@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react"; // Importing a close icon for better styling
+import { X } from "lucide-react"; 
 import Logo from "../Logo";
 import { useNavigate } from "react-router";
 
