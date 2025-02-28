@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { useTheme } from "@/context/ThemeContext";
 
 // Base animation variants with smoother timing
 const fadeIn = {
@@ -18,7 +19,7 @@ const slideUp = {
   },
 };
 
-// Stagger container for child animations
+
 const staggerContainer = {
   hidden: { opacity: 0 },
   visible: {
@@ -30,23 +31,32 @@ const staggerContainer = {
   },
 };
 
-// Button fade animation
+
 const buttonFade = {
   hover: { opacity: 0.85, transition: { duration: 0.3, ease: "easeInOut" } },
   tap: { opacity: 0.95, transition: { duration: 0.2 } },
 };
 
-// Smooth scroll behavior (move to CSS or useEffect in production)
+
 document.documentElement.style.scrollBehavior = "smooth";
 
 const Landing = () => {
   const navigate = useNavigate();
+  const {theme} = useTheme()
 
-  // Refs for scroll-triggered animations
+  
   const aboutRef = useRef(null);
   const whyChooseRef = useRef(null);
   const isAboutInView = useInView(aboutRef, { once: true, margin: "-150px" });
   const isWhyChooseInView = useInView(whyChooseRef, { once: true, margin: "-150px" });
+
+
+  const isDarkMode = theme === "dark";
+  const bgColor = isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black";
+  const textColor = isDarkMode ? "text-gray-300" : "text-gray-600";
+  const buttonPrimary = isDarkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-900 hover:bg-gray-800";
+  const buttonSecondary = isDarkMode ? "bg-gray-600 hover:bg-gray-500" : "bg-[#85786F] hover:bg-[#6d645c]";
+  const borderColor = isDarkMode ? "border-gray-700" : "border-gray-300";
 
   return (
     <>
@@ -118,7 +128,7 @@ const Landing = () => {
           <motion.h2 variants={slideUp} className="text-4xl font-bold mb-4">
             A Passion for Capturing Your Love Story
           </motion.h2>
-          <motion.p variants={fadeIn} className="text-lg text-gray-600 mb-6">
+          <motion.p variants={fadeIn} className={`text-lg text-${textColor}-600 mb-6`}>
             At Bella Imagine, we believe that every wedding is a unique and special celebration, and our mission is to help you preserve those cherished moments in the most beautiful and artistic way possible.
           </motion.p>
           <motion.button
@@ -148,7 +158,7 @@ const Landing = () => {
           <motion.p variants={fadeIn} className="text-sm text-gray-400 mb-2">
             Empowering Photographers, Connecting Clients
           </motion.p>
-          <motion.p variants={fadeIn} className="text-lg text-gray-600 mb-6">
+          <motion.p variants={fadeIn} className={`text-lg text-${textColor}-600 mb-6`}>
             Bella Imagine helps photographers connect with clients, manage bookings, and get paid securely—all with just a 2% commission. Focus on your craft while we handle the rest!
           </motion.p>
           <motion.button
