@@ -21,7 +21,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps , ErrorBoundaryState> {
     }
 
     componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-        console.error(`error cought  by errorBoundary ${error} ,this  component throw the error pettan ready aaktta ${errorInfo}`);
+        console.error(`error cought  by errorBoundary ${error} ,this  component throw the error :  pettan ready aaktta ${errorInfo}`);
     }
 
     render(): ReactNode {
