@@ -25,9 +25,6 @@ const ThemeToggle = () => {
         <DropdownMenuItem onClick={() => setTheme("dark")}>
           <Moon className="w-4 h-4 mr-2" /> Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          <Monitor className="w-4 h-4 mr-2" /> System
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

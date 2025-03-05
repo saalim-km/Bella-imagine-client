@@ -45,7 +45,7 @@ export default function Header({ onClick }: IHeader) {
 
       {/* Sign Up Button & Theme Toggle */}
       <div className="flex flex-row gap-2">
-        {location.pathname !== "/register" && (
+        {location.pathname !== "/register" && location.pathname !== "/login" && (
           <Button className={`px-4 py-2 rounded-md `} onClick={() => onClick?.()}>
             Sign Up
           </Button>
