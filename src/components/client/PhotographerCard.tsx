@@ -137,7 +137,7 @@ const PhotographerCard: React.FC<PhotographerCardProps> = ({
           <Button variant="outline" className={`flex-1 ${borderColor}`}>
             Visit Profile
           </Button>
-          <Button className={`flex-1 bg-blue-500 hover:bg-blue-600 text-white`}>
+          <Button className="flex-1 bg-[#655B52] hover:bg-[#544941] text-white">
             Send Message
           </Button>
         </div>

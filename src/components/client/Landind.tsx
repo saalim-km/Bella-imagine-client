@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
@@ -19,7 +19,6 @@ const slideUp = {
   },
 };
 
-
 const staggerContainer = {
   hidden: { opacity: 0 },
   visible: {
@@ -31,25 +30,33 @@ const staggerContainer = {
   },
 };
 
-
 const buttonFade = {
   hover: { opacity: 0.85, transition: { duration: 0.3, ease: "easeInOut" } },
   tap: { opacity: 0.95, transition: { duration: 0.2 } },
 };
 
+// Array of background images for the carousel
+const backgroundImages = [
+  "https://res.cloudinary.com/deh2nuqeb/image/upload/v1740647300/unsplash_IfjHaIoAoqE_z63y6p.png",
+  "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741187701/hisu-lee-FTW8ADj5igs-unsplash_ctadks.jpg",
+  "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741187701/marc-a-sporys-NO8Sj4dKE8k-unsplash_yg4unz.jpg",
+  "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741187702/jonathan-borba-eg-72fI9wK4-unsplash_otweju.jpg",
+  "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741187701/nathan-dumlao-5BB_atDT4oA-unsplash_lwukhj.jpg",
+  "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741187700/asdrubal-luna-33yonj9AKyU-unsplash_vpgsfh.jpg",
+  "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741187699/anna-vi-QUi84upBhoc-unsplash_ur8gdq.jpg"
+];
 
 document.documentElement.style.scrollBehavior = "smooth";
 
 const Landing = () => {
   const navigate = useNavigate();
-  const {theme} = useTheme()
+  const { theme } = useTheme();
+  const [currentImage, setCurrentImage] = useState(0);
 
-  
   const aboutRef = useRef(null);
   const whyChooseRef = useRef(null);
   const isAboutInView = useInView(aboutRef, { once: true, margin: "-150px" });
   const isWhyChooseInView = useInView(whyChooseRef, { once: true, margin: "-150px" });
-
 
   const isDarkMode = theme === "dark";
   const bgColor = isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black";
@@ -58,25 +65,44 @@ const Landing = () => {
   const buttonSecondary = isDarkMode ? "bg-gray-600 hover:bg-gray-500" : "bg-[#85786F] hover:bg-[#6d645c]";
   const borderColor = isDarkMode ? "border-gray-700" : "border-gray-300";
 
+  // Carousel effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % backgroundImages.length);
+    }, 5000); // Change image every 5 seconds
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <>
-      {/* Hero Section */}
+      {/* Hero Section with Carousel */}
       <motion.div
         className="relative w-full h-screen flex flex-col items-center justify-center text-center text-white bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "url('https://res.cloudinary.com/deh2nuqeb/image/upload/v1740647300/unsplash_IfjHaIoAoqE_z63y6p.png')",
-        }}
         initial="hidden"
         animate="visible"
         variants={staggerContainer}
       >
+        {/* Background Image Carousel */}
+        {backgroundImages.map((image, index) => (
+          <motion.div
+            key={index}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${image})` }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: index === currentImage ? 1 : 0 }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+          />
+        ))}
+        
+        {/* Overlay */}
         <motion.div
           className="absolute inset-0 bg-black bg-opacity-40"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
         />
+        
+        {/* Content */}
         <motion.div className="relative z-10 px-4" variants={slideUp}>
           <motion.p variants={fadeIn} className="text-lg text-gray-300 mb-2">
             Discover the Beauty of Bella Imagine
@@ -103,7 +129,7 @@ const Landing = () => {
         </motion.div>
       </motion.div>
 
-      {/* About Section */}
+      {/* About Section (unchanged) */}
       <motion.div
         ref={aboutRef}
         className="container mx-auto px-4 py-32 flex flex-col md:flex-row items-center justify-center gap-20"
@@ -143,7 +169,7 @@ const Landing = () => {
         </motion.div>
       </motion.div>
 
-      {/* Why Choose Us Section */}
+      {/* Why Choose Us Section (unchanged) */}
       <motion.div
         ref={whyChooseRef}
         className="container mx-auto px-4 py-32 flex flex-col md:flex-row items-center justify-center gap-20"

@@ -36,7 +36,7 @@ export default function Header({ onClick }: IHeader) {
           About
         </a>
         <a onClick={() => navigate("/vendors")} className={`${hoverTextColor} hover:cursor-pointer`}>
-          Vendors
+          Photographers
         </a>
         <a onClick={() => navigate("/contact")} className={`${hoverTextColor} hover:cursor-pointer`}>
           Contact
