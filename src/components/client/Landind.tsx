@@ -46,7 +46,7 @@ const backgroundImages = [
   "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741187699/anna-vi-QUi84upBhoc-unsplash_ur8gdq.jpg"
 ];
 
-document.documentElement.style.scrollBehavior = "smooth";
+document.documentElement.style.scrollBehavior = "smooth"
 
 const Landing = () => {
   const navigate = useNavigate();
