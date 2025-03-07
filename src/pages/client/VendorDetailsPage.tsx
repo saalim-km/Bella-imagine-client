@@ -1,6 +1,6 @@
 import VendorDetails from '@/components/client/VendorDetails'
 import Footer from '@/components/Footer'
-import Header from '@/components/Header'
+import Header from '@/components/headers/Header'
 import React from 'react'
 
 const VendorDetailsPage = () => {

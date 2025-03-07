@@ -68,7 +68,7 @@ const PhotographerCard: React.FC<PhotographerCardProps> = ({
   }, [isDragging, startX, scrollLeft]);
 
   return (
-    <div className={`flex flex-col p-6 rounded-lg shadow-md ${bgColor} max-w-6xl mx-auto mt-16`}>
+    <div className={`flex flex-col p-6 mb-10 rounded-lg shadow-md ${bgColor} max-w-6xl mx-auto mt-16`}>
       {/* Top Section - Photographer Info and Actions */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4">

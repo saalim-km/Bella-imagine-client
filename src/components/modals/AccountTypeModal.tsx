@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import Logo from "../Logo";
+import Logo from "../common/Logo";
 import { useNavigate } from "react-router";
 import { useTheme } from "@/context/ThemeContext";
 

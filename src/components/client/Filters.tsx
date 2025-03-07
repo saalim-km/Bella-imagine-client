@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useTheme } from "@/context/ThemeContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,19 +9,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
+import { useThemeConstants } from "@/utils/theme/themeUtills";
+
+
+
 
 export default function Filters() {
-  const { theme } = useTheme();
-  const isDarkMode = theme === "dark";
-  const bgColor = isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black";
-  const textColor = isDarkMode ? "text-gray-300" : "text-gray-600";
-  const borderColor = isDarkMode ? "border-gray-700" : "border-gray-300";
+  const {bgColor , textColor , borderColor } = useThemeConstants()
 
   // State to track selected options for each dropdown
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
   const [selectedPriceRange, setSelectedPriceRange] = useState<string | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
 
+  // dummy data
   const specialties = ["Wedding", "Portrait", "Event", "Fashion"];
   const priceRanges = ["0 - 25,000 INR", "25,000 - 50,000 INR", "50,000 - 75,000 INR"];
   const languages = ["Any Language", "English", "Hindi", "Tamil", "Telugu"];

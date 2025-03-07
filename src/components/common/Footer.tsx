@@ -8,7 +8,7 @@ export default function Footer() {
     <footer
       className={`${
         theme === "dark" ? "bg-gray-800 text-gray-100" : "bg-gray-100 text-gray-900"
-      } py-14 px-6 md:px-16 mt-24`}
+      } py-14 px-6 md:px-16`}
     >
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Left Section - Logo and Copyright */}

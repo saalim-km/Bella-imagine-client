@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import Logo from "./Logo";
+import Logo from "../common/Logo";
 import { useLocation, useNavigate } from "react-router";
-import ThemeToggle from "./ThemeToggle";
+import ThemeToggle from "../common/ThemeToggle";
 import { useTheme } from "@/context/ThemeContext";
 
 interface IHeader {
@@ -17,10 +17,9 @@ export default function Header({ onClick }: IHeader) {
   const isDarkMode = theme === "dark";
   const textColor = isDarkMode ? "text-white" : "text-gray-600";
   const hoverTextColor = isDarkMode ? "hover:text-gray-300" : "hover:text-black";
-  const borderColor = isDarkMode ? "border-gray-700" : "border-gray-300";
 
   return (
-    <header className={`flex justify-between items-center px-6 py-4 border-b ${borderColor}`}>
+    <header className={`flex justify-between items-center px-6 py-4`}>
       {/* Logo */}
       <div className="flex items-center space-x-2">
         <Logo />

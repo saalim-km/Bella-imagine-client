@@ -1,5 +1,5 @@
 import Footer from "@/components/Footer"
-import Header from "@/components/Header"
+import Header from "@/components/headers/Header"
 import Home from "@/components/client/Home"
 import { CalendarIcon, CreditCardIcon, HeartIcon, UserPlusIcon } from 'lucide-react';
 

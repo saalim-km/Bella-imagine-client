@@ -2,7 +2,7 @@ import Filters from '@/components/client/Filters';
 import LocationHeader from '@/components/client/LocationHeader';
 import PhotographerCard from '@/components/client/PhotographerCard';
 import Footer from '@/components/Footer';
-import Header from '@/components/Header';
+import Header from '@/components/headers/Header';
 import LocationModal from '@/components/modals/LocationModal';
 import { useTheme } from '@/context/ThemeContext';
 import React, { useState } from 'react'

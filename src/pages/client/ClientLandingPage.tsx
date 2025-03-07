@@ -1,6 +1,6 @@
 import Landing from '@/components/client/Landind'
 import Footer from '@/components/Footer'
-import Header from '@/components/Header'
+import Header from '@/components/headers/Header'
 import AccountTypeModal from '@/components/modals/AccountTypeModal'
 import { useState } from 'react'
 

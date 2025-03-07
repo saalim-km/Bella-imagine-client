@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { useTheme } from "@/context/ThemeContext";
+import { useThemeConstants } from "@/utils/theme/themeUtills";
+
+
 
 // Base animation variants with smoother timing
 const fadeIn = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: 1.2, ease: [0.25, 0.1, 0.25, 1] } },
 };
-
 const slideUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { 
@@ -18,7 +19,6 @@ const slideUp = {
     transition: { duration: 1.2, ease: [0.4, 0, 0.2, 1] } 
   },
 };
-
 const staggerContainer = {
   hidden: { opacity: 0 },
   visible: {
@@ -46,26 +46,23 @@ const backgroundImages = [
   "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741187699/anna-vi-QUi84upBhoc-unsplash_ur8gdq.jpg"
 ];
 
-document.documentElement.style.scrollBehavior = "smooth"
+document.documentElement.style.scrollBehavior = "smooth";
+
 
 const Landing = () => {
   const navigate = useNavigate();
-  const { theme } = useTheme();
   const [currentImage, setCurrentImage] = useState(0);
-
   const aboutRef = useRef(null);
   const whyChooseRef = useRef(null);
   const isAboutInView = useInView(aboutRef, { once: true, margin: "-150px" });
   const isWhyChooseInView = useInView(whyChooseRef, { once: true, margin: "-150px" });
+  const {textColor } = useThemeConstants()
 
-  const isDarkMode = theme === "dark";
-  const bgColor = isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black";
-  const textColor = isDarkMode ? "text-gray-300" : "text-gray-600";
-  const buttonPrimary = isDarkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-900 hover:bg-gray-800";
-  const buttonSecondary = isDarkMode ? "bg-gray-600 hover:bg-gray-500" : "bg-[#85786F] hover:bg-[#6d645c]";
-  const borderColor = isDarkMode ? "border-gray-700" : "border-gray-300";
 
-  // Carousel effect
+
+
+
+  // Carousel effect for image->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % backgroundImages.length);
@@ -119,7 +116,6 @@ const Landing = () => {
           <motion.button
             onClick={() => navigate("/register")}
             className="mt-6 px-6 py-3 bg-black text-white font-medium text-lg rounded-md hover:bg-gray-800"
-            variants={slideUp}
             whileHover="hover"
             whileTap="tap"
             variants={buttonFade}
@@ -159,7 +155,6 @@ const Landing = () => {
           </motion.p>
           <motion.button
             className="px-6 py-3 bg-black text-white font-medium text-lg rounded-md hover:bg-gray-800"
-            variants={slideUp}
             whileHover="hover"
             whileTap="tap"
             variants={buttonFade}
@@ -189,7 +184,6 @@ const Landing = () => {
           </motion.p>
           <motion.button
             className="px-6 py-3 bg-black text-white font-medium text-lg rounded-md hover:bg-gray-800"
-            variants={slideUp}
             whileHover="hover"
             whileTap="tap"
             variants={buttonFade}
