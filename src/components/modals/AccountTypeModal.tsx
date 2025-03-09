@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import Logo from "../common/Logo";
 import { useNavigate } from "react-router";
 import { useTheme } from "@/context/ThemeContext";
+import { useThemeConstants } from "@/utils/theme/themeUtills";
 
 interface ModalProps {
   isOpen: boolean;
@@ -12,7 +13,7 @@ interface ModalProps {
 
 const AccountTypeModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
-  const { theme } = useTheme(); // Get current theme
+  const {bgColor , borderColor , textColor , buttonPrimary , buttonSecondary } = useThemeConstants()
 
   // Prevent background scrolling when modal is open
   useEffect(() => {
@@ -26,14 +27,6 @@ const AccountTypeModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
-  // Dynamic styles based on theme
-  const isDarkMode = theme === "dark";
-  const bgColor = isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black";
-  const textColor = isDarkMode ? "text-gray-300" : "text-gray-600";
-  const buttonPrimary = isDarkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-900 hover:bg-gray-800";
-  const buttonSecondary = isDarkMode ? "bg-gray-600 hover:bg-gray-500" : "bg-[#85786F] hover:bg-[#6d645c]";
-  const borderColor = isDarkMode ? "border-gray-700" : "border-gray-300";
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -42,14 +35,15 @@ const AccountTypeModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
           onClick={onClose} // Close when clicking outside modal
         >
           <motion.div
-            className={`p-6 rounded-2xl shadow-lg max-w-sm w-full relative flex flex-col items-center text-center border ${borderColor} ${bgColor}`}
+            className={`p-6 rounded-2xl shadow-lg max-w-sm w-full relative flex flex-col items-center text-center ${bgColor}`}
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
           >
             {/* Close button */}
@@ -57,7 +51,7 @@ const AccountTypeModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
               onClick={onClose}
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:hover:text-gray-400"
             >
-              <X size={20} />
+              <X size={20} onClick={onClose}/>
             </button>
 
             {/* Logo */}

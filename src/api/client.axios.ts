@@ -1,8 +1,9 @@
+import { clientLogout } from "@/store/slices/clientSlice";
 import axios from "axios";
 import { toast } from "sonner";
 
 export const clientAxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_PRIVATE_API_URI,
+  baseURL: import.meta.env.VITE_CLIENT_API_URI,
   withCredentials: true,
 });
 
@@ -14,12 +15,13 @@ clientAxiosInstance.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
+      console.log('access token expire triggered');
       originalRequest._retry = true;
 
       if (!isRefreshing) {
         isRefreshing = true;
         try {
-          await clientAxiosInstance.post("/_cl/client/refresh-token");
+          await clientAxiosInstance.post("/client/refresh-token");
           isRefreshing = false;
 
           return clientAxiosInstance(originalRequest);

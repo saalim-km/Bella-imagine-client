@@ -32,27 +32,28 @@ export function ThemeProvider({
 
   useEffect(() => {
     const root = window.document.documentElement;
-
     root.classList.remove("light", "dark");
 
+    let appliedTheme = theme;
+
     if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
+      appliedTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light";
-
-      root.classList.add(systemTheme);
-      return;
     }
 
-    root.classList.add(theme);
+    root.classList.add(appliedTheme);
+
+    // ✅ Set body background color
+    document.body.style.backgroundColor =
+      appliedTheme === "dark" ? "hsl(240, 10%, 3.9%)" : "#ffffff";
   }, [theme]);
 
   const value = {
     theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
+    setTheme: (newTheme: Theme) => {
+      localStorage.setItem(storageKey, newTheme);
+      setTheme(newTheme);
     },
   };
 
@@ -65,7 +66,6 @@ export function ThemeProvider({
 
 export const useTheme = () => {
   const context = useContext(ThemeContext);
-
   if (context === undefined)
     throw new Error("useTheme must be used within a ThemeProvider");
 

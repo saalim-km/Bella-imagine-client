@@ -1,5 +1,5 @@
 import Landing from '@/components/client/Landind'
-import Footer from '@/components/Footer'
+import Footer from '@/components/common/Footer'
 import Header from '@/components/headers/Header'
 import AccountTypeModal from '@/components/modals/AccountTypeModal'
 import { useState } from 'react'
@@ -10,13 +10,13 @@ const ClientLandingPage = () => {
     function handleOpenModal() {
         setIsModalOpen(true)
     }
-
     function handleOnClose() {
-      setIsModalOpen((prevState)=> !prevState)
+      setIsModalOpen(false)
     }
+    
   return (
     <>
-        <Header onClick = {handleOpenModal} onClose = {handleOnClose}/>
+        <Header onClick = {handleOpenModal}/>
         <Landing/>
         <Footer/>
 

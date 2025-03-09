@@ -1,20 +1,20 @@
 import { authAxiosInstance } from "@/api/auth.axios";
 import { clientAxiosInstance } from "@/api/client.axios";
-import { handleError } from "@/utils/Error/errorHandler";
+import { ILogin, IUser } from "@/types/User";
+import { AxiosResponse } from "axios";
 // import { vendorAxiosInstance } from "@/api/vendor.axios";
 // import { UserDTO } from "@/types/User";
 
-// export interface AuthResponse {
-//   success: boolean;
-//   message: string;
-//   user: {
-//     id: string;
-//     firstName: string;
-//     lastName: string;
-//     email: string;
-//     role: "client" | "admin" | "vendor";
-//   };
-// }
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: "client" | "admin" | "vendor";
+  };
+}
 
 // export interface AxiosResponse {
 //   success: boolean;
@@ -27,57 +27,41 @@ import { handleError } from "@/utils/Error/errorHandler";
 //   role: "admin" | "client" | "vendor";
 // }
 
-export const signup = async (user : any): Promise<any> => {
-    try {
-        const response = await authAxiosInstance.post(
-            "/register",
-            user
-          );
-          return response.data;
-    } catch (error) {
-        handleError(error)
-    }   
+export const signup = async (user: IUser): Promise<any> => {
+  const response = await authAxiosInstance.post("/register", user);
+  return response.data;
 };
 
-// export const login = async (user: ILoginData): Promise<AuthResponse> => {
-//   const response = await authAxiosInstance.post<AuthResponse>("/login", user);
-//   return response.data;
-// };
+export const login = async (user: ILogin): Promise<AxiosResponse> => {
+  const response = await authAxiosInstance.post("/login", user);
+  return response.data;
+};
 
 export const sendOtp = async (email: string): Promise<any> => {
-    try {
-        const response = await authAxiosInstance.post("/send-otp", {
-            email,
-          });
-          return response.data;
-    } catch (error) {
-        handleError(error)
-    }
+  const response = await authAxiosInstance.post("/send-otp", {
+    email,
+  });
+  console.log(response);
+  return response.data;
 };
 
 export const verifyOtp = async (data: { email: string; otp: string }) => {
-    try {
-        const response = await authAxiosInstance.post<any>(
-            "/verify-otp",
-            data
-          );
-          return response.data;
-    } catch (error) {
-        handleError(error)
-    }
+  const response = await authAxiosInstance.post("/verify-otp", data);
+  console.log(response);
+  return response.data;
 };
 
-// export const logoutClient = async (): Promise<AxiosResponse> => {
-//   const response = await clientAxiosInstance.post("/_cl/client/logout");
-//   return response.data;
-// };
+export const logoutClient = async (): Promise<AxiosResponse> => {
+  const response = await clientAxiosInstance.post("/client/logout");
+  return response.data;
+};
 
 // export const logoutVendor = async (): Promise<AxiosResponse> => {
-//   const response = await vendorAxiosInstance.post("/_ve/vendor/logout");
+//   const response = await vendorAxiosInstance.post("/_ve/logout");
 //   return response.data;
 // };
 
 // export const logoutAdmin = async (): Promise<AxiosResponse> => {
-//   const response = await adminAxiosInstance.post("/_ad/admin/logout");
+//   const response = await adminAxiosInstance.post("/_ad/logout");
 //   return response.data;
 // };

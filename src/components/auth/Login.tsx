@@ -1,16 +1,48 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { GoogleIcon } from "../common/Google-icon";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { loginSchema } from "@/utils/formikValidators/login.validator";
 import {useThemeConstants} from '../../utils/theme/themeUtills'
+import GoogleAuth from "./GoogleAuth";
+import { ILogin, TRole } from "@/types/User";
+import { CredentialResponse } from "@react-oauth/google";
+import { useGoogleLoginMutataion } from "@/hooks/auth/useGoogleLogin";
+import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { clientLogin } from "@/store/slices/clientSlice";
 
-export default function Login() {
+
+interface loginProps {
+  userType : TRole;
+  onSubmit : (data : ILogin)=> void;
+  isSending : boolean
+}
+
+export default function Login({userType , onSubmit , isSending}: loginProps) {
+  const dispatch = useDispatch()
+  const {mutate : Login} = useGoogleLoginMutataion()
   const navigate = useNavigate();
-  const {isDarkMode , textColor , buttonPrimary , borderColor} = useThemeConstants()
+  const {isDarkMode , textColor , buttonPrimary , bgColor} = useThemeConstants()
 
-
+  function handleGoogleLogin(credentialResponse : CredentialResponse) {
+    console.log(credentialResponse);
+    Login({
+      credential : credentialResponse.credential,
+      client_id : import.meta.env.VITE_GOOGLE_CLIENT_ID,
+      role : userType
+    },{
+      onSuccess : (data)=> {
+        toast.success(data.message);
+        dispatch(clientLogin(data.user))
+        navigate('/home')
+      },
+      onError : (error)=> {
+        console.log(error.message)
+        toast.error(error.message)
+      }
+    })
+  }
 
 
   return (
@@ -27,63 +59,68 @@ export default function Login() {
             initialValues={{ email: "", password: "" }}
             validationSchema={loginSchema}
             onSubmit={(values, { setSubmitting }) => {
-              console.log("Login Submitted:", values);
+              const loginData = {
+                email : values.email,
+                password : values.password,
+                role : userType
+              }
+              console.log("Login Submitted:", loginData);
               setSubmitting(false);
-              // Add navigation or API call here if needed
+              onSubmit(loginData)
             }}
           >
             {({ isSubmitting }) => (
-              <Form className="space-y-4">
+                <Form className="space-y-4">
                 <div>
                   <Field
-                    name="email"
-                    type="email"
-                    placeholder="Email"
-                    as={Input}
-                    className={`rounded-md h-12 w-full ${
-                      isDarkMode
-                        ? "bg-gray-800 text-white border-gray-700"
-                        : "bg-white text-black border-gray-300"
-                    }`}
+                  name="email"
+                  type="email"
+                  placeholder="Email"
+                  as={Input}
+                  className={`rounded-md h-12 w-full ${
+                    isDarkMode
+                    ? `${bgColor} text-white border-gray-700 border`
+                    : "bg-white text-black border-gray-300"
+                  }`}
                   />
                   <ErrorMessage
-                    name="email"
-                    component="div"
-                    className="text-red-500 text-sm mt-1"
+                  name="email"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
                   />
                 </div>
                 <div>
                   <Field
-                    name="password"
-                    type="password"
-                    placeholder="Password"
-                    as={Input}
-                    className={`rounded-md h-12 w-full ${
-                      isDarkMode
-                        ? "bg-gray-800 text-white border-gray-700"
-                        : "bg-white text-black border-gray-300"
-                    }`}
+                  name="password"
+                  type="password"
+                  placeholder="Password"
+                  as={Input}
+                  className={`rounded-md h-12 w-full ${
+                    isDarkMode
+                    ? `${bgColor} text-white border-gray-700 border`
+                    : "bg-white text-black border-gray-300"
+                  }`}
                   />
                   <ErrorMessage
-                    name="password"
-                    component="div"
-                    className="text-red-500 text-sm mt-1"
+                  name="password"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
                   />
                 </div>
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isSending}
                   className={`w-full ${buttonPrimary} text-white h-12 rounded-md`}
                 >
-                  Login
+                  {isSending ? ".....verifying" : "Login"}
                 </Button>
-              </Form>
+                </Form>
             )}
           </Formik>
 
           <div className="relative flex items-center justify-center my-4">
             <div className="absolute inset-0 flex items-center">
-              <div className={`w-full border-t ${borderColor}`}></div>
+              <div className={`w-full border-t`}></div>
             </div>
             <span
               className={`relative px-2 text-sm ${
@@ -94,15 +131,9 @@ export default function Login() {
             </span>
           </div>
 
-          <Button
-            variant="outline"
-            className={`w-full flex items-center justify-center h-12 rounded-md ${borderColor} ${
-              isDarkMode ? "text-white" : "text-black"
-            }`}
-          >
-            <GoogleIcon />
-            <span className="ml-2">Login with Google</span>
-          </Button>
+          <div className="flex align-middle justify-center">
+            <GoogleAuth handleGoogleSuccess={handleGoogleLogin}/>
+          </div>
 
           <div className="text-center mt-6">
             <p className={textColor}>Don't have an account?</p>
