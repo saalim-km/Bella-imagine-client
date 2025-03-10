@@ -80,7 +80,7 @@ export default function Signup({ onSubmit  , userType}: SignUpProps) {
     googleLogin({
       credential : credentialResponse.credential,
       client_id : import.meta.env.VITE_GOOGLE_CLIENT_ID,
-      role : "client"
+      role : userType
     },{
       onSuccess : (data)=> {
         toast.success(data.message);
@@ -112,7 +112,7 @@ export default function Signup({ onSubmit  , userType}: SignUpProps) {
       <div className={`w-full md:w-1/3 flex items-center justify-center`}>
         <div className="w-full max-w-md">
           <div className="text-center space-y-1 mb-6">
-            <h1 className="text-2xl font-semibold">I'm a customer</h1>
+            <h1 className="text-2xl font-semibold">I'm a {userType === 'client' ? 'customer' : 'Photographer'}</h1>
             <p className={textColor}>Registration</p>
           </div>
 
@@ -129,7 +129,7 @@ export default function Signup({ onSubmit  , userType}: SignUpProps) {
                 name: values.name,
                 email: values.email,
                 password: values.password,
-                role: "client" as TRole,
+                role: userType as TRole,
               };
               setUserData(user);
               handleOtpSend(user); // Trigger OTP send
@@ -203,7 +203,7 @@ export default function Signup({ onSubmit  , userType}: SignUpProps) {
           <div className="text-center mt-4">
             <p className={textColor}>
               Already have an account?{" "}
-              <a onClick={() => navigate("/login")} className="text-blue-500 hover:underline hover:cursor-pointer">
+              <a onClick={() => navigate(userType === "vendor" ? '/vendor/login' : '/login')} className="text-blue-500 hover:underline hover:cursor-pointer">
                 Sign in
               </a>
             </p>

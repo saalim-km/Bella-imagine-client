@@ -74,6 +74,7 @@ const AccountTypeModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
             </button>
             <button
               className={`w-full py-3 rounded-lg text-lg font-medium transition ${buttonSecondary} text-white`}
+              onClick={()=> navigate('/vendor/signup')}
             >
               Photographer
             </button>

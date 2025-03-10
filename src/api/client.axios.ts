@@ -28,9 +28,9 @@ clientAxiosInstance.interceptors.response.use(
         } catch (refreshError) {
           isRefreshing = false;
 
+          toast.info("Please login again");
           localStorage.removeItem("clientSession");
           window.location.href = "/";
-          toast.info("Please login again");
           return Promise.reject(refreshError);
         }
       }

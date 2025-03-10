@@ -157,12 +157,12 @@ const PhotographerCard = ({ portfolioImages }: PhotographerCardProps) => {
         </div>
 
         <div className="flex gap-3 mt-4">
-          <Button
+            <Button
             variant="outline"
-            className={`border ${borderColor} ${buttonPrimary} text-white`}
-          >
+            className={`border ${borderColor} ${buttonPrimary} text-white hover:text-white`}
+            >
             Visit Profile
-          </Button>
+            </Button>
           <Button className="bg-[#655b52] hover:bg-[#544941] text-white">
             Send Message
           </Button>

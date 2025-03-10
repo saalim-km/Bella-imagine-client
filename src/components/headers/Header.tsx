@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import Logo from "../common/Logo";
 import { useLocation, useNavigate } from "react-router-dom";
 import ThemeToggle from "../common/ThemeToggle";
-import { useTheme } from "@/context/ThemeContext";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { logoutClient } from "@/services/auth/authService";
@@ -51,60 +50,53 @@ export default function Header({ onClick  }: IHeader) {
   const location = useLocation();
   const {isDarkMode , textColor } = useThemeConstants()
 
-  // Dynamic styles based on theme
   const hoverTextColor = isDarkMode ? "hover:text-gray-300" : "hover:text-black";
 
-  const isLoggedIn = !!client; // Assuming client is null or undefined when not logged in
+  const isLoggedIn = !!client; 
 
   return (
-    <header className={`flex justify-between items-center px-6 py-4`}>
+    <header className={`flex justify-between items-center  sm:px-6 sm:py-2 sm:mx-28   md:mx-0   lg:mx-32 lg:py-2`}>
       {/* Logo */}
       <div className="flex items-center space-x-2">
-        <Logo />
-        <span className={`text-lg font-semibold ${textColor}`}>Bella Imagine</span>
+      <Logo />
+      <span className={`text-sm sm:text-lg font-semibold ${textColor}`}>Bella Imagine</span>
       </div>
 
       {/* Navigation */}
-      <nav className={`hidden md:flex space-x-6 ${textColor}`}>
-        <a onClick={() => navigate("/")} className={`${hoverTextColor} hover:cursor-pointer`}>
-          Home
-        </a>
-        <a onClick={() => navigate("/about")} className={`${hoverTextColor} hover:cursor-pointer`}>
-          About
-        </a>
-        <a onClick={() => navigate("/vendors")} className={`${hoverTextColor} hover:cursor-pointer`}>
-          Photographers
-        </a>
-        <a onClick={() => navigate("/contact")} className={`${hoverTextColor} hover:cursor-pointer`}>
-          Contact
-        </a>
+      <nav className={`hidden sm:flex space-x-4 sm:space-x-6 ${textColor}`}>
+      <a onClick={() => navigate("/")} className={`${hoverTextColor} hover:cursor-pointer`}>
+        Home
+      </a>
+      <a onClick={() => navigate("/vendors")} className={`${hoverTextColor} hover:cursor-pointer`}>
+        Photographers
+      </a>
       </nav>
 
       {/* Sign Up Button & Theme Toggle */}
       <div className="flex flex-row gap-2 items-center">
-        {isLoggedIn ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className={`px-4 py-2 rounded-md`}>
-                {client.name} {/* Assuming client has a name property */}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-              <DropdownMenuItem onClick={() => navigate("/profile")}>Profile</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/settings")}>Settings</DropdownMenuItem>
-              <DropdownMenuItem >Messages</DropdownMenuItem>
-              <DropdownMenuItem className="bg-red-500" onClick={logoutUser}>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          location.pathname !== "/register" &&
-          location.pathname !== "/login" && (
-            <Button className={`px-4 py-2 rounded-md`} onClick={() => onClick?.()}>
-              Sign Up
-            </Button>
-          )
-        )}
-        <ThemeToggle />
+      {isLoggedIn ? (
+        <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button className={`px-2 py-1 sm:px-4 sm:py-2 rounded-md`}>
+          {client.name} 
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-40 sm:w-56">
+          <DropdownMenuItem onClick={() => navigate("/profile")}>Profile</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/settings")}>Settings</DropdownMenuItem>
+          <DropdownMenuItem >Messages</DropdownMenuItem>
+            <DropdownMenuItem onClick={logoutUser}>Logout</DropdownMenuItem>
+        </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        location.pathname !== "/register" &&
+        location.pathname !== "/login" && (
+        <Button className={`px-2 py-1 sm:px-4 sm:py-2 rounded-md`} onClick={() => onClick?.()}>
+          Sign Up
+        </Button>
+        )
+      )}
+      <ThemeToggle />
       </div>
     </header>
   );

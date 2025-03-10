@@ -13,7 +13,7 @@ import {
   
   const ToolTip = ({ content, element }: ToolTipProps) => {
     return (
-      <TooltipProvider delayDuration={300}>
+      <TooltipProvider delayDuration={100}>
         <Tooltip>
           <TooltipTrigger asChild>{element}</TooltipTrigger>
           <TooltipContent className="TooltipContent">

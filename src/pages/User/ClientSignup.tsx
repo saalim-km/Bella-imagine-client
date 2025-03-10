@@ -1,7 +1,7 @@
 import Header from "@/components/headers/Header";
 import Signup from "@/components/auth/SignUp";
 import AccountTypeModal from "@/components/modals/AccountTypeModal";
-import React, { useState } from "react";
+import { useState } from "react";
 import Footer from "@/components/common/Footer";
 import { useRegisterMutation } from "@/hooks/auth/useRegister";
 import { IUser } from "@/types/User";
@@ -35,7 +35,7 @@ const ClientSignup = () => {
     <>
       <Header onClick={handleOpenModal}/>
       <div className="p-20">
-        <Signup userType="vendor" onSubmit={handleRegister}
+        <Signup userType="client" onSubmit={handleRegister}
         />
         {isModalOpen && (
           <AccountTypeModal isOpen={isModalOpen} onClose={handleOnClose} />

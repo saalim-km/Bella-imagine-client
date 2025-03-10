@@ -1,4 +1,4 @@
-import Landing from '@/components/client/Landind'
+import Landing from '@/components/User/Landind'
 import Footer from '@/components/common/Footer'
 import Header from '@/components/headers/Header'
 import AccountTypeModal from '@/components/modals/AccountTypeModal'
