@@ -8,7 +8,11 @@ interface NoAuthRouteProps {
 }
 
 export const NoClientAuthRoute = ({ element }: NoAuthRouteProps) => {
-  const user = useSelector((state: RootState) => state.client.client);
+  const user  = useSelector((state: RootState) => {
+    if (state.vendor.vendor) return state.vendor.vendor.role;
+    if (state.client.client) return state.client.client.role;
+    return null;
+  });
 
   if (user) {
     return <Navigate to="/home" />; // Redirecting authenticated clients to home instead of landing

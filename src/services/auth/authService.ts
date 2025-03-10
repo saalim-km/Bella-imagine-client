@@ -1,5 +1,6 @@
 import { authAxiosInstance } from "@/api/auth.axios";
 import { clientAxiosInstance } from "@/api/client.axios";
+import { vendorAxiosInstance } from "@/api/vendor.axios";
 import { ILogin, IUser } from "@/types/User";
 import { AxiosResponse } from "axios";
 // import { vendorAxiosInstance } from "@/api/vendor.axios";
@@ -56,12 +57,8 @@ export const logoutClient = async (): Promise<AxiosResponse> => {
   return response.data;
 };
 
-// export const logoutVendor = async (): Promise<AxiosResponse> => {
-//   const response = await vendorAxiosInstance.post("/_ve/logout");
-//   return response.data;
-// };
-
-// export const logoutAdmin = async (): Promise<AxiosResponse> => {
-//   const response = await adminAxiosInstance.post("/_ad/logout");
-//   return response.data;
-// };
+export const logoutVendor = async ()=> {
+  const response = await vendorAxiosInstance.post('/vendor/logout')
+  console.log(response);
+  return response.data;
+}

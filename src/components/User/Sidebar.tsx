@@ -21,17 +21,15 @@ const vendorNavItems = [
 ];
 
 interface SidebarProps {
-  firstName?: string;
-  lastName?: string;
-  profileImage?: string;
-  activeTab?: string;
-  setActiveTab?: (tab: string) => void;
+  name : string;
+  profileImage ?: string;
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
   role: "client" | "vendor"; 
 }
 
 export function Sidebar({
-  firstName,
-  lastName,
+  name,
   profileImage,
   activeTab,
   setActiveTab,
@@ -45,15 +43,14 @@ export function Sidebar({
         {/* Profile Section */}
         <div className="flex items-center space-x-4 mb-6">
           <Avatar className="w-12 h-12">
-            <AvatarImage src={profileImage} alt={`${firstName} ${lastName}`} />
+            <AvatarImage src={profileImage} alt={`${name}`} />
             <AvatarFallback>
-              {firstName?.charAt(0).toUpperCase()}
-              {lastName?.charAt(0).toUpperCase()}
+              {name?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div>
             <h2 className="text-lg font-semibold">
-              {firstName} {lastName}
+              {name}
             </h2>
             <p className="text-sm text-muted-foreground">
               {role === "vendor" ? "Photographer" : "Event Enthusiast"}

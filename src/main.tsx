@@ -11,7 +11,6 @@ import { store } from "./store/store.ts";
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
     <Provider store={store}>
       <BrowserRouter>
         <ErrorBoundary>
@@ -23,5 +22,4 @@ createRoot(document.getElementById("root")!).render(
         </ErrorBoundary>
       </BrowserRouter>
     </Provider>
-  </StrictMode>
 );

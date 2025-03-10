@@ -12,7 +12,6 @@ const ClientSignup = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const {mutate : registerClient} = useRegisterMutation()
 
-  // modal->>>>>>>>>>>>>>>>>>
   function handleOpenModal() {
     setIsModalOpen(true);
   }
@@ -33,12 +32,14 @@ const ClientSignup = () => {
 
   return (
     <>
-      <Header onClick={handleOpenModal}/>
+      <Header/>
       <div className="p-20">
-        <Signup userType="client" onSubmit={handleRegister}
+        <Signup onClick={handleOpenModal} userType="client" onSubmit={handleRegister}
         />
         {isModalOpen && (
-          <AccountTypeModal isOpen={isModalOpen} onClose={handleOnClose} />
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <AccountTypeModal isOpen={isModalOpen} onClose={handleOnClose} />
+            </div>
         )}
       </div>
       <Footer/>
