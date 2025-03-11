@@ -1,4 +1,4 @@
-// import { Client } from "@/services/client/clientService";
+import { IClient } from "@/services/client/clientService";
 import {
   CalendarDays,
   MapPin,
@@ -9,31 +9,36 @@ import {
 } from "lucide-react";
 import moment from "moment";
 
-// interface ProfileInfoProps {
-//   data ? : Client;
-// }
+interface ProfileInfoProps {
+  data?: IClient;
+}
 
-export function ProfileInfo({ data } : {data ?: any}) {
+export function ProfileInfo({ data }: ProfileInfoProps) {
   return (
-    <div className="space-y-4 ">
+    <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <InfoItem icon={UserCheck} label="Full Name" value={data?.name} />
+        <InfoItem icon={Mail} label="Email" value={data?.email} />
+        <InfoItem icon={Phone} label="Phone" value={data?.phoneNumber?.toString()} />
         <InfoItem
-          icon={UserCheck}
-          label="Full Name"
-          value={`salim`}
+          icon={Briefcase}
+          label="Status"
+          value={data?.isActive ? "Active" : "Inactive"}
         />
-        <InfoItem icon={Mail} label="Email" value={'saalimkm@gmail.com'} />
-        <InfoItem icon={Phone} label="Phone" value={'11111111111'} />
-        <InfoItem icon={Briefcase} label="Status" value={'active'} />
         <InfoItem
           icon={CalendarDays}
           label="Joined"
-          value={'april 15'}
+          value={data?.createdAt ? moment(data.createdAt).format("MMMM DD, YYYY") : "N/A"}
         />
-        <InfoItem icon={MapPin} label="Location" value="N/A" />
+        <InfoItem icon={MapPin} label="Location" value={data?.location} />
       </div>
       <div className="mt-4">
         <h3 className="font-semibold mb-2">Additional Info</h3>
+        <InfoItem
+          icon={Briefcase}
+          label="Blocked"
+          value={data?.isblocked ? "Yes" : "No"}
+        />
       </div>
     </div>
   );
@@ -46,7 +51,7 @@ function InfoItem({
 }: {
   icon: any;
   label: string;
-  value: string;
+  value?: string;
 }) {
   return (
     <div className="flex items-center gap-2">

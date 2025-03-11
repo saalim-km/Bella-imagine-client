@@ -15,13 +15,15 @@ import { CredentialResponse } from "@react-oauth/google";
 import { useGoogleLoginMutataion } from "@/hooks/auth/useGoogleLogin";
 import { clientLogin } from "@/store/slices/clientSlice";
 import { useDispatch } from "react-redux";
+import { vendorLogin } from "@/store/slices/vendorSlice";
 
 interface SignUpProps {
   onSubmit: (data: IUser) => void;
-  userType : TRole
+  userType : TRole;
+  onClick ?: ()=> void;
 }
 
-export default function Signup({ onSubmit  , userType}: SignUpProps) {
+export default function Signup({ onSubmit  , userType , onClick}: SignUpProps) {
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
@@ -84,12 +86,21 @@ export default function Signup({ onSubmit  , userType}: SignUpProps) {
     },{
       onSuccess : (data)=> {
         toast.success(data.message);
-        dispatch(clientLogin({
-          _id : data.user.id,
-          name : data.user.name,
-          email : data.user.email,
-          role : data.user.role
-        }));
+        if(userType === "vendor") {
+          dispatch(vendorLogin({
+            _id : data.user.id,
+            name : data.user.name,
+            email : data.user.email,
+            role : data.user.role
+          }))
+        }else{
+          dispatch(clientLogin({
+            _id : data.user.id,
+            name : data.user.name,
+            email : data.user.email,
+            role : data.user.role
+          }));
+        }
       },
       onError : (error)=> {
         handleError(error)
@@ -198,7 +209,7 @@ export default function Signup({ onSubmit  , userType}: SignUpProps) {
 
           <div className="text-center mt-6">
             <p className={textColor}>Not a customer?</p>
-            <a className="text-blue-500 hover:underline hover:cursor-pointer">Select a different account type</a>
+            <a className="text-blue-500 hover:underline hover:cursor-pointer" onClick={()=> onClick()}>Select a different account type</a>
           </div>
           <div className="text-center mt-4">
             <p className={textColor}>

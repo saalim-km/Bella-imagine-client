@@ -1,9 +1,11 @@
 import {configureStore} from '@reduxjs/toolkit'
 import clientReducers from './slices/clientSlice'
+import vendorReducers from './slices/vendorSlice'
 
 export const store = configureStore({
     reducer : {
         client : clientReducers,
+        vendor : vendorReducers
     }
 })
 

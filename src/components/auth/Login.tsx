@@ -11,6 +11,8 @@ import { useGoogleLoginMutataion } from "@/hooks/auth/useGoogleLogin";
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { clientLogin } from "@/store/slices/clientSlice";
+import { handleError } from "@/utils/Error/errorHandler";
+import { vendorLogin } from "@/store/slices/vendorSlice";
 
 
 interface loginProps {
@@ -34,12 +36,15 @@ export default function Login({userType , onSubmit , isSending}: loginProps) {
     },{
       onSuccess : (data)=> {
         toast.success(data.message);
-        dispatch(clientLogin(data.user))
+        if(userType === "vendor") {
+          dispatch(vendorLogin(data.user))
+        }else{
+          dispatch(clientLogin(data.user))
+        }
         navigate('/home')
       },
       onError : (error)=> {
-        console.log(error.message)
-        toast.error(error.message)
+        handleError(error)
       }
     })
   }
@@ -51,7 +56,10 @@ export default function Login({userType , onSubmit , isSending}: loginProps) {
       <div className={`w-full md:w-1/3 flex items-center justify-center p-0`}>
         <div className="w-full max-w-md ">
           <div className="text-center space-y-1 mb-6">
-            <h1 className="text-2xl font-semibold">Welcome Back</h1>
+            {
+           
+              userType === 'admin' ?  <h1 className="text-2xl font-semibold">Admin Login</h1> : <h1 className="text-2xl font-semibold">Welcome Back</h1>
+            }
             <p className={textColor}>Login to your account</p>
           </div>
 
@@ -138,7 +146,7 @@ export default function Login({userType , onSubmit , isSending}: loginProps) {
           <div className="text-center mt-6">
             <p className={textColor}>Don't have an account?</p>
             <a
-              onClick={() => navigate("/register")}
+              onClick={() => navigate(userType === "vendor" ? '/vendor/signup' : '/register')}
               className="text-blue-500 hover:cursor-pointer"
             >
               Sign up

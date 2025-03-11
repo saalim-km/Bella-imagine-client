@@ -5,31 +5,77 @@ import { Edit2, Menu } from "lucide-react";
 import { EditProfileForm } from "@/components/User/EditProfileForm";
 import { Sidebar } from "@/components/User/Sidebar";
 import { ProfileInfo } from "@/components/User/ProfileInfo";
-
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import Header from "@/components/headers/Header";
 import { useThemeConstants } from "@/utils/theme/themeUtills";
+import { useClientQuery } from "@/hooks/client/useClientProfile";
+import Spinner from "@/components/common/LogoSpinner";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { useVendorQuery } from "@/hooks/vendor/useVendorProfile";
+
+const tabTitles: Record<string, string> = {
+  profile: "Profile",
+  "bookings-history": "Bookings & History",
+  wallet: "Wallet & Transactions",
+  "received-work": "Received Work",
+  bookings: "Bookings",
+  "allocate-slot": "Allocate Slot",
+  "upload-work": "Upload Work",
+  "services-portfolio": "Services & Portfolio",
+};
 
 export default function UserProfile() {
+  const { bgColor } = useThemeConstants();
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
-  const {bgColor} = useThemeConstants()
 
+  const userType  = useSelector((state: RootState) => {
+    if (state.vendor.vendor) return state.vendor.vendor.role;
+    if (state.client.client) return state.client.client.role;
+    return null;
+  });
   
-  const role = "client"
-
+  // ---------------------------Fetching client data if the role is only cient--------------------------------|
+  const {
+    data: clientData,
+    isLoading: isClientLoading,
+    isError: isClientError,
+  } = useClientQuery(userType === "client" );
   
-  const tabTitles: Record<string, string> = {
-    profile: "Profile",
-    "bookings-history": "Bookings & History",
-    wallet: "Wallet & Transactions",
-    "received-work": "Received Work",
-    bookings: "Bookings",
-    "allocate-slot": "Allocate Slot",
-    "upload-work": "Upload Work",
-    "services-portfolio": "Services & Portfolio",
-  };
+  // ---------------------------Fetching vendor data if the role is only vendor--------------------------------|
+  const {
+    data: vendorData,
+    isLoading: isVendorLoading,
+    isError: isVendorError,
+  } = useVendorQuery(userType === "vendor");
+  
+  
+  const isLoading = isClientLoading || isVendorLoading;
+  const isError = isClientError || isVendorError;
+  const userData = userType === "client" ? clientData?.client : vendorData?.vendor;
+  
+  console.log(`User data:`, userData);
+  
+  
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Spinner />
+      </div>
+    );
+  }
+  
+  
+  if (isError || !userData) {
+    return (
+      <div className="flex justify-center items-center min-h-screen text-red-500">
+        An error occurred. Please try again.
+      </div>
+    );
+  }
+  
 
   return (
     <div>
@@ -38,10 +84,14 @@ export default function UserProfile() {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Desktop Sidebar */}
           <aside className="hidden lg:block w-64 shrink-0">
-            <Sidebar role={role} activeTab={activeTab} setActiveTab={setActiveTab} />
+            <Sidebar
+              name={userData.name}
+              profileImage={userData.profileImage}
+              role={userData.role}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
           </aside>
-
-
 
           {/* Mobile Sidebar */}
           <Sheet>
@@ -51,15 +101,19 @@ export default function UserProfile() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-64 p-0">
-              <Sidebar role={role} activeTab={activeTab} setActiveTab={setActiveTab} />
+              <Sidebar
+                name={userData.name}
+                profileImage={userData.profileImage}
+                role={userData.role}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+              />
             </SheetContent>
           </Sheet>
 
-
-
           {/* Main Content */}
           <main className="flex-1">
-            <Card className={`p-6 ${bgColor }`}>
+            <Card className={`p-6 ${bgColor}`}>
               <div className="flex justify-between items-center mb-6">
                 {/* Dynamic Title */}
                 <h2 className="text-2xl font-bold">{tabTitles[activeTab] || "Dashboard"}</h2>
@@ -78,14 +132,12 @@ export default function UserProfile() {
 
               {/* Dynamic Content Rendering */}
               <div className={cn("transition-all duration-300 ease-in-out")}>
-                {activeTab === "profile" && (isEditing ? <EditProfileForm role={role}/> : <ProfileInfo />)}
-                {/* {activeTab === "bookings-history" && <ClientBookingListing />} */}
-                {/* {activeTab === "wallet" && <WalletTransactions />} */}
-                {/* {activeTab === "received-work" && <ReceivedWork />} */}
-                {/* {activeTab === "bookings" && <VendorBookingList />} */}
-                {/* {activeTab === "allocate-slot" && <AllocateSlot />} */}
-                {/* {activeTab === "upload-work" && <UploadWork />} */}
-                {/* {activeTab === "services-portfolio" && <Portfolio />} */}
+                {activeTab === "profile" &&
+                  (isEditing ? (
+                    <EditProfileForm setIsEditing={setIsEditing} role={userData.role} data={userData} />
+                  ) : (
+                    <ProfileInfo data={userData} />
+                  ))}
               </div>
             </Card>
           </main>

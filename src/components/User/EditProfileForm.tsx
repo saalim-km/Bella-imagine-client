@@ -10,6 +10,7 @@ import { uploadToCloudinary } from "@/utils/upload-cloudinary/cloudinary";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandInput, CommandList, CommandItem, CommandEmpty } from "@/components/ui/command";
 import { Globe } from "lucide-react";
+import { IClient } from "@/services/client/clientService";
 
 const popularLanguages = [
   "English", "Hindi", "Bengali", "Telugu", "Marathi", "Tamil", "Urdu", "Gujarati", "Malayalam",
@@ -37,7 +38,7 @@ interface VendorProfile extends BaseProfile {
 interface EditProfileFormProps {
   role: "client" | "vendor";
   setIsEditing: (isEditing: boolean) => void;
-  data?: ClientProfile | VendorProfile;
+  data?: IClient | VendorProfile;
   handleUpdateProfile?: (values: ClientProfile | VendorProfile) => void;
 }
 

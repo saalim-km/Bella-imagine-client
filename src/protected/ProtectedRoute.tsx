@@ -9,13 +9,17 @@ interface ProtectedRouteProps {
 }
 
 export const AuthClientRoute = ({ element, allowedRoles }: ProtectedRouteProps) => {
-  const userRole = useSelector((state: RootState) => state.client.client?.role);
+  const user  = useSelector((state: RootState) => {
+    if (state.vendor.vendor) return state.vendor.vendor.role;
+    if (state.client.client) return state.client.client.role;
+    return null;
+  });
 
-  if (!userRole) {
+  if (!user) {
     return <Navigate to="/login" />; 
   }
 
-  return allowedRoles.includes(userRole) ? element : <Navigate to="/unauthorized" />;
+  return allowedRoles.includes(user) ? element : <Navigate to="/unauthorized" />;
 };
 
 // export const AuthAdminRoute = ({
