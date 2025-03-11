@@ -73,14 +73,16 @@ export default function Header({ onClick }: IHeader) {
       </div>
 
       {/* Navigation */}
-      <nav className={`hidden sm:flex space-x-4 sm:space-x-6 ${textColor}`}>
-        <a onClick={() => navigate("/")} className={`${hoverTextColor} hover:cursor-pointer`}>
-          Home
-        </a>
-        <a onClick={() => navigate("/vendors")} className={`${hoverTextColor} hover:cursor-pointer`}>
-          Photographers
-        </a>
-      </nav>
+      {location.pathname !== "/admin/login" && (
+        <nav className={`hidden sm:flex space-x-4 sm:space-x-6 ${textColor}`}>
+          <a onClick={() => navigate("/")} className={`${hoverTextColor} hover:cursor-pointer`}>
+        Home
+          </a>
+          <a onClick={() => navigate("/vendors")} className={`${hoverTextColor} hover:cursor-pointer`}>
+        Photographers
+          </a>
+        </nav>
+      )}
 
       {/* Sign Up Button & Theme Toggle */}
       <div className="flex flex-row gap-2 items-center">
@@ -98,7 +100,8 @@ export default function Header({ onClick }: IHeader) {
           </DropdownMenu>
         ) : (
           location.pathname !== "/register" &&
-          location.pathname !== "/login" && (
+          location.pathname !== "/login" &&
+          location.pathname !== "/admin/login" && (
             <Button className="px-2 py-1 sm:px-4 sm:py-2 rounded-md" onClick={() => onClick?.()}>
               Sign Up
             </Button>

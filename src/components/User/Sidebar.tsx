@@ -2,13 +2,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useThemeConstants } from "@/utils/theme/themeUtills";
-import { User, Calendar, CreditCard, Image, Camera, Upload, Folder, Ticket } from "lucide-react";
+import { User, Calendar, CreditCard, Image, Camera, Upload, Ticket } from "lucide-react";
 
 const clientNavItems = [
   { icon: User, label: "Profile Management", id: "profile" },
   { icon: Calendar, label: "Bookings & History", id: "bookings-history" },
   { icon: CreditCard, label: "Wallet & Transactions", id: "wallet" },
-  { icon: Image, label: "Received Work", id: "received-work" }, // Renamed for professionalism
+  { icon: Image, label: "Received Work", id: "received-work" },
 ];
 
 const vendorNavItems = [
@@ -37,6 +37,7 @@ export function Sidebar({
 }: SidebarProps) {
   const navItems = role === "client" ? clientNavItems : vendorNavItems;
   const {bgColor} = useThemeConstants()
+  console.log(`user profile image ${profileImage}`);
   return (
     <Card className={`h-full p-4 ${bgColor}`}>
       <div className="flex flex-col h-full">
@@ -48,12 +49,12 @@ export function Sidebar({
               {name?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <div>
+          <div> 
             <h2 className="text-lg font-semibold">
               {name}
             </h2>
             <p className="text-sm text-muted-foreground">
-              {role === "vendor" ? "Photographer" : "Event Enthusiast"}
+              {role === "vendor" ? "Photographer" : "Client"}
             </p>
           </div>
         </div>

@@ -36,28 +36,29 @@ export default function UserProfile() {
     if (state.client.client) return state.client.client.role;
     return null;
   });
-  // Fetch client data only if userType is "client"
+  
+  // ---------------------------Fetching client data if the role is only cient--------------------------------|
   const {
     data: clientData,
     isLoading: isClientLoading,
     isError: isClientError,
   } = useClientQuery(userType === "client" );
   
-  // Fetch vendor data only if userType is "vendor"
+  // ---------------------------Fetching vendor data if the role is only vendor--------------------------------|
   const {
     data: vendorData,
     isLoading: isVendorLoading,
     isError: isVendorError,
   } = useVendorQuery(userType === "vendor");
   
-  // Unified states
+  
   const isLoading = isClientLoading || isVendorLoading;
   const isError = isClientError || isVendorError;
   const userData = userType === "client" ? clientData?.client : vendorData?.vendor;
   
   console.log(`User data:`, userData);
   
-  // Loading state
+  
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -66,7 +67,7 @@ export default function UserProfile() {
     );
   }
   
-  // Error or missing data state
+  
   if (isError || !userData) {
     return (
       <div className="flex justify-center items-center min-h-screen text-red-500">

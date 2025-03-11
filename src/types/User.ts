@@ -5,7 +5,7 @@ export interface IUser {
     role : TRole
 }
 
-export type TRole = "vendor" | "client";
+export type TRole = "vendor" | "client" | "admin"
 
 export interface ILogin {
     email : string;

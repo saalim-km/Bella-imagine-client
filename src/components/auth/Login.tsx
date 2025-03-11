@@ -56,7 +56,10 @@ export default function Login({userType , onSubmit , isSending}: loginProps) {
       <div className={`w-full md:w-1/3 flex items-center justify-center p-0`}>
         <div className="w-full max-w-md ">
           <div className="text-center space-y-1 mb-6">
-            <h1 className="text-2xl font-semibold">Welcome Back</h1>
+            {
+           
+              userType === 'admin' ?  <h1 className="text-2xl font-semibold">Admin Login</h1> : <h1 className="text-2xl font-semibold">Welcome Back</h1>
+            }
             <p className={textColor}>Login to your account</p>
           </div>
 

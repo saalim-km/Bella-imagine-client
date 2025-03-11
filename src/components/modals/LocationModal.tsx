@@ -1,4 +1,5 @@
 import { useTheme } from "@/context/ThemeContext";
+import { useThemeConstants } from "@/utils/theme/themeUtills";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
@@ -9,11 +10,7 @@ interface LocationModalProps {
 }
 
 export default function LocationModal({ isOpen, onClose, onSelectLocation }: LocationModalProps) {
-  const { theme } = useTheme();
-  const isDarkMode = theme === "dark";
-  const bgColor = isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black";
-  const borderColor = isDarkMode ? "border-gray-700" : "border-gray-300";
-
+  const {bgColor , isDarkMode , borderColor} = useThemeConstants()
   const states = [
     "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
     "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
