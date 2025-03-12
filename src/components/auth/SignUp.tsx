@@ -24,6 +24,7 @@ interface SignUpProps {
 }
 
 export default function Signup({ onSubmit  , userType , onClick}: SignUpProps) {
+  console.log(`usertype ${userType}`);
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);

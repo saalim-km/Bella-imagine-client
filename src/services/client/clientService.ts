@@ -1,4 +1,5 @@
 import { clientAxiosInstance } from "@/api/client.axios";
+import { ENDPOINTS } from "@/api/endpoints";
 
 export interface IClient {
     _id : string;
@@ -21,7 +22,7 @@ export interface IClient {
 
 export const getClientDetails = async ()  => {
     console.log('client service called');
-    const response = await clientAxiosInstance.get('/client/details');
+    const response = await clientAxiosInstance.get(ENDPOINTS.CLIENT_DETAILS);
     return response.data;
 };
   

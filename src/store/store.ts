@@ -1,11 +1,13 @@
 import {configureStore} from '@reduxjs/toolkit'
 import clientReducers from './slices/clientSlice'
 import vendorReducers from './slices/vendorSlice'
+import adminReducers from './slices/adminSlice'
 
 export const store = configureStore({
     reducer : {
         client : clientReducers,
-        vendor : vendorReducers
+        vendor : vendorReducers,
+        admin : adminReducers
     }
 })
 

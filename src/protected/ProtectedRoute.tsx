@@ -22,36 +22,18 @@ export const AuthClientRoute = ({ element, allowedRoles }: ProtectedRouteProps) 
   return allowedRoles.includes(user) ? element : <Navigate to="/unauthorized" />;
 };
 
-// export const AuthAdminRoute = ({
-//   element,
-//   allowedRoles,
-// }: ProtectedRouteProps) => {
-//   const userRole = useSelector((state: RootState) => state.admin.admin?.role);
-//   console.log(userRole);
-//   if (!userRole) {
-//     return <Navigate to="/admin" />;
-//   }
 
-//   return allowedRoles.includes(userRole) ? (
-//     element
-//   ) : (
-//     <Navigate to="/unauthorized" />
-//   );
-// };
 
-// export const AuthVendorRoute = ({
-//   element,
-//   allowedRoles,
-// }: ProtectedRouteProps) => {
-//   const userRole = useSelector((state: RootState) => state.vendor.vendor?.role);
-//   console.log(userRole);
-//   if (!userRole) {
-//     return <Navigate to="/vendor" />;
-//   }
+export const AuthAdminRoute = ({ element, allowedRoles }: ProtectedRouteProps) => {
+  const user  = useSelector((state: RootState) => {
+    if (state.admin.admin) return state.admin.admin?.role;
+    return null;
+  });
+  console.log('got admin in authadminroute',user);
 
-//   return allowedRoles.includes(userRole) ? (
-//     element
-//   ) : (
-//     <Navigate to="/unauthorized" />
-//   );
-// };
+  if (!user) {
+    return <Navigate to="/admin/login" />; 
+  }
+
+  return allowedRoles.includes(user) ? element : <Navigate to="/unauthorized" />;
+};

@@ -1,5 +1,6 @@
 import { vendorAxiosInstance } from "@/api/vendor.axios";
 import { IClient } from "../client/clientService";
+import { ENDPOINTS } from "@/api/endpoints";
 
 
 type TSlot = {
@@ -26,7 +27,7 @@ export interface IVendor extends IClient {
 
 export const getVendorDetails = async() : Promise<IVendor>=> {
     console.log('vendor service called');
-    const response = await vendorAxiosInstance.get('/vendor/details');
+    const response = await vendorAxiosInstance.get(ENDPOINTS.VENDOR_DETAILS);
     console.log(response);
     return response.data;
 }
