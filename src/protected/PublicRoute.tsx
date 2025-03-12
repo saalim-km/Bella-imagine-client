@@ -21,30 +21,15 @@ export const NoClientAuthRoute = ({ element }: NoAuthRouteProps) => {
   return element;
 };
 
-// export const NoAdminAuthRoute = ({ element }: NoAuthRouteProps) => {
-//   const user = useSelector((state: RootState) => state.admin.admin);
+export const NoAdminAuthRoute = ({ element }: NoAuthRouteProps) => {
+  const admin  = useSelector((state: RootState) => {
+    if (state.admin.admin) return state.admin?.admin?.role;
+    return null;  
+  });
 
-//   if (user && user?.role !== "admin") {
-//     return <Navigate to={"/unauthorized"} />;
-//   }
+  if (admin) {
+    return <Navigate to="/admin/dashboard" />; // Redirecting authenticated clients to home instead of landing
+  }
 
-//   if (user) {
-//     return <Navigate to="/admin/ad_pvt" />;
-//   }
-
-//   return element;
-// };
-
-// export const NoVendorAuthRoute = ({ element }: NoAuthRouteProps) => {
-//   const user = useSelector((state: RootState) => state.vendor.vendor);
-
-//   if (user && user?.role !== "vendor") {
-//     return <Navigate to={"/unauthorized"} />;
-//   }
-
-//   if (user) {
-//     return <Navigate to="/vendor/profile" />;
-//   }
-
-//   return element;
-// };
+  return element;
+};

@@ -1,6 +1,6 @@
-import { clientLogout } from "@/store/slices/clientSlice";
 import axios from "axios";
 import { toast } from "sonner";
+import { ENDPOINTS } from "./endpoints";
 
 export const clientAxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_CLIENT_API_URI,
@@ -21,7 +21,7 @@ clientAxiosInstance.interceptors.response.use(
       if (!isRefreshing) {
         isRefreshing = true;
         try {
-          await clientAxiosInstance.post("/client/refresh-token");
+          await clientAxiosInstance.post(ENDPOINTS.CLIENT_REFRESH_TOKEN);
           isRefreshing = false;
 
           return clientAxiosInstance(originalRequest);

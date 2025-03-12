@@ -1,5 +1,6 @@
 import { authAxiosInstance } from "@/api/auth.axios";
 import { clientAxiosInstance } from "@/api/client.axios";
+import { ENDPOINTS } from "@/api/endpoints";
 import { vendorAxiosInstance } from "@/api/vendor.axios";
 import { ILogin, IUser } from "@/types/User";
 import { AxiosResponse } from "axios";
@@ -17,29 +18,18 @@ export interface AuthResponse {
   };
 }
 
-// export interface AxiosResponse {
-//   success: boolean;
-//   message: string;
-// }
-
-// export interface ILoginData {
-//   email: string;
-//   password: string;
-//   role: "admin" | "client" | "vendor";
-// }
-
 export const signup = async (user: IUser): Promise<any> => {
-  const response = await authAxiosInstance.post("/register", user);
+  const response = await authAxiosInstance.post(ENDPOINTS.REGISTER, user);
   return response.data;
 };
 
 export const login = async (user: ILogin): Promise<AxiosResponse> => {
-  const response = await authAxiosInstance.post("/login", user);
+  const response = await authAxiosInstance.post(ENDPOINTS.LOGIN, user);
   return response.data;
 };
 
 export const sendOtp = async (email: string): Promise<any> => {
-  const response = await authAxiosInstance.post("/send-otp", {
+  const response = await authAxiosInstance.post(ENDPOINTS.SEND_OTP, {
     email,
   });
   console.log(response);
@@ -47,18 +37,18 @@ export const sendOtp = async (email: string): Promise<any> => {
 };
 
 export const verifyOtp = async (data: { email: string; otp: string }) => {
-  const response = await authAxiosInstance.post("/verify-otp", data);
+  const response = await authAxiosInstance.post(ENDPOINTS.VERIFY_OTP, data);
   console.log(response);
   return response.data;
 };
 
 export const logoutClient = async (): Promise<AxiosResponse> => {
-  const response = await clientAxiosInstance.post("/client/logout");
+  const response = await clientAxiosInstance.post(ENDPOINTS.CLIENT_LOGOUT);
   return response.data;
 };
 
 export const logoutVendor = async ()=> {
-  const response = await vendorAxiosInstance.post('/vendor/logout')
+  const response = await vendorAxiosInstance.post(ENDPOINTS.VENDOR_LOGOUT)
   console.log(response);
   return response.data;
 }
