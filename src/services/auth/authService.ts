@@ -1,3 +1,4 @@
+import { adminAxiosInstance } from "@/api/admin.axios";
 import { authAxiosInstance } from "@/api/auth.axios";
 import { clientAxiosInstance } from "@/api/client.axios";
 import { ENDPOINTS } from "@/api/endpoints";
@@ -49,6 +50,12 @@ export const logoutClient = async (): Promise<AxiosResponse> => {
 
 export const logoutVendor = async ()=> {
   const response = await vendorAxiosInstance.post(ENDPOINTS.VENDOR_LOGOUT)
+  console.log(response);
+  return response.data;
+}
+
+export const logoutAdmin = async ()=> {
+  const response = await adminAxiosInstance.post(ENDPOINTS.ADMIN_LOGOUT)
   console.log(response);
   return response.data;
 }

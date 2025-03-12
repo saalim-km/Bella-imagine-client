@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { BarChart, Calendar, DollarSign, Layers, LayoutDashboard, Settings, Tag, Users } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -15,9 +15,13 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { useSelector } from "react-redux"
+import { RootState } from "@/store/store"
 
 export function AdminSidebar() {
+    const admin = useSelector((state : RootState)=> state.admin.admin);
   const location = useLocation()
+  const navigate = useNavigate();
   const pathname = location.pathname
 
   // Define navigation items
@@ -25,7 +29,7 @@ export function AdminSidebar() {
     {
       title: "Overview",
       icon: LayoutDashboard,
-      href: "/admin",
+      href: "/admin/dashboard",
       isActive: pathname === "/admin",
     },
     {
@@ -81,10 +85,10 @@ export function AdminSidebar() {
               {mainNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton isActive={item.isActive} asChild>
-                    <a href={item.href}>
+                    <button onClick={()=> navigate(item.href)}>
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
-                    </a>
+                    </button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -132,8 +136,8 @@ export function AdminSidebar() {
               <AvatarFallback>AD</AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-sm font-medium">Admin User</p>
-              <p className="text-xs text-muted-foreground">admin@example.com</p>
+              <p className="text-sm font-medium">{admin?.name}</p>
+              <p className="text-xs text-muted-foreground">{admin?.email}</p>
             </div>
           </div>
         </div>

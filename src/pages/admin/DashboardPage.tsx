@@ -3,7 +3,7 @@ import { AdminLayout } from "@/components/admin/layout/AdminLayout"
 // import { GrowthChart } from "@/components/admin/dashboard/growth-chart"
 // import { RecentTransactions } from "@/components/admin/dashboard/recent-transactions"
 
-export function DashboardPage() {
+export  default function AdminDashboard() {
   return (
     <AdminLayout>
       <div className="space-y-6">

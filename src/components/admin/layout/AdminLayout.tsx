@@ -16,6 +16,11 @@ import { Badge } from "@/components/ui/badge"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AdminSidebar } from "./AdminSidebar"
 import { useNotifications } from "@/hooks/admin/useNotification"
+import { useDispatch } from "react-redux"
+import { useLogoutMutation } from "@/hooks/auth/useLogout"
+import { logoutAdmin } from "@/services/auth/authService"
+import { toast } from "sonner"
+import { adminLogout } from "@/store/slices/adminSlice"
 
 interface AdminLayoutProps {
   children: ReactNode
@@ -26,6 +31,20 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const { data: notificationsData } = useNotifications({ page: 1, limit: 5 })
   const notifications = notificationsData?.data || []
   const unreadCount = notifications.filter((n) => !n.read).length
+  const dispatch = useDispatch()
+  const {mutate : logout} = useLogoutMutation(logoutAdmin)
+
+  function handleLogout() {
+    logout(undefined,{
+        onSuccess : (data)=> {
+            toast.success(data.message);
+            dispatch(adminLogout())
+        },
+        onError : (error)=> {
+            console.log(error);
+        }
+    })
+  }
 
   return (
     <SidebarProvider>
@@ -93,7 +112,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     <DropdownMenuItem>Edit Profile</DropdownMenuItem>
                     <DropdownMenuItem>Settings</DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>Logout</DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>

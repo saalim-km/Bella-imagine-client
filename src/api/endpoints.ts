@@ -37,6 +37,7 @@ export const ENDPOINTS = {
   VERIFY_OTP: "/verify-otp",
   CLIENT_LOGOUT: "/client/logout",
   VENDOR_LOGOUT: "/vendor/logout",
+  ADMIN_LOGOUT: "/admin/logout",
   GOOGLE_LOGIN: "/google-auth",
 
   // Client and vendor Details
