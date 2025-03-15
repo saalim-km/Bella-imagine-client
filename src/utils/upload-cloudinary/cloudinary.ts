@@ -1,6 +1,5 @@
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-const CLOUDINARY_UPLOAD_PRESET = import.meta.env
-  .VITE_CLOUDINARY_UPLOAD_PRESET_NAME;
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET_NAME;
 
 export const uploadToCloudinary = async (file: File) => {
   const formData = new FormData();
@@ -16,6 +15,8 @@ export const uploadToCloudinary = async (file: File) => {
       }
     );
     const data = await response.json();
+    console.log(data);
+    console.log(data.secure_url);
     return data.secure_url;
   } catch (error) {
     console.error("Error uploading to Cloudinary:", error);

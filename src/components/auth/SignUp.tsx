@@ -43,7 +43,7 @@ export default function Signup({ onSubmit  , userType , onClick}: SignUpProps) {
   //----------------------- Mutation Method to handle Otp and Otp veification---------------------------
   function handleOtpSend(user: IUser) {
     setIsSending(true);
-    sendVerificationOTP(user.email, {
+    sendVerificationOTP({url:'/send-otp',email : user.email}, {
       onSuccess: (data) => {
         toast.success(data.message);
         setIsSending(false);
@@ -210,7 +210,7 @@ export default function Signup({ onSubmit  , userType , onClick}: SignUpProps) {
 
           <div className="text-center mt-6">
             <p className={textColor}>Not a customer?</p>
-            <a className="text-blue-500 hover:underline hover:cursor-pointer" onClick={()=> onClick()}>Select a different account type</a>
+            <a className="text-blue-500 hover:underline hover:cursor-pointer">Select a different account type</a>
           </div>
           <div className="text-center mt-4">
             <p className={textColor}>

@@ -9,11 +9,15 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import Header from "@/components/headers/Header";
 import { useThemeConstants } from "@/utils/theme/themeUtills";
-import { useClientQuery } from "@/hooks/client/useClientProfile";
 import Spinner from "@/components/common/LogoSpinner";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { useVendorQuery } from "@/hooks/vendor/useVendorProfile";
+import { useClientDetailsQuery, useUpdateClientMutation } from "@/hooks/client/useClient";
+import { useUpdateVendorMutation, useVendorDetailsQuery } from "@/hooks/vendor/useVendor";
+import { IProfileUpdate } from "@/types/User";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -27,6 +31,9 @@ const tabTitles: Record<string, string> = {
 };
 
 export default function UserProfile() {
+  const queryClient = useQueryClient() 
+  const {mutate : updateVendor} = useUpdateVendorMutation()
+  const {mutate : updateClient} = useUpdateClientMutation()
   const { bgColor } = useThemeConstants();
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
@@ -42,14 +49,14 @@ export default function UserProfile() {
     data: clientData,
     isLoading: isClientLoading,
     isError: isClientError,
-  } = useClientQuery(userType === "client" );
+  } = useClientDetailsQuery(userType === "client");
   
   // ---------------------------Fetching vendor data if the role is only vendor--------------------------------|
   const {
     data: vendorData,
     isLoading: isVendorLoading,
     isError: isVendorError,
-  } = useVendorQuery(userType === "vendor");
+  } = useVendorDetailsQuery(userType === "vendor");
   
   
   const isLoading = isClientLoading || isVendorLoading;
@@ -58,6 +65,32 @@ export default function UserProfile() {
   
   console.log(`User data:`, userData);
   
+
+  function handleUpdateProfile(data : IProfileUpdate) {
+    if(userType === "vendor") {
+      updateVendor(data,{
+        onSuccess : (data)=> {
+          queryClient.invalidateQueries({queryKey : ["vendor-profile"]})
+          toast.success(data.message)
+        },
+        onError : (error)=> {
+          console.log(error);
+          toast.error(error.message)
+        }
+      })
+    }else {
+      updateClient(data,{
+        onSuccess : (data)=> {
+          queryClient.invalidateQueries({queryKey : ["client-profile"]})
+          toast.success(data.message)
+        },
+        onError : (error)=> {
+          console.log(error);
+          console.log(error.message);
+        }
+      })
+    }
+  }
   
   if (isLoading) {
     return (
@@ -87,9 +120,9 @@ export default function UserProfile() {
             <Sidebar
               name={userData.name}
               profileImage={userData.profileImage}
-              role={userData.role}
               activeTab={activeTab}
               setActiveTab={setActiveTab}
+              role={userData.role}
             />
           </aside>
 
@@ -134,7 +167,7 @@ export default function UserProfile() {
               <div className={cn("transition-all duration-300 ease-in-out")}>
                 {activeTab === "profile" &&
                   (isEditing ? (
-                    <EditProfileForm setIsEditing={setIsEditing} role={userData.role} data={userData} />
+                    <EditProfileForm setIsEditing={setIsEditing} role={userData.role} data={userData} handleUpdateProfile={handleUpdateProfile}/>
                   ) : (
                     <ProfileInfo data={userData} />
                   ))}

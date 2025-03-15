@@ -21,7 +21,7 @@ adminAxiosInstance.interceptors.response.use(
       if (!isRefreshing) {
         isRefreshing = true;
         try {
-          await adminAxiosInstance.post(ENDPOINTS.ADMIN_REFRESH_TOKEN);
+          await adminAxiosInstance.post('/refresh-token');
           isRefreshing = false;
 
           return adminAxiosInstance(originalRequest);
@@ -30,7 +30,7 @@ adminAxiosInstance.interceptors.response.use(
 
           toast.info("Please login again");
           localStorage.removeItem("adminSession");
-          window.location.href = "/";
+          window.location.href = "/admin/login";
           return Promise.reject(refreshError);
         }
       }
@@ -48,7 +48,7 @@ adminAxiosInstance.interceptors.response.use(
         !originalRequest._retry)
     ) {
       localStorage.removeItem("adminSession");
-      window.location.href = "/";
+      window.location.href = "/admin/login";
       toast.info("Please login again");
       return Promise.reject(error);
     }

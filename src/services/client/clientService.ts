@@ -1,8 +1,10 @@
 import { clientAxiosInstance } from "@/api/client.axios";
 import { ENDPOINTS } from "@/api/endpoints";
+import { IClientReponse, IProfileUpdate, IProfileUpdateResponse } from "@/types/User";
+import { data } from "react-router-dom";
 
 export interface IClient {
-    _id : string;
+    _id ?: string;
     name : string;
     email : string;
     profileImage ?: string;
@@ -20,9 +22,13 @@ export interface IClient {
 }
 
 
-export const getClientDetails = async ()  => {
-    console.log('client service called');
+
+export const getClientDetails = async (): Promise<IClientReponse>  => {
     const response = await clientAxiosInstance.get(ENDPOINTS.CLIENT_DETAILS);
     return response.data;
 };
-  
+
+export const updateClientDetails = async(data : IProfileUpdate): Promise<IProfileUpdateResponse> => {
+    const response = await clientAxiosInstance.put(ENDPOINTS.CLIENT_DETAILS , data);
+    return response.data;
+}

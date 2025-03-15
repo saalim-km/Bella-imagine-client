@@ -1,6 +1,6 @@
 import * as Yup from "yup";
 
-// Client Profile Validation Schema
+
 export const clientProfileSchema = Yup.object({
   name: Yup.string()
     .matches(/^[a-zA-Z\s]+$/, "Name should only contain letters and spaces")
@@ -19,7 +19,7 @@ export const clientProfileSchema = Yup.object({
     .required("Location is required"),
 });
 
-// Vendor Profile Validation Schema
+
 export const vendorProfileSchema = Yup.object({
   name: Yup.string()
     .matches(/^[a-zA-Z\s]+$/, "Name should only contain letters and spaces")

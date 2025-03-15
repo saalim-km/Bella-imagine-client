@@ -112,6 +112,7 @@ export default function Login({ userType, onSubmit, isSending }: loginProps) {
                         : "bg-white text-black border-gray-300"
                     }`}
                   />
+                    <label onClick={()=> navigate(`/${userType}/forgot-password`)} htmlFor="" className="text-sm text-blue-500 hover:cursor-pointer">Forgot password</label>
                   <ErrorMessage
                     name="password"
                     component="div"

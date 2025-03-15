@@ -1,9 +1,11 @@
 "use client"
 import { useState } from "react"
-import { UserTable } from "@/components/admin/users/user-table"
-import { ClientTable } from "@/components/admin/users/client-table"
+// import { UserTable } from "@/components/admin/users/user-table"
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AdminLayout } from "@/components/admin/layout/AdminLayout"
+import { ClientTable } from "@/components/admin/users/ClientTable"
+import { UserTable } from "@/components/admin/users/VendorTable"
 
 export default function UsersPage() {
   const [userType, setUserType] = useState("photographers")
@@ -16,16 +18,16 @@ export default function UsersPage() {
           <p className="text-muted-foreground">Manage all users and vendors on the platform.</p>
         </div>
 
-        <Tabs defaultValue="photographers" value={userType} onValueChange={setUserType} className="w-full">
+        <Tabs defaultValue="photographers" value={userType} onValueChange={setUserType} className="w-auto">
           <TabsList className="grid w-full max-w-md grid-cols-2">
             <TabsTrigger value="photographers">Photographers (Vendors)</TabsTrigger>
             <TabsTrigger value="clients">Clients</TabsTrigger>
           </TabsList>
           <TabsContent value="photographers" className="mt-4">
-            {/* <UserTable userType="photographers" /> */}
+            <UserTable />
           </TabsContent>
           <TabsContent value="clients" className="mt-4">
-            {/* <ClientTable /> */}
+            <ClientTable />
           </TabsContent>
         </Tabs>
       </div>

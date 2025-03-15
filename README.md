@@ -1,50 +1,67 @@
-# React + TypeScript + Vite
+# 📸 Bella Imagine
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Bella Imagine** is a cutting-edge platform where users can hire professional photographers in India. The platform leverages AI-powered recommendations, real-time chatting, and real-time work sharing to enhance the client experience.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### ✅ Photographer Discovery & Booking
+- Find and hire photographers based on categories and expertise.
+- AI-powered recommendations to match users with the best photographers.
+- Smart budget-based matching and negotiation options.
 
-## Expanding the ESLint configuration
+### 🧠 AI-Powered Features
+- **Photographer Recommendation**: Uses user behavior tracking (clicks, searches, likes) to suggest relevant photographers.
+- **Auto Photo Editing & Delivery**: Enhances, organizes, and securely delivers photos using AI.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### 📡 Real-Time Capabilities
+- **Instant Chat**: Real-time messaging between clients and photographers.
+- **Work Sharing**: Live updates and previews of ongoing photography projects.
 
-- Configure the top-level `parserOptions` property like this:
+### 🔐 Secure & Scalable
+- JWT authentication for admin, vendors, and clients.
+- Clean Architecture with structured backend services.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## 🏗️ Tech Stack
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### Frontend
+- React.js (with TanStack Query for state management)
+- TypeScript
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+### Backend
+- Node.js (Express.js)
+- MongoDB (Atlas)
+- Socket.io (for real-time chat and updates)
+- JWT Authentication
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## 📌 Installation & Setup
+
+### Prerequisites
+- Node.js
+- MongoDB Atlas account
+
+### Steps to Run the Project
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/your-repo/bella-imagine.git
+   ```
+2. Install dependencies:
+   ```sh
+   cd bella-imagine
+   npm install
+   ```
+3. Set up environment variables (`.env` file):
+   ```env
+   MONGO_URI=your_mongodb_uri
+   JWT_SECRET=your_secret_key
+   ```
+4. Start the server:
+   ```sh
+   npm start
+   ```
+
+## 📜 API Documentation
+[Refer to the API documentation](#) for details on all available endpoints.
+
+## 📞 Contact
+For any queries or suggestions, reach out at [your email].
+

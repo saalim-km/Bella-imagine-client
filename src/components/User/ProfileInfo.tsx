@@ -1,4 +1,4 @@
-import { IClient } from "@/services/client/clientService";
+import { IProfileInfo } from "@/types/User";
 import {
   CalendarDays,
   MapPin,
@@ -10,21 +10,19 @@ import {
 import moment from "moment";
 
 interface ProfileInfoProps {
-  data?: IClient;
+  data : IProfileInfo
 }
 
 export function ProfileInfo({ data }: ProfileInfoProps) {
+  const isVendor = "vendorId" in data;
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <InfoItem icon={UserCheck} label="Full Name" value={data?.name} />
         <InfoItem icon={Mail} label="Email" value={data?.email} />
         <InfoItem icon={Phone} label="Phone" value={data?.phoneNumber?.toString()} />
-        <InfoItem
-          icon={Briefcase}
-          label="Status"
-          value={data?.isActive ? "Active" : "Inactive"}
-        />
+        <InfoItem icon={Briefcase} label="Status" value={data?.isActive ? "Active" : "Inactive"} />
         <InfoItem
           icon={CalendarDays}
           label="Joined"
@@ -32,17 +30,28 @@ export function ProfileInfo({ data }: ProfileInfoProps) {
         />
         <InfoItem icon={MapPin} label="Location" value={data?.location} />
       </div>
+
+      {/* Vendor-Specific Info */}
+      {isVendor && (
+        <div className="mt-4">
+          <h3 className="font-semibold mb-2">Vendor Details</h3>
+          <InfoItem icon={Briefcase} label="Vendor ID" value={data.vendorId} />
+          <InfoItem icon={Briefcase} label="Portfolio" value={data.portfolioWebsite} />
+          <InfoItem icon={Briefcase} label="Languages" value={data.languages?.join(", ")} />
+          <InfoItem icon={Briefcase} label="Categories" value={data.categories?.join(", ")} />
+          <InfoItem icon={Briefcase} label="Verified" value={data.isVerified ? "Yes" : "No"} />
+        </div>
+      )}
+
+      {/* Additional Info */}
       <div className="mt-4">
         <h3 className="font-semibold mb-2">Additional Info</h3>
-        <InfoItem
-          icon={Briefcase}
-          label="Blocked"
-          value={data?.isblocked ? "Yes" : "No"}
-        />
+        <InfoItem icon={Briefcase} label="Blocked" value={data?.isblocked ? "Yes" : "No"} />
       </div>
     </div>
   );
 }
+
 
 function InfoItem({
   icon: Icon,

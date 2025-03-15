@@ -6,3 +6,9 @@ export const useSendOtp = ()=> {
         mutationFn : sendOtp
     })
 }
+
+export const useForgotPassSendOtp = ()=> {
+    return useMutation({
+        mutationFn : sendOtp
+    })
+}

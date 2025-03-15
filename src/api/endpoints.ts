@@ -40,7 +40,7 @@ export const ENDPOINTS = {
   ADMIN_LOGOUT: "/admin/logout",
   GOOGLE_LOGIN: "/google-auth",
 
-  // Client and vendor Details
+  // Client and vendor 
   CLIENT_DETAILS: "/client/details",
   VENDOR_DETAILS: "/vendor/details",
 

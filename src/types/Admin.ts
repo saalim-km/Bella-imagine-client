@@ -58,9 +58,8 @@ export interface ChartDataPoint {
   transactions: number;
 }
 
-// API response types
-export interface ApiResponse<T> {
-  data: T;
+
+export interface ApiResponse {
   message: string;
   success: boolean;
 }
@@ -68,9 +67,6 @@ export interface ApiResponse<T> {
 export interface PaginatedResponse<T> {
   data: T[];
   total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
 }
 
 // Filter and pagination types
@@ -110,4 +106,14 @@ export interface AnalyticsParams {
   period: "daily" | "weekly" | "monthly" | "yearly";
   startDate?: string;
   endDate?: string;
+}
+
+
+
+
+export interface UserFilters {
+  status?: "Active" | "Inactive"
+  search?: string
+  sortBy?: string
+  sortOrder?: "asc" | "desc"
 }
