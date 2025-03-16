@@ -33,13 +33,13 @@ export function ProfileInfo({ data }: ProfileInfoProps) {
 
       {/* Vendor-Specific Info */}
       {isVendor && (
-        <div className="mt-4">
+        <div className="mt-4 grid gap-2">
           <h3 className="font-semibold mb-2">Vendor Details</h3>
-          <InfoItem icon={Briefcase} label="Vendor ID" value={data.vendorId} />
-          <InfoItem icon={Briefcase} label="Portfolio" value={data.portfolioWebsite} />
-          <InfoItem icon={Briefcase} label="Languages" value={data.languages?.join(", ")} />
+          <InfoItem icon={UserCheck} label="Vendor ID" value={data.vendorId} />
+          <InfoItem icon={Mail} label="Portfolio" value={data.portfolioWebsite} />
+          <InfoItem icon={CalendarDays} label="Languages I speak" value={data.languages?.join(", ")} />
           <InfoItem icon={Briefcase} label="Categories" value={data.categories?.join(", ")} />
-          <InfoItem icon={Briefcase} label="Verified" value={data.isVerified ? "Yes" : "No"} />
+          <InfoItem icon={UserCheck} label="Verified" value={data.isVerified ? "Yes" : "No"} />
         </div>
       )}
 
