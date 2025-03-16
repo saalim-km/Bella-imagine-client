@@ -11,14 +11,14 @@ export const vendorKeys = {
     detail: (id: number) => [...vendorKeys.details(), id] as const,
 }
 
-export const useAllVendorQuery = (filter: any = {}, pagination: PaginationParams = {page: 1, limit: 4}) => {
-    console.log(vendorKeys.list(filter, pagination));
-    console.log('useAllVendorQuery called');
-    return useQuery({
-        queryKey: vendorKeys.list(filter, pagination),
-        queryFn: () => AdminService.get<PaginatedResponse<IVendor>>('/vendor', {...filter, ...pagination})
-    })
-}
+export const useAllVendorQuery = (filter: any = {}, pagination: PaginationParams = { page: 1, limit: 4 }) => {
+    console.log('usevendorquery ->');
+    console.log(pagination);
+  return useQuery({
+    queryKey: vendorKeys.list(filter, pagination),
+    queryFn: () => AdminService.get<PaginatedResponse<IVendor>>('/vendor', { ...filter, ...pagination }),
+  });
+};
 
 export const useBlockVendor = () => {
     return useMutation({
@@ -30,3 +30,6 @@ export const useUnBlockVendor = () => {
       mutationFn: (id: string) => AdminService.patch<ApiResponse>('/user-status',{userId : id , userType : 'vendor'}),
     })
 }
+
+
+

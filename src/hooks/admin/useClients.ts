@@ -13,6 +13,7 @@ export const clientKeys = {
 
 export const useAllClientQuery = (filter : UserFilters = {} ,pagination : PaginationParams = {page : 1 , limit : 4} )=> {
     console.log('useAllClientQuery called');
+    console.log(pagination);
     return useQuery({
         queryKey : clientKeys.list(filter,pagination),
         queryFn : ()=> AdminService.get<PaginatedResponse<IClient>>('/client',{...filter,...pagination})

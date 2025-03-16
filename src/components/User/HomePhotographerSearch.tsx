@@ -188,7 +188,7 @@ export default function HomePhotographerSearch() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mb-2 text-1xl  sm:text-1xl md:text-3xl"
+          className="mb-2 text-3xl  sm:text-3xl md:text-3xl"
         >
           More than 45,000 wedding and family photographers
         </motion.h1>
@@ -214,7 +214,7 @@ export default function HomePhotographerSearch() {
                   <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     placeholder="Search for state or city..."
-                    className="h-12 pl-10 text-black"
+                    className="h-12 pl-10 text-white border-white"
                     onClick={() => setOpen(true)}
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
