@@ -10,6 +10,7 @@ const AdminService = {
 
 
   post: async <T>(url: string, data: any): Promise<T> => {
+    console.log('got data for post : ',url,data);
       const response = await adminAxiosInstance.post(url, data);
       return response.data;
   },

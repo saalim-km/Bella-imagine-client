@@ -85,9 +85,15 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
         values.profileImage = secureUrl
       }
 
-
       const updatedValues = { ...values }
       delete updatedValues.imageFile
+
+      // Remove empty fields from the update payload
+      Object.keys(updatedValues).forEach((key) => {
+        if (updatedValues[key] === "" || updatedValues[key] === null) {
+          delete updatedValues[key]
+        }
+      })
 
       console.log("Updated profile data:", updatedValues)
 
@@ -129,7 +135,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={isVendor ? vendorProfileSchema : clientProfileSchema}
+      validationSchema={isVendor ? vendorProfileSchema : clientProfileSchema} // Validation only for incorrect inputs
       onSubmit={handleSubmit}
       validateOnBlur
       validateOnChange

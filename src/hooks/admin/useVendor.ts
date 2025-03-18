@@ -1,6 +1,6 @@
 import AdminService from "@/services/admin/adminService";
 import { IVendor } from "@/services/vendor/vendorService";
-import { ApiResponse, PaginatedResponse, PaginationParams, UserFilters } from "@/types/Admin";
+import { ApiResponse, PaginatedResponse, PaginationParams, TVendorRequest } from "@/types/Admin";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const vendorKeys = {
@@ -31,5 +31,15 @@ export const useUnBlockVendor = () => {
     })
 }
 
+export const useVendorRequest = (filter : any = {} , pagination : PaginationParams = {page : 1 , limit : 4})=> {
+    return useQuery({
+        queryKey : vendorKeys.list(filter,pagination),
+        queryFn : ()=>  AdminService.get('/vendor-request',{...filter,...pagination})
+    })
+}
 
-
+export const useUpdateVendorRequest = ()=> {
+  return useMutation({
+    mutationFn : (data : {rejectReason ?: string , vendorId : string,status : TVendorRequest})=> AdminService.post('/vendor-request',data)
+  })
+}
