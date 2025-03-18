@@ -95,12 +95,7 @@ export interface CategoryFilters {
   search?: string;
 }
 
-export interface VendorRequestFilters {
-  status?: "Pending" | "Approved" | "Rejected";
-  search?: string;
-  dateFrom?: string;
-  dateTo?: string;
-}
+export type TVendorRequest = 'accept' | 'reject' | 'pending';
 
 export interface AnalyticsParams {
   period: "daily" | "weekly" | "monthly" | "yearly";

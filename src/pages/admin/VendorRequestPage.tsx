@@ -1,5 +1,3 @@
-
-
 import { AdminLayout } from "@/components/admin/layout/AdminLayout";
 import { VendorRequestsTable } from "@/components/admin/vendor/VendorRequest";
 
@@ -12,7 +10,7 @@ export function VendorRequestsPage() {
           <p className="text-muted-foreground">Manage pending vendor registration requests.</p>
         </div>
 
-        {/* <VendorRequestsTable /> */}
+        <VendorRequestsTable />
       </div>
     </AdminLayout>
   )

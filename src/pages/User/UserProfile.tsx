@@ -27,7 +27,8 @@ const tabTitles: Record<string, string> = {
   bookings: "Bookings",
   "allocate-slot": "Allocate Slot",
   "upload-work": "Upload Work",
-  "services-portfolio": "Services & Portfolio",
+  "services": "Services",
+  "portfolio" : "Portfolio"
 };
 
 export default function UserProfile() {
@@ -65,6 +66,7 @@ export default function UserProfile() {
   
   console.log(`User data:`, userData);
   
+  const hasCategory = userType === "vendor" && vendorData?.vendor?.category;
 
   function handleUpdateProfile(data : IProfileUpdate) {
     if(userType === "vendor") {
@@ -114,6 +116,13 @@ export default function UserProfile() {
     <div>
       <Header />
       <div className="container mx-auto p-4 lg:p-6">
+        {!hasCategory && userType === "vendor" && (
+          <div className="mb-4">
+            <Button variant="outline" onClick={() => alert("Choose a category")}>
+              Choose a Category
+            </Button>
+          </div>
+        )}
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Desktop Sidebar */}
           <aside className="hidden lg:block w-64 shrink-0">
@@ -123,6 +132,7 @@ export default function UserProfile() {
               activeTab={activeTab}
               setActiveTab={setActiveTab}
               role={userData.role}
+              hasCategory={hasCategory}
             />
           </aside>
 
@@ -140,6 +150,7 @@ export default function UserProfile() {
                 role={userData.role}
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
+                hasCategory={hasCategory}
               />
             </SheetContent>
           </Sheet>
@@ -151,8 +162,8 @@ export default function UserProfile() {
                 {/* Dynamic Title */}
                 <h2 className="text-2xl font-bold">{tabTitles[activeTab] || "Dashboard"}</h2>
 
-                {/* Edit Profile Button (only in Profile tab) */}
-                {activeTab === "profile" && (
+                {/* Edit Profile Button (always available for vendors) */}
+                {userType === "vendor" || userType === "client" && (
                   <Button
                     variant="outline"
                     size="icon"
@@ -165,12 +176,22 @@ export default function UserProfile() {
 
               {/* Dynamic Content Rendering */}
               <div className={cn("transition-all duration-300 ease-in-out")}>
-                {activeTab === "profile" &&
-                  (isEditing ? (
-                    <EditProfileForm setIsEditing={setIsEditing} role={userData.role} data={userData} handleUpdateProfile={handleUpdateProfile}/>
+                {activeTab === "profile" ? (
+                  isEditing ? (
+                    <EditProfileForm
+                      setIsEditing={setIsEditing}
+                      role={userData.role}
+                      data={userData}
+                      handleUpdateProfile={handleUpdateProfile}
+                    />
                   ) : (
                     <ProfileInfo data={userData} />
-                  ))}
+                  )
+                ) : (
+                  <div className={hasCategory ? "" : "opacity-50 pointer-events-none"}>
+                    {/* Render other tab-specific content here */}
+                  </div>
+                )}
               </div>
             </Card>
           </main>

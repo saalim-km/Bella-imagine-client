@@ -35,7 +35,7 @@ const FILTER_OPTIONS = [
   { label: "Blocked", value: "blocked" },
   { label: "Not Blocked", value: "notBlocked" },
   { label: "Latest Joined", value: "latest" },
-  { label: "Older Member", value: "older" },
+  { label: "Older Member", value: "oldest" },
 ];
 
 export function UserTable() {

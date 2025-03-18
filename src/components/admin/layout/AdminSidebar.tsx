@@ -102,10 +102,10 @@ export function AdminSidebar() {
               {managementNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton isActive={item.isActive} asChild>
-                    <a href={item.href}>
+                  <button onClick={()=> navigate(item.href)}>
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
-                    </a>
+                    </button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

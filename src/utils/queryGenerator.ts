@@ -7,16 +7,22 @@ export const buildQueryParams = (filters: string[]): Record<string, any> => {
     blocked: "isblocked",
     notBlocked: "isblocked",
     latest: "createdAt",
-    older: "createdAt",
+    oldest: "createdAt",
+    wedding: "category",
+    couple: "category",
+    potrait: "category",
   };
 
-  const valueMap: Record<string, boolean | number> = {
+  const valueMap: Record<string, boolean | number | string> = {
     isActive: true,
     notActive: false,
     blocked: true,
     notBlocked: false,
     latest: -1,
-    older: 1,
+    oldest: 1,
+    wedding: "Wedding",
+    couple: "Couple",
+    potrait: "Portrait",
   };
 
   filters.forEach((filter) => {
@@ -24,7 +30,11 @@ export const buildQueryParams = (filters: string[]): Record<string, any> => {
     const value = valueMap[filter];
 
     if (key && value !== undefined) {
-      queryObject[key] = value;
+      if (filter === "latest" || filter === "oldest") {
+        queryObject[key] = value;
+      } else {
+        queryObject[key] = value;
+      }
     }
   });
 
