@@ -14,17 +14,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { useAllCategoryQuery } from "@/hooks/category/useAllCategory";
+import { CategoryType } from "@/hooks/admin/useAllCategory";
 import { Spinner } from "../ui/spinner";
-import {
-  Category,
-  getAllCategories,
-} from "@/services/category/categoryService";
+import { Input } from "@/components/ui/input";
+import { PlusCircle } from "lucide-react";
+import { useAllVendorCategoryQuery, useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
+
 
 interface VendorCategoryModalProps {
   isOpen: boolean;
-  onClose: () => void;
-  onSave: (category: string) => void;
+  onClose ?: () => void;
+  onSave ?: (category: string) => void;
 }
 
 export function VendorCategoryModal({
@@ -32,13 +32,13 @@ export function VendorCategoryModal({
   onClose,
   onSave,
 }: VendorCategoryModalProps) {
-  const [categories, setCategories] = useState<Category[] | null>(null);
+  const [categories, setCategories] = useState<CategoryType[] | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
-  // const [newCategory, setNewCategory] = useState<string>("");
-  // const [isCreatingNew, setIsCreatingNew] = useState<boolean>(false);
+  const [newCategory, setNewCategory] = useState<string>("");
+  const [isCreatingNew, setIsCreatingNew] = useState<boolean>(false);
 
-  const { data, isLoading } = useAllCategoryQuery(getAllCategories);
-
+  const { data, isLoading } = useAllVendorCategoryQuery()
+  console.log('categories : ',data);
   useEffect(() => {
     if (data) {
       setCategories(data.categories);
@@ -46,8 +46,9 @@ export function VendorCategoryModal({
   }, [data]);
 
   const handleSave = () => {
-    onSave(selectedCategory);
-    onClose();
+    console.log(selectedCategory);
+    onSave?.(selectedCategory);
+    onClose?.();
   };
 
   if (isLoading) {
@@ -78,23 +79,20 @@ export function VendorCategoryModal({
               ))}
             </SelectContent>
           </Select>
-          {/* ) : (
-             <Input
-              id="newCategory"
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
-              placeholder="Enter new category name"
-              className="w-full"
+            <Input
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewCategory(e.target.value)}
+            value={newCategory}
+            placeholder="Enter new category name"
+            className="w-full"
             />
-          )} */}
-          {/* <Button
+            <Button
             variant="outline"
             className="w-full"
-            onClick={() => setIsCreatingNew(!isCreatingNew)}
-          >
+            onClick={() => console.log('creatin new category')}
+            >
             <PlusCircle className="mr-2 h-4 w-4" />
             {isCreatingNew ? "Choose Existing Category" : "Create New Category"}
-          </Button> */}
+            </Button>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>

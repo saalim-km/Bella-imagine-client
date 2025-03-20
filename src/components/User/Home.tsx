@@ -63,7 +63,7 @@ const photos: Photo[] = [
     },
   },
   {
-    url: "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741540898/unnamed_2_ocgmvv.webp",
+    url: "https://res.cloudinary.com/deh2nuqeb/image/upload/v1742401558/unnamed_1_n12imk.webp",
     alt: "Wedding detail shots",
     photographer: {
       name: "Alex Turner",
@@ -122,7 +122,7 @@ export default function Home() {
           <div className="aspect-[/3]" style={{marginTop: "-55px"}}>
             <PhotoCard photo={photos[4]} />
           </div>
-          <div className="aspect-[4/6]" style={{marginTop: "-50%"}}>
+          <div className="aspect-[4/6]" style={{marginTop: "-45%"}}>
             <PhotoCard photo={photos[5]} />
           </div>
           
