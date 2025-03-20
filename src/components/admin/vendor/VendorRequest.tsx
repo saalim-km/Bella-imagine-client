@@ -39,9 +39,11 @@ import { handleError } from "@/utils/Error/errorHandler";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Spinner } from "@/components/ui/spinner";
+import Pagination from "@/components/common/Pagination";
 
 export function VendorRequestsTable() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const { bgColor } = useThemeConstants();
   const [searchTerm, setSearchTerm] = useState("");
   const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
@@ -90,8 +92,8 @@ export function VendorRequestsTable() {
     }
   );
 
-  const vendorRequests = vendorRequestsData?.vendors.data || [];
-  const totalVendors = vendorRequestsData?.vendors.total || 1;
+  const vendorRequests = vendorRequestsData?.vendors?.data || [];
+  const totalVendors = vendorRequestsData?.vendors?.total ?? 1;
   const totalPages = Math.max(1, Math.ceil(totalVendors / itemsPerPage));
 
   console.log(vendorRequests, totalPages);
@@ -140,18 +142,18 @@ export function VendorRequestsTable() {
   };
 
   const handleApprove = async (id: string) => {
-    console.log('vendor id',id);
+    console.log("vendor id", id);
     setIsApproving(true);
     approveVendor(
-      { vendorId: id, status: 'accept' },
+      { vendorId: id, status: "accept" },
       {
-        onSuccess: (data : any) => {
-          setIsApproving(false)
-          queryClient.invalidateQueries({queryKey : vendorKeys.lists()})
-          toast.success(data.message)
+        onSuccess: (data: any) => {
+          setIsApproving(false);
+          queryClient.invalidateQueries({ queryKey: vendorKeys.lists() });
+          toast.success(data.message);
         },
         onError: (error) => {
-          setIsApproving(false)
+          setIsApproving(false);
           handleError(error);
         },
       }
@@ -166,10 +168,7 @@ export function VendorRequestsTable() {
   };
 
   const handleReject = async () => {
-    console.log("handlereject trigger");
-    console.log();
     if (selectedVendor) {
-      console.log("vendor selected");
       setIsApproving(true);
       const reasonToSend =
         rejectReason === "Other (Specify reason)"
@@ -177,18 +176,23 @@ export function VendorRequestsTable() {
           : rejectReason;
       console.log(reasonToSend, selectedVendor);
       rejectVendor(
-        { vendorId: selectedVendor, rejectReason: reasonToSend, status: 'reject' },
         {
-          onSuccess: (data : any) => {
-            setIsApproving(false)
+          vendorId: selectedVendor,
+          rejectReason: reasonToSend,
+          status: "reject",
+        },
+        {
+          onSuccess: (data: any) => {
+            setIsApproving(false);
             setRejectModalOpen(false);
             setRejectReason("");
             setCustomRejectReason("");
-            queryClient.invalidateQueries({queryKey : vendorKeys.lists()})
-            toast.success(data.message)
+            queryClient.invalidateQueries({ queryKey: vendorKeys.lists() });
+            queryClient.invalidateQueries({ queryKey: ["vendor-notifications"]});
+            toast.success(data.message);
           },
           onError: (error) => {
-            setIsApproving(false)
+            setIsApproving(false);
             handleError(error);
           },
         }
@@ -245,9 +249,7 @@ export function VendorRequestsTable() {
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="flex h-[300px] items-center justify-center">
-            <p>Loading vendor requests...</p>
-          </div>
+          <Spinner/>
         ) : (
           <>
             <Table>
@@ -256,7 +258,6 @@ export function VendorRequestsTable() {
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Request Date</TableHead>
-                  <TableHead>Category</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -275,8 +276,11 @@ export function VendorRequestsTable() {
                         {request.name}
                       </TableCell>
                       <TableCell>{request.email}</TableCell>
-                      <TableCell>{new Date(request.createdAt).toLocaleDateString("en-GB")}</TableCell>
-                      <TableCell>{request.category}</TableCell>
+                      <TableCell>
+                        {new Date(request.createdAt).toLocaleDateString(
+                          "en-GB"
+                        )}
+                      </TableCell>
                       <TableCell>
                         <Badge variant="secondary">
                           {request.isActive ? "Active" : "inActive"}
@@ -301,7 +305,7 @@ export function VendorRequestsTable() {
                                 <Button
                                   size="sm"
                                   variant="default"
-                                  onClick={() => handleApprove(request._id)}
+                                  onClick={() => request._id && handleApprove(request._id)}
                                   disabled={isApproving}
                                 >
                                   Approve
@@ -310,7 +314,7 @@ export function VendorRequestsTable() {
                                   size="sm"
                                   variant="destructive"
                                   onClick={() =>
-                                    handleOpenRejectModal(request._id)
+                                    handleOpenRejectModal(request._id ?? "")
                                   }
                                   disabled={isApproving}
                                 >
@@ -326,28 +330,7 @@ export function VendorRequestsTable() {
                 )}
               </TableBody>
             </Table>
-            <div className="flex items-center justify-between mt-4">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={currentPage === 1}
-                onClick={() => handlePageChange(currentPage - 1)}
-              >
-                Previous
-              </Button>
-              <span className="text-sm">
-                Page <strong>{currentPage}</strong> of{" "}
-                <strong>{totalPages}</strong>
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={currentPage === totalPages}
-                onClick={() => handlePageChange(currentPage + 1)}
-              >
-                Next
-              </Button>
-            </div>
+            <Pagination onPageChange={handlePageChange} currentPage={currentPage} totalPages={totalPages}/>
           </>
         )}
       </CardContent>

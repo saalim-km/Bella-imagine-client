@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -6,13 +6,12 @@ import { Check, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
 import { NewPasswordForm } from "../auth/NewPasswordForm"
@@ -23,7 +22,6 @@ import { toast } from "sonner"
 import { useSendOtp } from "@/hooks/auth/useSendOtp"
 import { handleError } from "@/utils/Error/errorHandler"
 
-
 const formSchema = z.object({
   otp: z.string().min(6, { message: "OTP must be 6 digits" }),
 })
@@ -32,19 +30,40 @@ type FormValues = z.infer<typeof formSchema>
 
 interface OTPVerificationModalProps {
   isOpen: boolean
-  onClose: () => void
   email: string
   userType: TRole
 }
 
-export function OTPVerificationModal({ isOpen, onClose, email, userType }: OTPVerificationModalProps) {
-    const {mutate : resendOtp} = useSendOtp()
-    const {mutate : verifyOtp} = useOtpVerifyMutataion()
-  const {bgColor} = useThemeConstants()
+export function OTPVerificationModal({ isOpen, email, userType }: OTPVerificationModalProps) {
+  const { mutate: resendOtp } = useSendOtp()
+  const { mutate: verifyOtp } = useOtpVerifyMutataion()
+  const { bgColor } = useThemeConstants()
+  
   const [isVerifying, setIsVerifying] = useState(false)
   const [isVerified, setIsVerified] = useState(false)
   const [showPasswordForm, setShowPasswordForm] = useState(false)
   const [resetComplete, setResetComplete] = useState(false)
+  const [isResendDisabled, setIsResendDisabled] = useState(true)
+  const [timer, setTimer] = useState(60)
+
+  // Start the timer when component mounts (OTP is sent)
+  useEffect(() => {
+    if (isOpen) startTimer()
+  }, [isOpen])
+
+  const startTimer = () => {
+    setIsResendDisabled(true)
+    setTimer(60)
+    const interval = setInterval(() => {
+      setTimer((prev) => {
+        if (prev === 1) {
+          clearInterval(interval)
+          setIsResendDisabled(false)
+        }
+        return prev - 1
+      })
+    }, 1000)
+  }
 
   // Initialize form
   const form = useForm<FormValues>({
@@ -54,57 +73,50 @@ export function OTPVerificationModal({ isOpen, onClose, email, userType }: OTPVe
     },
   })
 
-
   const onSubmit = (data: FormValues) => {
     setIsVerifying(true)
-    verifyOtp({email,otp : data.otp} , {
-        onSuccess : (data)=> {
-            console.log(data.message);
-            toast.success(data.message)
-            setIsVerified(true)
-            setIsVerifying(false)
-            setShowPasswordForm(true)
-        },
-        onError : (error)=> {
-            setIsVerifying(false)
-            handleError(error)
-        }
+    verifyOtp({ email, otp: data.otp }, {
+      onSuccess: (data) => {
+        toast.success(data.message)
+        setIsVerified(true)
+        setIsVerifying(false)
+        setShowPasswordForm(true)
+      },
+      onError: (error) => {
+        setIsVerifying(false)
+        handleError(error)
+      }
     })
   }
-
 
   const handleResendOTP = () => {
-    resendOtp({url : '/send-otp',email : email},{
-        onSuccess : (data)=> {
-            toast.success(data.message)
-        },onError : (error)=> {
-            handleError(error)
-        }
+    resendOtp({ url: '/forgot-password/send-otp', email: email , userType : userType }, {
+      onSuccess: (data) => {
+        toast.success(data.message)
+        startTimer()
+      },
+      onError: (error) => {
+        handleError(error)
+      }
     })
   }
-
 
   const handlePasswordResetComplete = () => {
     setShowPasswordForm(false)
     setResetComplete(true)
 
-
     setTimeout(() => {
-      onClose()
-      // Reset state for next time
       setIsVerified(false)
       setShowPasswordForm(false)
       setResetComplete(false)
     }, 2000)
   }
 
-
   const getDialogTitle = () => {
     if (resetComplete) return "Password Reset Complete"
     if (showPasswordForm) return "Create New Password"
     return "Verify your email"
   }
-
 
   const getDialogDescription = () => {
     if (resetComplete) return "Your password has been successfully reset."
@@ -113,23 +125,12 @@ export function OTPVerificationModal({ isOpen, onClose, email, userType }: OTPVe
   }
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => {
-        if (!open) {
-          onClose()
-          // Reset state when closing
-          setIsVerified(false)
-          setShowPasswordForm(false)
-          setResetComplete(false)
-        }
-      }}
-    >
-    <DialogContent className={`sm:max-w-md`}>
-        <DialogHeader>
-          <DialogTitle>{getDialogTitle()}</DialogTitle>
-          <DialogDescription>{getDialogDescription()}</DialogDescription>
-        </DialogHeader>
+    <AlertDialog open={isOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{getDialogTitle()}</AlertDialogTitle>
+          <AlertDialogDescription>{getDialogDescription()}</AlertDialogDescription>
+        </AlertDialogHeader>
 
         {resetComplete ? (
           <div className="flex flex-col items-center justify-center py-6 space-y-4">
@@ -174,7 +175,7 @@ export function OTPVerificationModal({ isOpen, onClose, email, userType }: OTPVe
                 )}
               />
 
-              <DialogFooter className="flex-col sm:flex-col gap-2">
+              <div className="flex-col sm:flex-col gap-2">
                 <Button type="submit" className="w-full" disabled={isVerifying}>
                   {isVerifying ? (
                     <>
@@ -185,14 +186,14 @@ export function OTPVerificationModal({ isOpen, onClose, email, userType }: OTPVe
                     "Verify"
                   )}
                 </Button>
-                <Button type="button" variant="link" onClick={handleResendOTP} disabled={isVerifying}>
-                  Didn't receive a code? Resend
+                <Button type="button" variant="link" onClick={handleResendOTP} disabled={isResendDisabled}>
+                  {isResendDisabled ? `Resend OTP in ${timer}s` : "Resend OTP"}
                 </Button>
-              </DialogFooter>
+              </div>
             </form>
           </Form>
         )}
-      </DialogContent>
-    </Dialog>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }

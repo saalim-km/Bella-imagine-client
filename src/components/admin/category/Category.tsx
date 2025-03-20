@@ -1,154 +1,212 @@
-import { useState } from "react"
-import { Plus } from "lucide-react"
-import { CategoryList } from "./CategoryList"
-import { CategoryForm } from "./categoryForm"
-import { Button } from "@/components/ui/button"
-import { toast } from "sonner"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card } from "@/components/ui/card"
-
-// Define the Category type
-export interface Category {
-  id: string
-  name: string
-  description: string
-  isActive: boolean
-  createdAt: Date
-  updatedAt: Date
-}
-
-// Mock data for demonstration
-const initialCategories: Category[] = [
-  {
-    id: "1",
-    name: "Wedding Photography",
-    description: "Professional photography services for wedding ceremonies and receptions",
-    isActive: true,
-    createdAt: new Date("2023-01-15"),
-    updatedAt: new Date("2023-01-15"),
-  },
-  {
-    id: "2",
-    name: "Portrait Photography",
-    description: "Professional portrait sessions for individuals, families, or groups",
-    isActive: true,
-    createdAt: new Date("2023-02-10"),
-    updatedAt: new Date("2023-02-10"),
-  },
-  {
-    id: "3",
-    name: "Event Photography",
-    description: "Photography services for corporate events, parties, and gatherings",
-    isActive: true,
-    createdAt: new Date("2023-03-05"),
-    updatedAt: new Date("2023-03-05"),
-  },
-  {
-    id: "4",
-    name: "Commercial Photography",
-    description: "Professional photography for products, real estate, and business needs",
-    isActive: false,
-    createdAt: new Date("2023-04-20"),
-    updatedAt: new Date("2023-05-15"),
-  },
-]
+import { useState } from "react";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { Switch } from "@/components/ui/switch";
+import {
+  type CategoryType,
+  useAllCategoryQuery,
+  useUpdateCategoryMutation,
+} from "@/hooks/admin/useAllCategory";
+import { CategoryForm } from "./CategoryForm";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { DataTable, type ColumnDef } from "@/components/common/Table";
+import { toast } from "sonner";
+import { handleError } from "@/utils/Error/errorHandler";
+import { Input } from "@/components/ui/input";
 
 export function CategoryManagement() {
-  const [categories, setCategories] = useState<Category[]>(initialCategories)
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
-  const [isEditing, setIsEditing] = useState(false)
-  const [activeTab, setActiveTab] = useState("list")
+  const [searchTerm, setSerachTerm] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const { mutate: updateCategory } = useUpdateCategoryMutation();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filter, setFilter] = useState<string>("all");
+  const [showForm, setShowForm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(
+    null
+  );
 
-  // Function to add a new category
-  const handleAddCategory = (category: Omit<Category, "id" | "createdAt" | "updatedAt">) => {
-    const newCategory: Category = {
-      ...category,
-      id: Math.random().toString(36).substring(2, 9), // Generate a random ID
-      createdAt: new Date(),
-      updatedAt: new Date(),
+  let filterOption;
+  switch (filter) {
+    case "active":
+      filterOption = { status: "active" };
+      break;
+    case "inactive":
+      filterOption = { status: "inActive" };
+      break;
+    default:
+      filterOption = {};
+  }
+
+  const { data, isLoading, refetch } = useAllCategoryQuery(
+    {
+      ...filterOption,
+      search : appliedSearch
+    },
+    { page: currentPage, limit: 4 },
+  );
+  function handleEdit(category: CategoryType) {
+    setSelectedCategory(category);
+    setIsEditing(true);
+    setShowForm(true);
+  }
+
+  function handleChangeSeaarchTerm(e: React.ChangeEvent<HTMLInputElement>) {
+    setSerachTerm(e.target.value);
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearchSubmit();
     }
+  };
 
-    setCategories([...categories, newCategory])
-    toast('category added')
-    setActiveTab("list")
+  function handleSearchSubmit() {
+    setAppliedSearch(searchTerm);
   }
 
-  // Function to update an existing category
-  const handleUpdateCategory = (updatedCategory: Category) => {
-    const updatedCategories = categories.map((category) =>
-      category.id === updatedCategory.id ? { ...updatedCategory, updatedAt: new Date() } : category,
-    )
-
-    setCategories(updatedCategories)
-    setSelectedCategory(null)
-    setIsEditing(false)
-    toast.success('category updated')
-    setActiveTab("list")
+  function handleToggleStatus(categoryId: string, status: boolean) {
+    console.log(categoryId);
+    updateCategory(
+      { id: categoryId, data: { status: !status } },
+      {
+        onSuccess: (data: any) => {
+          refetch();
+          toast.success(data?.message);
+        },
+        onError: (err) => {
+          handleError(err);
+        },
+      }
+    );
   }
 
-  // Function to toggle category active status
-  const handleToggleStatus = (id: string) => {
-    const updatedCategories = categories.map((category) =>
-      category.id === id ? { ...category, isActive: !category.isActive, updatedAt: new Date() } : category,
-    )
-
-    const targetCategory = categories.find((category) => category.id === id)
-    const newStatus = !targetCategory?.isActive
-
-    setCategories(updatedCategories)
-    toast.success('category activated')
+  function handleFormClose() {
+    setIsEditing(false);
+    setShowForm(false);
+    setSelectedCategory(null);
   }
 
-  // Function to edit a category
-  const handleEditCategory = (category: Category) => {
-    setSelectedCategory(category)
-    setIsEditing(true)
-    setActiveTab("form")
+  function handlePageChange(page: number) {
+    setCurrentPage(page);
   }
 
-  // Function to cancel editing
-  const handleCancelEdit = () => {
-    setSelectedCategory(null)
-    setIsEditing(false)
-    setActiveTab("list")
+  function handleFilterChange(value: string) {
+    console.log(value);
+    setFilter(value);
+    setCurrentPage(1);
   }
+
+  const columns: ColumnDef<CategoryType>[] = [
+    {
+      id: "_id",
+      header: "ID",
+      accessorKey: "categoryId",
+      cell: (category) => category.categoryId || "N/A",
+      className: "w-[300px]",
+    },
+    {
+      id: "title",
+      header: "Title",
+      accessorKey: "title",
+    },
+    {
+      id: "status",
+      header: "Status",
+      cell: (category) => (
+        <span
+          className={`px-2 py-1 rounded text-xs ${
+            category.status
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800"
+          }`}
+        >
+          {category.status ? "Active" : "Inactive"}
+        </span>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: (category) => (
+        <div className="flex items-center gap-2">
+          <Switch
+            checked={category.status}
+            onCheckedChange={() =>
+              handleToggleStatus(category._id, category.status)
+            }
+            value={category._id}
+          />
+          <Button size="sm" onClick={() => handleEdit(category)}>
+            Edit
+          </Button>
+        </div>
+      ),
+      className: "w-[150px]",
+    },
+  ];
+
+  if (isLoading) return <Spinner />;
 
   return (
-    <Card className="p-6">
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <div className="flex justify-between items-center mb-6">
-          <TabsList>
-            <TabsTrigger value="list">Categories</TabsTrigger>
-            <TabsTrigger value="form">{isEditing ? "Edit Category" : "Add Category"}</TabsTrigger>
-          </TabsList>
-          {activeTab === "list" && (
-            <Button
-              onClick={() => {
-                setIsEditing(false)
-                setSelectedCategory(null)
-                setActiveTab("form")
-              }}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add Category
-            </Button>
-          )}
-        </div>
-
-        <TabsContent value="list" className="mt-0">
-          <CategoryList categories={categories} onEdit={handleEditCategory} onToggleStatus={handleToggleStatus} />
-        </TabsContent>
-
-        <TabsContent value="form" className="mt-0">
-          <CategoryForm
-            category={selectedCategory}
-            isEditing={isEditing}
-            onSubmit={isEditing ? handleUpdateCategory : handleAddCategory}
-            onCancel={handleCancelEdit}
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Category Management</h2>
+        <Button onClick={() => setShowForm(true)}>
+          <Plus className="mr-2" /> Add Category
+        </Button>
+      </div>
+      <div className="mb-4 flex gap-5">
+        <div className="flex">
+          <Input
+            placeholder="Search clients..."
+            className="w-[200px] rounded-r-none"
+            value={searchTerm}
+            onChange={handleChangeSeaarchTerm}
+            onKeyDown={handleKeyDown}
           />
-        </TabsContent>
-      </Tabs>
-    </Card>
-  )
-}
+          <Button className="rounded-l-none" onClick={handleSearchSubmit}>
+            Search
+          </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium">Filter by status:</span>
+          <Select value={filter} onValueChange={handleFilterChange}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="active">Active Only</SelectItem>
+              <SelectItem value="inactive">Inactive Only</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
+      {showForm && (
+        <CategoryForm
+          initialData={isEditing ? selectedCategory : null}
+          onClose={handleFormClose}
+        />
+      )}
+
+      <DataTable
+        data={data?.categories || []}
+        columns={columns}
+        currentPage={currentPage}
+        totalPages={data?.totalPages || 1}
+        onPageChange={handlePageChange}
+        emptyMessage="No categories found"
+        isLoading={isLoading}
+      />
+    </div>
+  );
+}

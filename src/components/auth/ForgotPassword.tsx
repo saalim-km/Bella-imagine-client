@@ -14,8 +14,9 @@ import { TRole } from "@/types/User"
 import { useSendOtp } from "@/hooks/auth/useSendOtp"
 import { toast } from "sonner"
 import { handleError } from "@/utils/Error/errorHandler"
+import { useNavigate } from "react-router-dom"
 
-// Define the form schema with Zod
+
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
 })
@@ -27,6 +28,7 @@ interface ForgotPasswordProps {
 }
 
 export function ForgotPassword({ userType }: ForgotPasswordProps) {
+  const navigate = useNavigate()
   const {mutate : sendOtp} =  useSendOtp()
   const {bgColor} = useThemeConstants()
   const [isOTPModalOpen, setIsOTPModalOpen] = useState(false)
@@ -99,7 +101,7 @@ export function ForgotPassword({ userType }: ForgotPasswordProps) {
           </Form>
         </CardContent>
         <CardFooter className="flex justify-center">
-          <Button variant="link" onClick={() => window.history.back()}>
+          <Button variant="link" onClick={() => navigate('/login')}>
             Back to login
           </Button>
         </CardFooter>
@@ -107,7 +109,6 @@ export function ForgotPassword({ userType }: ForgotPasswordProps) {
 
       <OTPVerificationModal
         isOpen={isOTPModalOpen}
-        onClose={() => setIsOTPModalOpen(false)}
         email={email}
         userType={userType}
       />

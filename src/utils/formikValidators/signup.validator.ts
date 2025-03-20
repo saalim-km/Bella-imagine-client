@@ -2,6 +2,7 @@ import * as Yup from "yup";
 
 export const signupSchema = Yup.object().shape({
   name: Yup.string()
+    .min(6, "Name must be at least 6 characters long")
     .matches(
       /^(?!\s+$)[A-Za-z\s]+$/,
       "Name can only contain letters and spaces (not only spaces)"

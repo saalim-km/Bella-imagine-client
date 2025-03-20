@@ -37,7 +37,7 @@ export const ENDPOINTS = {
   VERIFY_OTP: "/verify-otp",
   CLIENT_LOGOUT: "/client/logout",
   VENDOR_LOGOUT: "/vendor/logout",
-  ADMIN_LOGOUT: "/admin/logout",
+  ADMIN_LOGOUT: "/logout",
   GOOGLE_LOGIN: "/google-auth",
 
   // Client and vendor 
@@ -48,4 +48,8 @@ export const ENDPOINTS = {
   CLIENT_REFRESH_TOKEN: `/client/refresh-token`,
   VENDOR_REFRESH_TOKEN: `/vendor/refresh-token`,
   ADMIN_REFRESH_TOKEN: `/admin/refresh-token`,
+
+
+  VENDOR_CATEGORIES : '/vendor/categories',
+  CLIENT_CATEGORIES : '/client/categories'
 };

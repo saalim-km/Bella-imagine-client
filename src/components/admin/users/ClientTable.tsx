@@ -28,6 +28,8 @@ import {
 import { useQueryClient } from "@tanstack/react-query"
 import { DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu"
 import { buildQueryParams } from "@/utils/queryGenerator"
+import Pagination from "@/components/common/Pagination"
+import { Spinner } from "@/components/ui/spinner"
 
 
 const FILTER_OPTIONS = [
@@ -198,9 +200,7 @@ export function ClientTable() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="flex h-[300px] items-center justify-center">
-              <p>Loading clients...</p>
-            </div>
+           <Spinner/>
           ) : (
             <>
               <Table>
@@ -249,7 +249,7 @@ export function ClientTable() {
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
                                 className="text-red-600"
-                                onClick={() => confirmAction(client._id, client.isblocked ? "unblock" : "block")}
+                                onClick={() => client._id && confirmAction(client._id, client.isblocked ? "unblock" : "block")}
                               >
                                 {client.isblocked ? "Unblock" : "Block"}
                               </DropdownMenuItem>
@@ -262,28 +262,7 @@ export function ClientTable() {
                 </TableBody>
               </Table>
 
-              {/* Pagination Controls */}
-              <div className="flex items-center justify-between mt-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={currentPage === 1}
-                  onClick={() => handlePageChange(currentPage - 1)}
-                >
-                  Previous
-                </Button>
-                <span className="text-sm">
-                  Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={currentPage === totalPages}
-                  onClick={() => handlePageChange(currentPage + 1)}
-                >
-                  Next
-                </Button>
-              </div>
+              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange}/>
             </>
           )}
         </CardContent>

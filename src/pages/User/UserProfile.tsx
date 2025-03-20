@@ -17,7 +17,9 @@ import { useUpdateVendorMutation, useVendorDetailsQuery } from "@/hooks/vendor/u
 import { IProfileUpdate } from "@/types/User";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-
+import { VendorCategoryModal } from "@/components/modals/VendorCategoryModal";
+import { useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
+import { handleError } from "@/utils/Error/errorHandler";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -33,8 +35,10 @@ const tabTitles: Record<string, string> = {
 
 export default function UserProfile() {
   const queryClient = useQueryClient() 
+    const {mutate : joinCategory} = useJoinCategoryRequestMutation()
   const {mutate : updateVendor} = useUpdateVendorMutation()
   const {mutate : updateClient} = useUpdateClientMutation()
+  const [isModal , setIsModal] = useState(false)
   const { bgColor } = useThemeConstants();
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
@@ -66,7 +70,7 @@ export default function UserProfile() {
   
   console.log(`User data:`, userData);
   
-  const hasCategory = userType === "vendor" && vendorData?.vendor?.category;
+  const hasCategory = userType === "vendor" && vendorData?.vendor?.categories?.length !== 0;
 
   function handleUpdateProfile(data : IProfileUpdate) {
     if(userType === "vendor") {
@@ -93,7 +97,27 @@ export default function UserProfile() {
       })
     }
   }
-  
+
+  function handleModalOpen() {
+    setIsModal(true);
+  }
+
+  function handleModalClose() {
+    setIsModal(false)
+  }
+
+  function handleJoinCategory(category : string) {
+    joinCategory(category,{
+      onSuccess : (data)=> {
+        queryClient.invalidateQueries({queryKey : ["client-profile"]})
+        toast.success(data.message)
+      },
+      onError :(err)=> {
+        handleError(err)
+      }
+    })
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -113,12 +137,12 @@ export default function UserProfile() {
   
 
   return (
-    <div>
+    <div className="mt-14">
       <Header />
       <div className="container mx-auto p-4 lg:p-6">
         {!hasCategory && userType === "vendor" && (
           <div className="mb-4">
-            <Button variant="outline" onClick={() => alert("Choose a category")}>
+            <Button variant="outline" onClick={handleModalOpen}>
               Choose a Category
             </Button>
           </div>
@@ -162,8 +186,6 @@ export default function UserProfile() {
                 {/* Dynamic Title */}
                 <h2 className="text-2xl font-bold">{tabTitles[activeTab] || "Dashboard"}</h2>
 
-                {/* Edit Profile Button (always available for vendors) */}
-                {userType === "vendor" || userType === "client" && (
                   <Button
                     variant="outline"
                     size="icon"
@@ -171,7 +193,6 @@ export default function UserProfile() {
                   >
                     <Edit2 className="h-4 w-4" />
                   </Button>
-                )}
               </div>
 
               {/* Dynamic Content Rendering */}
@@ -197,6 +218,10 @@ export default function UserProfile() {
           </main>
         </div>
       </div>
+
+      {isModal &&
+      <VendorCategoryModal isOpen = {isModal} onClose={handleModalClose} onSave={handleJoinCategory}/>
+      }
     </div>
   );
 }

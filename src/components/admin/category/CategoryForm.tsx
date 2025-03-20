@@ -1,125 +1,90 @@
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import type { Category } from './category'
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(2, {
-      message: "Category name must be at least 2 characters.",
-    })
-    .max(50, {
-      message: "Category name must not exceed 50 characters.",
-    })
-    .max(500, {
-      message: "Description must not exceed 500 characters.",
-    }),
-  isActive: z.boolean().default(true),
-})
-
-type FormValues = z.infer<typeof formSchema>
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { categoryKeys, CategoryType, useAllCategoryMutation, useUpdateCategoryMutation } from "@/hooks/admin/useAllCategory";
+import { Formik, Form, Field } from "formik";
+import * as Yup from "yup";
+import { AxiosResponse } from "@/hooks/auth/useOtpVerify";
+import { handleError } from "@/utils/Error/errorHandler";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CategoryFormProps {
-  category: Category | null
-  isEditing: boolean
-  onSubmit: (values: any) => void
-  onCancel: () => void
+  initialData?: CategoryType | null;
+  onClose: () => void;
 }
 
-export function CategoryForm({ category, isEditing, onSubmit, onCancel }: CategoryFormProps) {
-  // Initialize the form with default values or existing category values
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: category?.name || "",
-      isActive: category?.isActive ?? true,
-    },
-  })
+const CategorySchema = Yup.object().shape({
+  title: Yup.string().trim().required("Category title is required"),
+  status: Yup.string().oneOf(["active", "inactive"], "Invalid status"),
+});
 
-  // Handle form submission
-  const handleSubmit = (values: FormValues) => {
-    if (isEditing && category) {
-      onSubmit({
-        ...category,
-        ...values,
-      })
-    } else {
-      onSubmit(values)
-    }
-  }
+export function CategoryForm({ initialData, onClose }: CategoryFormProps) {
+    const queryClient = useQueryClient()
+  const { mutate: addCategory } = useUpdateCategoryMutation();
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Category Name</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., Wedding Photography" {...field} />
-              </FormControl>
-              <FormDescription>The name of the photography category as it will appear to vendors.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <div className="p-4 border rounded-lg shadow-md bg-white">
+      <h3 className="text-lg font-semibold mb-4">
+        {initialData ? "Edit Category" : "Add Category"}
+      </h3>
+      <Formik
+        initialValues={{
+          title: initialData?.title || "",
+          status: initialData?.status || "active",
+        }}
+        validationSchema={CategorySchema}
+        onSubmit={(values) => {
+          console.log({ title: values.title, status: values.status === "active" });
+          const isActive = values.status === "active"
+          addCategory({title : values.title , status : isActive},{
+            onSuccess : (data)=> {
+                const response = data as AxiosResponse;
+                toast.success(response.message);
+                queryClient.invalidateQueries({queryKey : categoryKeys.lists()})
+                onClose();
+            },
+            onError : (err)=> {
+                handleError(err)
+            }
+          })
+        }}
+      >
+        {({ errors, touched }) => (
+          <Form>
+            <div className="mb-4">
+              <Label htmlFor="title">Category Title</Label>
+              <Field
+                id="title"
+                name="title"
+                as={Input}
+                className="w-full"
+              />
+              {errors.title && touched.title && (
+                <div className="text-red-500 text-sm">{errors.title}</div>
+              )}
+            </div>
 
-        {/* <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Describe what this category encompasses..."
-                  className="min-h-[120px]"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>
-                A detailed description of the category to help vendors understand what services fall under it.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
+            <div className="mb-4">
+              <Label htmlFor="status">Status</Label>
+              <Field as="select" name="status" className="border p-2 rounded w-full">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </Field>
+              {errors.status && touched.status && (
+                <div className="text-red-500 text-sm">{errors.status}</div>
+              )}
+            </div>
 
-        <FormField
-          control={form.control}
-          name="isActive"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <FormLabel className="text-base">Active Status</FormLabel>
-                <FormDescription>
-                  {field.value
-                    ? "This category is active and visible to vendors."
-                    : "This category is inactive and hidden from new vendors."}
-                </FormDescription>
-              </div>
-              <FormControl>
-                <Switch checked={field.value} onCheckedChange={field.onChange} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-
-        <div className="flex justify-end gap-2">
-          <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button type="submit">{isEditing ? "Update Category" : "Add Category"}</Button>
-        </div>
-      </form>
-    </Form>
-  )
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button type="submit">{initialData ? "Update" : "Add"}</Button>
+            </div>
+          </Form>
+        )}
+      </Formik>
+    </div>
+  );
 }
-

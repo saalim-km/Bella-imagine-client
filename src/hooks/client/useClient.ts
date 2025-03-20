@@ -2,6 +2,7 @@ import {
   getClientDetails,
   updateClientDetails,
 } from "@/services/client/clientService";
+import { getAllClientNotification } from "@/services/notification/notificationService";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 
@@ -19,3 +20,12 @@ export const useUpdateClientMutation = () => {
     mutationFn: updateClientDetails,
   });
 };
+
+
+export const useAllClientNotification = (enabled = true)=> {
+  return useQuery({
+    queryKey : ["client-notification"],
+    queryFn : getAllClientNotification,
+    enabled
+  })
+}

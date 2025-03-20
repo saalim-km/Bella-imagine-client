@@ -1,114 +1,211 @@
-import { Button } from "@/components/ui/button";
-import Logo from "../common/Logo";
-import { useLocation, useNavigate } from "react-router-dom";
-import ThemeToggle from "../common/ThemeToggle";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import { logoutClient } from "@/services/auth/authService";
-import { logoutVendor } from "@/services/auth/authService";
-import { toast } from "sonner";
-import { clientLogout } from "@/store/slices/clientSlice";
-import { useLogoutMutation } from "@/hooks/auth/useLogout";
 
+import { useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
+import { useSelector, useDispatch } from "react-redux"
+import { motion } from "framer-motion"
+import { Bell } from "lucide-react"
+import { toast } from "sonner"
 
-
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu"; // Use Shadcn/UI imports
-import { useDispatch } from "react-redux";
-import { useThemeConstants } from "@/utils/theme/themeUtills";
-import { vendorLogout } from "@/store/slices/vendorSlice";
+import { Button } from "@/components/ui/button"
+import { 
+  DropdownMenu, 
+  DropdownMenuTrigger, 
+  DropdownMenuContent, 
+  DropdownMenuItem 
+} from "@/components/ui/dropdown-menu"
+import Logo from "../common/Logo"
+import ThemeToggle from "../common/ThemeToggle"
+import NotificationCard, { TNotification } from "../common/Notification"
+import { useThemeConstants } from "@/utils/theme/themeUtills"
+import { useLogoutMutation } from "@/hooks/auth/useLogout"
+import { logoutClient, logoutVendor } from "@/services/auth/authService"
+import { clientLogout } from "@/store/slices/clientSlice"
+import { vendorLogout } from "@/store/slices/vendorSlice"
+import { useAllVendortNotification } from "@/hooks/vendor/useVendor"
+import { useAllClientNotification } from "@/hooks/client/useClient"
+import type { RootState } from "@/store/store"
 
 interface IHeader {
-  onClick?: () => void;
-  logout ?: ()=> void;
+  onClick?: () => void
+  logout?: () => void
 }
 
-
 export default function Header({ onClick }: IHeader) {
+  const { textColor, borderColor } = useThemeConstants()
+  const [scrolled, setScrolled] = useState(false)
+  
   const user = useSelector((state: RootState) => {
-    if (state.vendor.vendor) return state.vendor.vendor;
-    if (state.client.client) return state.client.client;
-    return null;
-  });
+    if (state.vendor.vendor) return state.vendor.vendor
+    if (state.client.client) return state.client.client
+    return null
+  })
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { isDarkMode, textColor } = useThemeConstants();
+  const { data: vendorNot } = useAllVendortNotification(user?.role === "vendor")
+  const { data: clientNot } = useAllClientNotification(user?.role === "client")
+  
+  const allNotifications: TNotification[] = user?.role === "vendor" 
+    ? vendorNot?.notifications ?? [] 
+    : clientNot?.notifications ?? []
 
-  const hoverTextColor = isDarkMode ? "hover:text-gray-300" : "hover:text-black";
-  const isLoggedIn = !!user;
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const isLoggedIn = !!user
+
+  // Add scroll effect similar to NavBar
+  useState(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setScrolled(true)
+      } else {
+        setScrolled(false)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  })
 
   // Determine logout function dynamically based on role
-  const logoutFunction = user?.role === "vendor" ? logoutVendor : logoutClient;
-  const { mutate: logout } = useLogoutMutation(logoutFunction);
+  const logoutFunction = user?.role === "vendor" ? logoutVendor : logoutClient
+  const { mutate: logout } = useLogoutMutation(logoutFunction)
 
   const logoutUser = () => {
     logout(undefined, {
       onSuccess: (data: any) => {
-        console.log(data);
-        toast.success(data.message);
+        toast.success(data.message)
         if (user?.role === "vendor") {
-          dispatch(vendorLogout());
+          dispatch(vendorLogout())
         } else {
-          dispatch(clientLogout());
+          dispatch(clientLogout())
         }
       },
       onError: (error) => {
-        console.log(error);
+        console.log(error)
       },
-    });
+    })
+  }
+
+  const NavLink = ({ children, onClick, active = false }: { 
+    children: React.ReactNode; 
+    onClick: () => void;
+    active?: boolean;
+  }) => {
+    return (
+      <motion.a
+        onClick={onClick}
+        className={`relative text-sm font-medium ${textColor}  cursor-pointer transition-colors`}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        {children}
+        <motion.span
+          className={`absolute -bottom-1 left-0 w-0 h-[2px]  rounded-full`}
+          whileHover={{ width: '100%' }}
+          transition={{ duration: 0.2 }}
+        />
+      </motion.a>
+    );
   };
 
   return (
-    <header className="flex justify-between items-center sm:px-6 sm:py-2 sm:mx-28 md:mx-0 lg:mx-32 lg:py-2">
-      {/* Logo */}
-      <div className="flex items-center space-x-2">
-        <Logo />
-        <span className={`text-sm sm:text-lg font-semibold ${textColor}`}>Bella Imagine</span>
-      </div>
+    <motion.header
+      className={`fixed top-0 left-0 right-0 z-50 px-6 py-4 transition-all duration-300 ${
+        scrolled 
+          ? 'glass-effect backdrop-blur-md' 
+          : 'bg-transparent'
+      }`}
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        >
+      <div className="container mx-auto flex items-center justify-between">
+        {/* Logo */}
+        <motion.div 
+          className="flex items-center space-x-2"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <Logo />
+          <span className={`text-sm sm:text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400`}>
+        Bella Imagine
+          </span>
+        </motion.div>
 
-      {/* Navigation */}
-      {location.pathname !== "/admin/login" && (
-        <nav className={`hidden sm:flex space-x-4 sm:space-x-6 ${textColor}`}>
-          <a onClick={() => navigate("/")} className={`${hoverTextColor} hover:cursor-pointer`}>
-        Home
-          </a>
-          <a onClick={() => navigate("/vendors")} className={`${hoverTextColor} hover:cursor-pointer`}>
-        Photographers
-          </a>
-        </nav>
-      )}
-
-      {/* Sign Up Button & Theme Toggle */}
-      <div className="flex flex-row gap-2 items-center">
-        {isLoggedIn ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="px-2 py-1 sm:px-4 sm:py-2 rounded-md">{user.name}</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-40 sm:w-56">
-              <DropdownMenuItem onClick={() => navigate("/profile")}>Profile</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/settings")}>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Messages</DropdownMenuItem>
-              <DropdownMenuItem onClick={logoutUser}>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          location.pathname !== "/register" &&
-          location.pathname !== "/login" &&
-          location.pathname !== "/admin/login" && (
-            <Button className="px-2 py-1 sm:px-4 sm:py-2 rounded-md" onClick={() => onClick?.()}>
-              Sign Up
-            </Button>
-          )
+        {/* Navigation */}
+        {location.pathname !== "/admin/login" && (
+          <div className="hidden md:flex items-center space-x-8">
+        <NavLink onClick={() => navigate("/")}>
+          Home
+        </NavLink>
+        <NavLink onClick={() => navigate("/vendors")}>
+          Photographers
+        </NavLink>
+        {/* Add more nav links as needed */}
+          </div>
         )}
-        <ThemeToggle />
+
+        {/* Actions section */}
+        <div className="flex items-center space-x-4">
+          {isLoggedIn && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <motion.button
+          className="p-2 rounded-full hover:bg-gray-200/20 transition-colors relative"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+            >
+          <Bell className="h-5 w-5" />
+          {allNotifications.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-700 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              {allNotifications.length}
+            </span>
+          )}
+            </motion.button>
+          </DropdownMenuTrigger>
+          <NotificationCard 
+            notificationCount={allNotifications.length} 
+            notifications={allNotifications || []}
+          />
+        </DropdownMenu>
+          )}
+
+          {isLoggedIn ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <motion.button
+          className="px-5 py-2 rounded-md glass-effect hover:bg-white/10 transition-all text-sm font-medium"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+            >
+          {user.name}
+            </motion.button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => navigate("/profile")}>Profile</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/settings")}>Settings</DropdownMenuItem>
+            <DropdownMenuItem>Messages</DropdownMenuItem>
+            <DropdownMenuItem onClick={logoutUser}>Logout</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+          ) : (
+        location.pathname !== "/register" &&
+        location.pathname !== "/login" &&
+        location.pathname !== "/admin/login" && (
+          <motion.button
+            onClick={() => onClick?.()}
+            className="px-5 py-2 rounded-md glass-effect hover:bg-white/10 transition-all text-sm font-medium"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+          >
+            Sign Up
+          </motion.button>
+        )
+          )}
+          
+          <ThemeToggle />
+        </div>
       </div>
-    </header>
-  );
+        </motion.header>
+  )
 }

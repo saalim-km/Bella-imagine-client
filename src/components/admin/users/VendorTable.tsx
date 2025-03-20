@@ -28,6 +28,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
 import { buildQueryParams } from "@/utils/queryGenerator";
+import Pagination from "@/components/common/Pagination";
+import { Spinner } from "@/components/ui/spinner";
 
 const FILTER_OPTIONS = [
   { label: "Active", value: "isActive" },
@@ -100,7 +102,7 @@ export function UserTable() {
       block(id, {
         onSuccess: (data) => {
           queryClient.invalidateQueries({ queryKey: vendorKeys.lists() });
-          toast.success(data.message);
+          toast.success(data?.message);
         },
         onError: (err) => {
           console.log(err);
@@ -110,7 +112,7 @@ export function UserTable() {
       unBlock(id, {
         onSuccess: (data) => {
           queryClient.invalidateQueries({ queryKey: vendorKeys.lists() });
-          toast.success(data.message);
+          toast.success(data?.message);
         },
         onError: (err) => {
           console.log(err);
@@ -127,8 +129,8 @@ export function UserTable() {
     { ...filterOptions, search: appliedSearchTerm},{ page: currentPage, limit: itemsPerPage }  
   );
 
-  const vendors = vendorsData?.vendors.data || [];
-  const totalVendors = vendorsData?.vendors.total || 0;
+  const vendors = vendorsData?.vendors?.data || [];
+  const totalVendors = vendorsData?.vendors?.total || 0;
   const totalPages = Math.max(1, Math.ceil(totalVendors / itemsPerPage));
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -190,9 +192,7 @@ export function UserTable() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="flex h-[300px] items-center justify-center">
-              <p>Loading vendors...</p>
-            </div>
+            <Spinner/> 
           ) : (
             <>
               <Table>
@@ -241,7 +241,7 @@ export function UserTable() {
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
                                 className="text-red-600"
-                                onClick={() => confirmAction(vendor._id, vendor.isblocked ? "unblock" : "block")}
+                                onClick={() => vendor._id && confirmAction(vendor._id, vendor.isblocked ? "unblock" : "block")}
                               >
                                 {vendor.isblocked ? "Unblock" : "Block"}
                               </DropdownMenuItem>
@@ -254,28 +254,7 @@ export function UserTable() {
                 </TableBody>
               </Table>
 
-              {/* Pagination Controls */}
-              <div className="flex items-center justify-between mt-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={currentPage === 1}
-                  onClick={() => handlePageChange(currentPage - 1)} // Decrement page
-                >
-                  Previous
-                </Button>
-                <span className="text-sm">
-                  Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={currentPage === totalPages}
-                  onClick={() => handlePageChange(currentPage + 1)} // Increment page
-                >
-                  Next
-                </Button>
-              </div>
+              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange}/>
             </>
           )}
         </CardContent>

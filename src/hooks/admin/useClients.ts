@@ -1,7 +1,24 @@
 import AdminService from "@/services/admin/adminService";
 import { IClient } from "@/services/client/clientService";
-import { ApiResponse, PaginatedResponse, PaginationParams, UserFilters } from "@/types/Admin";
+import { PaginationParams,  } from "@/types/Admin";
 import { useMutation, useQuery } from "@tanstack/react-query";
+
+
+export interface ClientRequest {
+  data : IClient[],
+  total : number
+
+}
+
+export type TPaginatedClientRequest =  {
+  clients : ClientRequest
+}
+
+interface ApiResponse {
+  success : boolean,
+  message : string
+}
+
 
 export const clientKeys = {
     all: ["clients"] as const,
@@ -11,12 +28,12 @@ export const clientKeys = {
     detail: (id: number) => [...clientKeys.details(), id] as const,
 }
 
-export const useAllClientQuery = (filter : UserFilters = {} ,pagination : PaginationParams = {page : 1 , limit : 4} )=> {
+export const useAllClientQuery = (filter : any = {} ,pagination : PaginationParams = {page : 1 , limit : 4} )=> {
     console.log('useAllClientQuery called');
     console.log(pagination);
     return useQuery({
         queryKey : clientKeys.list(filter,pagination),
-        queryFn : ()=> AdminService.get<PaginatedResponse<IClient>>('/client',{...filter,...pagination})
+        queryFn : ()=> AdminService.get<TPaginatedClientRequest>('/client',{...filter,...pagination})
     })
 }
 
