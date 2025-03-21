@@ -1,6 +1,7 @@
 import * as Yup from "yup";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_DOCUMENTS = 2;
 
 const SUPPORTED_IMAGE_FORMATS = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 const SUPPORTED_DOCUMENT_FORMATS = [...SUPPORTED_IMAGE_FORMATS, "application/pdf"];
@@ -53,6 +54,11 @@ export const vendorProfileSchema = Yup.object().shape({
     ),
   verificationDocuments: Yup.array()
     .nullable()
+    .test(
+      "maxFiles",
+      `Maximum ${MAX_DOCUMENTS} documents allowed`,
+      (value) => !value || value.length <= MAX_DOCUMENTS
+    )
     .test(
       "fileSize",
       "One or more files are too large (max 5MB each)",

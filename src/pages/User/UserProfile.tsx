@@ -73,6 +73,7 @@ export default function UserProfile() {
   const hasCategory = userType === "vendor" && vendorData?.vendor?.categories?.length !== 0;
 
   function handleUpdateProfile(data : IProfileUpdate) {
+    console.log('data for update : ',data);
     if(userType === "vendor") {
       updateVendor(data,{
         onSuccess : (data)=> {
@@ -186,6 +187,7 @@ export default function UserProfile() {
                 {/* Dynamic Title */}
                 <h2 className="text-2xl font-bold">{tabTitles[activeTab] || "Dashboard"}</h2>
 
+                {activeTab === "profile" && (
                   <Button
                     variant="outline"
                     size="icon"
@@ -193,6 +195,7 @@ export default function UserProfile() {
                   >
                     <Edit2 className="h-4 w-4" />
                   </Button>
+                )}
               </div>
 
               {/* Dynamic Content Rendering */}

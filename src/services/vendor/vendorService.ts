@@ -22,6 +22,7 @@ export interface IVendor extends IClient {
     description ?: string;
     notifications ?: string[];
     availableSlots ?: TSlot[];
+    verificationDocuments : string[]
     services ?: TService[];
     isVerified ?: boolean
 }

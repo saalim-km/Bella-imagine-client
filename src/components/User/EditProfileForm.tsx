@@ -1,5 +1,4 @@
 import type React from "react"
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -16,6 +15,7 @@ import type { IClient } from "@/services/client/clientService"
 import type { IVendor } from "@/services/vendor/vendorService"
 import { useThemeConstants } from "@/utils/theme/themeUtills"
 import { motion, AnimatePresence } from "framer-motion"
+import { handleError } from "@/utils/Error/errorHandler"
 
 const popularLanguages = [
   "English",
@@ -78,7 +78,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
     profileImage: data?.profileImage || "",
     imageFile: null, 
     verificationDocuments: [],
-    verificationDocumentUrls: (data as IVendor)?.verificationDocumentUrls || [],
+    verificationDocumentUrls: (data as IVendor)?.verificationDocuments || [],
     ...(isVendor
       ? {
           profileDescription: (data as IVendor)?.description || "",
@@ -90,6 +90,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     try {
+      console.log('editform data : ',values);
       setIsUploading(true)
       const uploadPromises = []
       let uploadCount = 0
@@ -141,10 +142,8 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
 
       handleUpdateProfile?.(updatedValues)
       setIsEditing(false)
-      toast.success("Profile updated successfully")
     } catch (error) {
-      toast.error("Failed to update profile")
-      console.error("Failed to update profile:", error)
+      handleError(error)
     } finally {
       setIsUploading(false)
       setSubmitting(false)
@@ -180,7 +179,8 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
 
   const handleDocumentSelect = (
     event: React.ChangeEvent<HTMLInputElement>,
-    setFieldValue: any
+    setFieldValue: any,
+    values: any
   ) => {
     const files = event.target.files;
     
@@ -298,7 +298,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                       className="group"
                     >
                       <X className="mr-2 h-3 w-3 group-hover:text-destructive transition-colors" />
-                      Remove preview
+                      Remove image
                     </Button>
                   </motion.div>
                 )}
@@ -423,7 +423,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                           onClick={() =>
                             setFieldValue(
                               "languages",
-                              values.languages?.filter((item: string) => item !== lang),
+                              values?.languages?.filter((item: string) => item !== lang),
                             )
                           }
                           className="ml-2 text-foreground/70 hover:text-foreground transition-colors"
@@ -452,8 +452,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                     <div className="border-2 border-dashed rounded-lg p-8 text-center border-primary/20 hover:border-primary/30 transition-colors group cursor-pointer">
                       <Input
                         type="file"
-                        accept=".pdf,.png,.jpg,.jpeg"
-                        onChange={(e) => handleDocumentSelect(e, setFieldValue)}
+                        onChange={(e) => handleDocumentSelect(e, setFieldValue, values)}
                         disabled={isUploading}
                         id="verificationDocuments"
                         multiple
@@ -528,7 +527,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                               transition={{ duration: 0.2 }}
                             >
                               {isPdf ? (
-                                <FilePdf className="h-6 w-6 text-red-500" />
+                                <FileText className="h-6 w-6 text-red-500" />
                               ) : isImage ? (
                                 <FileImage className="h-6 w-6 text-blue-500" />
                               ) : (

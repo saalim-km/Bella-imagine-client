@@ -5,8 +5,6 @@ import { useSelector, useDispatch } from "react-redux"
 import { motion } from "framer-motion"
 import { Bell } from "lucide-react"
 import { toast } from "sonner"
-
-import { Button } from "@/components/ui/button"
 import { 
   DropdownMenu, 
   DropdownMenuTrigger, 
@@ -31,7 +29,7 @@ interface IHeader {
 }
 
 export default function Header({ onClick }: IHeader) {
-  const { textColor, borderColor } = useThemeConstants()
+  const { textColor , isDarkMode } = useThemeConstants()
   const [scrolled, setScrolled] = useState(false)
   
   const user = useSelector((state: RootState) => {
@@ -122,7 +120,8 @@ export default function Header({ onClick }: IHeader) {
       <div className="container mx-auto flex items-center justify-between">
         {/* Logo */}
         <motion.div 
-          className="flex items-center space-x-2"
+        onClick={()=> navigate('/')}
+          className="flex items-center space-x-2 hover:cursor-pointer"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -134,7 +133,7 @@ export default function Header({ onClick }: IHeader) {
 
         {/* Navigation */}
         {location.pathname !== "/admin/login" && (
-          <div className="hidden md:flex items-center space-x-8">
+          <div className={`hidden md:flex items-center space-x-8 `}>
         <NavLink onClick={() => navigate("/")}>
           Home
         </NavLink>
