@@ -45,7 +45,6 @@ export function ClientTable() {
   const queryClient = useQueryClient()
   const { mutate: block } = useBlockClient()
   const { mutate: unBlock } = useUnBlockClient()
-  const { bgColor, buttonPrimary, isDarkMode } = useThemeConstants()
   const [selectedFilters, setSelectedFilters] = useState<string[]>([])
   const [appliedFilters, setAppliedFilters] = useState<string[]>([])
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -150,7 +149,7 @@ export function ClientTable() {
 
   return (
     <>
-      <Card className={`bg-${bgColor}`}>
+      <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Clients</CardTitle>
@@ -237,7 +236,6 @@ export function ClientTable() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className={isDarkMode ? buttonPrimary : "text-black bg-slate-100"}
                               >
                                 Actions
                               </Button>

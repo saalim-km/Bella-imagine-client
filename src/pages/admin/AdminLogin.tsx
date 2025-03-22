@@ -35,7 +35,9 @@ const AdminLogin = () => {
   return (
     <>
         <Header/>
-        <Login userType='admin' isSending = {isSending} onSubmit={handleLogin}/>
+        <div className='mt-20'> 
+          <Login userType='admin' isSending = {isSending} onSubmit={handleLogin}/>
+        </div>
         <Footer/>
     </>
   )

@@ -27,7 +27,7 @@ export function CategoryForm({ initialData, onClose }: CategoryFormProps) {
   const { mutate: updateCategory } = useUpdateCategoryMutation();
 
   return (
-    <div className="p-4 border rounded-lg shadow-md bg-white">
+    <div className="p-4 border rounded-lg shadow-md ">
       <h3 className="text-lg font-semibold mb-4">
         {initialData ? "Edit Category" : "Add Category"}
       </h3>

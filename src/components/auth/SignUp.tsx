@@ -129,7 +129,7 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
         <img
           src="https://res.cloudinary.com/deh2nuqeb/image/upload/v1740628126/samrat-khadka-93wlS7VA_jg-unsplash_nynmsw.jpg"
           alt="Wedding couple"
-          className="w-full h-full object-cover opacity-90 rounded-l-lg"
+          className="w-full h-full object-cover opacity-90 rounded-l-2xl"
         />
       </div>
 

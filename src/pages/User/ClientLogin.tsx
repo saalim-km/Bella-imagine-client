@@ -33,11 +33,11 @@ const ClientLogin = () => {
   
   return (
     <>
-    <Header/>
-    <div className='p-10'>
-        <Login userType = "client" onSubmit = {handleLogin} isSending = {isSending}/>
-    </div>
-    <Footer/>
+      <Header />
+      <div className='mt-20'>
+      <Login userType="client" onSubmit={handleLogin} isSending={isSending} />
+      </div>
+      <Footer />
     </>
   )
 }

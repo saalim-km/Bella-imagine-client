@@ -64,7 +64,7 @@ export function ForgotPassword({ userType }: ForgotPasswordProps) {
 
   return (
     <div className={`w-full max-w-md mx-auto mt-40`}>
-      <Card className={`bg-${bgColor}`}>
+      <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">Reset Password</CardTitle>
           <CardDescription className="text-center">

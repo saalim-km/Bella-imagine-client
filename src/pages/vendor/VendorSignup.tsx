@@ -22,7 +22,9 @@ const VendorSignup = () => {
   return (
     <>
         <Header/>
-        <Signup userType='vendor' onSubmit={handleRegister}/>
+        <div className='p-20'>
+          <Signup userType='vendor' onSubmit={handleRegister}/>
+        </div>
         <Footer/>
     </>
   )

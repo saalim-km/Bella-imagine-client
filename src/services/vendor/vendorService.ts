@@ -4,15 +4,7 @@ import { ENDPOINTS } from "@/api/endpoints";
 import { IProfileUpdate, IVendorReponse } from "@/types/User";
 
 
-type TSlot = {
-    slotDate : Date,
-    slotBooked : boolean,
-}
 
-type TService = {
-    duration : number,
-    pricePerHour : number
-}
 
 export interface IVendor extends IClient {
     vendorId ?: string,
@@ -20,11 +12,8 @@ export interface IVendor extends IClient {
     portfolioWebsite : string;
     languages ?: string[];
     description ?: string;
-    notifications ?: string[];
-    availableSlots ?: TSlot[];
     verificationDocuments : string[]
-    services ?: TService[];
-    isVerified ?: boolean
+    isVerified ?: "pending" | "accept" |  "reject"
 }
 
 
