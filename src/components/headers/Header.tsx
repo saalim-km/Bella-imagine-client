@@ -5,8 +5,6 @@ import { useSelector, useDispatch } from "react-redux"
 import { motion } from "framer-motion"
 import { Bell } from "lucide-react"
 import { toast } from "sonner"
-
-import { Button } from "@/components/ui/button"
 import { 
   DropdownMenu, 
   DropdownMenuTrigger, 
@@ -31,7 +29,7 @@ interface IHeader {
 }
 
 export default function Header({ onClick }: IHeader) {
-  const { textColor, borderColor } = useThemeConstants()
+  const { textColor , isDarkMode } = useThemeConstants()
   const [scrolled, setScrolled] = useState(false)
   
   const user = useSelector((state: RootState) => {
@@ -52,6 +50,8 @@ export default function Header({ onClick }: IHeader) {
   const location = useLocation()
   const isLoggedIn = !!user
 
+
+  const isAdminPage = location.pathname.startsWith("/admin")
   // Add scroll effect similar to NavBar
   useState(() => {
     const handleScroll = () => {
@@ -109,20 +109,20 @@ export default function Header({ onClick }: IHeader) {
   };
 
   return (
-    <motion.header
-      className={`fixed top-0 left-0 right-0 z-50 px-6 py-4 transition-all duration-300 ${
-        scrolled 
-          ? 'glass-effect backdrop-blur-md' 
-          : 'bg-transparent'
-      }`}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        >
+      <motion.header
+        className={`fixed top-0 left-0 right-0 z-50 px-6 py-4 transition-all duration-300 ${
+          scrolled ? 'glass-effect backdrop-blur-md' : 'bg-transparent'
+        }`}
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        style={{ width: "100%", overflowX: "hidden" }} // Prevent unwanted shifts
+      >
       <div className="container mx-auto flex items-center justify-between">
         {/* Logo */}
         <motion.div 
-          className="flex items-center space-x-2"
+        onClick={()=> navigate('/')}
+          className="flex items-center space-x-2 hover:cursor-pointer"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -134,7 +134,7 @@ export default function Header({ onClick }: IHeader) {
 
         {/* Navigation */}
         {location.pathname !== "/admin/login" && (
-          <div className="hidden md:flex items-center space-x-8">
+          <div className={`hidden md:flex items-center space-x-8 `}>
         <NavLink onClick={() => navigate("/")}>
           Home
         </NavLink>
@@ -147,36 +147,34 @@ export default function Header({ onClick }: IHeader) {
 
         {/* Actions section */}
         <div className="flex items-center space-x-4">
-          {isLoggedIn && (
+        {isLoggedIn && !isAdminPage && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <motion.button
-          className="p-2 rounded-full hover:bg-gray-200/20 transition-colors relative"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+              className="p-2 rounded-full hover:bg-gray-200/20 transition-colors relative"
+              whileHover={{ scale: 1.08 }}
             >
-          <Bell className="h-5 w-5" />
-          {allNotifications.length > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-700 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-              {allNotifications.length}
-            </span>
-          )}
+              <Bell className="h-5 w-5" />
+              {allNotifications.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-700 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {allNotifications.length}
+                </span>
+              )}
             </motion.button>
           </DropdownMenuTrigger>
           <NotificationCard 
             notificationCount={allNotifications.length} 
             notifications={allNotifications || []}
           />
-        </DropdownMenu>
-          )}
+          </DropdownMenu>
+        )}
 
-          {isLoggedIn ? (
+          {isLoggedIn && !isAdminPage ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <motion.button
           className="px-5 py-2 rounded-md glass-effect hover:bg-white/10 transition-all text-sm font-medium"
           whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
             >
           {user.name}
             </motion.button>

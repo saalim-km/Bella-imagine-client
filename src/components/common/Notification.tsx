@@ -1,3 +1,4 @@
+import { format, formatDistanceToNow } from "date-fns";
 import { Check } from "lucide-react"
 import { DropdownMenuContent } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
@@ -45,12 +46,9 @@ export default function NotificationCard({ notifications = [] }: NotificationCar
                     <div className="flex-1">
                       <p className="text-sm">{notification.message}</p>
                       <p className="text-xs text-muted-foreground">
-                        {new Date(notification.createdAt).toLocaleString('en-US', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
+                        {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })} 
+                        {" • "}
+                        {format(new Date(notification.createdAt), "MMM d, yyyy h:mm a")}
                       </p>
                     </div>
                     <button className="absolute right-0 top-2 text-muted-foreground hover:text-foreground">

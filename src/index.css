@@ -10,6 +10,15 @@ html {
   scroll-behavior: smooth;
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
+body.modal-open {
+  overflow: hidden;
+  padding-right: var(--scrollbar-width, 0);
+}
+
 /* ... */
 @layer base {
   :root {
@@ -80,72 +89,54 @@ html {
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%}
-  .dark {
-
-    --background: 224 71.4% 4.1%;
-
-    --foreground: 210 20% 98%;
-
-    --card: 224 71.4% 4.1%;
-
-    --card-foreground: 210 20% 98%;
-
-    --popover: 224 71.4% 4.1%;
-
-    --popover-foreground: 210 20% 98%;
-
-    --primary: 210 20% 98%;
-
-    --primary-foreground: 220.9 39.3% 11%;
-
-    --secondary: 215 27.9% 16.9%;
-
-    --secondary-foreground: 210 20% 98%;
-
-    --muted: 215 27.9% 16.9%;
-
-    --muted-foreground: 217.9 10.6% 64.9%;
-
-    --accent: 215 27.9% 16.9%;
-
-    --accent-foreground: 210 20% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-
-    --destructive-foreground: 210 20% 98%;
-
-    --border: 215 27.9% 16.9%;
-
-    --input: 215 27.9% 16.9%;
-
-    --ring: 216 12.2% 83.9%;
-
-    --chart-1: 220 70% 50%;
-
-    --chart-2: 160 60% 45%;
-
-    --chart-3: 30 80% 55%;
-
-    --chart-4: 280 65% 60%;
-
-    --chart-5: 340 75% 55%
-  ;
-
-    --sidebar-background: 240 5.9% 10%;
-
-    --sidebar-foreground: 240 4.8% 95.9%;
-
-    --sidebar-primary: 224.3 76.3% 48%;
-
-    --sidebar-primary-foreground: 0 0% 100%;
-
-    --sidebar-accent: 240 3.7% 15.9%;
-
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-
-    --sidebar-border: 240 3.7% 15.9%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%}
+    .dark {
+      --background: 240 6% 3.9%; /* Closest match to #09090B */
+      --foreground: 0 0% 98%; /* White text */
+    
+      --card: 240 6% 4.5%; /* Slightly lighter than background */
+      --card-foreground: 0 0% 98%;
+    
+      --popover: 240 6% 5%; /* Slightly more contrast for popups */
+      --popover-foreground: 0 0% 98%;
+    
+      --primary: 220 14% 65%; /* ShadCN primary color */
+      --primary-foreground: 0 0% 98%;
+    
+      --secondary: 240 5% 10%; /* Dark grayish secondary */
+      --secondary-foreground: 220 14% 85%;
+    
+      --muted: 240 5% 10%;
+      --muted-foreground: 220 14% 55%;
+    
+      --accent: 240 5% 15%;
+      --accent-foreground: 0 0% 98%;
+    
+      --destructive: 0 62.8% 40%;
+      --destructive-foreground: 0 0% 98%;
+    
+      --border: 240 4% 16%; /* Borders should be subtle */
+      --input: 240 4% 20%;
+      --ring: 217 91% 59%;
+    
+      --chart-1: 220 70% 50%;
+      --chart-2: 160 60% 45%;
+      --chart-3: 30 80% 55%;
+      --chart-4: 280 65% 60%;
+      --chart-5: 340 75% 55%;
+    
+      --sidebar-background: 240 6% 4%;
+      --sidebar-foreground: 0 0% 98%;
+    
+      --sidebar-primary: 220 14% 65%;
+      --sidebar-primary-foreground: 0 0% 98%;
+    
+      --sidebar-accent: 240 4.8% 12%;
+      --sidebar-accent-foreground: 0 0% 98%;
+    
+      --sidebar-border: 240 4% 16%;
+      --sidebar-ring: 217 91% 59%;
+    }
+    
 }
 
 

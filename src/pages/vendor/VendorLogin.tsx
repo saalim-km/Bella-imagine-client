@@ -35,8 +35,12 @@ const VendorLogin = () => {
 
   return (
    <>
-    <Header/>
-    <Login userType='vendor' onSubmit={handleLogin} isSending = {isSending}/>
+    <div>
+      <Header />
+      <div className='mt-20'>
+      <Login userType='vendor' onSubmit={handleLogin} isSending={isSending} />
+      </div>
+    </div>
     <Footer/>
    </>
   )

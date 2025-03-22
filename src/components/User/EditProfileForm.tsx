@@ -1,5 +1,4 @@
 import type React from "react"
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -16,6 +15,7 @@ import type { IClient } from "@/services/client/clientService"
 import type { IVendor } from "@/services/vendor/vendorService"
 import { useThemeConstants } from "@/utils/theme/themeUtills"
 import { motion, AnimatePresence } from "framer-motion"
+import { handleError } from "@/utils/Error/errorHandler"
 
 const popularLanguages = [
   "English",
@@ -78,7 +78,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
     profileImage: data?.profileImage || "",
     imageFile: null, 
     verificationDocuments: [],
-    verificationDocumentUrls: (data as IVendor)?.verificationDocumentUrls || [],
+    verificationDocumentUrls: (data as IVendor)?.verificationDocuments || [],
     ...(isVendor
       ? {
           profileDescription: (data as IVendor)?.description || "",
@@ -90,6 +90,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     try {
+      console.log('editform data : ',values);
       setIsUploading(true)
       const uploadPromises = []
       let uploadCount = 0
@@ -141,10 +142,8 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
 
       handleUpdateProfile?.(updatedValues)
       setIsEditing(false)
-      toast.success("Profile updated successfully")
     } catch (error) {
-      toast.error("Failed to update profile")
-      console.error("Failed to update profile:", error)
+      handleError(error)
     } finally {
       setIsUploading(false)
       setSubmitting(false)
@@ -180,7 +179,8 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
 
   const handleDocumentSelect = (
     event: React.ChangeEvent<HTMLInputElement>,
-    setFieldValue: any
+    setFieldValue: any,
+    values: any
   ) => {
     const files = event.target.files;
     
@@ -298,7 +298,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                       className="group"
                     >
                       <X className="mr-2 h-3 w-3 group-hover:text-destructive transition-colors" />
-                      Remove preview
+                      Remove image
                     </Button>
                   </motion.div>
                 )}
@@ -423,7 +423,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                           onClick={() =>
                             setFieldValue(
                               "languages",
-                              values.languages?.filter((item: string) => item !== lang),
+                              values?.languages?.filter((item: string) => item !== lang),
                             )
                           }
                           className="ml-2 text-foreground/70 hover:text-foreground transition-colors"
@@ -439,135 +439,138 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
               </div>
 
               {/* Verification Documents Section */}
-              <div className="space-y-4 pt-2">
-                <div className="border-t pt-4">
-                  <Label htmlFor="verificationDocuments" className="text-base font-medium">
-                    Verification Documents
-                  </Label>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Upload identification documents (Aadhar Card, Passport, Driver's License etc.)
-                  </p>
-                  
-                  <div className="mt-3 relative">
-                    <div className="border-2 border-dashed rounded-lg p-8 text-center border-primary/20 hover:border-primary/30 transition-colors group cursor-pointer">
-                      <Input
-                        type="file"
-                        accept=".pdf,.png,.jpg,.jpeg"
-                        onChange={(e) => handleDocumentSelect(e, setFieldValue)}
-                        disabled={isUploading}
-                        id="verificationDocuments"
-                        multiple
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      />
-                      <div className="flex flex-col items-center justify-center">
-                        <Upload className="h-8 w-8 text-muted-foreground group-hover:text-foreground transition-colors mb-2" />
-                        <p className="text-sm font-medium group-hover:text-foreground transition-colors">
-                          Drag files here or click to browse
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          PDF, PNG, JPG or JPEG (max 5MB per file)
-                        </p>
+              {
+                data?.verificationDocuments.length === 0 && (
+                  <div className="space-y-4 pt-2">
+                  <div className="border-t pt-4">
+                    <Label htmlFor="verificationDocuments" className="text-base font-medium">
+                      Verification Documents
+                    </Label>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Upload identification documents (Aadhar Card, Passport, Driver's License etc.)
+                    </p>
+                    
+                    <div className="mt-3 relative">
+                      <div className="border-2 border-dashed rounded-lg p-8 text-center border-primary/20 hover:border-primary/30 transition-colors group cursor-pointer">
+                        <Input
+                          type="file"
+                          onChange={(e) => handleDocumentSelect(e, setFieldValue, values)}
+                          disabled={isUploading}
+                          id="verificationDocuments"
+                          multiple
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        />
+                        <div className="flex flex-col items-center justify-center">
+                          <Upload className="h-8 w-8 text-muted-foreground group-hover:text-foreground transition-colors mb-2" />
+                          <p className="text-sm font-medium group-hover:text-foreground transition-colors">
+                            Drag files here or click to browse
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            PDF, PNG, JPG or JPEG (max 5MB per file)
+                          </p>
+                        </div>
                       </div>
                     </div>
+                    <ErrorMessage name="verificationDocuments" component={TextError} />
                   </div>
-                  <ErrorMessage name="verificationDocuments" component={TextError} />
-                </div>
-
-                {/* Previews of new documents to be uploaded */}
-                {documentPreviews.length > 0 && (
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">New Documents</Label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <AnimatePresence>
-                        {documentPreviews.map((doc, index) => (
-                          <motion.div
-                            key={`new-${index}`}
-                            className="relative flex items-center p-3 rounded-lg border bg-card"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            {getDocumentIcon(doc.type)}
-                            <div className="ml-3 flex-1 min-w-0">
-                              <p className="text-sm font-medium truncate">{doc.name}</p>
-                              <p className="text-xs text-muted-foreground">{(doc.file.size / (1024 * 1024)).toFixed(2)} MB</p>
-                            </div>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => removeDocument(index, setFieldValue, values)}
-                            >
-                              <X className="h-4 w-4 hover:text-destructive transition-colors" />
-                            </Button>
-                          </motion.div>
-                        ))}
-                      </AnimatePresence>
-                    </div>
-                  </div>
-                )}
-
-                {/* Display previously uploaded documents */}
-                {values.verificationDocumentUrls?.length > 0 && (
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">Existing Documents</Label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <AnimatePresence>
-                        {values.verificationDocumentUrls.map((url: string, index: number) => {
-                          const isPdf = url.endsWith('.pdf');
-                          const isImage = /\.(jpe?g|png|webp)$/i.test(url);
-                          return (
+  
+                  {/* Previews of new documents to be uploaded */}
+                  {documentPreviews.length > 0 && (
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">New Documents</Label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <AnimatePresence>
+                          {documentPreviews.map((doc, index) => (
                             <motion.div
-                              key={`existing-${index}`}
+                              key={`new-${index}`}
                               className="relative flex items-center p-3 rounded-lg border bg-card"
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, scale: 0.95 }}
                               transition={{ duration: 0.2 }}
                             >
-                              {isPdf ? (
-                                <FilePdf className="h-6 w-6 text-red-500" />
-                              ) : isImage ? (
-                                <FileImage className="h-6 w-6 text-blue-500" />
-                              ) : (
-                                <File className="h-6 w-6 text-gray-500" />
-                              )}
+                              {getDocumentIcon(doc.type)}
                               <div className="ml-3 flex-1 min-w-0">
-                                <p className="text-sm font-medium truncate">Document {index + 1}</p>
-                                <p className="text-xs text-muted-foreground">Uploaded</p>
+                                <p className="text-sm font-medium truncate">{doc.name}</p>
+                                <p className="text-xs text-muted-foreground">{(doc.file.size / (1024 * 1024)).toFixed(2)} MB</p>
                               </div>
-                              <div className="flex">
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 mr-1"
-                                  asChild
-                                >
-                                  <a href={url} target="_blank" rel="noopener noreferrer">
-                                    <CheckCircle2 className="h-4 w-4 text-primary" />
-                                  </a>
-                                </Button>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8"
-                                  onClick={() => removeExistingDocument(url, index, setFieldValue, values)}
-                                >
-                                  <X className="h-4 w-4 hover:text-destructive transition-colors" />
-                                </Button>
-                              </div>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => removeDocument(index, setFieldValue, values)}
+                              >
+                                <X className="h-4 w-4 hover:text-destructive transition-colors" />
+                              </Button>
                             </motion.div>
-                          );
-                        })}
-                      </AnimatePresence>
+                          ))}
+                        </AnimatePresence>
+                      </div>
                     </div>
+                  )}
+  
+                  {/* Display previously uploaded documents */}
+                  {values.verificationDocumentUrls?.length > 0 && (
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Existing Documents</Label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <AnimatePresence>
+                          {values.verificationDocumentUrls.map((url: string, index: number) => {
+                            const isPdf = url.endsWith('.pdf');
+                            const isImage = /\.(jpe?g|png|webp)$/i.test(url);
+                            return (
+                              <motion.div
+                                key={`existing-${index}`}
+                                className="relative flex items-center p-3 rounded-lg border bg-card"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                transition={{ duration: 0.2 }}
+                              >
+                                {isPdf ? (
+                                  <FileText className="h-6 w-6 text-red-500" />
+                                ) : isImage ? (
+                                  <FileImage className="h-6 w-6 text-blue-500" />
+                                ) : (
+                                  <File className="h-6 w-6 text-gray-500" />
+                                )}
+                                <div className="ml-3 flex-1 min-w-0">
+                                  <p className="text-sm font-medium truncate">Document {index + 1}</p>
+                                  <p className="text-xs text-muted-foreground">Uploaded</p>
+                                </div>
+                                <div className="flex">
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 mr-1"
+                                    asChild
+                                  >
+                                    <a href={url} target="_blank" rel="noopener noreferrer">
+                                      <CheckCircle2 className="h-4 w-4 text-primary" />
+                                    </a>
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={() => removeExistingDocument(url, index, setFieldValue, values)}
+                                  >
+                                    <X className="h-4 w-4 hover:text-destructive transition-colors" />
+                                  </Button>
+                                </div>
+                              </motion.div>
+                            );
+                          })}
+                        </AnimatePresence>
+                      </div>
+                    </div>
+                  )}
                   </div>
-                )}
-              </div>
+                )
+              }
             </>
           )}
 

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import VendorRoute from "./routes/VendorRoute";
 import AdminRoute from "./routes/AdminRoute";
@@ -6,6 +7,15 @@ import { Toaster } from "sonner";
 
 
 const App = () => {
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      document.body.removeAttribute("data-scroll-locked");
+    });
+
+    observer.observe(document.body, { attributes: true, attributeFilter: ["data-scroll-locked"] });
+
+    return () => observer.disconnect();
+  }, []);
   return (
     <>
         <Toaster position="bottom-right" closeButton expand={false} richColors/>

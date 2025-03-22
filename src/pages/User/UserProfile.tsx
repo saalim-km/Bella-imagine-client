@@ -30,7 +30,7 @@ const tabTitles: Record<string, string> = {
   "allocate-slot": "Allocate Slot",
   "upload-work": "Upload Work",
   "services": "Services",
-  "portfolio" : "Portfolio"
+  "work-sample" : "Work Sample"
 };
 
 export default function UserProfile() {
@@ -73,7 +73,9 @@ export default function UserProfile() {
   const hasCategory = userType === "vendor" && vendorData?.vendor?.categories?.length !== 0;
 
   function handleUpdateProfile(data : IProfileUpdate) {
+    console.log('data for update : ',data);
     if(userType === "vendor") {
+      console.log(data);
       updateVendor(data,{
         onSuccess : (data)=> {
           queryClient.invalidateQueries({queryKey : ["vendor-profile"]})
@@ -181,11 +183,12 @@ export default function UserProfile() {
 
           {/* Main Content */}
           <main className="flex-1">
-            <Card className={`p-6 ${bgColor}`}>
+            <Card className={`p-6`}>
               <div className="flex justify-between items-center mb-6">
                 {/* Dynamic Title */}
                 <h2 className="text-2xl font-bold">{tabTitles[activeTab] || "Dashboard"}</h2>
 
+                {activeTab === "profile" && (
                   <Button
                     variant="outline"
                     size="icon"
@@ -193,6 +196,7 @@ export default function UserProfile() {
                   >
                     <Edit2 className="h-4 w-4" />
                   </Button>
+                )}
               </div>
 
               {/* Dynamic Content Rendering */}
@@ -208,11 +212,14 @@ export default function UserProfile() {
                   ) : (
                     <ProfileInfo data={userData} />
                   )
-                ) : (
-                  <div className={hasCategory ? "" : "opacity-50 pointer-events-none"}>
-                    {/* Render other tab-specific content here */}
-                  </div>
-                )}
+                ) :''}
+
+                {activeTab === "services" ? (
+                  <>
+                                      <div>service upload</div>
+                                      <Button>upload work</Button>
+                  </>
+                ) : ''}
               </div>
             </Card>
           </main>

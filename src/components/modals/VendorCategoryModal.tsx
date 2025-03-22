@@ -20,11 +20,10 @@ import { Input } from "@/components/ui/input";
 import { PlusCircle } from "lucide-react";
 import { useAllVendorCategoryQuery, useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
 
-
 interface VendorCategoryModalProps {
   isOpen: boolean;
-  onClose ?: () => void;
-  onSave ?: (category: string) => void;
+  onClose?: () => void;
+  onSave?: (category: string) => void;
 }
 
 export function VendorCategoryModal({
@@ -37,17 +36,31 @@ export function VendorCategoryModal({
   const [newCategory, setNewCategory] = useState<string>("");
   const [isCreatingNew, setIsCreatingNew] = useState<boolean>(false);
 
-  const { data, isLoading } = useAllVendorCategoryQuery()
-  console.log('categories : ',data);
+  const { data, isLoading } = useAllVendorCategoryQuery();
+
   useEffect(() => {
     if (data) {
       setCategories(data.categories);
     }
   }, [data]);
 
+  // Handles category selection or creation
+  const handleCategoryChange = (value: string) => {
+    if (isCreatingNew) {
+      setNewCategory(value);
+    } else {
+      setSelectedCategory(value);
+    }
+  };
+
   const handleSave = () => {
-    console.log(selectedCategory);
-    onSave?.(selectedCategory);
+    if (isCreatingNew && newCategory) {
+      console.log("Creating new category:", newCategory);
+      onSave?.(newCategory);
+    } else if (!isCreatingNew && selectedCategory) {
+      console.log("Selected category:", selectedCategory);
+      onSave?.(selectedCategory);
+    }
     onClose?.();
   };
 
@@ -56,7 +69,7 @@ export function VendorCategoryModal({
   }
 
   if (!categories) {
-    return;
+    return null;
   }
 
   return (
@@ -66,39 +79,49 @@ export function VendorCategoryModal({
           <DialogTitle>Choose or Create Category</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          {/* {!isCreatingNew ? ( */}
-          <Select onValueChange={setSelectedCategory} value={selectedCategory}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a category" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((category) => (
-                <SelectItem key={category.categoryId} value={category._id}>
-                  {category.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {isCreatingNew ? (
             <Input
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewCategory(e.target.value)}
-            value={newCategory}
-            placeholder="Enter new category name"
-            className="w-full"
+              onChange={(e) => handleCategoryChange(e.target.value)}
+              value={newCategory}
+              placeholder="Enter new category name"
+              className="w-full"
             />
-            <Button
+          ) : (
+            <Select onValueChange={handleCategoryChange} value={selectedCategory}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category._id} value={category._id}>
+                    {category.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+
+          <Button
             variant="outline"
             className="w-full"
-            onClick={() => console.log('creatin new category')}
-            >
+            onClick={() => {
+              setIsCreatingNew((prev) => !prev);
+              setSelectedCategory(""); // Reset selected category when switching
+              setNewCategory(""); // Reset new category input when switching
+            }}
+          >
             <PlusCircle className="mr-2 h-4 w-4" />
             {isCreatingNew ? "Choose Existing Category" : "Create New Category"}
-            </Button>
+          </Button>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={!selectedCategory}>
+          <Button
+            onClick={handleSave}
+            disabled={isCreatingNew ? !newCategory : !selectedCategory}
+          >
             Save
           </Button>
         </DialogFooter>

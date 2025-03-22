@@ -1,10 +1,10 @@
 import AdminService from "@/services/admin/adminService";
-import { updateCategoryStatus } from "@/services/categories/categoryService";
+import { getAllCategoryJoinRequests, updateCategoryJoinRequest, updateCategoryStatus } from "@/services/categories/categoryService";
 import { PaginationParams } from "@/types/Admin";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const categoryKeys = {
-  all: ["vendors"] as const,
+  all: ["category "] as const,
   lists: () => [...categoryKeys.all, "list"] as const,
   list: (filters: any, pagination: PaginationParams) =>
     [...categoryKeys.lists(), filters, pagination] as const,
@@ -53,3 +53,16 @@ export const useUpdateCategoryMutation = () => {
       updateCategoryStatus(id,{...data})
   });
 };
+
+export const useGetAllCategoryRequest = ()=> {
+  return useQuery({
+    queryKey : ["category-request"],
+    queryFn : getAllCategoryJoinRequests
+  })
+}
+
+export const useUpdateCategoryRequest = ()=> {
+  return useMutation({
+    mutationFn : updateCategoryJoinRequest,
+  })
+}

@@ -201,7 +201,7 @@ export function VendorRequestsTable() {
   };
 
   return (
-    <Card className={`bg-${bgColor}`}>
+    <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Pending Requests</CardTitle>

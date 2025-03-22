@@ -20,46 +20,51 @@ const CategorySchema = Yup.object().shape({
 });
 
 export function CategoryForm({ initialData, onClose }: CategoryFormProps) {
-    const queryClient = useQueryClient()
-  const { mutate: addCategory } = useUpdateCategoryMutation();
+  const queryClient = useQueryClient();
+
+  // Separate mutation hooks for adding and updating categories
+  const { mutate: addCategory } = useAllCategoryMutation();
+  const { mutate: updateCategory } = useUpdateCategoryMutation();
 
   return (
-    <div className="p-4 border rounded-lg shadow-md bg-white">
+    <div className="p-4 border rounded-lg shadow-md ">
       <h3 className="text-lg font-semibold mb-4">
         {initialData ? "Edit Category" : "Add Category"}
       </h3>
       <Formik
         initialValues={{
           title: initialData?.title || "",
-          status: initialData?.status || "active",
+          status: initialData?.status ? "active" : "inactive",
         }}
         validationSchema={CategorySchema}
         onSubmit={(values) => {
-          console.log({ title: values.title, status: values.status === "active" });
-          const isActive = values.status === "active"
-          addCategory({title : values.title , status : isActive},{
-            onSuccess : (data)=> {
-                const response = data as AxiosResponse;
-                toast.success(response.message);
-                queryClient.invalidateQueries({queryKey : categoryKeys.lists()})
-                onClose();
-            },
-            onError : (err)=> {
-                handleError(err)
-            }
-          })
+          const isActive = values.status === "active";
+
+          if (initialData) {
+            console.log('edited data : ',values);
+          } else {
+            addCategory(
+              { title: values.title, status: isActive },
+              {
+                onSuccess: (data) => {
+                  const response = data as AxiosResponse;
+                  toast.success(response.message);
+                  queryClient.invalidateQueries({ queryKey: categoryKeys.lists() });
+                  onClose();
+                },
+                onError: (err) => {
+                  handleError(err);
+                },
+              }
+            );
+          }
         }}
       >
         {({ errors, touched }) => (
           <Form>
             <div className="mb-4">
               <Label htmlFor="title">Category Title</Label>
-              <Field
-                id="title"
-                name="title"
-                as={Input}
-                className="w-full"
-              />
+              <Field id="title" name="title" as={Input} className="w-full" />
               {errors.title && touched.title && (
                 <div className="text-red-500 text-sm">{errors.title}</div>
               )}

@@ -21,6 +21,7 @@ import { useLogoutMutation } from "@/hooks/auth/useLogout"
 import { logoutAdmin } from "@/services/auth/authService"
 import { toast } from "sonner"
 import { adminLogout } from "@/store/slices/adminSlice"
+import ThemeToggle from "@/components/common/ThemeToggle"
 
 interface AdminLayoutProps {
   children: ReactNode
@@ -86,6 +87,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     ))}
                   </DropdownMenuContent> */}
                 </DropdownMenu>
+                <ThemeToggle/>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="rounded-full">

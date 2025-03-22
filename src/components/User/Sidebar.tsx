@@ -16,7 +16,7 @@ const vendorNavItems = [
   { icon: Ticket, label: "Allocate Slot", id: "allocate-slot" },
   { icon: Upload, label: "Upload Work for Clients", id: "upload-work" },
   { icon: Camera, label: "Services", id: "services" },
-  { icon: Image, label: "Portfolio", id: "portfolio" },
+  { icon: Image, label: "Work Sample", id: "work-sample" },
 ];
 
 interface SidebarProps {
@@ -37,11 +37,10 @@ export function Sidebar({
   hasCategory,
 }: SidebarProps) {
   const navItems = role === "client" ? clientNavItems : vendorNavItems;
-  const { bgColor } = useThemeConstants();
   console.log(`user profile image ${profileImage}`);
 
   return (
-    <Card className={`h-full p-4 ${bgColor}`}>
+    <Card className={`h-full p-4`}>
       <div className="flex flex-col h-full">
         {/* Profile Section */}
         <div className="flex items-center space-x-4 mb-6">

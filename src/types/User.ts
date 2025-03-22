@@ -42,6 +42,7 @@ interface VendorProfileUpdate {
     portfolioWebsite?: string;
     profileDescription: string;
     profileImage?: File | string; 
+    verificationDocuments : string[]
 }
 
 export interface IProfileUpdateResponse {

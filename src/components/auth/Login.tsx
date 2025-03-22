@@ -25,7 +25,7 @@ export default function Login({ userType, onSubmit, isSending }: loginProps) {
   const dispatch = useDispatch();
   const { mutate: Login } = useGoogleLoginMutataion();
   const navigate = useNavigate();
-  const { isDarkMode, textColor, buttonPrimary, bgColor } = useThemeConstants();
+  const { isDarkMode, textColor, buttonPrimary } = useThemeConstants();
   
   function handleGoogleLogin(credentialResponse: CredentialResponse) {
     console.log(credentialResponse);
@@ -88,11 +88,7 @@ export default function Login({ userType, onSubmit, isSending }: loginProps) {
                     type="email"
                     placeholder="Email"
                     as={Input}
-                    className={`rounded-md h-12 w-full ${
-                      isDarkMode
-                        ? `${bgColor} text-white border-gray-700 border`
-                        : "bg-white text-black border-gray-300"
-                    }`}
+                    className={`rounded-md h-12 w-full`}
                   />
                   <ErrorMessage
                     name="email"
@@ -106,11 +102,7 @@ export default function Login({ userType, onSubmit, isSending }: loginProps) {
                     type="password"
                     placeholder="Password"
                     as={Input}
-                    className={`rounded-md h-12 w-full ${
-                      isDarkMode
-                        ? `${bgColor} text-white border-gray-700 border`
-                        : "bg-white text-black border-gray-300"
-                    }`}
+                    className={`rounded-md h-12 w-full`}
                   />
                     <label onClick={()=> navigate(`/${userType}/forgot-password`)} htmlFor="" className="text-sm text-blue-500 hover:cursor-pointer">Forgot password</label>
                   <ErrorMessage

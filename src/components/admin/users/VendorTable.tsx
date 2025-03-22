@@ -145,7 +145,7 @@ export function UserTable() {
 
   return (
     <>
-      <Card className={`bg-${bgColor}`}>
+      <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Vendors</CardTitle>

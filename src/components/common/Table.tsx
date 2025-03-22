@@ -2,6 +2,7 @@ import type React from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card } from "@/components/ui/card"
 import Pagination from "@/components/common/Pagination"
+import { Spinner } from "../ui/spinner"
 
 export type ColumnDef<T> = {
   id: string
@@ -35,9 +36,7 @@ export function DataTable<T extends Record<string, any>>({
   return (
     <Card className={`p-4 ${className}`}>
       {isLoading ? (
-        <div className="flex justify-center items-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
+        <Spinner/>
       ) : data.length === 0 ? (
         <p className="text-center py-4 text-muted-foreground">{emptyMessage}</p>
       ) : (
