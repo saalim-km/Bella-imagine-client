@@ -16,6 +16,8 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useThemeConstants } from "@/utils/theme/themeUtills";
 import { Button } from "../ui/button";
+import { IVendor } from "@/services/vendor/vendorService";
+import { IClient } from "@/services/client/clientService";
 
 // Types for the profile data
 interface Category {
@@ -25,25 +27,7 @@ interface Category {
 
 type VerificationStatus = "accept" | "reject" | "pending";
 
-interface IProfileInfo {
-  id?: string;
-  name?: string;
-  email?: string;
-  phoneNumber?: string | number;
-  isActive?: boolean;
-  createdAt?: string | Date;
-  location?: string;
-  isblocked?: boolean;
-  
-  // Vendor specific properties
-  vendorId?: string;
-  portfolioWebsite?: string;
-  languages?: string[];
-  description?: string;
-  categories?: Category[];
-  isVerified?: VerificationStatus;
-  verificationDocuments ?: string[]
-}
+type IProfileInfo = Partial<IVendor | IClient>
 
 interface ProfileInfoProps {
   data: IProfileInfo;

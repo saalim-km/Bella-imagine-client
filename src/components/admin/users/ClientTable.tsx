@@ -30,6 +30,7 @@ import { DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu"
 import { buildQueryParams } from "@/utils/queryGenerator"
 import Pagination from "@/components/common/Pagination"
 import { Spinner } from "@/components/ui/spinner"
+import { useNavigate } from "react-router-dom"
 
 
 const FILTER_OPTIONS = [
@@ -42,6 +43,7 @@ const FILTER_OPTIONS = [
 ];
 
 export function ClientTable() {
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { mutate: block } = useBlockClient()
   const { mutate: unBlock } = useUnBlockClient()
@@ -242,7 +244,7 @@ export function ClientTable() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem asChild>
-                                <a href={`/admin/clients/${client._id}`}>View Details</a>
+                                <a onClick={()=> navigate(`/admin/user/${client._id}`)}>View Details</a>
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem

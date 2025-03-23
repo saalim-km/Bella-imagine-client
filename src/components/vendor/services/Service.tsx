@@ -13,9 +13,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useServiceMutation } from "@/hooks/service/useService";
-import { createService } from "@/services/vendor/service";
-import { serviceValidationSchema } from "@/utils/service.validator";
+// import { useServiceMutation } from "@/hooks/service/useService";
+// import { createService } from "@/services/vendor/service";
+import { serviceValidationSchema } from "@/utils/formikValidators/service.validator";
 
 import { FormSection } from "./FormSection"
 import { DateTimeSection } from "./DateTimeSection";
@@ -100,7 +100,7 @@ interface ServiceFormValues {
 
 export const ServiceForm: React.FC = () => {
   const navigate = useNavigate();
-  const { mutate: addNewService } = useServiceMutation(createService);
+//   const { mutate: addNewService } = useServiceMutation(createService);
   const [activeTab, setActiveTab] = useState("basic");
   
   // Attempt to load saved draft from localStorage
@@ -154,16 +154,17 @@ export const ServiceForm: React.FC = () => {
     initialValues,
     validationSchema: serviceValidationSchema,
     onSubmit: (values) => {
+      console.log('form submitted');
       console.log(values);
-      addNewService(values, {
-        onSuccess: (data: any) => {
-          toast.success(data.message);
-          // Clear draft
-          localStorage.removeItem('serviceDraft');
-          navigate("/vendor/services");
-        },
-        onError: (error: any) => toast.error(error.response?.data?.message || "An error occurred"),
-      });
+    //   addNewService(values, {
+    //     onSuccess: (data: any) => {
+    //       toast.success(data.message);
+    //       // Clear draft
+    //       localStorage.removeItem('serviceDraft');
+    //       navigate("/vendor/services");
+    //     },
+    //     onError: (error: any) => toast.error(error.response?.data?.message || "An error occurred"),
+    //   });
     },
   });
 
@@ -173,6 +174,7 @@ export const ServiceForm: React.FC = () => {
   }, [formik.values]);
 
   const saveDraft = () => {
+    console.log(formik.values);
     localStorage.setItem('serviceDraft', JSON.stringify(formik.values));
     toast.success("Draft saved successfully");
   };
@@ -191,7 +193,7 @@ export const ServiceForm: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen">
       <div className="max-w-5xl mx-auto pt-8 px-4 sm:px-6 pb-24">
         
         <form
@@ -219,7 +221,7 @@ export const ServiceForm: React.FC = () => {
                 <div className="space-y-6">
                   <div>
                     <div className="relative">
-                      <PencilLine className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                      <PencilLine className="absolute left-3 top-1/2 transform -translate-y-1/2  h-4 w-4" />
                       <Input
                         id="serviceTitle"
                         name="serviceTitle"
@@ -236,7 +238,7 @@ export const ServiceForm: React.FC = () => {
 
                   <div>
                     <div className="relative">
-                      <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                      <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2  h-4 w-4" />
                       <Input
                         id="category"
                         name="category"
@@ -253,7 +255,7 @@ export const ServiceForm: React.FC = () => {
 
                   <div>
                     <div className="relative">
-                      <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                      <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2  h-4 w-4" />
                       <Input
                         id="yearsOfExperience"
                         name="yearsOfExperience"
@@ -270,7 +272,7 @@ export const ServiceForm: React.FC = () => {
 
                   <div>
                     <div className="relative">
-                      <FileText className="absolute left-3 top-3 text-gray-500 h-4 w-4" />
+                      <FileText className="absolute left-3 top-3  h-4 w-4" />
                       <Textarea
                         id="serviceDescription"
                         name="serviceDescription"
@@ -343,7 +345,7 @@ export const ServiceForm: React.FC = () => {
                   <div>
                     <Label htmlFor="depositRequirement.amount">Deposit Amount</Label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">₹</span>
+                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2  font-medium">₹</span>
                       <Input
                         id="depositRequirement.amount"
                         name="depositRequirement.amount"
@@ -363,7 +365,7 @@ export const ServiceForm: React.FC = () => {
                       type="checkbox"
                       onChange={formik.handleChange}
                       checked={formik.values.depositRequirement.isPercentage}
-                      className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                      className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
                     />
                     <Label htmlFor="depositRequirement.isPercentage" className="ml-2 block text-sm font-medium text-gray-700">
                       Is deposit percentage of total
@@ -543,7 +545,7 @@ export const ServiceForm: React.FC = () => {
                       label="Policy"
                       values={formik.values.cancellationPolicies}
                       updateValues={(values) => formik.setFieldValue("cancellationPolicies", values)}
-                      icon={<Shield className="h-4 w-4 text-gray-500" />}
+                      icon={<Shield className="h-4 w-4 " />}
                     />
                     {formik.touched.cancellationPolicies && formik.errors.cancellationPolicies && (
                       <div className="text-red-500 text-sm mt-2 animate-fade-in">
@@ -560,7 +562,7 @@ export const ServiceForm: React.FC = () => {
                       label="Term"
                       values={formik.values.termsAndConditions}
                       updateValues={(values) => formik.setFieldValue("termsAndConditions", values)}
-                      icon={<ScrollText className="h-4 w-4 text-gray-500" />}
+                      icon={<ScrollText className="h-4 w-4 " />}
                     />
                     {formik.touched.termsAndConditions && formik.errors.termsAndConditions && (
                       <div className="text-red-500 text-sm mt-2 animate-fade-in">
@@ -576,7 +578,7 @@ export const ServiceForm: React.FC = () => {
                       type="checkbox"
                       onChange={formik.handleChange}
                       checked={formik.values.paymentRequired}
-                      className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                      className="h-4 w-4 text-blue-600 rounded  focus:ring-blue-500"
                     />
                     <Label htmlFor="paymentRequired" className="ml-2 block text-sm font-medium text-gray-700">
                       Payment required before confirmation

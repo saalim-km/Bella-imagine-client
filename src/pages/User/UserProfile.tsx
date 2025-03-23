@@ -20,6 +20,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { VendorCategoryModal } from "@/components/modals/VendorCategoryModal";
 import { useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
 import { handleError } from "@/utils/Error/errorHandler";
+import { ServiceForm } from "@/components/vendor/services/Service";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -142,13 +143,20 @@ export default function UserProfile() {
     <div className="mt-14">
       <Header />
       <div className="container mx-auto p-4 lg:p-6">
-        {!hasCategory && userType === "vendor" && (
+        {!hasCategory && userType === "vendor" ? (
           <div className="mb-4">
             <Button variant="outline" onClick={handleModalOpen}>
               Choose a Category
             </Button>
           </div>
-        )}
+        )
+        :
+        <div className="mb-4">
+            <Button variant="outline" onClick={handleModalOpen}>
+              Add Category
+            </Button>
+          </div>
+      }
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Desktop Sidebar */}
           <aside className="hidden lg:block w-64 shrink-0">
@@ -216,8 +224,7 @@ export default function UserProfile() {
 
                 {activeTab === "services" ? (
                   <>
-                                      <div>service upload</div>
-                                      <Button>upload work</Button>
+                    <ServiceForm/>
                   </>
                 ) : ''}
               </div>

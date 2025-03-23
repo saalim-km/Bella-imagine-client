@@ -30,6 +30,7 @@ import { DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
 import { buildQueryParams } from "@/utils/queryGenerator";
 import Pagination from "@/components/common/Pagination";
 import { Spinner } from "@/components/ui/spinner";
+import { useNavigate } from "react-router-dom";
 
 const FILTER_OPTIONS = [
   { label: "Active", value: "isActive" },
@@ -41,6 +42,7 @@ const FILTER_OPTIONS = [
 ];
 
 export function UserTable() {
+  const navigate = useNavigate()
   const queryClient = useQueryClient();
   const { mutate: block } = useBlockVendor();
   const { mutate: unBlock } = useUnBlockVendor();
@@ -236,7 +238,7 @@ export function UserTable() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem asChild>
-                                <a href={`/admin/vendors/${vendor._id}`}>View Details</a>
+                                <a onClick={()=> navigate(`/admin/user/${vendor._id}`)}>View Details</a>
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem

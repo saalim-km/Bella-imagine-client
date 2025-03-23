@@ -76,9 +76,9 @@ export const DateTimeSection: React.FC<DateTimeSectionProps> = ({ availableDates
   return (
     <div className="space-y-4">
       {dates.length === 0 && (
-        <div className="text-center py-6 border border-dashed border-gray-200 rounded-lg">
-          <Calendar className="mx-auto h-10 w-10 text-gray-400 mb-2" />
-          <p className="text-gray-500">No dates added yet</p>
+        <div className="text-center py-6 border border-dashed  rounded-lg">
+          <Calendar className="mx-auto h-10 w-10  mb-2" />
+          <p className="">No dates added yet</p>
         </div>
       )}
       
@@ -98,7 +98,7 @@ export const DateTimeSection: React.FC<DateTimeSectionProps> = ({ availableDates
           </Button>
           
           <div className="flex items-center mb-4">
-            <Calendar className="mr-2 h-4 w-4 text-gray-500" />
+            <Calendar className="mr-2 h-4 w-4 " />
             <Input
               type="date"
               value={dateSlot.date}
@@ -111,12 +111,12 @@ export const DateTimeSection: React.FC<DateTimeSectionProps> = ({ availableDates
             {dateSlot.timeSlots && dateSlot.timeSlots.map((timeSlot, timeIndex) => (
               <div
                 key={timeIndex}
-                className="bg-gray-50 p-3 rounded-md animate-fade-in"
+                className=" p-3 rounded-md animate-fade-in"
                 style={{ animationDelay: `${timeIndex * 0.05}s` }}
               >
                 <div className="flex flex-wrap md:flex-nowrap items-center gap-2 relative">
                   <div className="flex items-center w-full md:w-auto">
-                    <Clock className="h-4 w-4 text-gray-500 mr-2" />
+                    <Clock className="h-4 w-4  mr-2" />
                     <Input
                       type="time"
                       value={timeSlot.startTime}
@@ -126,10 +126,10 @@ export const DateTimeSection: React.FC<DateTimeSectionProps> = ({ availableDates
                     />
                   </div>
                   
-                  <div className="h-px w-4 bg-gray-200 hidden md:block"></div>
+                  <div className="h-px w-4  hidden md:block"></div>
                   
                   <div className="flex items-center w-full md:w-auto">
-                    <Clock className="h-4 w-4 text-gray-500 mr-2" />
+                    <Clock className="h-4 w-4  mr-2" />
                     <Input
                       type="time"
                       value={timeSlot.endTime}
@@ -169,7 +169,7 @@ export const DateTimeSection: React.FC<DateTimeSectionProps> = ({ availableDates
             variant="outline"
             size="sm"
             onClick={() => addTimeSlot(dateIndex)}
-            className="mt-3 w-full transition-all duration-200 hover:bg-gray-50"
+            className="mt-3 w-full transition-all duration-200 "
           >
             <Plus className="h-3.5 w-3.5 mr-1" />
             Add Time Slot
@@ -180,7 +180,7 @@ export const DateTimeSection: React.FC<DateTimeSectionProps> = ({ availableDates
       <Button
         type="button"
         onClick={addDateSlot}
-        className="w-full py-6 border-dashed border-2 hover:border-gray-300 transition-colors bg-transparent text-gray-700 hover:text-gray-900 hover:bg-gray-50/50"
+        className="w-full py-6 border-dashed"
       >
         <Plus className="h-5 w-5 mr-2" />
         Add Date
