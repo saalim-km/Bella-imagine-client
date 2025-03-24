@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { loginSchema } from "@/utils/formikValidators/login.validator";
+import { loginSchema } from "@/utils/formikValidators/auth/login.validator";
 import { useThemeConstants } from "../../utils/theme/themeUtills";
 import GoogleAuth from "./GoogleAuth";
 import { ILogin, TRole } from "@/types/User";

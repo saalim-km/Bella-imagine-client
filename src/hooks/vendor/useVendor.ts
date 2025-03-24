@@ -1,6 +1,6 @@
 import { getAllCategories, vendorJoinCategory } from "@/services/categories/categoryService";
 import { getAllVendorNotification } from "@/services/notification/notificationService";
-import { getVendorDetails, updateVendorDetails } from "@/services/vendor/vendorService";
+import { createService, getVendorDetails, updateVendorDetails } from "@/services/vendor/vendorService";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 
@@ -44,5 +44,12 @@ export const useAllVendortNotification = (enabled = true)=> {
     queryKey : ["vendor-notifications"],
     queryFn : getAllVendorNotification,
     enabled
+  })
+}
+
+
+export const useCreateServiceMutation = ()=> {
+  return useMutation({
+    mutationFn : createService
   })
 }

@@ -2,6 +2,8 @@ import { vendorAxiosInstance } from "@/api/vendor.axios";
 import { IClient } from "../client/clientService";
 import { ENDPOINTS } from "@/api/endpoints";
 import { IProfileUpdate, IVendorReponse } from "@/types/User";
+import { IService } from "@/types/vendor";
+import { ApiResponse } from "@/hooks/vendor/useVendor";
 
 
 
@@ -29,4 +31,11 @@ export const updateVendorDetails = async(data : IProfileUpdate)=> {
     const response = await vendorAxiosInstance.put(ENDPOINTS.VENDOR_DETAILS , data);
     console.log(response);
     return response.data;
+}
+
+
+export const createService = async(data : Partial<IService>):Promise<ApiResponse> => {
+    const reponse = await vendorAxiosInstance.post(ENDPOINTS.CREATE_SERVICE,data);
+    console.log(reponse);
+    return reponse.data;
 }

@@ -20,7 +20,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { VendorCategoryModal } from "@/components/modals/VendorCategoryModal";
 import { useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
 import { handleError } from "@/utils/Error/errorHandler";
-import { ServiceForm } from "@/components/vendor/services/Service";
+import { ServiceForm } from "@/components/vendor/services/serviceForm/Service";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",

@@ -1,0 +1,63 @@
+export interface TimeSlot {
+  startTime: string;
+  endTime: string;
+  capacity: number;
+}
+
+export interface DateSlot {
+  date: string;
+  timeSlots: TimeSlot[];
+}
+
+export interface SessionDuration {
+  durationInHours: number;
+  price: number;
+}
+
+export interface RecurringAvailability {
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+}
+
+export interface Location {
+  options: {
+    studio: boolean;
+    onLocation: boolean;
+  };
+  travelFee: number;
+  city: string;
+  state: string;
+  country: string;
+}
+
+export interface CustomField {
+  name: string;
+  type: string;
+  required: boolean;
+  options: string[];
+}
+
+export interface DepositRequirement {
+  amount: number;
+  isPercentage: boolean;
+}
+
+export interface IService {
+  serviceTitle: string;
+  category: string;
+  yearsOfExperience: number;
+  styleSpecialty: string[];
+  tags: string[];
+  serviceDescription: string;
+  sessionDurations: SessionDuration[];
+  features: string[];
+  availableDates: DateSlot[];
+  location: Location;
+  equipment: string[];
+  cancellationPolicies: string[];
+  termsAndConditions: string[];
+  customFields: CustomField[];
+  isPublished?: boolean;
+  portfolioImages: string[];
+}

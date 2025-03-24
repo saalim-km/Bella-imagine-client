@@ -8,6 +8,7 @@ import { AuthClientRoute } from "@/protected/ProtectedRoute";
 import { NoClientAuthRoute } from "@/protected/PublicRoute";
 import UserProfile from "@/pages/User/UserProfile";
 import ForgotPassPage from "@/pages/User/ForgotPassPage";
+import { Client404 } from "@/components/404/Client404";
 
 const ClientRoute = () => {
   return (
@@ -19,6 +20,7 @@ const ClientRoute = () => {
       <Route path="/vendors" element={<AuthClientRoute element={<Vendors />} allowedRoles={["client","vendor"]} />} />
       <Route path="/profile" element = {<AuthClientRoute element={<UserProfile/>} allowedRoles={["client","vendor"]}/>}/>
       <Route path="/client/forgot-password" element = {<NoClientAuthRoute element={<ForgotPassPage userType="client"/>}/>}/>
+      <Route path="*" element = {<Client404/>}/>
     </Routes>
   );
 };

@@ -3,10 +3,7 @@ import LocationHeader from '@/components/User/LocationHeader';
 import PhotographerCard from '@/components/User/PhotographerCard';
 import Footer from '@/components/common/Footer';
 import Header from '@/components/headers/Header';
-import AccountTypeModal from '@/components/modals/AccountTypeModal';
 import LocationModal from '@/components/modals/LocationModal';
-import { useTheme } from '@/context/ThemeContext';
-import { useThemeConstants } from '@/utils/theme/themeUtills';
 import React, { useState } from 'react'
 
 const Vendors = () => {
@@ -32,7 +29,7 @@ const Vendors = () => {
     };
   
     return (
-      <div>
+      <div className='mt-20'>
         <Header/>
         <LocationHeader
           onOpenModal={() => setIsModalOpen(true)}

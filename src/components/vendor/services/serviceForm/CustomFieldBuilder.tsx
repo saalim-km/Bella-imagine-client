@@ -18,7 +18,7 @@ interface CustomFieldBuilderProps {
 }
 
 const fieldTypes = [
-  { value: 'text', label: 'Text' },
+  { value: 'string', label: 'Text' },
   { value: 'number', label: 'Number' },
   { value: 'boolean', label: 'Yes/No' },
   { value: 'date', label: 'Date' },

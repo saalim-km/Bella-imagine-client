@@ -4,6 +4,7 @@ import VendorRoute from "./routes/VendorRoute";
 import AdminRoute from "./routes/AdminRoute";
 import ClientRoute from "./routes/UserRoute";
 import { Toaster } from "sonner";
+import { Custom404 } from "./components/404/Custom404";
 
 
 const App = () => {
@@ -23,6 +24,7 @@ const App = () => {
           <Route path="/*" element={<ClientRoute />} />
           <Route path="/vendor/*" element={<VendorRoute />} />
           <Route path="/admin/*" element={<AdminRoute />} />
+          <Route path="*" element = {<Custom404 pathname={window.location.pathname}/>}/>
         </Routes>
     </>
   );
