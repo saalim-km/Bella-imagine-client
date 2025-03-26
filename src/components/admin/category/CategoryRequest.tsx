@@ -80,7 +80,7 @@ const CategoryRequest = () => {
       cell: (row) =>
         row.status === "pending" && (
           <div className="flex gap-2">
-            <Button variant="default" onClick={() => handleApprove(row.categoryId._id, row.vendorId._id)}>
+            <Button variant="outline" onClick={() => handleApprove(row.categoryId._id, row.vendorId._id)}>
               Approve
             </Button>
             <Button variant="destructive" onClick={() => handleReject(row.categoryId._id, row.vendorId._id)}>

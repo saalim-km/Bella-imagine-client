@@ -105,7 +105,7 @@ export const AvailabilityScheduler: React.FC<AvailabilitySchedulerProps> = ({
                   name={`recurringAvailability[${index}].dayOfWeek`}
                   value={slot.dayOfWeek}
                   onChange={(e) => updateRecurringSlot(index, 'dayOfWeek', parseInt(e.target.value))}
-                  className="w-full h-12 rounded-md -input px-3 py-2 bg-transparent "
+                  className="w-full h-12 rounded-md -input px-3 py-2  "
                 >
                   {dayNames.map((day, i) => (
                     <option key={i} value={i}>{day}</option>
@@ -158,87 +158,6 @@ export const AvailabilityScheduler: React.FC<AvailabilitySchedulerProps> = ({
           <Plus className="h-4 w-4 mr-2" />
           Add Weekly Schedule
         </Button>
-      </div>
-      
-      <div className="grid md:grid-cols-2 gap-6">
-        <div>
-          <Label htmlFor="bufferTime" className="text-sm font-medium mb-1 block">
-            Buffer Time Between Sessions (minutes)
-          </Label>
-          <Input
-            id="bufferTime"
-            name="bufferTime"
-            type="number"
-            value={bufferTime}
-            onChange={(e) => updateBufferTime(parseInt(e.target.value))}
-            className="h-12"
-          />
-        </div>
-        
-        <div>
-          <Label htmlFor="maxBookingsPerDay" className="text-sm font-medium mb-1 block">
-            Maximum Bookings Per Day
-          </Label>
-          <Input
-            id="maxBookingsPerDay"
-            name="maxBookingsPerDay"
-            type="number"
-            value={maxBookingsPerDay}
-            onChange={(e) => updateMaxBookingsPerDay(parseInt(e.target.value))}
-            className="h-12"
-          />
-        </div>
-      </div>
-      
-      <div className="space-y-4">
-        <Label className="text-sm font-medium">Blackout Dates</Label>
-        
-        <div className=" rounded-lg p-4">
-          <div className="mb-4">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full justify-start">
-                  <Calendar className="mr-2 h-4 w-4" />
-                  <span>Select Blackout Dates</span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <CalendarComponent
-                  mode="single"
-                  onSelect={(date) => date && addBlackoutDate(date)}
-                  initialFocus
-                  className={cn("p-3 pointer-events-auto")}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-          
-          <div className="space-y-2">
-            {blackoutDates.length === 0 ? (
-              <p className=" text-center py-3">No blackout dates selected</p>
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {blackoutDates.map((date, index) => (
-                  <div 
-                    key={index} 
-                    className=" rounded-full px-3 py-1 flex items-center text-sm"
-                  >
-                    <span>{format(new Date(date), 'MMM d, yyyy')}</span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-5 w-5 ml-1"
-                      onClick={() => removeBlackoutDate(date)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
       </div>
     </div>
   );

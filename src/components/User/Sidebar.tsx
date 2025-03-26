@@ -16,7 +16,6 @@ const vendorNavItems = [
   { icon: Ticket, label: "Allocate Slot", id: "allocate-slot" },
   { icon: Upload, label: "Upload Work for Clients", id: "upload-work" },
   { icon: Camera, label: "Services", id: "services" },
-  { icon: Image, label: "Work Sample", id: "work-sample" },
 ];
 
 interface SidebarProps {

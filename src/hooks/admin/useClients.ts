@@ -7,7 +7,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 export interface ClientRequest {
   data : IClient[],
   total : number
-
 }
 
 export type TPaginatedClientRequest =  {

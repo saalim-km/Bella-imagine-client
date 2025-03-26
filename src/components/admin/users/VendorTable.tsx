@@ -46,7 +46,6 @@ export function UserTable() {
   const queryClient = useQueryClient();
   const { mutate: block } = useBlockVendor();
   const { mutate: unBlock } = useUnBlockVendor();
-  const { bgColor, buttonPrimary, isDarkMode } = useThemeConstants();
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [appliedFilters, setAppliedFilters] = useState<string[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -160,7 +159,7 @@ export function UserTable() {
                   onChange={handleSearchChange}
                   onKeyDown={handleKeyDown}
                 />
-                <Button className="rounded-l-none" onClick={handleSearchSubmit}>
+                <Button variant={"outline"} className="rounded-l-none" onClick={handleSearchSubmit}>
                   Search
                 </Button>
               </div>
@@ -183,7 +182,7 @@ export function UserTable() {
                   ))}
                   <DropdownMenuSeparator />
                   <div className="flex justify-end p-2">
-                    <Button size="sm" onClick={applyFilters}>
+                    <Button variant={"outline"} size="sm" onClick={applyFilters}>
                       Apply Filters
                     </Button>
                   </div>
@@ -220,7 +219,7 @@ export function UserTable() {
                         <TableCell className="font-medium">{vendor.name}</TableCell>
                         <TableCell>{vendor.email}</TableCell>
                         <TableCell>
-                          <Badge variant={vendor.isActive ? "default" : "secondary"}>
+                          <Badge variant={vendor.isActive ? "outline" : "secondary"}>
                             {vendor.isActive ? "Active" : "Inactive"}
                           </Badge>
                         </TableCell>
@@ -229,9 +228,8 @@ export function UserTable() {
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
-                                variant="ghost"
+                                variant="outline"
                                 size="sm"
-                                className={isDarkMode ? buttonPrimary : "text-black bg-slate-100"}
                               >
                                 Actions
                               </Button>

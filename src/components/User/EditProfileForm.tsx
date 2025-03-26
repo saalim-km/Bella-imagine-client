@@ -108,7 +108,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
         )
       }
 
-      // Upload verification documents if any
+
       if (values.verificationDocuments?.length > 0) {
         uploadPromises.push(
           uploadMultipleToCloudinary(values.verificationDocuments).then(urls => {

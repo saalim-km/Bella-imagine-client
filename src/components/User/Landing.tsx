@@ -93,7 +93,7 @@ const features = [
   }
 ];
 
-const Index = () => {
+const Landing = () => {
   const navigate = useNavigate();
   const [currentImage, setCurrentImage] = useState(0);
   const aboutRef = useRef(null);
@@ -334,8 +334,6 @@ const Index = () => {
                 className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-soft"
                 initial={{ opacity: 0, y: 30 }}
                 animate={isServicesInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -8, transition: { duration: 0.2 } }}
               >
                 <div className="mb-4 p-3 bg-gray-100 dark:bg-gray-700 inline-block rounded-xl text-gray-700 dark:text-gray-300">
                   {feature.icon}
@@ -455,4 +453,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Landing;

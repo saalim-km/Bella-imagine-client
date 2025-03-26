@@ -21,6 +21,7 @@ import { VendorCategoryModal } from "@/components/modals/VendorCategoryModal";
 import { useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
 import { handleError } from "@/utils/Error/errorHandler";
 import { ServiceForm } from "@/components/vendor/services/serviceForm/Service";
+import VendorServices from "@/components/vendor/VendorServices";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -43,6 +44,7 @@ export default function UserProfile() {
   const { bgColor } = useThemeConstants();
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
+  const [isServiceCreating , setServiceCreating] = useState(false);
 
   const userType  = useSelector((state: RootState) => {
     if (state.vendor.vendor) return state.vendor.vendor.role;
@@ -121,6 +123,9 @@ export default function UserProfile() {
     })
   }
 
+  function handleIsServiceCreating(){
+    setServiceCreating(!isServiceCreating)
+  }
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -223,9 +228,11 @@ export default function UserProfile() {
                 ) :''}
 
                 {activeTab === "services" ? (
-                  <>
-                    <ServiceForm/>
-                  </>
+                  isServiceCreating ? (
+                    <ServiceForm handleIsCreatingService={handleIsServiceCreating}/>
+                  ) : (
+                    <VendorServices handleIsCreateService={handleIsServiceCreating}/>
+                  )
                 ) : ''}
               </div>
             </Card>

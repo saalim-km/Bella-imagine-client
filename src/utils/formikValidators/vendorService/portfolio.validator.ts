@@ -17,7 +17,6 @@ export const customFieldSchema = Yup.object({
 });
 
 export const portfolioSchema = Yup.object({
-  portfolioImages: Yup.array().of(Yup.string()).min(6, 'At least 6 portfolio images are required'),
   customFields: Yup.array()
     .of(customFieldSchema)
     .min(3, 'At least 3 custom fields are required'),

@@ -165,6 +165,7 @@ export function ClientTable() {
                   onKeyDown={handleKeyDown}
                 />
                 <Button 
+                variant={"outline"}
                   className="rounded-l-none" 
                   onClick={handleSearchSubmit}
                 >
@@ -190,7 +191,7 @@ export function ClientTable() {
                   ))}
                   <DropdownMenuSeparator />
                   <div className="flex justify-end p-2">
-                    <Button size="sm" onClick={applyFilters}>
+                    <Button variant={"outline"} size="sm" onClick={applyFilters}>
                       Apply Filters
                     </Button>
                   </div>
@@ -236,7 +237,7 @@ export function ClientTable() {
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
-                                variant="ghost"
+                                variant="outline"
                                 size="sm"
                               >
                                 Actions

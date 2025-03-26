@@ -44,6 +44,7 @@ export interface DepositRequirement {
 }
 
 export interface IService {
+  _id ?: string;
   serviceTitle: string;
   category: string;
   yearsOfExperience: number;
@@ -59,5 +60,26 @@ export interface IService {
   termsAndConditions: string[];
   customFields: CustomField[];
   isPublished?: boolean;
-  portfolioImages: string[];
+}
+
+
+
+
+
+
+export interface IServiceFilter {
+  serviceTitle?: string;
+  category?: string; 
+  location?: string;
+  tags?: string[];
+  styleSpecialty?: string[];
+  isPublished?: boolean;
+  createdAt?: 1 | -1;
+  page ?: number;
+  limit ?: number
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
 }

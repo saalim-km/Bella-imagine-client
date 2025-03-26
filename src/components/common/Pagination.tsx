@@ -35,7 +35,7 @@ const Pagination: React.FC<PaginationProps> = ({
           number === totalPages ||
           (number >= currentPage - 1 && number <= currentPage + 1) ? (
             <Button
-              variant={currentPage === number ? "default" : "outline"}
+              variant={currentPage === number ? "secondary" : "outline"}
               size="icon"
               onClick={() => onPageChange(number)}
             >
