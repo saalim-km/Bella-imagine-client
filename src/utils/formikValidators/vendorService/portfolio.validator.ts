@@ -1,3 +1,4 @@
+
 import { Yup } from './yup-extension.validator';
 import { isEmptyInput } from './helper.validator';
 
@@ -9,10 +10,9 @@ export const customFieldSchema = Yup.object({
   required: Yup.boolean(),
   options: Yup.array().of(
     Yup.string()
-      .test('not-empty', 'Option cannot be empty', value => !isEmptyInput(value as string))
   ).when('type', {
     is: 'enum',
-    then: (schema : any) => schema.min(1, 'At least one option is required for enum field')
+    then: (schema) => schema.min(1, 'At least one option is required for enum field')
   })
 });
 

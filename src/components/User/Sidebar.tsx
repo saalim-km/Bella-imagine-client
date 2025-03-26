@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useThemeConstants } from "@/utils/theme/themeUtills";
-import { User, Calendar, CreditCard, Image, Camera, Upload, Ticket } from "lucide-react";
+import { User, Calendar, CreditCard, Image, Camera, Upload, Ticket, ImageDown, CameraOffIcon, CameraIcon, LucideCamera } from "lucide-react";
 
 const clientNavItems = [
   { icon: Calendar, label: "Bookings & History", id: "bookings-history" },
@@ -13,9 +13,9 @@ const clientNavItems = [
 const vendorNavItems = [
   { icon: Calendar, label: "Bookings", id: "bookings" },
   { icon: CreditCard, label: "Wallet & Transactions", id: "wallet" },
-  { icon: Ticket, label: "Allocate Slot", id: "allocate-slot" },
   { icon: Upload, label: "Upload Work for Clients", id: "upload-work" },
-  { icon: Camera, label: "Services", id: "services" },
+  { icon: LucideCamera, label: "Services", id: "services" },
+  { icon: ImageDown, label: "Work Sample", id: "work-sample" },
 ];
 
 interface SidebarProps {

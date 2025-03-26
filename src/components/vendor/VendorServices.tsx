@@ -7,14 +7,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Search, Filter } from "lucide-react";
 import Pagination from "../common/Pagination";
 import { useAllVendorCategoryQuery, useVendorServices } from "@/hooks/vendor/useVendor";
-import { IService } from "@/types/vendor";
+import { IService, IServiceResponse } from "@/types/vendor";
 import { Spinner } from "../ui/spinner";
+import { Badge } from "../ui/badge";
 
 interface IVendorServicesPageProps {
   handleIsCreateService(): void;
+  handleIsEditingService(data : IServiceResponse) : void;
 }
 
-const VendorServicesPage = ({ handleIsCreateService }: IVendorServicesPageProps) => {
+const VendorServicesPage = ({ handleIsCreateService , handleIsEditingService}: IVendorServicesPageProps) => {
   const {data : categories } = useAllVendorCategoryQuery()
   console.log('categoriees : ',categories);
   const [searchTerm, setSearchTerm] = useState("");
@@ -51,7 +53,7 @@ const VendorServicesPage = ({ handleIsCreateService }: IVendorServicesPageProps)
     setCurrentPage(page);
   };
 
-  const services: IService[] = data?.data || [];
+  const services: IServiceResponse[] = data?.data || [];
   const totalPages = data ? Math.ceil(data.total / 4) : 1;
 
   return (
@@ -117,6 +119,18 @@ const VendorServicesPage = ({ handleIsCreateService }: IVendorServicesPageProps)
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((service) => (
               <Card key={service._id} className="hover:shadow-lg transition-shadow">
+                  <Badge
+                    variant="outline"
+                    className={`
+                      relative top-2 left-3 
+                      ${service.isPublished 
+                        ? "bg-green-500 text-white border-green-600" 
+                        : "bg-yellow-300 text-gray-800 border-yellow-400"
+                      }
+                    `}
+                  >
+                    {service.isPublished ? "Published" : "Draft"}
+                  </Badge>
                 <CardHeader>
                   <CardTitle>{service.serviceTitle}</CardTitle>
                 </CardHeader>
@@ -128,19 +142,20 @@ const VendorServicesPage = ({ handleIsCreateService }: IVendorServicesPageProps)
                       <p>Location: {service.location.city || "N/A"}, {service.location.state || "N/A"}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-primary">From ₹{service.sessionDurations[0]?.price || "N/A"}</p>
+                      <p className="font-bold ">From ₹{service.sessionDurations[0]?.price || "N/A"}</p>
                     </div>
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-between">
                   <div className="flex space-x-2">
                     {(service.tags || []).slice(0, 2).map((tag) => (
-                      <span key={tag} className=" text-secondary-foreground px-2 py-1 rounded-full text-xs">
+                      <span key={tag} className=" text-secondary-foreground px-2 py-1 rounded-full text-xs border-2">
                         {tag}
                       </span>
                     ))}
                   </div>
                   <Button variant="outline" size="sm">View Details</Button>
+                  <Button variant="outline" size="sm" onClick={()=> handleIsEditingService(service)}>Edit</Button>
                 </CardFooter>
               </Card>
             ))}

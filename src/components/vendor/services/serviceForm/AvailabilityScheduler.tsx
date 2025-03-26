@@ -87,7 +87,7 @@ export const AvailabilityScheduler: React.FC<AvailabilitySchedulerProps> = ({
           <div key={index} className="p-4  rounded-lg relative animate-fade-in">
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               size="icon"
               className="absolute top-2 right-2 opacity-70 hover:opacity-100"
               onClick={() => removeRecurringSlot(index)}
@@ -149,15 +149,6 @@ export const AvailabilityScheduler: React.FC<AvailabilitySchedulerProps> = ({
             </div>
           </div>
         ))}
-        
-        <Button
-          type="button"
-          onClick={addRecurringSlot}
-          className="w-full py-3 -dashed -2 transition-colors"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Weekly Schedule
-        </Button>
       </div>
     </div>
   );

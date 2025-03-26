@@ -1,8 +1,8 @@
 import { getAllCategories, vendorJoinCategory } from "@/services/categories/categoryService";
 import { getAllVendorNotification } from "@/services/notification/notificationService";
-import { createService, getAllVendorServices, getVendorDetails, updateVendorDetails } from "@/services/vendor/vendorService";
+import { createService, getAllVendorServices, getVendorDetails, updateVendorDetails, updateVendorService } from "@/services/vendor/vendorService";
 import { PaginationParams } from "@/types/Admin";
-import { IService, IServiceFilter, PaginatedResponse } from "@/types/vendor";
+import { IService, IServiceFilter, IServiceResponse, PaginatedResponse } from "@/types/vendor";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 
@@ -58,8 +58,14 @@ export const useCreateServiceMutation = ()=> {
 
 export const useVendorServices = (filters: IServiceFilter) => {
   console.log('query called');
-  return useQuery<PaginatedResponse<IService>>({
+  return useQuery<PaginatedResponse<IServiceResponse>>({
     queryKey: ["services", filters],
     queryFn: () => getAllVendorServices(filters),
   });
 };
+
+export const useUpdateVendorServiceMutation = ()=> {
+  return useMutation({
+    mutationFn : updateVendorService,
+  })
+}

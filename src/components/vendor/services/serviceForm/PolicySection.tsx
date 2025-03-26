@@ -1,8 +1,8 @@
-
-import React from 'react';
+import React, { useState } from "react";
+import { AlertCircle, Plus, Trash } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { X, Plus, ScrollText } from "lucide-react";
+import { Label } from "@/components/ui/label";
 
 interface PolicySectionProps {
   label: string;
@@ -11,75 +11,89 @@ interface PolicySectionProps {
   icon?: React.ReactNode;
 }
 
-export const PolicySection: React.FC<PolicySectionProps> = ({ 
-  label, 
-  values, 
+export const PolicySection: React.FC<PolicySectionProps> = ({
+  label,
+  values,
   updateValues,
-  icon = <ScrollText className="h-4 w-4 text-gray-500" />
+  icon,
 }) => {
-  const addItem = () => {
+  const [errors, setErrors] = useState<string[]>([]);
+
+  const addPolicy = () => {
     updateValues([...values, ""]);
   };
 
-  const removeItem = (index: number) => {
-    const newValues = values.filter((_, i) => i !== index);
+  const removePolicy = (index: number) => {
+    if (values.length <= 1) {
+      // Always keep at least one policy field
+      const newValues = [""];
+      updateValues(newValues);
+      return;
+    }
+    
+    const newValues = [...values];
+    newValues.splice(index, 1);
     updateValues(newValues);
+    
+    // Remove error for this field
+    const newErrors = [...errors];
+    newErrors.splice(index, 1);
+    setErrors(newErrors);
   };
 
-  const updateItem = (index: number, value: string) => {
+  const updatePolicy = (index: number, value: string) => {
     const newValues = [...values];
     newValues[index] = value;
     updateValues(newValues);
+    
+    // Clear error for this field if value is not empty
+    if (value.trim()) {
+      const newErrors = [...errors];
+      newErrors[index] = "";
+      setErrors(newErrors);
+    }
   };
 
   return (
-    <div className="space-y-3">
-      {values.length === 0 && (
-        <div className="text-center py-6 border border-dashed border-gray-200 rounded-lg">
-          {icon}
-          <p className=" mt-2">No {label.toLowerCase()} added yet</p>
-        </div>
-      )}
-      
-      {values.map((item, index) => (
-        <div 
-          key={index} 
-          className="flex items-center gap-2 animate-fade-in"
-          style={{ animationDelay: `${index * 0.05}s` }}
-        >
-          <div className="flex-grow">
-            <div className="relative">
-              {icon && <span className="absolute left-3 top-1/2 transform -translate-y-1/2">{icon}</span>}
-              <Input
-                value={item}
-                onChange={(e) => updateItem(index, e.target.value)}
-                className="pl-10 service-input"
-                placeholder={`Enter ${label.toLowerCase()}`}
+    <div className="space-y-4">
+      {values.map((policy, index) => (
+        <div key={index} className="space-y-2">
+          <div className="flex items-start">
+            <div className="relative flex-1">
+              {icon && (
+                <span className="absolute left-3 top-3">{icon}</span>
+              )}
+              <Textarea
+                value={policy}
+                onChange={(e) => updatePolicy(index, e.target.value)}
+                placeholder={`Enter ${label}`}
+                className={`${icon ? "pl-10" : ""} min-h-[80px] ${
+                  errors[index] ? "border-red-500" : ""
+                }`}
               />
             </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => removePolicy(index)}
+              className="ml-2 mt-2"
+            >
+              <Trash className="h-4 w-4" />
+            </Button>
           </div>
           
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => removeItem(index)}
-            className="flex-shrink-0"
-          >
-            <X className="h-4 w-4" />
-          </Button>
+          {errors[index] && (
+            <div className="text-red-500 text-sm flex items-center">
+              <AlertCircle className="h-3 w-3 mr-1" />
+              {errors[index]}
+            </div>
+          )}
         </div>
       ))}
       
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        onClick={addItem}
-        className="w-full transition-all duration-200 "
-      >
-        <Plus className="h-3.5 w-3.5 mr-1" />
-        Add {label}
+      <Button type="button" variant="outline" onClick={addPolicy} className="w-full">
+        <Plus className="h-4 w-4 mr-2" /> Add {label}
       </Button>
     </div>
   );

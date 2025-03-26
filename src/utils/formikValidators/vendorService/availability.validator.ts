@@ -22,13 +22,11 @@ export const timeSlotSchema = Yup.object({
 export const dateSlotSchema = Yup.object({
   date: Yup.string()
     .required('Date is required')
-    .validDateFormat()
     .test('is-future-date', 'Date must be in the future', (value) => value ? isFutureDate(value) : false),
   timeSlots: Yup.array()
     .of(timeSlotSchema)
     .min(1, 'At least one time slot is required'),
 });
-
 
 export const availabilitySchema = Yup.object({
   availableDates: Yup.array()

@@ -1,5 +1,5 @@
+
 import { Yup } from './yup-extension.validator';
-import { isEmptyInput } from './helper.validator';
 
 export const sessionDurationSchema = Yup.object({
   durationInHours: Yup.number()
@@ -17,8 +17,6 @@ export const sessionPricingSchema = Yup.object({
     .of(sessionDurationSchema)
     .min(1, 'At least one session duration is required'),
   features: Yup.array()
-    .of(Yup.string()
-      .test('not-empty', 'Features cannot be empty', value => !isEmptyInput(value as string))
-    )
+    .of(Yup.string())
     .min(1, 'At least one feature must be added'),
 });

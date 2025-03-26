@@ -2,7 +2,7 @@ import { vendorAxiosInstance } from "@/api/vendor.axios";
 import { IClient } from "../client/clientService";
 import { ENDPOINTS } from "@/api/endpoints";
 import { IProfileUpdate, IVendorReponse } from "@/types/User";
-import { IService, IServiceFilter, PaginatedResponse } from "@/types/vendor";
+import { IService, IServiceFilter, IServiceResponse, PaginatedResponse } from "@/types/vendor";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
 
 
@@ -38,9 +38,14 @@ export const createService = async(data : Partial<IService>):Promise<ApiResponse
     return reponse.data;
 }
 
-export const getAllVendorServices = async(filters : IServiceFilter) : Promise<PaginatedResponse<IService>> => {
+export const getAllVendorServices = async(filters : IServiceFilter) : Promise<PaginatedResponse<IServiceResponse>> => {
       console.log(filters);
       const response = await vendorAxiosInstance.get(`/vendor/service`, { params: filters });
       console.log(response);
       return response.data.data;
+}
+
+export const updateVendorService = async(data : Partial<IService>) : Promise<ApiResponse>=> {
+    const response = await vendorAxiosInstance.put('/vendor/service',data)
+    return response.data;
 }

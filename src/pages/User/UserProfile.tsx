@@ -22,6 +22,7 @@ import { useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
 import { handleError } from "@/utils/Error/errorHandler";
 import { ServiceForm } from "@/components/vendor/services/serviceForm/Service";
 import VendorServices from "@/components/vendor/VendorServices";
+import { IService, IServiceResponse } from "@/types/vendor";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -37,7 +38,7 @@ const tabTitles: Record<string, string> = {
 
 export default function UserProfile() {
   const queryClient = useQueryClient() 
-    const {mutate : joinCategory} = useJoinCategoryRequestMutation()
+  const {mutate : joinCategory} = useJoinCategoryRequestMutation()
   const {mutate : updateVendor} = useUpdateVendorMutation()
   const {mutate : updateClient} = useUpdateClientMutation()
   const [isModal , setIsModal] = useState(false)
@@ -45,6 +46,7 @@ export default function UserProfile() {
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [isServiceCreating , setServiceCreating] = useState(false);
+  const [serviceEditData , setIsServiceEditData] = useState<IServiceResponse>();
 
   const userType  = useSelector((state: RootState) => {
     if (state.vendor.vendor) return state.vendor.vendor.role;
@@ -74,6 +76,11 @@ export default function UserProfile() {
   console.log(`User data:`, userData);
   
   const hasCategory = userType === "vendor" && vendorData?.vendor?.categories?.length !== 0;
+
+  function handleIsServiceEditing(data : IServiceResponse) {
+    setIsServiceEditData(data);
+    setServiceCreating(!isServiceCreating)
+  }
 
   function handleUpdateProfile(data : IProfileUpdate) {
     console.log('data for update : ',data);
@@ -125,7 +132,9 @@ export default function UserProfile() {
 
   function handleIsServiceCreating(){
     setServiceCreating(!isServiceCreating)
+    setIsServiceEditData(undefined)
   }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -229,9 +238,9 @@ export default function UserProfile() {
 
                 {activeTab === "services" ? (
                   isServiceCreating ? (
-                    <ServiceForm handleIsCreatingService={handleIsServiceCreating}/>
+                    <ServiceForm handleIsCreatingService={handleIsServiceCreating} editData={serviceEditData}/>
                   ) : (
-                    <VendorServices handleIsCreateService={handleIsServiceCreating}/>
+                    <VendorServices handleIsCreateService={handleIsServiceCreating} handleIsEditingService={handleIsServiceEditing} />
                   )
                 ) : ''}
               </div>

@@ -1,22 +1,31 @@
-import React, { ReactNode } from 'react';
+
+import React from "react";
 
 interface FormSectionProps {
   title: string;
-  subtitle?: string;
-  children: ReactNode;
+  subtitle: string;
   index: number;
+  children: React.ReactNode;
 }
 
-export const FormSection: React.FC<FormSectionProps> = ({ title, subtitle, children, index }) => {
+export const FormSection: React.FC<FormSectionProps> = ({ 
+  title, 
+  subtitle, 
+  index, 
+  children 
+}) => {
   return (
-    <div className="form-section mb-8" style={{ '--index': index } as React.CSSProperties}>
-      <div className="mb-4">
-        <h3 className="text-lg font-medium">{title}</h3>
-        {subtitle && <p className="text-sm  mt-1">{subtitle}</p>}
+    <div className=" rounded-md shadow-sm border  p-6 mb-6">
+      <div className="mb-6">
+        <div className="flex items-center mb-2">
+          <div className="bg-primary  rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3">
+            {index + 1}
+          </div>
+          <h3 className="text-xl font-semibold">{title}</h3>
+        </div>
+        <p className=" ml-9">{subtitle}</p>
       </div>
-      <div className=" rounded-xl p-6 shadow-sm border ">
-        {children}
-      </div>
+      {children}
     </div>
   );
 };

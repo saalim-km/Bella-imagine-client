@@ -1,3 +1,4 @@
+
 import { Yup } from './yup-extension.validator';
 import { isEmptyInput, nameRegex } from './helper.validator';
 
@@ -22,8 +23,6 @@ export const locationSchema = Yup.object({
       .test('not-empty', 'Country cannot be empty', value => !isEmptyInput(value as string))
   }),
   equipment: Yup.array()
-    .of(Yup.string()
-      .test('not-empty', 'Equipment cannot be empty', value => !isEmptyInput(value as string))
-    )
+    .of(Yup.string())
     .min(1, 'At least one equipment item must be listed'),
 });

@@ -14,12 +14,10 @@ export const basicInfoSchema = Yup.object({
     .typeError('Years of experience must be a valid number'),
   styleSpecialty: Yup.array()
     .of(Yup.string())
-    .min(1, 'At least one specialty must be selected')
-    .noEmptyStrings(),
+    .min(1, 'At least one specialty must be selected'),
   tags: Yup.array()
     .of(Yup.string())
-    .min(1, 'At least one tag is required')
-    .noEmptyStrings(),
+    .min(1, 'At least one tag is required'),
   serviceDescription: Yup.string()
     .required('Service description is required')
     .test('not-empty', 'Service description cannot be empty', value => !isEmptyInput(value as string)),

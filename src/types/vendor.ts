@@ -1,3 +1,5 @@
+import { Category } from "@/services/categories/categoryService";
+
 export interface TimeSlot {
   startTime: string;
   endTime: string;
@@ -43,6 +45,7 @@ export interface DepositRequirement {
   isPercentage: boolean;
 }
 
+
 export interface IService {
   _id ?: string;
   serviceTitle: string;
@@ -63,7 +66,25 @@ export interface IService {
 }
 
 
-
+export interface IServiceResponse {
+  _id ?: string;
+  serviceTitle: string;
+  category: Category
+  yearsOfExperience: number;
+  styleSpecialty: string[];
+  tags: string[];
+  serviceDescription: string;
+  sessionDurations: SessionDuration[];
+  features: string[];
+  availableDates: DateSlot[];
+  location: Location;
+  equipment: string[];
+  cancellationPolicies: string[];
+  termsAndConditions: string[];
+  customFields: CustomField[];
+  isPublished?: boolean;
+  __v ?: number;
+}
 
 
 

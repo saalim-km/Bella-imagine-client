@@ -1,3 +1,4 @@
+
 // Helper function for checking if string contains only letters and spaces
 export const nameRegex = /^[A-Za-z\s]+$/;
 
