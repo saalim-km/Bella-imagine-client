@@ -61,7 +61,6 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
   const [showExitDialog, setShowExitDialog] = useState(false);
   const [allowReload, setAllowReload] = useState(false);
   const [showExitDialogDraft, setShowExitDialogDraft] = useState(false);
-  const [allowDraft, setAllowReloadDraft] = useState(false);
   const [completedSections, setCompletedSections] = useState<Record<string, boolean>>({
     basic: false,
     session: false,
@@ -142,6 +141,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
         updateService(values,{
           onSuccess : (data)=> {
             console.log(data);
+            handleIsCreatingService()
             toast.success(data.message)
           },
           onError : (err)=> {
@@ -173,6 +173,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
     ) {
       addNewService(formik.values, {
         onSuccess: (data) => {
+          localStorage.removeItem("serviceDraft");
           handleIsCreatingService();
           toast.success(data.message);
         },
@@ -369,7 +370,6 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
     );
   };
 
-
   const handleFieldChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     
@@ -441,7 +441,6 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
       localStorage.setItem('serviceDraft', JSON.stringify(formik.values));
       valueRef.current = formik.values;
   }, [formik.values]);
-
 
   useEffect(() => {
     if (activeTab === 'availability') {
@@ -575,7 +574,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
                         onChange={handleFieldChange}
                         onBlur={() => markFieldAsTouched("serviceTitle")}
                         value={formik.values.serviceTitle}
-                        className={`pl-10 service-input h-12 ${
+                        className={`pl-10 service-input h-12 ₹{
                           (isFieldTouched("serviceTitle") && formik.errors.serviceTitle) || 
                           validationErrors.serviceTitle ? "border-red-500" : ""
                         }`}
@@ -607,7 +606,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
                       }}
                     >
                       <SelectTrigger
-                        className={`h-12 ${
+                        className={`h-12 ₹{
                           (isFieldTouched("category") && formik.errors.category) || 
                           validationErrors.category ? "border-red-500" : ""
                         }`}
@@ -636,7 +635,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
                         onChange={handleFieldChange}
                         onBlur={() => markFieldAsTouched("yearsOfExperience")}
                         value={formik.values.yearsOfExperience}
-                        className={`pl-10 service-input h-12 ${
+                        className={`pl-10 service-input h-12 ₹{
                           (isFieldTouched("yearsOfExperience") && formik.errors.yearsOfExperience) || 
                           validationErrors.yearsOfExperience ? "border-red-500" : ""
                         }`}
@@ -655,7 +654,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
                         onChange={handleFieldChange}
                         onBlur={() => markFieldAsTouched("serviceDescription")}
                         value={formik.values.serviceDescription}
-                        className={`pl-10 service-input min-h-[120px] ${
+                        className={`pl-10 service-input min-h-[120px] ₹{
                           (isFieldTouched("serviceDescription") && formik.errors.serviceDescription) || 
                           validationErrors.serviceDescription ? "border-red-500" : ""
                         }`}
@@ -667,7 +666,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
                   <div>
                     <Label
                       htmlFor="styleSpecialty"
-                      className={`text-sm font-medium mb-1 block ${
+                      className={`text-sm font-medium mb-1 block ₹{
                         (isFieldTouched("styleSpecialty") && formik.errors.styleSpecialty) || 
                         validationErrors.styleSpecialty ? "text-red-500" : ""
                       }`}
@@ -695,7 +694,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
                   <div>
                     <Label
                       htmlFor="tags"
-                      className={`text-sm font-medium mb-1 block ${
+                      className={`text-sm font-medium mb-1 block ₹{
                         (isFieldTouched("tags") && formik.errors.tags) || 
                         validationErrors.tags ? "text-red-500" : ""
                       }`}
@@ -749,7 +748,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
                 index={1}
               >
                 <Label
-                  className={`text-sm font-medium mb-3 block ${
+                  className={`text-sm font-medium mb-3 block ₹{
                     (isFieldTouched("sessionDurations") && formik.errors.sessionDurations) || 
                     validationErrors.sessionDurations ? "text-red-500" : ""
                   }`}
@@ -779,7 +778,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
                 index={2}
               >
                 <Label
-                  className={`text-sm font-medium mb-1 block ${
+                  className={`text-sm font-medium mb-1 block ₹{
                     (isFieldTouched("features") && formik.errors.features) || 
                     validationErrors.features ? "text-red-500" : ""
                   }`}
@@ -869,7 +868,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
                 index={5}
               >
                 <Label
-                  className={`text-sm font-medium mb-1 block ${
+                  className={`text-sm font-medium mb-1 block ₹{
                     (isFieldTouched("equipment") && formik.errors.equipment) || 
                     validationErrors.equipment ? "text-red-500" : ""
                   }`}
@@ -923,7 +922,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
                 index={6}
               >
                 <Label
-                  className={`text-sm font-medium mb-1 block ${
+                  className={`text-sm font-medium mb-1 block ₹{
                     (isFieldTouched("availableDates") && formik.errors.availableDates) || 
                     validationErrors.availableDates ? "text-red-500" : ""
                   }`}
@@ -970,7 +969,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
                 index={9}
               >
                 <Label
-                  className={`text-sm font-medium mb-3 block ${
+                  className={`text-sm font-medium mb-3 block ₹{
                     (isFieldTouched("customFields") && formik.errors.customFields) || 
                     validationErrors.customFields ? "text-red-500" : ""
                   }`}
@@ -1026,7 +1025,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
                   <div>
                     <Label
                       htmlFor="cancellationPolicies"
-                      className={`text-sm font-medium mb-2 block ${
+                      className={`text-sm font-medium mb-2 block ₹{
                         (isFieldTouched("cancellationPolicies") && formik.errors.cancellationPolicies) || 
                         validationErrors.cancellationPolicies ? "text-red-500" : ""
                       }`}
@@ -1059,7 +1058,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
                   <div>
                     <Label
                       htmlFor="termsAndConditions"
-                      className={`text-sm font-medium mb-2 block ${
+                      className={`text-sm font-medium mb-2 block ₹{
                         (isFieldTouched("termsAndConditions") && formik.errors.termsAndConditions) || 
                         validationErrors.termsAndConditions ? "text-red-500" : ""
                       }`}

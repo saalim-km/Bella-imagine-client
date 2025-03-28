@@ -2,7 +2,7 @@ import { vendorAxiosInstance } from "@/api/vendor.axios";
 import { IClient } from "../client/clientService";
 import { ENDPOINTS } from "@/api/endpoints";
 import { IProfileUpdate, IVendorReponse } from "@/types/User";
-import { IService, IServiceFilter, IServiceResponse, PaginatedResponse } from "@/types/vendor";
+import { IService, IServiceFilter, IServiceResponse, IWorkSampleRequest, IWorkSampleFilter, PaginatedResponse, IWorkSampleResponse } from "@/types/vendor";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
 
 
@@ -32,6 +32,7 @@ export const updateVendorDetails = async(data : IProfileUpdate)=> {
 }
 
 
+// vendor-service-management
 export const createService = async(data : Partial<IService>):Promise<ApiResponse> => {
     const reponse = await vendorAxiosInstance.post(ENDPOINTS.CREATE_SERVICE,data);
     console.log(reponse);
@@ -48,4 +49,16 @@ export const getAllVendorServices = async(filters : IServiceFilter) : Promise<Pa
 export const updateVendorService = async(data : Partial<IService>) : Promise<ApiResponse>=> {
     const response = await vendorAxiosInstance.put('/vendor/service',data)
     return response.data;
+}
+
+
+// vendor-work-sample-management
+export const cerateWorkSampleService = async(data : IWorkSampleRequest) : Promise<IWorkSampleRequest> => {
+    const response = await vendorAxiosInstance.post('/vendor/work-sample',data)
+    return response.data;
+}
+
+export const getAllWorkSampleService = async(data : IWorkSampleFilter) : Promise<PaginatedResponse<IWorkSampleResponse>>=> {
+    const response = await vendorAxiosInstance.get('/vendor/work-sample',{params : data});
+    return response.data.data;
 }

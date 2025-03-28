@@ -1,5 +1,6 @@
 import { Category } from "@/services/categories/categoryService";
 
+// --------------------------Service Managment Types-----------------------------------------------------------------||
 export interface TimeSlot {
   startTime: string;
   endTime: string;
@@ -45,7 +46,6 @@ export interface DepositRequirement {
   isPercentage: boolean;
 }
 
-
 export interface IService {
   _id ?: string;
   serviceTitle: string;
@@ -64,7 +64,6 @@ export interface IService {
   customFields: CustomField[];
   isPublished?: boolean;
 }
-
 
 export interface IServiceResponse {
   _id ?: string;
@@ -86,8 +85,6 @@ export interface IServiceResponse {
   __v ?: number;
 }
 
-
-
 export interface IServiceFilter {
   serviceTitle?: string;
   category?: string; 
@@ -100,7 +97,55 @@ export interface IServiceFilter {
   limit ?: number
 }
 
+// --------------------------Work-Sample Managment Types-----------------------------------------------------------------||
 export interface PaginatedResponse<T> {
   data: T[];
   total: number;
+}
+
+type TMedia = {
+  url: string;
+  type: "image" | "video";
+}
+
+type TComment = {
+  user: string;
+  text: string;
+  createdAt: Date;
+}
+
+export interface IWorkSampleRequest {
+  service: string;
+  title: string;
+  description: string;
+  media: TMedia[];
+  tags?: string[];
+  likes?: string[];
+  comments?: TComment;
+  isPublished: boolean;
+}
+
+export interface IWorkSampleResponse {
+  _id ?: string;
+  service: string;
+  vendor: string;
+  title: string;
+  description?: string;
+  media: TMedia[];
+  tags?: string[];
+  likes?: string[];
+  comments?: TComment[]
+  isPublished: boolean;
+  createdAt: Date;
+  __v ?: number;
+}
+
+export interface IWorkSampleFilter {
+  title?: string;
+  service?: string; 
+  tags?: string[];
+  isPublished?: boolean;
+  createdAt?: 1 | -1;
+  page ?: number;
+  limit ?: number
 }

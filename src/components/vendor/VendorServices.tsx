@@ -17,7 +17,7 @@ interface IVendorServicesPageProps {
 }
 
 const VendorServicesPage = ({ handleIsCreateService , handleIsEditingService}: IVendorServicesPageProps) => {
-  const {data : categories } = useAllVendorCategoryQuery()
+  const {data : categories } = useAllVendorCategoryQuery();
   console.log('categoriees : ',categories);
   const [searchTerm, setSearchTerm] = useState("");
   const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
@@ -65,7 +65,11 @@ const VendorServicesPage = ({ handleIsCreateService , handleIsEditingService}: I
 
       <div className="mb-6 flex space-x-4">
         <div className="flex-grow flex">
-          <Input placeholder="Search services..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          <Input placeholder="Search services..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} onKeyDown={(e) =>{
+            if(e.key === "Enter") {
+              handleSearch()
+            }
+          }}/>
           <Button variant={"outline"} className="ml-2" onClick={handleSearch} disabled={isLoading}>
             <Search className="mr-2 h-4 w-4" /> Search
           </Button>
@@ -102,7 +106,7 @@ const VendorServicesPage = ({ handleIsCreateService , handleIsEditingService}: I
               </div>
             </div>
             <div className="flex justify-end">
-              <Button onClick={applyFilters}>
+              <Button variant={"outline"} onClick={applyFilters}>
                 <Search className="mr-2 h-4 w-4" /> Apply Filters
               </Button>
             </div>
@@ -160,7 +164,6 @@ const VendorServicesPage = ({ handleIsCreateService , handleIsEditingService}: I
               </Card>
             ))}
           </div>
-
           {services.length === 0 && <div className="text-center py-10 text-muted-foreground">No services found. Try adjusting your search or filters.</div>}
 
           <Pagination onPageChange={handlePageChange} currentPage={currentPage} totalPages={totalPages} />

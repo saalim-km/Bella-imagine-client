@@ -1,8 +1,8 @@
 import { getAllCategories, vendorJoinCategory } from "@/services/categories/categoryService";
 import { getAllVendorNotification } from "@/services/notification/notificationService";
-import { createService, getAllVendorServices, getVendorDetails, updateVendorDetails, updateVendorService } from "@/services/vendor/vendorService";
+import { cerateWorkSampleService, createService, getAllVendorServices, getAllWorkSampleService, getVendorDetails, updateVendorDetails, updateVendorService } from "@/services/vendor/vendorService";
 import { PaginationParams } from "@/types/Admin";
-import { IService, IServiceFilter, IServiceResponse, PaginatedResponse } from "@/types/vendor";
+import { IService, IServiceFilter, IServiceResponse, IWorkSampleFilter, PaginatedResponse } from "@/types/vendor";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 
@@ -11,7 +11,6 @@ export interface ApiResponse {
   message : string
 }
 export const useVendorDetailsQuery = (enabled = true) => {
-  console.log("Vendor query called");
   return useQuery({
     queryKey: ["vendor-profile"],
     queryFn: getVendorDetails,
@@ -50,22 +49,36 @@ export const useAllVendortNotification = (enabled = true)=> {
 }
 
 
+//vendor-service
 export const useCreateServiceMutation = ()=> {
   return useMutation({
     mutationFn : createService
   })
 }
-
 export const useVendorServices = (filters: IServiceFilter) => {
-  console.log('query called');
   return useQuery<PaginatedResponse<IServiceResponse>>({
     queryKey: ["services", filters],
     queryFn: () => getAllVendorServices(filters),
   });
 };
-
 export const useUpdateVendorServiceMutation = ()=> {
   return useMutation({
     mutationFn : updateVendorService,
+  })
+}
+
+
+//vendor-workSample
+export const useVendorWorkSampleUploadMutataion = ()=> {
+  return useMutation({
+    mutationFn : cerateWorkSampleService
+  })
+}
+
+export const useAllVendorWorkSample = (filters : IWorkSampleFilter)=> {
+  console.log('in useAllVendorWorkSample : ',filters);
+  return useQuery({
+    queryKey : ["vendor",filters],
+    queryFn : ()=> getAllWorkSampleService(filters)
   })
 }

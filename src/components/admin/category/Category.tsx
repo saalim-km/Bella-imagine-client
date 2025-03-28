@@ -99,7 +99,6 @@ export function CategoryManagement() {
   }
 
   function handleFilterChange(value: string) {
-    console.log(value);
     setFilter(value);
     setCurrentPage(1);
   }

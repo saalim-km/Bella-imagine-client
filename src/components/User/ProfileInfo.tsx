@@ -19,7 +19,6 @@ import { Button } from "../ui/button";
 import { IVendor } from "@/services/vendor/vendorService";
 import { IClient } from "@/services/client/clientService";
 
-// Types for the profile data
 interface Category {
   id?: string;
   title?: string;
@@ -119,7 +118,7 @@ export function ProfileInfo({ data, className }: ProfileInfoProps) {
                       key={index} 
                       src={doc} 
                       alt={`Document ${index + 1}`} 
-                      className="w-full h-auto max-h-40 object-cover rounded-md shadow-sm"
+                      className="w-full h-auto  object-cover rounded-md shadow-sm"
                     />
                   ))}
                 </div>

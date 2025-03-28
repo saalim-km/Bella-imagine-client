@@ -34,8 +34,8 @@ export const SessionDurationManager: React.FC<SessionDurationManagerProps> = ({
     
     // Clear errors for this duration
     const newErrors = { ...errors };
-    delete newErrors[`duration-${index}`];
-    delete newErrors[`price-${index}`];
+    delete newErrors[`duration-₹{index}`];
+    delete newErrors[`price-₹{index}`];
     setErrors(newErrors);
   };
 
@@ -57,7 +57,7 @@ export const SessionDurationManager: React.FC<SessionDurationManagerProps> = ({
     // Update errors
     setErrors({
       ...errors,
-      [`${field}-${index}`]: error
+      [`₹{field}-₹{index}`]: error
     });
     
     // Only update if no error
@@ -94,29 +94,29 @@ export const SessionDurationManager: React.FC<SessionDurationManagerProps> = ({
                 min="0.5"
                 value={duration.durationInHours}
                 onChange={(e) => updateDuration(index, "durationInHours", parseFloat(e.target.value))}
-                className={errors[`duration-${index}`] ? "border-red-500" : ""}
+                className={errors[`duration-₹{index}`] ? "border-red-500" : ""}
               />
-              {errors[`duration-${index}`] && (
+              {errors[`duration-₹{index}`] && (
                 <div className="text-red-500 text-sm mt-1 flex items-center">
                   <AlertCircle className="h-3 w-3 mr-1" />
-                  {errors[`duration-${index}`]}
+                  {errors[`duration-₹{index}`]}
                 </div>
               )}
             </div>
             
             <div>
-              <Label className="text-sm">Price ($)</Label>
+              <Label className="text-sm">Price (₹)</Label>
               <Input
                 type="number"
                 min="0"
                 value={duration.price}
                 onChange={(e) => updateDuration(index, "price", parseFloat(e.target.value))}
-                className={errors[`price-${index}`] ? "border-red-500" : ""}
+                className={errors[`price-₹{index}`] ? "border-red-500" : ""}
               />
-              {errors[`price-${index}`] && (
+              {errors[`price-₹{index}`] && (
                 <div className="text-red-500 text-sm mt-1 flex items-center">
                   <AlertCircle className="h-3 w-3 mr-1" />
-                  {errors[`price-${index}`]}
+                  {errors[`price-₹{index}`]}
                 </div>
               )}
             </div>
