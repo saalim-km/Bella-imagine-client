@@ -76,7 +76,6 @@ export const useVendorWorkSampleUploadMutataion = ()=> {
 }
 
 export const useAllVendorWorkSample = (filters : IWorkSampleFilter)=> {
-  console.log('in useAllVendorWorkSample : ',filters);
   return useQuery({
     queryKey : ["vendor",filters],
     queryFn : ()=> getAllWorkSampleService(filters)

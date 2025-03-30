@@ -19,7 +19,7 @@ export const Client404 = () => {
         </div>
 
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-          Oops! This event seems to be missing
+          Oops! This seems to be missing
         </h2>
 
         <p className="text-muted-foreground max-w-md mx-auto mb-8">

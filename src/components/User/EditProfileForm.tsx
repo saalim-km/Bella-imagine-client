@@ -327,7 +327,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
           </div>
 
           <div>
-            <Label htmlFor="location" className="text-base font-medium">Location</Label>
+            <Label htmlFor="location" className="text-base font-medium">Location (city or state)</Label>
             <Field name="location" as={CustomInput} id="location" className="mt-1" />
             <ErrorMessage name="location" component={TextError} />
           </div>
@@ -375,8 +375,8 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                           <CommandItem 
                             key={lang}
                             onSelect={() => {
-                              if (lang.trim() && !values.languages?.includes(lang)) {
-                                setFieldValue("languages", [...(values.languages || []), lang.trim()])
+                              if (lang.trim() && !values?.languages?.includes(lang)) {
+                                setFieldValue("languages", [...(values?.languages || []), lang.trim()])
                               }
                               setNewLanguage("")
                               setOpen(false)
@@ -408,7 +408,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
 
                 <div className="flex flex-wrap gap-2 mt-2">
                   <AnimatePresence>
-                    {values.languages?.map((lang: string) => (
+                    {values?.languages?.map((lang: string) => (
                       <motion.div 
                         key={lang} 
                         className={`flex items-center ${bgColor} px-3 py-1.5 rounded-full text-sm`}
@@ -594,7 +594,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
           <div className="flex justify-end space-x-3 pt-2">
             <Button 
               type="button" 
-              variant="outline" 
+              variant="destructive" 
               onClick={() => setIsEditing(false)} 
               disabled={isSubmitting}
               className="px-5"
@@ -602,6 +602,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
               Cancel
             </Button>
             <Button 
+            variant={"outline"}
               type="submit" 
               disabled={isSubmitting || isUploading || !isValid}
               className="px-5"

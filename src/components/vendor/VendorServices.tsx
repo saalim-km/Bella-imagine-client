@@ -30,7 +30,7 @@ const VendorServicesPage = ({ handleIsCreateService , handleIsEditingService}: I
     category: appliedFilters.category,
     location: appliedFilters.location,
     page: currentPage,
-    limit: 4,
+    limit: 2,
   };
 
   const { data, isLoading, error } = useVendorServices(queryFilters);
@@ -54,8 +54,7 @@ const VendorServicesPage = ({ handleIsCreateService , handleIsEditingService}: I
   };
 
   const services: IServiceResponse[] = data?.data || [];
-  const totalPages = data ? Math.ceil(data.total / 4) : 1;
-
+  const totalPages = Math.max(1, Math.ceil((data?.total || 0) / 2));
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
@@ -158,7 +157,6 @@ const VendorServicesPage = ({ handleIsCreateService , handleIsEditingService}: I
                       </span>
                     ))}
                   </div>
-                  <Button variant="outline" size="sm">View Details</Button>
                   <Button variant="outline" size="sm" onClick={()=> handleIsEditingService(service)}>Edit</Button>
                 </CardFooter>
               </Card>

@@ -1,5 +1,30 @@
 import * as Yup from "yup";
 
+const validLocations = new Set([
+  "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Ahmedabad", "Chennai", "Kolkata", "Pune",
+  "Jaipur", "Surat", "Lucknow", "Kanpur", "Nagpur", "Indore", "Thane", "Bhopal", "Visakhapatnam",
+  "Patna", "Vadodara", "Ghaziabad", "Ludhiana", "Agra", "Nashik", "Faridabad", "Meerut",
+  "Rajkot", "Kalyan", "Vasai-Virar", "Varanasi", "Srinagar", "Aurangabad", "Dhanbad",
+  "Amritsar", "Navi Mumbai", "Allahabad", "Ranchi", "Howrah", "Coimbatore", "Jabalpur",
+  "Gwalior", "Vijayawada", "Jodhpur", "Madurai", "Raipur", "Kota", "Guwahati", "Chandigarh",
+  "Solapur", "Hubli-Dharwad", "Mysore", "Tiruchirappalli", "Bareilly", "Aligarh",
+  "Tiruppur", "Moradabad", "Jalandhar", "Bhubaneswar", "Salem", "Warangal", "Guntur",
+  "Bikaner", "Noida", "Mangalore", "Belgaum", "Jamshedpur", "Bhilai", "Cuttack",
+  "Firozabad", "Kochi", "Bhavnagar", "Dehradun", "Durgapur", "Asansol", "Nanded",
+  "Kolhapur", "Ajmer", "Gandhinagar", "Ujjain", "Siliguri", "Jhansi", "Ulhasnagar",
+  "Jammu", "Sangli", "Erode", "Malegaon", "Gaya", "Tirunelveli", "Ambattur",
+  "Tirupati", "Bijapur", "Rampur", "Shimla", "Gangtok", "Aizawl", "Imphal", "Shillong",
+  "Itanagar", "Agartala", "Panaji", "Port Blair", "Kavaratti",
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
+  "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+  "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
+  "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+  "Uttar Pradesh", "Uttarakhand", "West Bengal",
+  "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu",
+  "Lakshadweep", "Delhi", "Puducherry", "Ladakh", "Jammu and Kashmir"
+])
+
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const MAX_DOCUMENTS = 2;
 
@@ -13,7 +38,14 @@ export const clientProfileSchema = Yup.object().shape({
     /^(\+\d{1,3}[- ]?)?\d{10}$/,
     "Phone number must be 10 digits"
   ),
-  location: Yup.string(),
+  location: Yup.string()
+  .test(
+    "isValidLocation",
+    "Location must be a valid location in India",
+    (value) => {
+      return !value || validLocations.has(value);
+    }
+  ),
   profileImage: Yup.string(),
   imageFile: Yup.mixed()
     .nullable()
@@ -35,7 +67,14 @@ export const vendorProfileSchema = Yup.object().shape({
     /^(\+\d{1,3}[- ]?)?\d{10}$/,
     "Phone number must be 10 digits"
   ),
-  location: Yup.string(),
+  location: Yup.string()
+    .test(
+      "isValidLocation",
+      "Location must be a valid location in India",
+      (value) => {
+        return !value || validLocations.has(value);
+      }
+    ),
   profileDescription: Yup.string(),
   profileImage: Yup.string(),
   portfolioWebsite: Yup.string().url("Invalid URL"),

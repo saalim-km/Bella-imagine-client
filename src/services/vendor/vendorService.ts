@@ -43,7 +43,7 @@ export const getAllVendorServices = async(filters : IServiceFilter) : Promise<Pa
       console.log(filters);
       const response = await vendorAxiosInstance.get(`/vendor/service`, { params: filters });
       console.log(response);
-      return response.data.data;
+      return response.data.data
 }
 
 export const updateVendorService = async(data : Partial<IService>) : Promise<ApiResponse>=> {
@@ -60,5 +60,5 @@ export const cerateWorkSampleService = async(data : IWorkSampleRequest) : Promis
 
 export const getAllWorkSampleService = async(data : IWorkSampleFilter) : Promise<PaginatedResponse<IWorkSampleResponse>>=> {
     const response = await vendorAxiosInstance.get('/vendor/work-sample',{params : data});
-    return response.data.data;
+    return response.data;
 }

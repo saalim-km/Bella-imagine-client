@@ -21,10 +21,9 @@ import { useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
 import { handleError } from "@/utils/Error/errorHandler";
 import { ServiceForm } from "@/components/vendor/services/serviceForm/Service";
 import VendorServices from "@/components/vendor/VendorServices";
-import { IServiceResponse, IWorkSampleResponse } from "@/types/vendor";
+import { IServiceResponse } from "@/types/vendor";
 import VendorWorkSample from "@/components/vendor/VendorWorkSample";
 import WorkSampleUpload from "@/components/vendor/work-sample/WorkSampleUpload";
-import WorkSampleDetails from "@/components/vendor/work-sample/WorkDetails";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -49,8 +48,6 @@ export default function UserProfile() {
   const [isServiceCreating , setServiceCreating] = useState(false);
   const [serviceEditData , setIsServiceEditData] = useState<IServiceResponse>();
   const [isWorkSampleCreating , setIsWorkSampleCreating] = useState(false);
-  const [isWorkSampleViewDetails , setIsWorkSampleViewDetails] = useState(false);
-  const [workSample , sestWorkSample] = useState<IWorkSampleResponse>();
   const userType = useSelector((state: RootState) => {
     if (state.vendor.vendor) return state.vendor.vendor;
     if (state.client.client) return state.client.client;
@@ -143,10 +140,6 @@ export default function UserProfile() {
     setIsServiceEditData(undefined)
   }
 
-  function handleWorkSampleViewDetails(workSample : IWorkSampleResponse) {
-    setIsWorkSampleViewDetails(!isWorkSampleViewDetails);
-    sestWorkSample(workSample);
-  }
 
   if (isLoading) {
     return (
@@ -170,20 +163,21 @@ export default function UserProfile() {
     <div className="mt-14">
       <Header />
       <div className="container mx-auto p-4 lg:p-6">
-        {!hasCategory && userType?.role === "vendor" ? (
-          <div className="mb-4">
-            <Button variant="outline" onClick={handleModalOpen}>
-              Choose a Category
-            </Button>
-          </div>
-        )
-        :
-        <div className="mb-4">
-            <Button variant="outline" onClick={handleModalOpen}>
-              Add Category
-            </Button>
-          </div>
-      }
+        {userType?.role === "vendor" && (
+          !hasCategory ? (
+            <div className="mb-4">
+              <Button variant="outline" onClick={handleModalOpen}>
+          Choose a Category
+              </Button>
+            </div>
+          ) : (
+            <div className="mb-4">
+              <Button variant="outline" onClick={handleModalOpen}>
+          Add Category
+              </Button>
+            </div>
+          )
+        )}
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Desktop Sidebar */}
           <aside className="hidden lg:block w-64 shrink-0">
@@ -251,7 +245,7 @@ export default function UserProfile() {
 
                 {activeTab === "services" ? (
                   isServiceCreating ? (
-                    <ServiceForm handleIsCreatingService={handleIsServiceCreating} editData={serviceEditData}/>
+                    <ServiceForm handleIsCreatingService={handleIsServiceCreating} editData={serviceEditData} vendorData={vendorData ? vendorData.vendor : undefined}/>
                   ) : (
                     <VendorServices handleIsCreateService={handleIsServiceCreating} handleIsEditingService={handleIsServiceEditing} />
                   )
@@ -263,22 +257,10 @@ export default function UserProfile() {
                     <WorkSampleUpload vendorId={userType?._id || ""} handleCancelCreatingWorkSample={handleIsWorkSampleCreating}/>
                   )
                   :(
-                    <VendorWorkSample handleIsCreateWorkSample={handleIsWorkSampleCreating} handleWorkSampleViewDetails={handleWorkSampleViewDetails}/>
+                    <VendorWorkSample handleIsCreateWorkSample={handleIsWorkSampleCreating}/>
                   )
                   ) 
                   : (
-                    ""
-                  )
-                }
-
-                {
-                  activeTab === "work-sample" ? (
-                    isWorkSampleViewDetails && workSample ? (
-                      <WorkSampleDetails workSample={workSample}/>
-                    ):(
-                      ""
-                    )
-                  ):(
                     ""
                   )
                 }

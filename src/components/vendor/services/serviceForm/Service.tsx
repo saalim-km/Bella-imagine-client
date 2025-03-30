@@ -47,14 +47,16 @@ import { IService, IServiceResponse } from "@/types/vendor";
 import { handleError } from "@/utils/Error/errorHandler";
 import ToolTip from "@/components/common/ToolTip";
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
+import { IVendor } from "@/services/vendor/vendorService";
 
 interface IServiceFormProps {
   handleIsCreatingService(): void;
   editData ?: IServiceResponse
+  vendorData ?: IVendor
 }
 
-export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceFormProps) => {
-  const { data } = useAllVendorCategoryQuery();
+export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: IServiceFormProps) => {
+  console.log('vendor data : ',vendorData);
   const { mutate: addNewService } = useCreateServiceMutation();
   const { mutate : updateService } = useUpdateVendorServiceMutation()
   const [activeTab, setActiveTab] = useState("basic");
@@ -614,9 +616,9 @@ export const ServiceForm = ({ handleIsCreatingService , editData }: IServiceForm
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {data?.categories.map((category) => (
-                          <SelectItem key={category._id} value={category._id}>
-                            {category.title}
+                        {(vendorData?.categories ?? []).map((category) => (
+                          <SelectItem key={category?._id} value={category?._id}>
+                            {category?.title}
                           </SelectItem>
                         ))}
                       </SelectContent>

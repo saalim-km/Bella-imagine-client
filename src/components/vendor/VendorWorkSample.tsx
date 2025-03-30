@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,10 +13,9 @@ import { Badge } from "../ui/badge";
 
 interface IVendorWorkSamplePageProps {
   handleIsCreateWorkSample(): void;
-  handleWorkSampleViewDetails (workSample : IWorkSampleResponse): void;
 }
 
-const VendorWorkSample = ({ handleIsCreateWorkSample , handleWorkSampleViewDetails}: IVendorWorkSamplePageProps) => {
+const VendorWorkSample = ({ handleIsCreateWorkSample }: IVendorWorkSamplePageProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
   const [filters, setFilters] = useState({ service: "", tags: "", isPublished: "" });
@@ -35,7 +34,7 @@ const VendorWorkSample = ({ handleIsCreateWorkSample , handleWorkSampleViewDetai
   };
 
   const { data, isLoading, error } = useAllVendorWorkSample(queryFilters);
-
+  console.log('work samples : ',data);
   const handleSearch = () => {
     setAppliedSearchTerm(searchTerm);
     setCurrentPage(1);
@@ -49,9 +48,9 @@ const VendorWorkSample = ({ handleIsCreateWorkSample , handleWorkSampleViewDetai
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-
   const workSamples: IWorkSampleResponse[] = data?.data || [];
-  const totalPages = data ? Math.ceil(data.total / 4) : 1;
+  const totalPages = Math.max(1, Math.ceil((data?.total || 0) / 2));
+
   console.log(data?.total);
 
   return (
@@ -195,9 +194,6 @@ const VendorWorkSample = ({ handleIsCreateWorkSample , handleWorkSampleViewDetai
                       </span>
                     ))}
                   </div>
-                  <Button variant="outline" size="sm" onClick={()=> handleWorkSampleViewDetails(sample)}>
-                    View Details
-                  </Button>
                   <Button variant="outline" size="sm">
                     Edit
                   </Button>
