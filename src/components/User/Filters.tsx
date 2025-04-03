@@ -14,6 +14,7 @@ import { Category } from "@/services/categories/categoryService";
 import { IVendorsResponse } from "@/types/User";
 import { getLocationFromCordinates } from "@/utils/location/get-location.utils";
 import { handleError } from "@/utils/Error/errorHandler";
+import { popularLanguages } from "./EditProfileForm";
 
 
 interface FilterProps {
@@ -57,7 +58,7 @@ export default function   Filters({handleSpecialitySelect ,handleCategorySelect 
           >
         All Languages
           </DropdownMenuItem>
-          {languages.map((language, index) => (
+          {popularLanguages.map((language, index) => (
         <DropdownMenuItem
           key={index}
           className={`${textColor} ${selectedLanguage === language ? "font-bold" : ""}`}

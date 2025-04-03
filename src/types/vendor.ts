@@ -61,7 +61,6 @@ export interface IService {
   equipment: string[];
   cancellationPolicies: string[];
   termsAndConditions: string[];
-  customFields: CustomField[];
   isPublished?: boolean;
 }
 
@@ -80,7 +79,6 @@ export interface IServiceResponse {
   equipment: string[];
   cancellationPolicies: string[];
   termsAndConditions: string[];
-  customFields: CustomField[];
   isPublished?: boolean;
   __v ?: number;
 }

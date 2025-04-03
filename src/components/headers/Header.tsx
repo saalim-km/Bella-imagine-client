@@ -127,7 +127,7 @@ export default function Header({ onClick }: IHeader) {
           whileTap={{ scale: 0.98 }}
         >
           <Logo />
-          <span className={`text-sm sm:text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400`}>
+          <span className={`text-sm sm:text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 dark:from-white dark:to-gray-400`}>
         Bella Imagine
           </span>
         </motion.div>
@@ -135,13 +135,16 @@ export default function Header({ onClick }: IHeader) {
         {/* Navigation */}
         {location.pathname !== "/admin/login" && (
           <div className={`hidden md:flex items-center space-x-8 `}>
-        <NavLink onClick={() => navigate("/")}>
-          Home
-        </NavLink>
-        <NavLink onClick={() => navigate("/vendors")}>
-          Photographers
-        </NavLink>
-        {/* Add more nav links as needed */}
+            <NavLink  onClick={() => navigate("/")}>
+              <span className="text-white">
+                Home
+              </span>
+            </NavLink>
+            <NavLink onClick={() => navigate("/vendors")}>
+              <span className="text-white">
+                Photographers
+              </span>
+            </NavLink>
           </div>
         )}
 
@@ -151,8 +154,8 @@ export default function Header({ onClick }: IHeader) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <motion.button
-              className="p-2 rounded-full hover:bg-gray-200/20 transition-colors relative"
-              whileHover={{ scale: 1.08 }}
+              className="p-2 rounded-full hover:bg-gray-200/20 relative text-white"
+              whileHover={{ scale: 1. }}
             >
               <Bell className="h-5 w-5" />
               {allNotifications.length > 0 && (
@@ -173,8 +176,8 @@ export default function Header({ onClick }: IHeader) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <motion.button
-          className="px-5 py-2 rounded-md glass-effect hover:bg-white/10 transition-all text-sm font-medium"
-          whileHover={{ scale: 1.03 }}
+          className="px-5 py-2 rounded-md glass-effect hover:bg-white/10 transition-all text-sm font-medium text-white"
+          whileHover={{ scale: 1.0 }}
             >
           {user.name}
             </motion.button>

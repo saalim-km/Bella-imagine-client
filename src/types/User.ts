@@ -1,7 +1,7 @@
 import { Category } from "@/services/categories/categoryService";
 import { IClient } from "@/services/client/clientService";
 import { IVendor } from "@/services/vendor/vendorService";
-import { IService, IWorkSampleResponse } from "./vendor";
+import { IService, IServiceResponse, IWorkSampleResponse } from "./vendor";
 export interface IUser {
   name: string;
   email: string;
@@ -75,7 +75,7 @@ export interface IVendorsResponse extends IClient {
   verificationDocuments : string[]
   yearsOfExperience : number,
   categories : Category[],
-  services : IService[],
+  services : IServiceResponse[],
   workSamples : IWorkSampleResponse[],
   isVerified ?: "pending" | "accept" |  "reject"
 }

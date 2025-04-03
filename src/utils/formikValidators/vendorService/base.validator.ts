@@ -4,7 +4,6 @@ import { basicInfoSchema } from './basic-info.validator';
 import { sessionPricingSchema } from './session.validator';
 import { locationSchema } from './location.validator';
 import { availabilitySchema } from './availability.validator';
-import { portfolioSchema } from './portfolio.validator';
 import { policiesSchema } from './policies.validator';
 
 // Complete schema - combination of all section schemas
@@ -13,7 +12,6 @@ export const serviceValidationSchema = Yup.object({
   ...sessionPricingSchema.fields,
   ...locationSchema.fields,
   ...availabilitySchema.fields,
-  ...portfolioSchema.fields,
   ...policiesSchema.fields,
 });
 
@@ -33,9 +31,6 @@ export const validateSection = async (values: any, section: string): Promise<{is
         break;
       case 'availability':
         schema = availabilitySchema;
-        break;
-      case 'portfolio':
-        schema = portfolioSchema;
         break;
       case 'policies':
         schema = policiesSchema;
@@ -66,5 +61,4 @@ export * from './basic-info.validator';
 export * from './session.validator';
 export * from './location.validator';
 export * from './availability.validator';
-export * from './portfolio.validator';
 export * from './policies.validator';

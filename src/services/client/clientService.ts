@@ -45,3 +45,8 @@ export const getAllClientCategories = async(): Promise<{success : boolean , data
     const response = await clientAxiosInstance.get('/client/categories');
     return response.data
 }
+
+export const getPhotographerDetails = async(id : string) : Promise<IVendorsResponse> => {
+    const response = await clientAxiosInstance.get(`/client/photographer/${id}`);
+    return response.data;
+}

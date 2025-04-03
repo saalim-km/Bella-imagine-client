@@ -1,42 +1,21 @@
-
 import React from "react";
 import { IServiceResponse } from "@/types/vendor";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { 
-  Accordion, 
-  AccordionContent, 
-  AccordionItem, 
-  AccordionTrigger 
-} from "@/components/ui/accordion";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
-import {
-  MapPin,
-  Clock,
-  CheckSquare,
-  Camera,
-  FileText,
-  Home,
-  Building
-} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import Tags from "./Tags";
+import { MapPin, Clock, CheckSquare, Camera, FileText, Home, Building } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface ServiceCardProps {
   service: IServiceResponse;
-  onBookNow: (service: IServiceResponse) => void;
 }
 
-const ServiceCard: React.FC<ServiceCardProps> = ({ service, onBookNow }) => {
+const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
+  const navigate = useNavigate();
+  
   return (
-    <Card className="h-full shadow-md hover:shadow-lg transition-shadow">
+    <Card className="h-full w-96 shadow-md hover:shadow-lg transition-shadow p-4">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>{service.serviceTitle}</CardTitle>
@@ -47,12 +26,15 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, onBookNow }) => {
 
       <CardContent className="space-y-4">
         <div>
+          <h3 className="text-sm font-medium mb-2">Years of Experience</h3>
+          <Badge>{service.yearsOfExperience} Years</Badge>
+        </div>
+        
+        <div>
           <h3 className="text-sm font-medium mb-2">Style Specialties</h3>
           <div className="flex flex-wrap gap-1.5">
             {service.styleSpecialty.map(style => (
-              <Badge key={style} variant="secondary" className="text-xs">
-                {style}
-              </Badge>
+              <Badge key={style} variant="secondary" className="text-xs">{style}</Badge>
             ))}
           </div>
         </div>
@@ -69,94 +51,91 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, onBookNow }) => {
             <TableBody>
               {service.sessionDurations.map((session, index) => (
                 <TableRow key={index}>
-                  <TableCell>{session.durationInHours} hour{session.durationInHours > 1 ? 's' : ''}</TableCell>
-                  <TableCell>${session.price}</TableCell>
+                  <TableCell>{session.durationInHours} hr</TableCell>
+                  <TableCell>₹{session.price}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
         
-        <div className="flex flex-wrap gap-2">
-          {service.location.options.studio && (
-            <div className="flex items-center gap-1 text-sm text-gray-600">
-              <Building size={16} />
-              <span>Studio</span>
-            </div>
-          )}
-          {service.location.options.onLocation && (
-            <div className="flex items-center gap-1 text-sm text-gray-600">
-              <Home size={16} />
-              <span>On-Location</span>
-              {service.location.travelFee && (
-                <Badge variant="outline" className="text-xs ml-1">
-                  +${service.location.travelFee} Travel Fee
-                </Badge>
-              )}
-            </div>
-          )}
+        <div>
+          <h3 className="text-sm font-medium mb-2">Location Options</h3>
+          <div className="flex flex-wrap gap-2">
+            {service.location.options.studio && <Badge variant="outline">Studio</Badge>}
+            {service.location.options.onLocation && <Badge variant="outline">On Location</Badge>}
+            {service.location.travelFee && <Badge variant="outline">Travel Fee: ₹{service.location.travelFee}</Badge>}
+          </div>
         </div>
         
-        <Accordion type="single" collapsible className="w-full">
+        <Accordion type="single" collapsible>
           <AccordionItem value="features">
-            <AccordionTrigger className="text-sm font-medium">
-              <div className="flex items-center gap-2">
-                <CheckSquare size={16} />
-                Features
-              </div>
-            </AccordionTrigger>
+            <AccordionTrigger>Features</AccordionTrigger>
             <AccordionContent>
-              <ul className="list-disc list-inside text-sm space-y-1 text-gray-700">
-                {service.features.map((feature, index) => (
-                  <li key={index}>{feature}</li>
-                ))}
+              <ul className="list-disc list-inside text-sm">
+                {service.features.map((feature, index) => <li key={index}>{feature}</li>)}
               </ul>
             </AccordionContent>
           </AccordionItem>
           
           <AccordionItem value="equipment">
-            <AccordionTrigger className="text-sm font-medium">
-              <div className="flex items-center gap-2">
-                <Camera size={16} />
-                Equipment
-              </div>
-            </AccordionTrigger>
+            <AccordionTrigger>Equipment</AccordionTrigger>
             <AccordionContent>
-              <ul className="list-disc list-inside text-sm space-y-1 text-gray-700">
-                {service.equipment.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
+              <ul className="list-disc list-inside text-sm">
+                {service.equipment.map((item, index) => <li key={index}>{item}</li>)}
               </ul>
             </AccordionContent>
           </AccordionItem>
           
-          <AccordionItem value="policies">
-            <AccordionTrigger className="text-sm font-medium">
-              <div className="flex items-center gap-2">
-                <FileText size={16} />
-                Cancellation Policies
-              </div>
-            </AccordionTrigger>
+          <AccordionItem value="cancellationPolicies">
+            <AccordionTrigger>Cancellation Policies</AccordionTrigger>
             <AccordionContent>
-              <ul className="list-disc list-inside text-sm space-y-1 text-gray-700">
-                {service.cancellationPolicies.map((policy, index) => (
-                  <li key={index}>{policy}</li>
-                ))}
+              <ul className="list-disc list-inside text-sm">
+                {service.cancellationPolicies.map((policy, index) => <li key={index}>{policy}</li>)}
+              </ul>
+            </AccordionContent>
+          </AccordionItem>
+          
+          <AccordionItem value="termsAndConditions">
+            <AccordionTrigger>Terms & Conditions</AccordionTrigger>
+            <AccordionContent>
+              <ul className="list-disc list-inside text-sm">
+                {service.termsAndConditions.map((term, index) => <li key={index}>{term}</li>)}
               </ul>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
+        
+        <div>
+          <h3 className="text-sm font-medium mb-2">Available Dates</h3>
+          {service.availableDates.length ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Time Slots</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {service.availableDates.map((date, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{date.date}</TableCell>
+                    <TableCell>
+                      {date.timeSlots.map((slot, idx) => (
+                        <div key={idx} className="text-xs">
+                          {slot.startTime} - {slot.endTime} ({slot.capacity} slots)
+                        </div>
+                      ))}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <p className="text-sm text-gray-500">No available dates</p>
+          )}
+        </div>
       </CardContent>
-      
-      <CardFooter className="flex flex-col items-start space-y-4">
-        <Tags tags={service.tags} variant="outline" />
-        <Button 
-          className="w-full mt-2" 
-          onClick={() => onBookNow(service)}
-        >
-          Book Now
-        </Button>
-      </CardFooter>
     </Card>
   );
 };

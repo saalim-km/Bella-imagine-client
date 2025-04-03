@@ -2,6 +2,7 @@ import {
   getAllClientCategories,
   getAllVendors,
   getClientDetails,
+  getPhotographerDetails,
   updateClientDetails,
 } from "@/services/client/clientService";
 import { getAllClientNotification } from "@/services/notification/notificationService";
@@ -45,5 +46,12 @@ export const useAllClientCategories = ()=> {
   return useQuery({
     queryKey : ["client-categories"],
     queryFn : getAllClientCategories
+  })
+}
+
+export const useGetPhotographerDetails = (id : string)=> {
+  return useQuery({
+    queryKey : ["photographer",id],
+    queryFn : ()=> getPhotographerDetails(id)
   })
 }

@@ -4,9 +4,8 @@ import { IVendorsResponse } from "@/types/User";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Globe, Award, CheckCircle2, XCircle } from "lucide-react";
+import { MapPin, Globe, CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Tags from "./Tags";
 
 interface VendorProfileProps {
   vendor: IVendorsResponse;
@@ -23,19 +22,14 @@ const VendorProfile: React.FC<VendorProfileProps> = ({ vendor }) => {
 
   return (
     <Card className="overflow-hidden shadow-md">
-      <div className="relative h-32 bg-gradient-to-r from-purple-500 to-indigo-600">
+      <div className="relative h-32 bg-gray-200">
         <div className="absolute -bottom-16 left-6">
           <Avatar className="h-28 w-28 border-4 border-white shadow-md">
-            <AvatarImage src={vendor.profileImage} alt={vendor.name} />
-            <AvatarFallback className="text-lg bg-primary text-primary-foreground">
+            <AvatarImage className="object-cover" src={vendor.profileImage} alt={vendor.name} />
+            <AvatarFallback className="text-lg bg-gray-400 text-white">
               {getInitials(vendor.name)}
             </AvatarFallback>
           </Avatar>
-        </div>
-        <div className="absolute top-4 right-4">
-          <span className={`status-badge ${vendor.isActive ? 'active' : 'inactive'}`}>
-            {vendor.isActive ? 'Active' : 'Inactive'}
-          </span>
         </div>
       </div>
       
@@ -51,12 +45,7 @@ const VendorProfile: React.FC<VendorProfileProps> = ({ vendor }) => {
             </div>
             
             <div>
-              <p className="text-gray-700">{vendor.description}</p>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <Award size={16} className="text-primary" />
-              <span>{vendor.yearsOfExperience} years of experience</span>
+              <p className="text-gray-600">{vendor.description}</p>
             </div>
             
             {vendor.portfolioWebsite && (
@@ -79,7 +68,7 @@ const VendorProfile: React.FC<VendorProfileProps> = ({ vendor }) => {
             <div>
               <h3 className="text-sm font-medium text-gray-500 mb-2">Categories</h3>
               {vendor.categories.map((category,indx)=> (
-                <Badge key={indx}>{category.title}</Badge>
+                <Badge variant={"outline"} className="rounded-2xl" key={indx}>{category.title}</Badge>
               ))}
             </div>
             
@@ -87,7 +76,7 @@ const VendorProfile: React.FC<VendorProfileProps> = ({ vendor }) => {
               <h3 className="text-sm font-medium text-gray-500 mb-2">Languages</h3>
               <div className="flex flex-wrap gap-1.5">
                 {vendor.languages?.map((language,indx)=> (
-                    <Badge key={indx}>{language}</Badge>
+                    <Badge variant={"outline"} className="rounded-2xl" key={indx}>{language}</Badge>
                 ))}
               </div>
             </div>
@@ -95,14 +84,18 @@ const VendorProfile: React.FC<VendorProfileProps> = ({ vendor }) => {
             <div>
               <h3 className="text-sm font-medium text-gray-500 mb-2">Verification Status</h3>
               <div className="flex items-center">
-                <span className={`status-badge ${vendor.isVerified}`}>
-                  {vendor.isVerified === "accept" && (
-                    <CheckCircle2 size={14} className="mr-1" />
-                  )}
-                  {vendor.isVerified === "reject" && (
-                    <XCircle size={14} className="mr-1" />
-                  )}
-                </span>
+              <span className="status-badge">
+                {vendor.isVerified === "accept" ? (
+                  <Badge className="border-green-500 text-green-600 rounded-2xl flex items-center gap-1" variant="outline">
+                    <CheckCircle2 size={14} className="text-green-500" />
+                    Verified
+                  </Badge>
+                ) : vendor.isVerified === "pending" ? (
+                  <XCircle size={14} className="mr-1 text-yellow-500" />
+                ) : (
+                  <XCircle size={14} className="mr-1 text-red-500" />
+                )}
+              </span>
               </div>
             </div>
           </div>

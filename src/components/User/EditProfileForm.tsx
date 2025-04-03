@@ -17,7 +17,7 @@ import { useThemeConstants } from "@/utils/theme/themeUtills"
 import { motion, AnimatePresence } from "framer-motion"
 import { handleError } from "@/utils/Error/errorHandler"
 
-const popularLanguages = [
+export const popularLanguages = [
   "English",
   "Hindi",
   "Bengali",
@@ -33,17 +33,6 @@ const popularLanguages = [
   "Assamese",
   "Maithili",
   "Sanskrit",
-  "Spanish",
-  "French",
-  "German",
-  "Chinese",
-  "Japanese",
-  "Portuguese",
-  "Russian",
-  "Italian",
-  "Arabic",
-  "Korean",
-  "Dutch",
 ]
 
 interface DocumentPreview {
@@ -604,7 +593,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
             <Button 
             variant={"outline"}
               type="submit" 
-              disabled={isSubmitting || isUploading || !isValid}
+              disabled={isSubmitting || isUploading}
               className="px-5"
             >
               {isSubmitting ? "Saving..." : "Save Changes"}

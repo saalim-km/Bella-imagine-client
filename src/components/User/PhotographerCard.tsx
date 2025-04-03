@@ -66,9 +66,9 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
   }, [isDragging, startX, scrollLeft])
 
 
-  const hourlyRate = vendorData.services[0].sessionDurations[0].price
+  const hourlyRate = vendorData?.services[0]?.sessionDurations[0]?.price || 0;
   const currency = "INR"
-  const minimumHours = vendorData.services[0].sessionDurations[0].durationInHours
+  const minimumHours = vendorData?.services[0]?.sessionDurations[0]?.durationInHours || 0
 
   return (
     <div className=" rounded-lg shadow-md overflow-hidden max-w-7xl mx-auto mb-20">
@@ -154,13 +154,7 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
             )}
 
             <div className="flex flex-wrap gap-3 justify-end">
-              <Button
-              variant="outline"
-              className="border-green-500 text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20"
-              >
-              WhatsApp
-              </Button>
-              <Button variant="outline" className={`border ${borderColor} border-blue-600 dark:text-blue-400 text-blue-600`} onClick={()=> navigate(`/vendor/${vendorData._id}`)}>
+              <Button variant="outline"  onClick={()=> navigate(`/photographer/${vendorData._id}`)}>
               Visit profile
               </Button>
               <Button variant={"outline"}>Send message</Button>

@@ -29,7 +29,6 @@ import { FormSection } from "./FormSection";
 import { DateTimeSection } from "./DateTimeSection";
 import { PolicySection } from "./PolicySection";
 import { SessionDurationManager } from "./SessionDurationManager";
-import { CustomFieldBuilder } from "./CustomFieldBuilder";
 import { FeaturesList } from "./FeaturesList";
 import { LocationSection } from "./LocationSection";
 import { ServicePreview } from "./ServicePreview";
@@ -80,7 +79,6 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
     "session",
     "location",
     "availability",
-    "portfolio",
     "policies",
     "preview",
   ];
@@ -129,7 +127,6 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
     equipment: [],
     cancellationPolicies: [""],
     termsAndConditions: [""],
-    customFields: [],
   };
 
   const formik = useFormik<IService>({
@@ -205,13 +202,11 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
     const currentIndex = tabSequence.indexOf(activeTab);
     const targetIndex = tabSequence.indexOf(value);
 
-    // Always allow going backward
     if (targetIndex < currentIndex) {
       setActiveTab(value);
       return;
     }
 
-    // Prevent skipping sections that aren't completed
     if (
       targetIndex > currentIndex + 1 &&
       !completedSections[tabSequence[currentIndex]]
@@ -220,7 +215,6 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
       return;
     }
 
-    // When trying to move forward or to preview
     if (targetIndex === currentIndex + 1 || value === "preview") {
       setIsValidating(true);
       
@@ -231,15 +225,12 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
         );
         
         if (isValid) {
-          // Section is valid, advance to next tab
           setCompletedSections((prev) => ({ ...prev, [activeTab]: true }));
           setValidationErrors({});
           setActiveTab(value);
         } else {
-          // Section has errors, mark fields as touched and show errors
           setValidationErrors(errors);
           
-          // Mark relevant fields as touched based on the active tab
           if (activeTab === "basic") {
             ["serviceTitle", "category", "yearsOfExperience", "styleSpecialty", "tags", "serviceDescription"]
               .forEach(markFieldAsTouched);
@@ -249,8 +240,6 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
             ["location.city", "location.state", "location.country", "equipment"].forEach(markFieldAsTouched);
           } else if (activeTab === "availability") {
             ["availableDates"].forEach(markFieldAsTouched);
-          } else if (activeTab === "portfolio") {
-            ["customFields"].forEach(markFieldAsTouched);
           } else if (activeTab === "policies") {
             ["cancellationPolicies", "termsAndConditions"].forEach(markFieldAsTouched);
           }
@@ -264,7 +253,6 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
         setIsValidating(false);
       }
     } else if (completedSections[tabSequence[currentIndex]]) {
-      // If the current section is completed, allow moving to the target tab
       setActiveTab(value);
     }
   };
@@ -536,12 +524,6 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
                 disabled={!completedSections.location}
               >
                 Availability
-              </TabsTrigger>
-              <TabsTrigger
-                value="portfolio"
-                disabled={!completedSections.availability}
-              >
-                Custom Fields
               </TabsTrigger>
               <TabsTrigger
                 value="policies"
@@ -940,59 +922,6 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
                   validationErrors={validationErrors}
                 />
                 <ErrorMessage name="availableDates" />
-              </FormSection>
-
-              <div className="flex justify-between mt-6">
-                <Button
-                  type="button"
-                  onClick={handlePrevious}
-                  variant="outline"
-                  className="w-32"
-                >
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  type="button"
-                  onClick={handleNext}
-                  className="w-32"
-                  disabled={isValidating}
-                >
-                  {isValidating ? "Validating..." : "Next"}
-                </Button>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="portfolio">
-              <SectionError section="portfolio" />
-              <FormSection
-                title="Custom Fields"
-                subtitle="Create custom fields for your service"
-                index={9}
-              >
-                <Label
-                  className={`text-sm font-medium mb-3 block ₹{
-                    (isFieldTouched("customFields") && formik.errors.customFields) || 
-                    validationErrors.customFields ? "text-red-500" : ""
-                  }`}
-                >
-                  Custom Fields (at least 3 required)
-                </Label>
-                <CustomFieldBuilder
-                  fields={formik.values.customFields}
-                  updateFields={(fields) => {
-                    formik.setFieldValue("customFields", fields);
-                    markFieldAsTouched("customFields");
-                    
-                    // Clear error if at least 3 fields
-                    if (fields.length >= 3 && validationErrors.customFields) {
-                      const newErrors = { ...validationErrors };
-                      delete newErrors.customFields;
-                      setValidationErrors(newErrors);
-                    }
-                  }}
-                />
-                <ErrorMessage name="customFields" />
               </FormSection>
 
               <div className="flex justify-between mt-6">
