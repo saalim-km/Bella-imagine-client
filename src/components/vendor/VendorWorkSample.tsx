@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,35 +6,42 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Search, Filter } from "lucide-react";
 import Pagination from "../common/Pagination";
-import { useAllVendorWorkSample, useVendorServices } from "@/hooks/vendor/useVendor";
+import { useAllVendorWorkSample, useDeleteWorkSample, useVendorServices } from "@/hooks/vendor/useVendor";
 import { IWorkSampleResponse } from "@/types/vendor";
 import { Spinner } from "../ui/spinner";
 import { Badge } from "../ui/badge";
+import { ReusableAlertDialog } from "../common/AlertDialogue";
+import { toast } from "sonner";
+import { handleError } from "@/utils/Error/errorHandler";
 
 interface IVendorWorkSamplePageProps {
   handleIsCreateWorkSample(): void;
+  handleIsWorkSampleEditing(workSample : IWorkSampleResponse): void;
 }
 
-const VendorWorkSample = ({ handleIsCreateWorkSample }: IVendorWorkSamplePageProps) => {
+const VendorWorkSample = ({ handleIsCreateWorkSample , handleIsWorkSampleEditing }: IVendorWorkSamplePageProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
   const [filters, setFilters] = useState({ service: "", tags: "", isPublished: "" });
   const [appliedFilters, setAppliedFilters] = useState({ service: "", tags: "", isPublished: "" });
   const [currentPage, setCurrentPage] = useState(1);
+  const [worksampleId , setWorkSampleId] = useState('');
+  const [isWorkSampleDelete , setIsWorkSampleDelete] = useState(false);
 
   const { data: services } = useVendorServices({ page: 1, limit: 20 });
 
   const queryFilters = {
-    title: appliedSearchTerm,
+    title: appliedSearchTerm, 
     service: appliedFilters.service,
     tags: appliedFilters.tags ? appliedFilters.tags.split(",").map(tag => tag.trim()) : undefined,
     isPublished: appliedFilters.isPublished ? appliedFilters.isPublished === "true" : undefined,
     page: currentPage,
-    limit: 2,
+    limit: 3,
   };
 
-  const { data, isLoading, error } = useAllVendorWorkSample(queryFilters);
-  console.log('work samples : ',data);
+  const { data, isLoading, error , refetch} = useAllVendorWorkSample(queryFilters);
+  const {mutate : deleteWorkSample} = useDeleteWorkSample()
+  
   const handleSearch = () => {
     setAppliedSearchTerm(searchTerm);
     setCurrentPage(1);
@@ -48,8 +55,34 @@ const VendorWorkSample = ({ handleIsCreateWorkSample }: IVendorWorkSamplePagePro
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+
+  const handleWorkSampleDelete = (id : string)=> {
+    console.log('delete id :',id);
+    setIsWorkSampleDelete(true);
+    setWorkSampleId(id);
+  }
+
+  const handleOnSuccessDeleteWorkSample = ()=> {
+    console.log('trigger success delete work sample',worksampleId);
+    setIsWorkSampleDelete(!isWorkSampleDelete);
+    deleteWorkSample(worksampleId,{
+      onSuccess : (data)=> {
+        toast.success(data.message);
+        refetch()
+      },
+      onError : (err)=> {
+        handleError(err)
+      }
+    })
+  }
+
+  const handleOnCancelWorkSample = ()=> {
+    setIsWorkSampleDelete(!isWorkSampleDelete);
+    setWorkSampleId('');
+  }
+
   const workSamples: IWorkSampleResponse[] = data?.data || [];
-  const totalPages = Math.max(1, Math.ceil((data?.total || 0) / 2));
+  const totalPages = Math.max(1, Math.ceil((data?.total || 0) / 3));
 
   console.log(data?.total);
 
@@ -194,9 +227,14 @@ const VendorWorkSample = ({ handleIsCreateWorkSample }: IVendorWorkSamplePagePro
                       </span>
                     ))}
                   </div>
-                  <Button variant="outline" size="sm">
-                    Edit
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={()=> handleIsWorkSampleEditing(sample)}>
+                      Edit
+                    </Button>
+                    <Button variant="destructive" size="sm" onClick={()=> handleWorkSampleDelete(sample._id|| '')}>
+                      Delete
+                    </Button>
+                  </div>
                 </CardFooter>
               </Card>
             ))}
@@ -215,6 +253,7 @@ const VendorWorkSample = ({ handleIsCreateWorkSample }: IVendorWorkSamplePagePro
           />
         </>
       )}
+      <ReusableAlertDialog confirmLabel="Delete" onCancel={handleOnCancelWorkSample} onConfirm={handleOnSuccessDeleteWorkSample} open = {isWorkSampleDelete} confirmVariant="destructive"/>
     </div>
   );
 };

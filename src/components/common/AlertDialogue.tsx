@@ -10,17 +10,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Button } from "react-day-picker";
-
+  
 interface ReusableAlertDialogProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange ?: (open: boolean) => void;
   title?: string;
   description?: string;
   confirmLabel?: string;
   cancelLabel?: string;
   onConfirm: () => void;
-  onCancel?: () => void;
+  onCancel : () => void;
   confirmVariant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link"; // Match shadcn/ui Button variants
 }
 
@@ -33,16 +32,14 @@ export const ReusableAlertDialog: React.FC<ReusableAlertDialogProps> = ({
   cancelLabel = "Cancel",
   onConfirm,
   onCancel,
-  confirmVariant = "default",
+  confirmVariant = "destructive",
 }) => {
   const handleConfirm = () => {
     onConfirm();
-    onOpenChange(false);
   };
 
   const handleCancel = () => {
     if (onCancel) onCancel();
-    onOpenChange(false);
   };
 
   return (
@@ -54,7 +51,7 @@ export const ReusableAlertDialog: React.FC<ReusableAlertDialogProps> = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={handleCancel}>{cancelLabel}</AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirm}>
+          <AlertDialogAction className="bg-red-700"  onClick={handleConfirm}>
             {confirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>

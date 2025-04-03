@@ -21,9 +21,9 @@ import { useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
 import { handleError } from "@/utils/Error/errorHandler";
 import { ServiceForm } from "@/components/vendor/services/serviceForm/Service";
 import VendorServices from "@/components/vendor/VendorServices";
-import { IServiceResponse } from "@/types/vendor";
+import { IServiceResponse, IWorkSampleResponse } from "@/types/vendor";
 import VendorWorkSample from "@/components/vendor/VendorWorkSample";
-import WorkSampleUpload from "@/components/vendor/work-sample/WorkSampleUpload";
+import WorkSampleUpload, { WorkSampleFormData } from "@/components/vendor/work-sample/WorkSampleUpload";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -48,6 +48,7 @@ export default function UserProfile() {
   const [isServiceCreating , setServiceCreating] = useState(false);
   const [serviceEditData , setIsServiceEditData] = useState<IServiceResponse>();
   const [isWorkSampleCreating , setIsWorkSampleCreating] = useState(false);
+  const [workSample , setWorkSample] = useState<IWorkSampleResponse>()
   const userType = useSelector((state: RootState) => {
     if (state.vendor.vendor) return state.vendor.vendor;
     if (state.client.client) return state.client.client;
@@ -83,7 +84,8 @@ export default function UserProfile() {
   }
 
   function handleIsWorkSampleCreating() {
-    setIsWorkSampleCreating(!isWorkSampleCreating)
+    setIsWorkSampleCreating(!isWorkSampleCreating);
+    setWorkSample(undefined);
   }
 
   function handleUpdateProfile(data : IProfileUpdate) {
@@ -138,8 +140,15 @@ export default function UserProfile() {
     setServiceCreating(!isServiceCreating)
     localStorage.removeItem("serviceDraft");
     setIsServiceEditData(undefined)
+    handleIsServiceEditing
   }
 
+  function handleisWorkSampleEditing(workSample : IWorkSampleResponse) {
+    console.log('in handleisWorkSampleEditing =>>>>>');
+    setIsWorkSampleCreating(true);
+    console.log('got the data for eidt : ',workSample);
+    setWorkSample(workSample)
+  }
 
   if (isLoading) {
     return (
@@ -254,10 +263,10 @@ export default function UserProfile() {
 
                 {activeTab === "work-sample" ? (
                   isWorkSampleCreating ? (
-                    <WorkSampleUpload vendorId={userType?._id || ""} handleCancelCreatingWorkSample={handleIsWorkSampleCreating}/>
+                    <WorkSampleUpload workSampleData={workSample} vendorId={userType?._id || ""} handleCancelCreatingWorkSample={handleIsWorkSampleCreating}/>
                   )
                   :(
-                    <VendorWorkSample handleIsCreateWorkSample={handleIsWorkSampleCreating}/>
+                    <VendorWorkSample handleIsWorkSampleEditing={handleisWorkSampleEditing} handleIsCreateWorkSample={handleIsWorkSampleCreating} />
                   )
                   ) 
                   : (

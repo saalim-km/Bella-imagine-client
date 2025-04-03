@@ -127,7 +127,7 @@ export default function Header({ onClick }: IHeader) {
           whileTap={{ scale: 0.98 }}
         >
           <Logo />
-          <span className={`text-sm sm:text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 dark:from-white dark:to-gray-400`}>
+          <span className={`text-sm sm:text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-black to-gray-600 dark:from-white dark:to-gray-400`}>
         Bella Imagine
           </span>
         </motion.div>
@@ -136,12 +136,12 @@ export default function Header({ onClick }: IHeader) {
         {location.pathname !== "/admin/login" && (
           <div className={`hidden md:flex items-center space-x-8 `}>
             <NavLink  onClick={() => navigate("/")}>
-              <span className="text-white">
+              <span className="text-black dark:text-white">
                 Home
               </span>
             </NavLink>
             <NavLink onClick={() => navigate("/vendors")}>
-              <span className="text-white">
+              <span className="text-black dark:text-white">
                 Photographers
               </span>
             </NavLink>
@@ -154,12 +154,12 @@ export default function Header({ onClick }: IHeader) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <motion.button
-              className="p-2 rounded-full hover:bg-gray-200/20 relative text-white"
+              className="p-2 rounded-full hover:bg-gray-200/20 relative text-black dark:text-white"
               whileHover={{ scale: 1. }}
             >
               <Bell className="h-5 w-5" />
               {allNotifications.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-700 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-red-700 text-black text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {allNotifications.length}
                 </span>
               )}
@@ -176,7 +176,7 @@ export default function Header({ onClick }: IHeader) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <motion.button
-          className="px-5 py-2 rounded-md glass-effect hover:bg-white/10 transition-all text-sm font-medium text-white"
+          className="px-5 py-2 rounded-md glass-effect hover:bg-white/10 transition-all text-sm font-medium text-black dark:text-white"
           whileHover={{ scale: 1.0 }}
             >
           {user.name}

@@ -4,6 +4,7 @@ import { ENDPOINTS } from "@/api/endpoints";
 import { IProfileUpdate, IVendorReponse } from "@/types/User";
 import { IService, IServiceFilter, IServiceResponse, IWorkSampleRequest, IWorkSampleFilter, PaginatedResponse, IWorkSampleResponse } from "@/types/vendor";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
+import { data } from "react-router-dom";
 
 
 
@@ -25,40 +26,49 @@ export const getVendorDetails = async() : Promise<IVendorReponse>=> {
     return response.data;
 }
 
-export const updateVendorDetails = async(data : IProfileUpdate)=> {
-    const response = await vendorAxiosInstance.put(ENDPOINTS.VENDOR_DETAILS , data);
+export const updateVendorDetails = async(payload : IProfileUpdate)=> {
+    const response = await vendorAxiosInstance.put(ENDPOINTS.VENDOR_DETAILS , payload);
     console.log(response);
     return response.data;
 }
 
 
 // vendor-service-management
-export const createService = async(data : Partial<IService>):Promise<ApiResponse> => {
-    const reponse = await vendorAxiosInstance.post(ENDPOINTS.CREATE_SERVICE,data);
+export const createService = async(payload : Partial<IService>):Promise<ApiResponse> => {
+    const reponse = await vendorAxiosInstance.post(ENDPOINTS.CREATE_SERVICE,payload);
     console.log(reponse);
     return reponse.data;
 }
 
-export const getAllVendorServices = async(filters : IServiceFilter) : Promise<PaginatedResponse<IServiceResponse>> => {
-      console.log(filters);
-      const response = await vendorAxiosInstance.get(`/vendor/service`, { params: filters });
+export const getAllVendorServices = async(payload : IServiceFilter) : Promise<PaginatedResponse<IServiceResponse>> => {
+      const response = await vendorAxiosInstance.get(`/vendor/service`, { params: payload });
       console.log(response);
       return response.data.data
 }
 
-export const updateVendorService = async(data : Partial<IService>) : Promise<ApiResponse>=> {
-    const response = await vendorAxiosInstance.put('/vendor/service',data)
+export const updateVendorService = async(payload : Partial<IService>) : Promise<ApiResponse>=> {
+    const response = await vendorAxiosInstance.put('/vendor/service',payload)
     return response.data;
 }
 
 
 // vendor-work-sample-management
-export const cerateWorkSampleService = async(data : IWorkSampleRequest) : Promise<IWorkSampleRequest> => {
-    const response = await vendorAxiosInstance.post('/vendor/work-sample',data)
+export const cerateWorkSampleService = async(payload : IWorkSampleRequest) : Promise<ApiResponse> => {
+    const response = await vendorAxiosInstance.post('/vendor/work-sample',payload)
     return response.data;
 }
 
-export const getAllWorkSampleService = async(data : IWorkSampleFilter) : Promise<PaginatedResponse<IWorkSampleResponse>>=> {
-    const response = await vendorAxiosInstance.get('/vendor/work-sample',{params : data});
+export const getAllWorkSampleService = async(payload : IWorkSampleFilter) : Promise<PaginatedResponse<IWorkSampleResponse>>=> {
+    const response = await vendorAxiosInstance.get('/vendor/work-sample',{params : payload});
     return response.data;
 }
+
+export const deleteWorkSampleService = async(payload: string) : Promise<ApiResponse> => {
+    const response = await vendorAxiosInstance.delete('/vendor/work-sample',{params : {id: payload }});
+    return response.data;
+}
+
+export const updateWorkSampleService = async(payload: Partial<IWorkSampleRequest>): Promise<ApiResponse> => {
+    const response = await vendorAxiosInstance.put('/vendor/work-sample',{data : payload})
+    return response.data;
+}   

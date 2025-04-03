@@ -1,5 +1,12 @@
 import { Category } from "@/services/categories/categoryService";
 
+// -----------common type-------------|
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+}
+
+
 // --------------------------Service Managment Types-----------------------------------------------------------------||
 export interface TimeSlot {
   startTime: string;
@@ -95,11 +102,8 @@ export interface IServiceFilter {
   limit ?: number
 }
 
-// --------------------------Work-Sample Managment Types-----------------------------------------------------------------||
-export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-}
+
+// --------------------------Work-Sample Managment Types-----------------------------||
 
 type TMedia = {
   url: string;
@@ -112,7 +116,30 @@ type TComment = {
   createdAt: Date;
 }
 
+export type TService = {
+  _id ?:  string,
+  vendor: string ,
+  serviceTitle: string,
+  category: string,
+  yearsOfExperience: number,
+  styleSpecialty: string[],
+  tags: string[],
+  serviceDescription: string,
+  sessionDurations: SessionDuration[],
+  features: string[],
+  availableDates: DateSlot[],
+  location: Location,
+  equipment: string[],
+  cancellationPolicies: string[],
+  termsAndConditions: string[],
+  isPublished?: boolean,
+  createdAt ?: string,
+  updatedAt ?: string
+}
+
 export interface IWorkSampleRequest {
+  _id ?: string;
+  vendor ?: string;
   service: string;
   title: string;
   description: string;
@@ -125,7 +152,7 @@ export interface IWorkSampleRequest {
 
 export interface IWorkSampleResponse {
   _id ?: string;
-  service: string;
+  service: TService;
   vendor: string;
   title: string;
   description?: string;

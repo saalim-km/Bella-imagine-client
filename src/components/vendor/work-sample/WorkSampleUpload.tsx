@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react'; 
 import { useCloudinary } from '@/hooks/coudinary/useCloudinary';
 import { toast } from 'sonner';
 import TagInput from './TagInput';
-import ImagePreview, { MediaItem } from "./ImagePreview"
+import ImagePreview, { MediaItem } from "./ImagePreview";
 import { 
   Upload, 
   Check, 
@@ -33,17 +33,13 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from '@/utils/upload-cloudinary/cloudinary';
-import { useVendorServices, useVendorWorkSampleUploadMutataion } from '@/hooks/vendor/useVendor';
-import { IServiceResponse } from '@/types/vendor';
+import { useUpdateWorkSample, useVendorServices, useVendorWorkSampleUploadMutataion } from '@/hooks/vendor/useVendor';
+import { IServiceResponse, IWorkSampleRequest, IWorkSampleResponse } from '@/types/vendor';
 import { Spinner } from '@/components/ui/spinner';
+import { handleError } from '@/utils/Error/errorHandler';
 
-// Types
-interface Service {
-  _id: string;
-  serviceTitle: string;
-}
-
-interface WorkSampleFormData {
+export interface WorkSampleFormData {
+  _id?: string;
   service: string;
   vendor: string;
   title: string;
@@ -55,53 +51,64 @@ interface WorkSampleFormData {
 
 interface WorkSampleUploadProps {
   vendorId: string;
-  handleCancelCreatingWorkSample() : void;
+  handleCancelCreatingWorkSample: () => void;
+  workSampleData?: IWorkSampleResponse;
+  isEditMode?: boolean;
 }
 
-const WorkSampleUpload = ({ vendorId , handleCancelCreatingWorkSample}: WorkSampleUploadProps) => {
-  const {mutate : createWorkSample} = useVendorWorkSampleUploadMutataion()
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [formData, setFormData] = useState<WorkSampleFormData>({
-    service: '',
-    vendor: vendorId,
-    title: '',
-    description: '',
-    media: [],
-    tags: [],
-    isPublished: false,
-  });
+const WorkSampleUpload = ({ 
+  vendorId, 
+  handleCancelCreatingWorkSample, 
+  workSampleData, 
+}: WorkSampleUploadProps) => {
+  console.log('initial data : ', workSampleData?.service);
 
-    const { data , isLoading } = useVendorServices({page : 1 , limit : 20})
-    const services : IServiceResponse[] = data?.data ?? [];
-    console.log(services);
+  const initialData: WorkSampleFormData = {
+    service: workSampleData?.service._id || '',
+    vendor: workSampleData?.service.vendor || vendorId,
+    description: workSampleData?.description || '',
+    isPublished: workSampleData?.isPublished ?? false,
+    media: workSampleData?.media || [],
+    tags: workSampleData?.tags || [],
+    title: workSampleData?.title || '',
+    _id: workSampleData?._id,
+  };
+
+  const { mutate: createWorkSample } = useVendorWorkSampleUploadMutataion();
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   
+  const [formData, setFormData] = useState<WorkSampleFormData>(initialData);
+
+  const { data, isLoading } = useVendorServices({ page: 1, limit: 20 });
+  const {mutate : updateWorkSample} = useUpdateWorkSample()
+  const services: IServiceResponse[] = data?.data ?? [];
+
   const handleCloudinarySuccess = (results: any[]) => {
     const newMedia = results.map(result => ({
       url: result.info.secure_url,
       type: result.info.resource_type === 'video' ? 'video' as 'video' : 'image' as 'image',
-      public_id: result.info.public_id
+      public_id: result.info.public_id,
     }));
     
     setFormData(prev => ({
       ...prev,
-      media: [...prev.media, ...newMedia]
+      media: [...prev.media, ...newMedia],
     }));
     
-    toast(
-     `${newMedia.length} file(s) uploaded successfully.`,
-    );
+    toast(`${newMedia.length} file(s) uploaded successfully.`);
   };
-  const { openWidget, isReady: isCloudinaryReady , error : coudinaryErr } = useCloudinary(
+
+  const { openWidget, isReady: isCloudinaryReady } = useCloudinary(
     {
-      cloudName: CLOUDINARY_CLOUD_NAME, 
-      uploadPreset: CLOUDINARY_UPLOAD_PRESET, 
+      cloudName: CLOUDINARY_CLOUD_NAME,
+      uploadPreset: CLOUDINARY_UPLOAD_PRESET,
       cropping: true,
       croppingAspectRatio: 4/3,
       multiple: true,
       maxFiles: 10,
       resourceType: 'auto',
       clientAllowedFormats: ['image', 'video'],
-      sources: ['local', 'url', 'camera', 'google_drive', 'dropbox','unsplash_ctadks'],
+      sources: ['local', 'url', 'camera', 'google_drive', 'dropbox', 'unsplash_ctadks'],
     },
     handleCloudinarySuccess
   );
@@ -112,104 +119,116 @@ const WorkSampleUpload = ({ vendorId , handleCancelCreatingWorkSample}: WorkSamp
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-  
+
   const handleServiceChange = (value: string) => {
     setFormData(prev => ({ ...prev, service: value }));
   };
-  
+
   const handlePublishedChange = (checked: boolean) => {
     setFormData(prev => ({ ...prev, isPublished: checked }));
   };
-  
+
   const handleTagsChange = (tags: string[]) => {
     setFormData(prev => ({ ...prev, tags }));
   };
-  
+
   const handleRemoveMedia = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      media: prev.media.filter((_, i) => i !== index)
+      media: prev.media.filter((_, i) => i !== index),
     }));
   };
-  
+
   const isFormValid = () => {
     return (
-      formData.service.trim() !== '' &&
-      formData.title.trim() !== '' &&
-      formData.media.length > 0
+      (formData.service && formData.service.trim()) &&
+      (formData.title && formData.title?.trim() !== '') &&
+      (formData.media && formData.media?.length > 0)
     );
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!isFormValid()) {
-      toast(
-         'Please fill in all required fields and upload at least one image.',
-      );
+      toast('Please fill in all required fields and upload at least one image.');
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
-      
-      // In a real app, this would be an API call
-      console.log('Submitting work sample:', formData);
-      createWorkSample(formData,{
-        onSuccess : (data)=> {
-            console.log(data);
-        },
-        onError : (err)=> {
-            console.log(err);
+      if(initialData.service !== '') {
+        const updatedWorkSampleData : IWorkSampleRequest = {
+          _id : initialData._id,
+          vendor : formData.vendor,
+          isPublished : formData.isPublished,
+          media : formData.media,
+          tags : formData.tags,
+          title : formData.title,
+          service : formData.service,
+          description : formData.description
         }
-      })
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast(
-         'Work sample created successfully!',
-      );
-      
-      // Reset form
-      setFormData({
-        service: '',
-        vendor: vendorId,
-        title: '',
-        description: '',
-        media: [],
-        tags: [],
-        isPublished: false,
-      });
+        console.log('updated work sample data : ',updatedWorkSampleData);
+        updateWorkSample(updatedWorkSampleData,{
+          onSuccess : (data)=> {
+            toast.success(data.message);
+            handleCancelCreating()
+          },
+          onError : (err)=> {
+            handleError(err);
+          }
+        })
+      }else {
+        console.log('Submitting work sample:', formData);
+        createWorkSample(formData, {
+          onSuccess: (data) => {
+            console.log('Success:', data);
+            toast(data.message);
+            if (!workSampleData?._id) {
+              setFormData({
+                service: '',
+                vendor: vendorId,
+                title: '',
+                description: '',
+                media: [],
+                tags: [],
+                isPublished: false,
+              });
+            }
+            handleCancelCreating()
+          },
+          onError: (err) => {
+            handleError(err);
+          },
+        });
+      }
     } catch (error) {
       console.error('Error submitting work sample:', error);
-      toast(
-         'Failed to create work sample. Please try again.',
-      );
+      toast('Failed to process work sample. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
-  
-const handleCancelCreating = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
+
+  const handleCancelCreating = () => {
     handleCancelCreatingWorkSample();
   };
 
   if (isLoading) {
-    return <Spinner/>;
+    return <Spinner />;
   }
-
 
   return (
     <Card className="w-full max-w-4xl mx-auto overflow-hidden border shadow-sm animate-fade-in">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-medium">Create Work Sample</CardTitle>
+        <CardTitle className="text-2xl font-medium">
+          {workSampleData?._id ? 'Edit Work Sample' : 'Create Work Sample'}
+        </CardTitle>
         <CardDescription>
-          Showcase your best work to potential clients
+          {workSampleData?._id ? 'Update your work sample details' : 'Showcase your best work to potential clients'}
         </CardDescription>
       </CardHeader>
-      
+
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-6">
           {/* Service selection */}
@@ -227,20 +246,18 @@ const handleCancelCreating = (event: React.MouseEvent<HTMLButtonElement>) => {
               </SelectTrigger>
               <SelectContent>
                 {isLoading ? (
-                  <div className="flex items-center justify-center p-4">
-                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-                  </div>
+                  <Spinner />
                 ) : (
                   services.map(service => (
                     <SelectItem key={service._id} value={service._id || ""}>
-                      {service.serviceTitle}
+                      {service?.serviceTitle}
                     </SelectItem>
                   ))
                 )}
               </SelectContent>
             </Select>
           </div>
-          
+
           {/* Title */}
           <div className="form-section" style={{ '--delay': 2 } as React.CSSProperties}>
             <Label htmlFor="title" className="text-sm font-medium">
@@ -256,7 +273,7 @@ const handleCancelCreating = (event: React.MouseEvent<HTMLButtonElement>) => {
               className="input-field"
             />
           </div>
-          
+
           {/* Description */}
           <div className="form-section" style={{ '--delay': 3 } as React.CSSProperties}>
             <Label htmlFor="description" className="text-sm font-medium">
@@ -273,13 +290,12 @@ const handleCancelCreating = (event: React.MouseEvent<HTMLButtonElement>) => {
               className="resize-none"
             />
           </div>
-          
+
           {/* Media upload */}
           <div className="form-section space-y-4" style={{ '--delay': 4 } as React.CSSProperties}>
             <Label className="text-sm font-medium">
               Media <span className="text-red-500">*</span>
             </Label>
-            
             {formData.media.length > 0 ? (
               <div className="space-y-4">
                 <ImagePreview 
@@ -287,7 +303,6 @@ const handleCancelCreating = (event: React.MouseEvent<HTMLButtonElement>) => {
                   onRemove={handleRemoveMedia}
                   readOnly={isSubmitting}
                 />
-                
                 <Button
                   type="button"
                   variant="outline"
@@ -311,19 +326,19 @@ const handleCancelCreating = (event: React.MouseEvent<HTMLButtonElement>) => {
                 <div className="rounded-full bg-secondary/70 p-4 hover:cursor-pointer">
                   <ImageIcon className="h-8 w-8 text-primary/70 hover:cursor-pointer" />
                   <div className="mt-2 text-center">
-                  <p className="text-sm font-medium hover:cursor-pointer" >
-                    {isCloudinaryReady ? 'Click to upload' :  <Spinner/>}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Supports JPG, PNG, GIF (max 10MB each)
-                  </p>
-                </div>
+                    <p className="text-sm font-medium hover:cursor-pointer">
+                      {isCloudinaryReady ? 'Click to upload' : <Spinner />}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Supports JPG, PNG, GIF (max 10MB each)
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
           </div>
-          
-          {/* Tags input - only show if media is uploaded */}
+
+          {/* Tags input */}
           {formData.media.length > 0 && (
             <div className="form-section" style={{ '--delay': 5 } as React.CSSProperties}>
               <Label htmlFor="tags" className="text-sm font-medium">
@@ -340,7 +355,7 @@ const handleCancelCreating = (event: React.MouseEvent<HTMLButtonElement>) => {
               </p>
             </div>
           )}
-          
+
           {/* Published switch */}
           <div className="form-section flex items-center justify-between pt-2" style={{ '--delay': 6 } as React.CSSProperties}>
             <div className="space-y-0.5">
@@ -359,11 +374,13 @@ const handleCancelCreating = (event: React.MouseEvent<HTMLButtonElement>) => {
             />
           </div>
         </CardContent>
-        
+
         <CardFooter className="border-t bg-muted/30 px-6 py-4">
-        <Button variant={"destructive"} onClick={handleCancelCreating}>cancel</Button>
+          <Button variant="destructive" onClick={handleCancelCreating}>
+            Cancel
+          </Button>
           <Button
-          variant={"outline"}
+            variant="outline"
             type="submit"
             className="ml-auto"
             disabled={!isFormValid() || isSubmitting}
@@ -371,12 +388,12 @@ const handleCancelCreating = (event: React.MouseEvent<HTMLButtonElement>) => {
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
+                {workSampleData?._id ? 'Updating...' : 'Saving...'}
               </>
             ) : (
               <>
                 <Check className="mr-2 h-4 w-4" />
-                Save Work Sample
+                {workSampleData?._id ? 'Update Work Sample' : 'Save Work Sample'}
               </>
             )}
           </Button>
