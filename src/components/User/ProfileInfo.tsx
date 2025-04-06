@@ -16,8 +16,9 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useThemeConstants } from "@/utils/theme/themeUtills";
 import { Button } from "../ui/button";
+import { IVendor } from "@/services/vendor/vendorService";
+import { IClient } from "@/services/client/clientService";
 
-// Types for the profile data
 interface Category {
   id?: string;
   title?: string;
@@ -25,25 +26,7 @@ interface Category {
 
 type VerificationStatus = "accept" | "reject" | "pending";
 
-interface IProfileInfo {
-  id?: string;
-  name?: string;
-  email?: string;
-  phoneNumber?: string | number;
-  isActive?: boolean;
-  createdAt?: string | Date;
-  location?: string;
-  isblocked?: boolean;
-  
-  // Vendor specific properties
-  vendorId?: string;
-  portfolioWebsite?: string;
-  languages?: string[];
-  description?: string;
-  categories?: Category[];
-  isVerified?: VerificationStatus;
-  verificationDocuments ?: string[]
-}
+type IProfileInfo = Partial<IVendor | IClient>
 
 interface ProfileInfoProps {
   data: IProfileInfo;
@@ -135,7 +118,7 @@ export function ProfileInfo({ data, className }: ProfileInfoProps) {
                       key={index} 
                       src={doc} 
                       alt={`Document ${index + 1}`} 
-                      className="w-full h-auto max-h-40 object-cover rounded-md shadow-sm"
+                      className="w-full h-auto  object-cover rounded-md shadow-sm"
                     />
                   ))}
                 </div>

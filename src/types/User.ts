@@ -1,5 +1,7 @@
+import { Category } from "@/services/categories/categoryService";
 import { IClient } from "@/services/client/clientService";
 import { IVendor } from "@/services/vendor/vendorService";
+import { IService, IServiceResponse, IWorkSampleResponse } from "./vendor";
 export interface IUser {
   name: string;
   email: string;
@@ -52,3 +54,64 @@ export interface IProfileUpdateResponse {
 export type IProfileUpdate = ClientProfileUpdate | VendorProfileUpdate;
   
 export type IProfileInfo =   IVendor | IClient
+
+
+
+export interface IVendorsFilter {
+  location ?: string;
+  languages?: string;
+  category ?: string;
+  minCharge?: number;
+  maxCharge?: number;
+  page?: number;
+  limit?: number;
+}
+
+export interface IVendorsResponse extends IClient {
+  vendorId ?: string,
+  portfolioWebsite : string;
+  languages ?: string[];
+  description ?: string;
+  verificationDocuments : string[]
+  yearsOfExperience : number,
+  categories : Category[],
+  services : IServiceResponse[],
+  workSamples : IWorkSampleResponse[],
+  isVerified ?: "pending" | "accept" |  "reject"
+}
+
+
+
+// // geolocation types
+// export interface GeolocationPosition {
+//   coords: GeolocationCoordinates;
+//   timestamp: number;
+// }
+
+// export interface GeolocationCoordinates {
+//   latitude: number;
+//   longitude: number;
+//   altitude: number | null;
+//   accuracy: number;
+//   altitudeAccuracy: number | null;
+//   heading: number | null;
+//   speed: number | null;
+// }
+
+
+
+
+// Booking types
+export interface Booking {
+  vendorId: string;
+
+  serviceId: string;
+
+  bookingDate: string;
+  timeSlot: {
+    startTime: string;
+    endTime: string;
+  };
+
+  totalPrice: number;
+}

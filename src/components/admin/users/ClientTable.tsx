@@ -30,6 +30,8 @@ import { DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu"
 import { buildQueryParams } from "@/utils/queryGenerator"
 import Pagination from "@/components/common/Pagination"
 import { Spinner } from "@/components/ui/spinner"
+import { useNavigate } from "react-router-dom"
+import { handleError } from "@/utils/Error/errorHandler"
 
 
 const FILTER_OPTIONS = [
@@ -42,6 +44,7 @@ const FILTER_OPTIONS = [
 ];
 
 export function ClientTable() {
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { mutate: block } = useBlockClient()
   const { mutate: unBlock } = useUnBlockClient()
@@ -106,7 +109,7 @@ export function ClientTable() {
           toast.success(data.message)
         },
         onError: (err) => {
-          console.log(err)
+          handleError(err)
         },
       })
     } else {
@@ -116,7 +119,7 @@ export function ClientTable() {
           toast.success(data.message)
         },
         onError: (err) => {
-          console.log(err)
+          handleError(err)
         },
       })
     }
@@ -124,7 +127,6 @@ export function ClientTable() {
   }
 
   const filterOptions = buildQueryParams(appliedFilters)
-  console.log(filterOptions);
   const { data: clientsData, isLoading } = useAllClientQuery(
     {
       ...filterOptions,
@@ -163,6 +165,7 @@ export function ClientTable() {
                   onKeyDown={handleKeyDown}
                 />
                 <Button 
+                variant={"outline"}
                   className="rounded-l-none" 
                   onClick={handleSearchSubmit}
                 >
@@ -188,7 +191,7 @@ export function ClientTable() {
                   ))}
                   <DropdownMenuSeparator />
                   <div className="flex justify-end p-2">
-                    <Button size="sm" onClick={applyFilters}>
+                    <Button variant={"outline"} size="sm" onClick={applyFilters}>
                       Apply Filters
                     </Button>
                   </div>
@@ -234,7 +237,7 @@ export function ClientTable() {
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
-                                variant="ghost"
+                                variant="outline"
                                 size="sm"
                               >
                                 Actions
@@ -242,7 +245,7 @@ export function ClientTable() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem asChild>
-                                <a href={`/admin/clients/${client._id}`}>View Details</a>
+                                <a onClick={()=> navigate(`/admin/user/${client._id}`)}>View Details</a>
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem

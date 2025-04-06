@@ -20,7 +20,7 @@ const Pagination: React.FC<PaginationProps> = ({
   }
 
   return (
-    <div className="flex items-center justify-center space-x-2 mt-4">
+    <div className="flex items-center justify-center space-x-2 mt-4 mb-4">
       <Button
         variant="outline"
         size="icon"
@@ -35,7 +35,7 @@ const Pagination: React.FC<PaginationProps> = ({
           number === totalPages ||
           (number >= currentPage - 1 && number <= currentPage + 1) ? (
             <Button
-              variant={currentPage === number ? "default" : "outline"}
+              variant={currentPage === number ? "secondary" : "outline"}
               size="icon"
               onClick={() => onPageChange(number)}
             >

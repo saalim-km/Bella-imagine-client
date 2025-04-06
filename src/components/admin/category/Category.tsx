@@ -99,7 +99,6 @@ export function CategoryManagement() {
   }
 
   function handleFilterChange(value: string) {
-    console.log(value);
     setFilter(value);
     setCurrentPage(1);
   }
@@ -144,7 +143,7 @@ export function CategoryManagement() {
             }
             value={category._id}
           />
-          <Button size="sm" onClick={() => handleEdit(category)}>
+          <Button variant={"outline"} size="sm" onClick={() => handleEdit(category)}>
             Edit
           </Button>
         </div>
@@ -172,7 +171,7 @@ export function CategoryManagement() {
             onChange={handleChangeSeaarchTerm}
             onKeyDown={handleKeyDown}
           />
-          <Button className="rounded-l-none" onClick={handleSearchSubmit}>
+          <Button variant={"outline"} className="rounded-l-none" onClick={handleSearchSubmit}>
             Search
           </Button>
         </div>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useNavigate } from "react-router";
-import { signupSchema } from "@/utils/formikValidators/signup.validator";
+import { signupSchema } from "@/utils/formikValidators/auth/signup.validator";
 import OTPModal from "@/components/modals/OtpModal";
 import { useThemeConstants } from "@/utils/theme/themeUtills";
 import GoogleAuth from "./GoogleAuth";

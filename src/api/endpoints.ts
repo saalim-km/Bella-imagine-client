@@ -51,5 +51,7 @@ export const ENDPOINTS = {
 
 
   VENDOR_CATEGORIES : '/vendor/categories',
-  CLIENT_CATEGORIES : '/client/categories'
+  CLIENT_CATEGORIES : '/client/categories',
+
+  CREATE_SERVICE : '/vendor/service'
 };

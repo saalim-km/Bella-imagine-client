@@ -4,21 +4,17 @@ import AnimatedImage from './AnimatedImage';
 
 interface PhotographerCardProps {
   name: string;
-  specialty: string;
   location: string;
   image: string;
   rating: number;
-  price: string;
   delay?: number;
 }
 
 const HomeVendorCard = ({
   name,
-  specialty,
   location,
   image,
   rating,
-  price,
   delay = 0
 }: PhotographerCardProps) => {
   return (
@@ -37,9 +33,6 @@ const HomeVendorCard = ({
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        <div className="absolute bottom-3 left-3 bg-white/90 dark:bg-black/80 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium">
-          {price}
-        </div>
       </div>
       
       <div className="p-4 flex-grow">
@@ -52,7 +45,6 @@ const HomeVendorCard = ({
             <span className="ml-1 text-xs">{rating.toFixed(1)}</span>
           </div>
         </div>
-        <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{specialty}</p>
         <div className="flex items-center text-gray-500 dark:text-gray-500 text-xs">
           <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />

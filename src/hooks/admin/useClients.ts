@@ -7,7 +7,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 export interface ClientRequest {
   data : IClient[],
   total : number
-
 }
 
 export type TPaginatedClientRequest =  {
@@ -25,17 +24,16 @@ export const clientKeys = {
     lists: () => [...clientKeys.all, "list"] as const,
     list: (filters: any, pagination: PaginationParams) => [...clientKeys.lists(), filters, pagination] as const,
     details: () => [...clientKeys.all, "detail"] as const,
-    detail: (id: number) => [...clientKeys.details(), id] as const,
+    detail: (id: string) => [...clientKeys.details(), id] as const,
 }
 
 export const useAllClientQuery = (filter : any = {} ,pagination : PaginationParams = {page : 1 , limit : 4} )=> {
-    console.log('useAllClientQuery called');
-    console.log(pagination);
     return useQuery({
         queryKey : clientKeys.list(filter,pagination),
         queryFn : ()=> AdminService.get<TPaginatedClientRequest>('/client',{...filter,...pagination})
     })
 }
+
 
 export const useBlockClient = () => {
     return useMutation({

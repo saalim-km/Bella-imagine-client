@@ -8,7 +8,6 @@ import { ProfileInfo } from "@/components/User/ProfileInfo";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import Header from "@/components/headers/Header";
-import { useThemeConstants } from "@/utils/theme/themeUtills";
 import Spinner from "@/components/common/LogoSpinner";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -20,6 +19,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { VendorCategoryModal } from "@/components/modals/VendorCategoryModal";
 import { useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
 import { handleError } from "@/utils/Error/errorHandler";
+import { ServiceForm } from "@/components/vendor/services/serviceForm/Service";
+import VendorServices from "@/components/vendor/VendorServices";
+import { IServiceResponse, IWorkSampleResponse } from "@/types/vendor";
+import VendorWorkSample from "@/components/vendor/VendorWorkSample";
+import WorkSampleUpload, { WorkSampleFormData } from "@/components/vendor/work-sample/WorkSampleUpload";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -35,17 +39,19 @@ const tabTitles: Record<string, string> = {
 
 export default function UserProfile() {
   const queryClient = useQueryClient() 
-    const {mutate : joinCategory} = useJoinCategoryRequestMutation()
+  const {mutate : joinCategory} = useJoinCategoryRequestMutation()
   const {mutate : updateVendor} = useUpdateVendorMutation()
   const {mutate : updateClient} = useUpdateClientMutation()
   const [isModal , setIsModal] = useState(false)
-  const { bgColor } = useThemeConstants();
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
-
-  const userType  = useSelector((state: RootState) => {
-    if (state.vendor.vendor) return state.vendor.vendor.role;
-    if (state.client.client) return state.client.client.role;
+  const [isServiceCreating , setServiceCreating] = useState(false);
+  const [serviceEditData , setIsServiceEditData] = useState<IServiceResponse>();
+  const [isWorkSampleCreating , setIsWorkSampleCreating] = useState(false);
+  const [workSample , setWorkSample] = useState<IWorkSampleResponse>()
+  const userType = useSelector((state: RootState) => {
+    if (state.vendor.vendor) return state.vendor.vendor;
+    if (state.client.client) return state.client.client;
     return null;
   });
   
@@ -54,27 +60,37 @@ export default function UserProfile() {
     data: clientData,
     isLoading: isClientLoading,
     isError: isClientError,
-  } = useClientDetailsQuery(userType === "client");
+  } = useClientDetailsQuery(userType?.role === "client");
   
   // ---------------------------Fetching vendor data if the role is only vendor--------------------------------|
   const {
     data: vendorData,
     isLoading: isVendorLoading,
     isError: isVendorError,
-  } = useVendorDetailsQuery(userType === "vendor");
+  } = useVendorDetailsQuery(userType?.role === "vendor");
   
   
   const isLoading = isClientLoading || isVendorLoading;
   const isError = isClientError || isVendorError;
-  const userData = userType === "client" ? clientData?.client : vendorData?.vendor;
+  const userData = userType?.role === "client" ? clientData?.client : vendorData?.vendor;
   
   console.log(`User data:`, userData);
   
-  const hasCategory = userType === "vendor" && vendorData?.vendor?.categories?.length !== 0;
+  const hasCategory = userType?.role === "vendor" && vendorData?.vendor?.categories?.length !== 0;
+
+  function handleIsServiceEditing(data : IServiceResponse) {
+    setIsServiceEditData(data);
+    setServiceCreating(!isServiceCreating)
+  }
+
+  function handleIsWorkSampleCreating() {
+    setIsWorkSampleCreating(!isWorkSampleCreating);
+    setWorkSample(undefined);
+  }
 
   function handleUpdateProfile(data : IProfileUpdate) {
     console.log('data for update : ',data);
-    if(userType === "vendor") {
+    if(userType?.role === "vendor") {
       console.log(data);
       updateVendor(data,{
         onSuccess : (data)=> {
@@ -120,6 +136,20 @@ export default function UserProfile() {
     })
   }
 
+  function handleIsServiceCreating(){
+    setServiceCreating(!isServiceCreating)
+    localStorage.removeItem("serviceDraft");
+    setIsServiceEditData(undefined)
+    handleIsServiceEditing
+  }
+
+  function handleisWorkSampleEditing(workSample : IWorkSampleResponse) {
+    console.log('in handleisWorkSampleEditing =>>>>>');
+    setIsWorkSampleCreating(true);
+    console.log('got the data for eidt : ',workSample);
+    setWorkSample(workSample)
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -142,12 +172,20 @@ export default function UserProfile() {
     <div className="mt-14">
       <Header />
       <div className="container mx-auto p-4 lg:p-6">
-        {!hasCategory && userType === "vendor" && (
-          <div className="mb-4">
-            <Button variant="outline" onClick={handleModalOpen}>
-              Choose a Category
-            </Button>
-          </div>
+        {userType?.role === "vendor" && (
+          !hasCategory ? (
+            <div className="mb-4">
+              <Button variant="outline" onClick={handleModalOpen}>
+          Choose a Category
+              </Button>
+            </div>
+          ) : (
+            <div className="mb-4">
+              <Button variant="outline" onClick={handleModalOpen}>
+          Add Category
+              </Button>
+            </div>
+          )
         )}
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Desktop Sidebar */}
@@ -215,11 +253,26 @@ export default function UserProfile() {
                 ) :''}
 
                 {activeTab === "services" ? (
-                  <>
-                                      <div>service upload</div>
-                                      <Button>upload work</Button>
-                  </>
+                  isServiceCreating ? (
+                    <ServiceForm handleIsCreatingService={handleIsServiceCreating} editData={serviceEditData} vendorData={vendorData ? vendorData.vendor : undefined}/>
+                  ) : (
+                    <VendorServices handleIsCreateService={handleIsServiceCreating} handleIsEditingService={handleIsServiceEditing} />
+                  )
                 ) : ''}
+
+
+                {activeTab === "work-sample" ? (
+                  isWorkSampleCreating ? (
+                    <WorkSampleUpload workSampleData={workSample} vendorId={userType?._id || ""} handleCancelCreatingWorkSample={handleIsWorkSampleCreating}/>
+                  )
+                  :(
+                    <VendorWorkSample handleIsWorkSampleEditing={handleisWorkSampleEditing} handleIsCreateWorkSample={handleIsWorkSampleCreating} />
+                  )
+                  ) 
+                  : (
+                    ""
+                  )
+                }
               </div>
             </Card>
           </main>

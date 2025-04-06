@@ -41,10 +41,11 @@ import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Spinner } from "@/components/ui/spinner";
 import Pagination from "@/components/common/Pagination";
+import { useNavigate } from "react-router-dom";
 
 export function VendorRequestsTable() {
+  const navigate = useNavigate()
   const queryClient = useQueryClient();
-  const { bgColor } = useThemeConstants();
   const [searchTerm, setSearchTerm] = useState("");
   const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -214,7 +215,7 @@ export function VendorRequestsTable() {
                 onChange={handleSearchChange}
                 onKeyDown={handleKeyDown}
               />
-              <Button className="rounded-l-none" onClick={handleSearchSubmit}>
+              <Button variant={"outline"} className="rounded-l-none" onClick={handleSearchSubmit}>
                 Search
               </Button>
             </div>
@@ -238,7 +239,7 @@ export function VendorRequestsTable() {
                 ))}
                 <DropdownMenuSeparator />
                 <div className="flex justify-end p-2">
-                  <Button size="sm" onClick={applyFilters}>
+                  <Button variant={"outline"} size="sm" onClick={applyFilters}>
                     Apply Filters
                   </Button>
                 </div>
@@ -289,13 +290,13 @@ export function VendorRequestsTable() {
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
+                            <Button variant="outline" size="sm">
                               Actions
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="p-2">
                             <DropdownMenuItem asChild>
-                              <a href={`/admin/clients/${request._id}`}>
+                              <a onClick={()=> navigate(`/admin/user/${request._id}`)} className="hover:cursor-pointer">
                                 View Details
                               </a>
                             </DropdownMenuItem>

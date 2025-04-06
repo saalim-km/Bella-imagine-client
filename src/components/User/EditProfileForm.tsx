@@ -6,7 +6,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik"
 import { useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { toast } from "sonner"
-import { clientProfileSchema, vendorProfileSchema } from "@/utils/formikValidators/profile.validator"
+import { clientProfileSchema, vendorProfileSchema } from "@/utils/formikValidators/user/profile.validator"
 import { uploadToCloudinary, uploadMultipleToCloudinary } from "@/utils/upload-cloudinary/cloudinary"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Command, CommandInput, CommandList, CommandItem, CommandEmpty } from "@/components/ui/command"
@@ -17,7 +17,7 @@ import { useThemeConstants } from "@/utils/theme/themeUtills"
 import { motion, AnimatePresence } from "framer-motion"
 import { handleError } from "@/utils/Error/errorHandler"
 
-const popularLanguages = [
+export const popularLanguages = [
   "English",
   "Hindi",
   "Bengali",
@@ -33,17 +33,6 @@ const popularLanguages = [
   "Assamese",
   "Maithili",
   "Sanskrit",
-  "Spanish",
-  "French",
-  "German",
-  "Chinese",
-  "Japanese",
-  "Portuguese",
-  "Russian",
-  "Italian",
-  "Arabic",
-  "Korean",
-  "Dutch",
 ]
 
 interface DocumentPreview {
@@ -108,7 +97,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
         )
       }
 
-      // Upload verification documents if any
+
       if (values.verificationDocuments?.length > 0) {
         uploadPromises.push(
           uploadMultipleToCloudinary(values.verificationDocuments).then(urls => {
@@ -327,7 +316,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
           </div>
 
           <div>
-            <Label htmlFor="location" className="text-base font-medium">Location</Label>
+            <Label htmlFor="location" className="text-base font-medium">Location (city or state)</Label>
             <Field name="location" as={CustomInput} id="location" className="mt-1" />
             <ErrorMessage name="location" component={TextError} />
           </div>
@@ -375,8 +364,8 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                           <CommandItem 
                             key={lang}
                             onSelect={() => {
-                              if (lang.trim() && !values.languages?.includes(lang)) {
-                                setFieldValue("languages", [...(values.languages || []), lang.trim()])
+                              if (lang.trim() && !values?.languages?.includes(lang)) {
+                                setFieldValue("languages", [...(values?.languages || []), lang.trim()])
                               }
                               setNewLanguage("")
                               setOpen(false)
@@ -408,7 +397,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
 
                 <div className="flex flex-wrap gap-2 mt-2">
                   <AnimatePresence>
-                    {values.languages?.map((lang: string) => (
+                    {values?.languages?.map((lang: string) => (
                       <motion.div 
                         key={lang} 
                         className={`flex items-center ${bgColor} px-3 py-1.5 rounded-full text-sm`}
@@ -594,7 +583,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
           <div className="flex justify-end space-x-3 pt-2">
             <Button 
               type="button" 
-              variant="outline" 
+              variant="destructive" 
               onClick={() => setIsEditing(false)} 
               disabled={isSubmitting}
               className="px-5"
@@ -602,8 +591,9 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
               Cancel
             </Button>
             <Button 
+            variant={"outline"}
               type="submit" 
-              disabled={isSubmitting || isUploading || !isValid}
+              disabled={isSubmitting || isUploading}
               className="px-5"
             >
               {isSubmitting ? "Saving..." : "Save Changes"}

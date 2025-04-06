@@ -19,7 +19,6 @@ interface NotificationCardProps {
 
 export default function NotificationCard({ notifications = [] }: NotificationCardProps) {
   
-    console.log("Notifications type:", Array.isArray(notifications));
     console.log("Notifications:", notifications.length > 0 ? notifications : "No notifications");
   
     return (

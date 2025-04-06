@@ -11,7 +11,7 @@ export default function LocationHeader({ onOpenModal, selectedLocation }: Header
   const {bgColor , buttonPrimary} = useThemeConstants()
 
   return (
-    <header className={`flex flex-col items-center py-20 ${bgColor}`}>
+    <header className={`flex flex-col items-center py-20`}>
       <h1 className="text-3xl font-bold mb-4">India's Best Wedding Photographers</h1>
       <Button onClick={onOpenModal} className={`${buttonPrimary} text-white px-4 py-2 rounded-md`}>
         {selectedLocation || "Choose Location"}

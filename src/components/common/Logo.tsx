@@ -10,11 +10,7 @@ const Logo = () => {
       case "dark":
         return "invert(100%) hue-rotate(180deg) brightness(1.2)"; // White-ish with a tint
       case "light":
-        return "invert(0%) brightness(1)"; // Original colors
-      case "primary":
-        return "hue-rotate(90deg) saturate(1.5)"; // Example: shift to a primary color (e.g., blue/green)
-      case "secondary":
-        return "hue-rotate(270deg) saturate(2)"; // Example: shift to a secondary color (e.g., purple)
+        return "invert(100%) brightness(1)"; // Original colors
       default:
         return "invert(0%) brightness(1)"; // Fallback to original
     }

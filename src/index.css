@@ -99,7 +99,7 @@ body.modal-open {
       --popover: 240 6% 5%; /* Slightly more contrast for popups */
       --popover-foreground: 0 0% 98%;
     
-      --primary: 220 14% 65%; /* ShadCN primary color */
+      --primary: 220 14% 65%;
       --primary-foreground: 0 0% 98%;
     
       --secondary: 240 5% 10%; /* Dark grayish secondary */

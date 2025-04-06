@@ -17,8 +17,7 @@ import { Button } from "@/components/ui/button";
 import { CategoryType } from "@/hooks/admin/useAllCategory";
 import { Spinner } from "../ui/spinner";
 import { Input } from "@/components/ui/input";
-import { PlusCircle } from "lucide-react";
-import { useAllVendorCategoryQuery, useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
+import { useAllVendorCategoryQuery } from "@/hooks/vendor/useVendor";
 
 interface VendorCategoryModalProps {
   isOpen: boolean;
@@ -76,7 +75,7 @@ export function VendorCategoryModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Choose or Create Category</DialogTitle>
+          <DialogTitle>Choose a Category</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           {isCreatingNew ? (
@@ -100,25 +99,13 @@ export function VendorCategoryModal({
               </SelectContent>
             </Select>
           )}
-
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => {
-              setIsCreatingNew((prev) => !prev);
-              setSelectedCategory(""); // Reset selected category when switching
-              setNewCategory(""); // Reset new category input when switching
-            }}
-          >
-            <PlusCircle className="mr-2 h-4 w-4" />
-            {isCreatingNew ? "Choose Existing Category" : "Create New Category"}
-          </Button>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
           <Button
+          variant={"outline"}
             onClick={handleSave}
             disabled={isCreatingNew ? !newCategory : !selectedCategory}
           >

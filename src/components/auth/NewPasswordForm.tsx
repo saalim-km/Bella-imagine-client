@@ -9,7 +9,7 @@ import { TRole } from "@/types/User";
 import {
   passwordRequirements,
   passwordSchema,
-} from "@/utils/formikValidators/reset-password.vlidator";
+} from "@/utils/formikValidators/auth/reset-password.vlidator";
 import { useResetPasswordMUtation } from "@/hooks/auth/useResetPassword";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/errorHandler";
