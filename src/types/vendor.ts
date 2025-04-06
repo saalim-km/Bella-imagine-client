@@ -12,6 +12,7 @@ export interface TimeSlot {
   startTime: string;
   endTime: string;
   capacity: number;
+  isBooked: boolean;
 }
 
 export interface DateSlot {
@@ -22,12 +23,14 @@ export interface DateSlot {
 export interface SessionDuration {
   durationInHours: number;
   price: number;
+  _id ?: string;
 }
 
-export interface RecurringAvailability {
-  dayOfWeek: number;
-  startTime: string;
-  endTime: string;
+export interface BookingState {
+  selectedDate: string | null;
+  selectedTimeSlot: TimeSlot | null;
+  selectedDuration: SessionDuration | null;
+  agreedToTerms: boolean;
 }
 
 export interface Location {

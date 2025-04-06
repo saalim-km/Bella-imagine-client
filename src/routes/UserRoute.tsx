@@ -22,7 +22,7 @@ const ClientRoute = () => {
       <Route path="/vendors" element={<AuthClientRoute element={<Vendors />} allowedRoles={["client","vendor"]} />} />
       <Route path="/profile" element = {<AuthClientRoute element={<UserProfile/>} allowedRoles={["client","vendor"]}/>}/>
       <Route path="/photographer/:id" element = {<AuthClientRoute element={<VendorDetails/>} allowedRoles={["client","vendor"]}/>}/>
-      <Route path="/service/:id" element = {<AuthClientRoute element={<BookingServicePage/>} allowedRoles={["client","vendor"]}/>}/>
+      <Route path="/booking/:id" element = {<AuthClientRoute element={<BookingServicePage/>} allowedRoles={["client","vendor"]}/>}/>
       <Route path="/client/forgot-password" element = {<NoClientAuthRoute element={<ForgotPassPage userType="client"/>}/>}/>
       <Route path="*" element = {<Client404/>}/>
     </Routes>

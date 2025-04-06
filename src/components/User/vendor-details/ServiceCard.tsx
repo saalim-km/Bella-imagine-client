@@ -5,7 +5,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Clock, CheckSquare, Camera, FileText, Home, Building } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import Pagination from "@/components/common/Pagination";
 
 interface ServiceCardProps {
   service: IServiceResponse;
@@ -15,7 +17,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
   const navigate = useNavigate();
   
   return (
-    <Card className="h-full w-96 shadow-md hover:shadow-lg transition-shadow p-4">
+    <>
+          <Card className="h-full w-96 shadow-md hover:shadow-lg transition-shadow p-4">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>{service.serviceTitle}</CardTitle>
@@ -135,8 +138,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
             <p className="text-sm text-gray-500">No available dates</p>
           )}
         </div>
+        <Link to={`/booking/${service._id}`}>
+        <Button variant={"outline"} className="mt-2">Book NOw</Button>
+        </Link>
       </CardContent>
     </Card>
+    </>
   );
 };
 

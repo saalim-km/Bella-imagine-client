@@ -60,7 +60,7 @@ const Vendors = () => {
 
     return (
         <div className="mt-20">
-            <Header />
+            <Header/>
             <LocationHeader onOpenModal={() => setIsModalOpen(true)} selectedLocation={filters.location} />
             <LocationModal
             vendors={vendors?.data || []}

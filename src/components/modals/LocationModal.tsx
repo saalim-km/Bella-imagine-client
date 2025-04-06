@@ -6,6 +6,7 @@ import { X, Search, RotateCcw } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { validLocations } from "@/utils/formikValidators/user/profile.validator";
 import { Button } from "@/components/ui/button";
 
 interface LocationModalProps {
@@ -15,10 +16,6 @@ interface LocationModalProps {
   vendors: IVendorsResponse[];
 }
 
-const validLocations = new Set([
-  "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Ahmedabad", "Chennai", "Kolkata", "Pune",
-  // ... (rest of the locations remain the same)
-]);
 
 export default function LocationModal({ isOpen, onClose, onSelectLocation, vendors }: LocationModalProps) {
   const { bgColor } = useThemeConstants();
@@ -72,13 +69,9 @@ export default function LocationModal({ isOpen, onClose, onSelectLocation, vendo
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="flex-1"
               />
-              <Button onClick={handleSearch}>
+              <Button onClick={handleSearch} variant={"outline"}>
                 <Search className="w-4 h-4 mr-2" />
                 Search
-              </Button>
-              <Button variant="outline" onClick={handleReset}>
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Reset
               </Button>
             </div>
 

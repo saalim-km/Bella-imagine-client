@@ -97,3 +97,21 @@ export interface IVendorsResponse extends IClient {
 //   heading: number | null;
 //   speed: number | null;
 // }
+
+
+
+
+// Booking types
+export interface Booking {
+  vendorId: string;
+
+  serviceId: string;
+
+  bookingDate: string;
+  timeSlot: {
+    startTime: string;
+    endTime: string;
+  };
+
+  totalPrice: number;
+}

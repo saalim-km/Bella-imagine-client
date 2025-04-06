@@ -19,6 +19,7 @@ import { useGetPhotographerDetails } from "@/hooks/client/useClient";
 import { Spinner } from "@/components/ui/spinner";
 import ServiceCard from "@/components/User/vendor-details/ServiceCard";
 import WorkSample from "@/components/User/vendor-details/WorkSample";
+import Pagination from "@/components/common/Pagination";
 
 const VendorDetails = () => {
   const {id} = useParams()
@@ -52,14 +53,6 @@ const VendorDetails = () => {
                 <span>Work Samples</span>
               </TabsTrigger>
             </TabsList>
-            <Link to={`/booking/${vendor._id}`}>
-              <Button 
-                variant="default" 
-                className="sm:self-end flex items-center gap-2"
-              >
-                Book Now
-              </Button>
-            </Link>
           </div>
           
           <TabsContent value="services">
@@ -70,7 +63,7 @@ const VendorDetails = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {vendor.services.map((service) => (
                       <ServiceCard
                         key={service._id}
@@ -78,6 +71,7 @@ const VendorDetails = () => {
                       />
                     ))}
                   </div>
+                <Pagination totalPages={3} currentPage={1} onPageChange={()=> console.log('page changed')}/>
               </CardContent>
             </Card>
           </TabsContent>

@@ -1,7 +1,7 @@
 import { clientAxiosInstance } from "@/api/client.axios";
 import { ENDPOINTS } from "@/api/endpoints";
 import { IClientReponse, IProfileUpdate, IProfileUpdateResponse, IVendorsFilter, IVendorsResponse } from "@/types/User";
-import { PaginatedResponse } from "@/types/vendor";
+import { IServiceResponse, PaginatedResponse } from "@/types/vendor";
 import { Category } from "../categories/categoryService";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
 
@@ -49,4 +49,9 @@ export const getAllClientCategories = async(): Promise<{success : boolean , data
 export const getPhotographerDetails = async(id : string) : Promise<IVendorsResponse> => {
     const response = await clientAxiosInstance.get(`/client/photographer/${id}`);
     return response.data;
+}
+
+export const getService = async(id : string) : Promise<IServiceResponse>=> {
+    const response = await clientAxiosInstance.get(`/client/service/${id}`,);
+    return response.data
 }

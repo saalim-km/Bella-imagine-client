@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, LocateFixedIcon, LocateIcon } from "lucide-react";
+import { ChevronDown, RotateCcw } from "lucide-react";
 import { useThemeConstants } from "@/utils/theme/themeUtills";
 import { Category } from "@/services/categories/categoryService";
 import { IVendorsResponse } from "@/types/User";
@@ -99,6 +99,11 @@ export default function   Filters({handleSpecialitySelect ,handleCategorySelect 
       </DropdownMenu>
 
       <Button onClick={()=> navigator.geolocation.getCurrentPosition(handleLocation,handleLocationErr,{enableHighAccuracy : true})} variant={"outline"}>Find Nearby Photographers</Button>
+
+      <Button variant="outline" >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Reset
+              </Button>
     </div>
   );
 }
