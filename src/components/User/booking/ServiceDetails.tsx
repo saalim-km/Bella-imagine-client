@@ -84,8 +84,8 @@ const ServiceDetails: React.FC<ServiceDetailsProps> = ({
             {service.location.city && (
               <p className="mt-1">
                 {service.location.city}
-                {service.location.state ? `, ₹{service.location.state}` : ""}
-                {service.location.country ? `, ₹{service.location.country}` : ""}
+                {service.location.state ? `, ${service.location.state}` : ""}
+                {service.location.country ? `, ${service.location.country}` : ""}
               </p>
             )}
           </div>

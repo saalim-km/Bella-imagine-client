@@ -11,14 +11,14 @@ import Pagination from "@/components/common/Pagination";
 
 interface ServiceCardProps {
   service: IServiceResponse;
+  vendorId : string
 }
 
-const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
-  const navigate = useNavigate();
+const ServiceCard: React.FC<ServiceCardProps> = ({ service , vendorId }) => {
   
   return (
     <>
-          <Card className="h-full w-96 shadow-md hover:shadow-lg transition-shadow p-4">
+    <Card className="h-full w-96 shadow-md hover:shadow-lg transition-shadow p-4">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>{service.serviceTitle}</CardTitle>
@@ -138,8 +138,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
             <p className="text-sm text-gray-500">No available dates</p>
           )}
         </div>
-        <Link to={`/booking/${service._id}`}>
-        <Button variant={"outline"} className="mt-2">Book NOw</Button>
+        <Link to={`/booking/${service._id}/${vendorId}`}>
+        <Button variant={"outline"} className="mt-2">Book Now</Button>
         </Link>
       </CardContent>
     </Card>

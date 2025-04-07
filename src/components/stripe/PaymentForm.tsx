@@ -8,6 +8,9 @@ import {
 } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Booking } from "@/types/User";
+import { useVendorBookingPaymentMutation } from "@/hooks/payment/usePayment";
+import { clientAxiosInstance } from "@/api/client.axios";
 
 // Load Stripe with your public key
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY); 
@@ -15,6 +18,7 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 interface PaymentWrapperProps {
   amount: number;
   setIsSuccess: () => void;
+  bookingData : Booking
   onError: (error: string) => void;
 }
 
@@ -22,54 +26,54 @@ const PaymentForm: React.FC<PaymentWrapperProps> = ({
   amount,
   setIsSuccess,
   onError,
+  bookingData
 }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
+  const {mutate : proceedPayment} = useVendorBookingPaymentMutation()
 
-  const handlePayment = async () => {
+  console.log('data in paymentform :', bookingData);
+  function handlePayment() {
     if (!stripe || !elements) {
-      toast.error("Stripe is not loaded yet.");
       return;
     }
-
-    setLoading(true);
-    try {
-      const clientSecret = await fetch("/api/create-payment-intent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount }),
-      }).then((res) => res.json());
-
-      const cardElement = elements.getElement(CardElement);
-      if (!cardElement) {
-        throw new Error("Card element not found.");
+    proceedPayment(
+      {
+        amount,
+        purpose: "vendor-booking",
+        bookingData: bookingData,
+        createrType: "Client",
+        receiverType: "Vendor",
+      },
+      {
+        onSuccess: async (data) => {
+          const { error: stripeError, paymentIntent } =
+            await stripe.confirmCardPayment(data.clientSecret, {
+              payment_method: {
+                card: elements?.getElement(CardElement)!,
+              },
+            });
+          if (stripeError) {
+            toast.error(stripeError.message || "An error occurred");
+          } else if (paymentIntent.status === "succeeded") {
+            try {
+              await clientAxiosInstance.post("/client/confirm-payment", {
+                paymentIntentId: paymentIntent.id,
+              });
+              setIsSuccess();
+              toast.success("Payment completed.");
+            } catch (error) {
+              console.log("Error in confirm payement=>", error);
+            }
+          }
+        },
+        onError: (error: any) => {
+          toast.error(error.response.data.message);
+        },
       }
-
-      const { error, paymentIntent } = await stripe.confirmCardPayment(
-        clientSecret,
-        {
-          payment_method: {
-            card: cardElement,
-          },
-        }
-      );
-
-      if (error) {
-        throw new Error(error.message || "Payment failed.");
-      }
-
-      if (paymentIntent?.status === "succeeded") {
-        setIsSuccess();
-      } else {
-        throw new Error("Payment not successful.");
-      }
-    } catch (error: any) {
-      onError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -93,7 +97,7 @@ const PaymentForm: React.FC<PaymentWrapperProps> = ({
         />
       </div>
       <Button onClick={handlePayment} disabled={loading} className="w-full bg-blue-600 hover:bg-blue-400">
-        {loading ? "Processing..." : `Pay $${amount.toFixed(2)}`}
+        {loading ? "Processing..." : `Pay ₹ ${amount.toFixed(2)}`}
       </Button>
     </div>
   );

@@ -30,7 +30,7 @@ export interface BookingState {
   selectedDate: string | null;
   selectedTimeSlot: TimeSlot | null;
   selectedDuration: SessionDuration | null;
-  agreedToTerms: boolean;
+  vendorId ?: string
 }
 
 export interface Location {
@@ -77,6 +77,7 @@ export interface IService {
 export interface IServiceResponse {
   _id ?: string;
   serviceTitle: string;
+  vendorId ?: string;
   category: Category
   yearsOfExperience: number;
   styleSpecialty: string[];

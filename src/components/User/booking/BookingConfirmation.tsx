@@ -11,20 +11,23 @@ import { Separator } from "@/components/ui/separator";
 import { BookingState, IServiceResponse } from "@/types/vendor";
 import { toast } from "sonner";
 import { PaymentWrapper } from "@/components/stripe/PaymentForm";
+import { Booking } from "@/types/User";
 
 interface BookingConfirmationProps {
   service: IServiceResponse;
   bookingState: BookingState;
   onConfirmBooking: () => void;
+  isOpen : boolean
+  setIsBookingSucess : ()=> void;
 }
 
 const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
   service,
   bookingState,
   onConfirmBooking,
+  setIsBookingSucess
 }) => {
-  const { selectedDate, selectedTimeSlot, selectedDuration } = bookingState;
-
+  const { selectedDate, selectedTimeSlot, selectedDuration , vendorId} = bookingState;
   const formatTime = (timeString: string | undefined) => {
     if (!timeString) return "";
 
@@ -39,15 +42,19 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
     }
   };
 
-  const handlePaymentSuccess = () => {
-    toast.success("Payment successful!");
-    onConfirmBooking();
-  };
-
   const handlePaymentError = (error: string) => {
     toast.error(error);
   };
 
+  const bookingData : Booking = {
+    bookingDate : selectedDate || '',
+    serviceId : service._id || '',
+    timeSlot : {startTime : selectedTimeSlot?.startTime || '' , endTime : selectedTimeSlot?.endTime || ''},
+    totalPrice : selectedDuration?.price || 0,
+    vendorId : vendorId || ''
+  }
+
+  console.log('final booking date : ',bookingData);
   return (
     <>
       <Card>
@@ -106,8 +113,9 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
       <div className="mt-5">
       {selectedDate && selectedTimeSlot && selectedDuration && (
         <PaymentWrapper
+          bookingData={bookingData}
           amount={selectedDuration.price}
-          setIsSuccess={handlePaymentSuccess}
+          setIsSuccess={setIsBookingSucess}
           onError={handlePaymentError}
         />
       )}

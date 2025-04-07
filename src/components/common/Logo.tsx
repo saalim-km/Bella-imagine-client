@@ -10,7 +10,7 @@ const Logo = () => {
       case "dark":
         return "invert(100%) hue-rotate(180deg) brightness(1.2)"; // White-ish with a tint
       case "light":
-        return "invert(100%) brightness(1)"; // Original colors
+        return "invert(0%) brightness(1)"; // Original colors
       default:
         return "invert(0%) brightness(1)"; // Fallback to original
     }

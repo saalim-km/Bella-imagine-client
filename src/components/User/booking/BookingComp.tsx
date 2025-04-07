@@ -5,17 +5,23 @@ import ServiceDetails from "./ServiceDetails";
 import DateSelector from "./DateSelector";
 import TimeSlotSelector from "./TimeSlotSelector";
 import BookingConfirmation from "./BookingConfirmation";
+import { BookingSuccessModal } from "@/components/modals/BookingSuccess";
+import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
 interface BookingPageProps {
   service: IServiceResponse;
+  vendorId : string
 }
 
-const BookingPage: React.FC<BookingPageProps> = ({ service }) => {
+const BookingPage: React.FC<BookingPageProps> = ({ service , vendorId }) => {
+  const navgiate = useNavigate();
+  const [isBookingSuccess, setIsBookingSuccess] = useState(false);
   const [bookingState, setBookingState] = useState<BookingState>({
     selectedDate: null,
     selectedTimeSlot: null,
     selectedDuration: service.sessionDurations.length > 0 ? service.sessionDurations[0] : null,
-    agreedToTerms: true, // Default to true since we're removing the checkbox
+    vendorId : vendorId
   });
 
   const handleDateSelect = (date: string) => {
@@ -56,9 +62,13 @@ const BookingPage: React.FC<BookingPageProps> = ({ service }) => {
       selectedDate: null,
       selectedTimeSlot: null,
       selectedDuration: service.sessionDurations.length > 0 ? service.sessionDurations[0] : null,
-      agreedToTerms: true,
+      vendorId : vendorId
     });
   };
+
+  function moment() {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <div className="container mx-auto py-8 px-4 mt-16">
@@ -88,11 +98,23 @@ const BookingPage: React.FC<BookingPageProps> = ({ service }) => {
 
         <div>
           <BookingConfirmation
+            setIsBookingSucess={()=> setIsBookingSuccess(true)}
+            isOpen={isBookingSuccess}
             service={service}
             bookingState={bookingState}
             onConfirmBooking={handleConfirmBooking}
           />
         </div>
+
+        <BookingSuccessModal
+        isOpen={isBookingSuccess}
+        onClose={()=> {
+          setIsBookingSuccess(false)
+          navgiate('/');
+        }}
+        eventDate={bookingState.selectedDate || ''}
+        eventName={service.serviceTitle}
+        />
       </div>
     </div>
   );
