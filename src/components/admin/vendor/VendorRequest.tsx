@@ -44,7 +44,7 @@ import Pagination from "@/components/common/Pagination";
 import { useNavigate } from "react-router-dom";
 
 export function VendorRequestsTable() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
@@ -59,7 +59,7 @@ export function VendorRequestsTable() {
   const [isApproving, setIsApproving] = useState(false);
   const { mutate: approveVendor } = useUpdateVendorRequest();
   const { mutate: rejectVendor } = useUpdateVendorRequest();
-  const itemsPerPage = 4;
+  const itemsPerPage = 2;
 
   const FILTER_OPTIONS = [
     { label: "Latest Requests", value: "latest" },
@@ -189,7 +189,9 @@ export function VendorRequestsTable() {
             setRejectReason("");
             setCustomRejectReason("");
             queryClient.invalidateQueries({ queryKey: vendorKeys.lists() });
-            queryClient.invalidateQueries({ queryKey: ["vendor-notifications"]});
+            queryClient.invalidateQueries({
+              queryKey: ["vendor-notifications"],
+            });
             toast.success(data.message);
           },
           onError: (error) => {
@@ -215,7 +217,11 @@ export function VendorRequestsTable() {
                 onChange={handleSearchChange}
                 onKeyDown={handleKeyDown}
               />
-              <Button variant={"outline"} className="rounded-l-none" onClick={handleSearchSubmit}>
+              <Button
+                variant={"outline"}
+                className="rounded-l-none"
+                onClick={handleSearchSubmit}
+              >
                 Search
               </Button>
             </div>
@@ -250,7 +256,7 @@ export function VendorRequestsTable() {
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <Spinner/>
+          <Spinner />
         ) : (
           <>
             <Table>
@@ -283,9 +289,19 @@ export function VendorRequestsTable() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary">
-                          {request.isActive ? "Active" : "inActive"}
-                        </Badge>
+                        {request.isVerified === "pending" && (
+                          <Badge className="bg-yellow-600" variant={"outline"}>
+                            Pending
+                          </Badge>
+                        )}
+                        {request.isVerified === "accept" && (
+                          <Badge className="bg-green-600" variant={"outline"}>
+                            Accepted
+                          </Badge>
+                        )}
+                        {request.isVerified === "reject" && <Badge className="bg-red-600" variant={"outline"}>
+                            Rejected
+                          </Badge>}
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>
@@ -296,31 +312,43 @@ export function VendorRequestsTable() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="p-2">
                             <DropdownMenuItem asChild>
-                              <a onClick={()=> navigate(`/admin/user/${request._id}`)} className="hover:cursor-pointer">
+                              <a
+                                onClick={() =>
+                                  navigate(`/admin/user/${request._id}`)
+                                }
+                                className="hover:cursor-pointer"
+                              >
                                 View Details
                               </a>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem asChild>
                               <div className="flex items-center gap-2 pt-1">
-                                <Button
-                                  size="sm"
-                                  variant="default"
-                                  onClick={() => request._id && handleApprove(request._id)}
-                                  disabled={isApproving}
-                                >
-                                  Approve
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="destructive"
-                                  onClick={() =>
-                                    handleOpenRejectModal(request._id ?? "")
-                                  }
-                                  disabled={isApproving}
-                                >
-                                  Reject
-                                </Button>
+                                {request.isVerified !== "accept" && (
+                                  <>
+                                    <Button
+                                      size="sm"
+                                      variant="default"
+                                      onClick={() =>
+                                        request._id &&
+                                        handleApprove(request._id)
+                                      }
+                                      disabled={isApproving}
+                                    >
+                                      Approve
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="destructive"
+                                      onClick={() =>
+                                        handleOpenRejectModal(request._id ?? "")
+                                      }
+                                      disabled={isApproving}
+                                    >
+                                      Reject
+                                    </Button>
+                                  </>
+                                )}
                               </div>
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -331,7 +359,11 @@ export function VendorRequestsTable() {
                 )}
               </TableBody>
             </Table>
-            <Pagination onPageChange={handlePageChange} currentPage={currentPage} totalPages={totalPages}/>
+            <Pagination
+              onPageChange={handlePageChange}
+              currentPage={currentPage}
+              totalPages={totalPages}
+            />
           </>
         )}
       </CardContent>
