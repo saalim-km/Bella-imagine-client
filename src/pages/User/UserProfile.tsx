@@ -24,6 +24,9 @@ import VendorServices from "@/components/vendor/VendorServices";
 import { IServiceResponse, IWorkSampleResponse } from "@/types/vendor";
 import VendorWorkSample from "@/components/vendor/VendorWorkSample";
 import WorkSampleUpload, { WorkSampleFormData } from "@/components/vendor/work-sample/WorkSampleUpload";
+import { ClientBookingListing } from "./ClientBookingListing";
+import VendorBookingList from "@/components/User/VendorBookingList";
+import { VendorBookingListing } from "../vendor/vendorBookingListing";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -73,9 +76,7 @@ export default function UserProfile() {
   const isLoading = isClientLoading || isVendorLoading;
   const isError = isClientError || isVendorError;
   const userData = userType?.role === "client" ? clientData?.client : vendorData?.vendor;
-  
-  console.log(`User data:`, userData);
-  
+
   const hasCategory = userType?.role === "vendor" && vendorData?.vendor?.categories?.length !== 0;
 
   function handleIsServiceEditing(data : IServiceResponse) {
@@ -273,6 +274,15 @@ export default function UserProfile() {
                     ""
                   )
                 }
+
+                {(activeTab === "bookings-history"  && userType?.role === 'client') &&(
+                  <ClientBookingListing userType={userType?.role}/>
+                )}
+
+                {(activeTab === 'bookings' && userType?.role === 'vendor') && (
+                  <VendorBookingListing userType={userType?.role}/>
+                )}
+
               </div>
             </Card>
           </main>

@@ -63,3 +63,4 @@ export const useGetServiceQuery = (id : string)=> {
     queryFn : ()=> getService(id)
   })
 }
+

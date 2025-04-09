@@ -34,10 +34,21 @@ const PaymentForm: React.FC<PaymentWrapperProps> = ({
   const {mutate : proceedPayment} = useVendorBookingPaymentMutation()
 
   console.log('data in paymentform :', bookingData);
-  function handlePayment() {
+  async function handlePayment() {
     if (!stripe || !elements) {
       return;
     }
+
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
+      type: 'card',
+      card: elements?.getElement(CardElement)!,
+    });
+
+    if (error) {
+      toast.error(error.message || "An error occurred while creating payment method");
+      return;
+    }
+    
     proceedPayment(
       {
         amount,

@@ -23,9 +23,9 @@ clientAxiosInstance.interceptors.response.use(
         try {
           await clientAxiosInstance.post(ENDPOINTS.CLIENT_REFRESH_TOKEN);
           isRefreshing = false;
-
+          
           return clientAxiosInstance(originalRequest);
-        } catch (refreshError) {
+        } catch (refreshError) {  
           isRefreshing = false;
 
           toast.info("Please login again");
@@ -37,22 +37,12 @@ clientAxiosInstance.interceptors.response.use(
     }
 
     if (
-      (error.response.status === 403 &&
-        error.response.data.message ===
-          "Access denied. You do not have permission to access this resource.") ||
-      (error.response.status === 403 &&
-        error.response.data.message === "Token is blacklisted") ||
-      (error.response.status === 403 &&
-        error.response.data.message ===
-          "Access denied: Your account has been blocked" &&
-        !originalRequest._retry)
-    ) {
+      (error.response.status === 403 && error.response.data.message === "Access denied: Your account has been blocked")){
       localStorage.removeItem("clientSession");
       window.location.href = "/";
-      toast.info("Please login again");
+      toast.info(error.response.data.message);
       return Promise.reject(error);
     }
-
     return Promise.reject(error);
   }
 );

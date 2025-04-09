@@ -38,6 +38,10 @@ const Vendors = () => {
         }
     }
 
+    const resetFilters = ()=> {
+        setFilters({location:'',specialty:'',language:'',category:''})
+        setSelectedCategory('');
+    }
 
     const handleFilterChange = (key: keyof typeof filters, value: string | undefined) => {
         setFilters((prev) => ({ ...prev, [key]: value }));
@@ -77,6 +81,7 @@ const Vendors = () => {
                 selectedLanguage={filters.language}
                 selectedSpeciality={filters.specialty}
                 categories={categories?.data || []}
+                resetFilter={resetFilters}
             />
 
             {vendors && vendors.data.map((vendor)=> (

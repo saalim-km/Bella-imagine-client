@@ -34,8 +34,6 @@ const categories = [
 
 const Landing = () => {
   const navigate = useNavigate();
-  const { data: vendors } = useAllVendorsListQuery({ page: 1, limit: 4 });
-  const photographers = vendors?.data || [];
 
   return (
     <div className="w-full">
