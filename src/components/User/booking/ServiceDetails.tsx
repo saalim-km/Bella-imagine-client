@@ -78,7 +78,7 @@ const ServiceDetails: React.FC<ServiceDetailsProps> = ({
             {service.location.options.studio && (
               <p>
                 • Available on location 
-                {service.location.travelFee ? ` (Travel fee: ₹₹{service.location.travelFee.toFixed(2)})` : ""}
+                {service.location.travelFee ? ` (Travel fee: ₹${service.location.travelFee.toFixed(2)})` : ""}
               </p>
             )}
             {service.location.city && (

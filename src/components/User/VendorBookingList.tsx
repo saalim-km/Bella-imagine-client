@@ -97,7 +97,7 @@ export default function VendorBookingList({
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          {/* <Select value={statusFilter} onValueChange={setStatusFilter}>
+          {/* <Select value={st} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
@@ -138,7 +138,7 @@ export default function VendorBookingList({
                 <TableCell>{formatPrice(booking.totalPrice)}</TableCell>
                 <TableCell>
                   <Badge className={getStatusColor(booking.status)}>
-                    {booking.isVendorApproved ? booking.status : "Pending"}
+                    {booking.status}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -150,7 +150,7 @@ export default function VendorBookingList({
                 <TableCell>
                   <Select
                     value={
-                      booking.isVendorApproved ? booking.status : "pending"
+                      booking.status
                     }
                     onValueChange={(value) => {
                       setBookingId(booking._id);
@@ -187,7 +187,7 @@ export default function VendorBookingList({
                       setStatus("completed");
                       setIsConfirmationModalOpen(true);
                     }}
-                    disabled={booking.isVendorApproved}
+                    disabled={booking.isVendorApproved || booking.status === 'cancelled'}
                   >
                     Mark as Complete
                   </Button>

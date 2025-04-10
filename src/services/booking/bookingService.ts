@@ -97,7 +97,7 @@ export const vendorUpdateBookingStatus = async ({
   status: string;
 }) => {
   const response = await vendorAxiosInstance.patch(
-    "/_ve/vendor/booking/status",
+    "/vendor/booking/status",
     {},
     {
       params: {
