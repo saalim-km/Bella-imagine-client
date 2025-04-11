@@ -41,10 +41,10 @@ export const useAllVendorQuery = (filter: any = {}, pagination: PaginationParams
   });
 };
 
-export const useVendorDetailsQuery = (userId : string)=> {
+export const useVendorDetailsQuery = (userId : string , role : 'vendor' | 'client')=> {
   return useQuery({
     queryKey : vendorKeys.detail(userId),
-    queryFn : ()=> AdminService.get<IUserDetailsResponse>('/user/details',{id : userId , role : "vendor"})
+    queryFn : ()=> AdminService.get<IUserDetailsResponse>('/user/details',{id : userId , role : role})
   })
 }
 

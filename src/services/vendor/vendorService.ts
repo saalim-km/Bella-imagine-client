@@ -5,13 +5,14 @@ import { IProfileUpdate, IVendorReponse } from "@/types/User";
 import { IService, IServiceFilter, IServiceResponse, IWorkSampleRequest, IWorkSampleFilter, PaginatedResponse, IWorkSampleResponse } from "@/types/vendor";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
 import { data } from "react-router-dom";
+import { Category } from "../categories/categoryService";
 
 
 
 
 export interface IVendor extends IClient {
     vendorId ?: string,
-    categories ?: string[];
+    categories ?: Category[];
     portfolioWebsite : string;
     languages ?: string[];
     description ?: string;

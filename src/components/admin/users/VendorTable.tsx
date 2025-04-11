@@ -236,7 +236,7 @@ export function UserTable() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem asChild>
-                                <a onClick={()=> navigate(`/admin/user/${vendor._id}`)}>View Details</a>
+                                <a onClick={()=> navigate(`/admin/user/${vendor._id}/vendor`)}>View Details</a>
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem

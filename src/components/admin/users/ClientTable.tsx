@@ -245,7 +245,7 @@ export function ClientTable() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem asChild>
-                                <a onClick={()=> navigate(`/admin/user/${client._id}`)}>View Details</a>
+                                <a onClick={()=> navigate(`/admin/user/${client._id}/client`)}>View Details</a>
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
