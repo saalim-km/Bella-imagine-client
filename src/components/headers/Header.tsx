@@ -154,9 +154,12 @@ export default function Header({ onClick }: IHeader) {
         {/* Desktop Navigation */}
         {location.pathname !== "/admin/login" && (
           <nav className="hidden md:flex items-center space-x-6">
-            <NavLink to="/" active={location.pathname === "/"}>Home</NavLink>
+            <NavLink to="/home" active={location.pathname === "/home"}>Home</NavLink>
             <NavLink to="/vendors" active={location.pathname === "/vendors"}>
               Photographers
+            </NavLink>
+            <NavLink to="/community" active={location.pathname === "/community"}>
+              Community & Contest
             </NavLink>
           </nav>
         )}
