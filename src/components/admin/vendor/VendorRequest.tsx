@@ -314,7 +314,7 @@ export function VendorRequestsTable() {
                             <DropdownMenuItem asChild>
                               <a
                                 onClick={() =>
-                                  navigate(`/admin/user/${request._id}`)
+                                  navigate(`/admin/user/${request._id}/vendor`)
                                 }
                                 className="hover:cursor-pointer"
                               >

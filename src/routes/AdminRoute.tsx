@@ -8,6 +8,7 @@ import { NoAdminAuthRoute } from '@/protected/PublicRoute'
 import CategoryPage from '@/pages/admin/CategoryPage'
 import { Route, Routes } from 'react-router-dom'
 import { Admin404 } from '@/components/404/Admin404'
+import AdminWalletPage from '@/pages/admin/AdminTransactionsPage'
 
 const AdminRoute = () => {
   return (
@@ -17,7 +18,8 @@ const AdminRoute = () => {
       <Route path='/users' element = {<AuthAdminRoute element={<UsersPage/>} allowedRoles={["admin"]}/>}/>
       <Route path='/vendor-requests' element = {<AuthAdminRoute element={<VendorRequestsPage/>} allowedRoles={["admin"]}/>}/>
       <Route path='/categories' element = {<AuthAdminRoute element={<CategoryPage/>} allowedRoles={["admin"]}/>}/>
-      <Route path='/user/:id' element = {<AuthAdminRoute element={<UserDetailsPage/>} allowedRoles={["admin"]}/>}/>
+      <Route path='/user/:id/:role' element = {<AuthAdminRoute element={<UserDetailsPage/>} allowedRoles={["admin"]}/>}/>
+      <Route path='/payments' element = {<AuthAdminRoute element={<AdminWalletPage/>} allowedRoles={["admin"]}/>}/>
       <Route path='*' element={<Admin404/>}/>
     </Routes>
   )

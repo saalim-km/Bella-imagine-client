@@ -15,7 +15,7 @@ console.log(service);
   return (
     <>
       <Header/>
-      <BookingPage service={service as IServiceResponse} vendorId = {vendorId}/>
+      <BookingPage service={service as IServiceResponse} vendorId = {vendorId!}/>
     </>
   )
 }

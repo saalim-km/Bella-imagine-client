@@ -11,8 +11,14 @@ import Header from "@/components/headers/Header";
 import Spinner from "@/components/common/LogoSpinner";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { useClientDetailsQuery, useUpdateClientMutation } from "@/hooks/client/useClient";
-import { useUpdateVendorMutation, useVendorDetailsQuery } from "@/hooks/vendor/useVendor";
+import {
+  useClientDetailsQuery,
+  useUpdateClientMutation,
+} from "@/hooks/client/useClient";
+import {
+  useUpdateVendorMutation,
+  useVendorDetailsQuery,
+} from "@/hooks/vendor/useVendor";
 import { IProfileUpdate } from "@/types/User";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -23,7 +29,14 @@ import { ServiceForm } from "@/components/vendor/services/serviceForm/Service";
 import VendorServices from "@/components/vendor/VendorServices";
 import { IServiceResponse, IWorkSampleResponse } from "@/types/vendor";
 import VendorWorkSample from "@/components/vendor/VendorWorkSample";
-import WorkSampleUpload, { WorkSampleFormData } from "@/components/vendor/work-sample/WorkSampleUpload";
+import WorkSampleUpload, {
+  WorkSampleFormData,
+} from "@/components/vendor/work-sample/WorkSampleUpload";
+import { ClientBookingListing } from "./ClientBookingListing";
+import VendorBookingList from "@/components/User/VendorBookingList";
+import { VendorBookingListing } from "../vendor/vendorBookingListing";
+import ClientWallet from "./ClientWalletPage";
+import VendorWallet from "../vendor/VendorWallet";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -33,54 +46,53 @@ const tabTitles: Record<string, string> = {
   bookings: "Bookings",
   "allocate-slot": "Allocate Slot",
   "upload-work": "Upload Work",
-  "services": "Services",
-  "work-sample" : "Work Sample"
+  services: "Services",
+  "work-sample": "Work Sample",
 };
 
 export default function UserProfile() {
-  const queryClient = useQueryClient() 
-  const {mutate : joinCategory} = useJoinCategoryRequestMutation()
-  const {mutate : updateVendor} = useUpdateVendorMutation()
-  const {mutate : updateClient} = useUpdateClientMutation()
-  const [isModal , setIsModal] = useState(false)
+  const queryClient = useQueryClient();
+  const { mutate: joinCategory } = useJoinCategoryRequestMutation();
+  const { mutate: updateVendor } = useUpdateVendorMutation();
+  const { mutate: updateClient } = useUpdateClientMutation();
+  const [isModal, setIsModal] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
-  const [isServiceCreating , setServiceCreating] = useState(false);
-  const [serviceEditData , setIsServiceEditData] = useState<IServiceResponse>();
-  const [isWorkSampleCreating , setIsWorkSampleCreating] = useState(false);
-  const [workSample , setWorkSample] = useState<IWorkSampleResponse>()
+  const [isServiceCreating, setServiceCreating] = useState(false);
+  const [serviceEditData, setIsServiceEditData] = useState<IServiceResponse>();
+  const [isWorkSampleCreating, setIsWorkSampleCreating] = useState(false);
+  const [workSample, setWorkSample] = useState<IWorkSampleResponse>();
   const userType = useSelector((state: RootState) => {
     if (state.vendor.vendor) return state.vendor.vendor;
     if (state.client.client) return state.client.client;
     return null;
   });
-  
+
   // ---------------------------Fetching client data if the role is only cient--------------------------------|
   const {
     data: clientData,
     isLoading: isClientLoading,
     isError: isClientError,
   } = useClientDetailsQuery(userType?.role === "client");
-  
+
   // ---------------------------Fetching vendor data if the role is only vendor--------------------------------|
   const {
     data: vendorData,
     isLoading: isVendorLoading,
     isError: isVendorError,
   } = useVendorDetailsQuery(userType?.role === "vendor");
-  
-  
+
   const isLoading = isClientLoading || isVendorLoading;
   const isError = isClientError || isVendorError;
-  const userData = userType?.role === "client" ? clientData?.client : vendorData?.vendor;
-  
-  console.log(`User data:`, userData);
-  
-  const hasCategory = userType?.role === "vendor" && vendorData?.vendor?.categories?.length !== 0;
+  const userData =
+    userType?.role === "client" ? clientData?.client : vendorData?.vendor;
 
-  function handleIsServiceEditing(data : IServiceResponse) {
+  const hasCategory =
+    userType?.role === "vendor" && vendorData?.vendor?.categories?.length !== 0;
+
+  function handleIsServiceEditing(data: IServiceResponse) {
     setIsServiceEditData(data);
-    setServiceCreating(!isServiceCreating)
+    setServiceCreating(!isServiceCreating);
   }
 
   function handleIsWorkSampleCreating() {
@@ -88,31 +100,31 @@ export default function UserProfile() {
     setWorkSample(undefined);
   }
 
-  function handleUpdateProfile(data : IProfileUpdate) {
-    console.log('data for update : ',data);
-    if(userType?.role === "vendor") {
+  function handleUpdateProfile(data: IProfileUpdate) {
+    console.log("data for update : ", data);
+    if (userType?.role === "vendor") {
       console.log(data);
-      updateVendor(data,{
-        onSuccess : (data)=> {
-          queryClient.invalidateQueries({queryKey : ["vendor-profile"]})
-          toast.success(data.message)
+      updateVendor(data, {
+        onSuccess: (data) => {
+          queryClient.invalidateQueries({ queryKey: ["vendor-profile"] });
+          toast.success(data.message);
         },
-        onError : (error)=> {
+        onError: (error) => {
           console.log(error);
-          toast.error(error.message)
-        }
-      })
-    }else {
-      updateClient(data,{
-        onSuccess : (data)=> {
-          queryClient.invalidateQueries({queryKey : ["client-profile"]})
-          toast.success(data.message)
+          toast.error(error.message);
         },
-        onError : (error)=> {
+      });
+    } else {
+      updateClient(data, {
+        onSuccess: (data) => {
+          queryClient.invalidateQueries({ queryKey: ["client-profile"] });
+          toast.success(data.message);
+        },
+        onError: (error) => {
           console.log(error);
           console.log(error.message);
-        }
-      })
+        },
+      });
     }
   }
 
@@ -121,33 +133,33 @@ export default function UserProfile() {
   }
 
   function handleModalClose() {
-    setIsModal(false)
+    setIsModal(false);
   }
 
-  function handleJoinCategory(category : string) {
-    joinCategory(category,{
-      onSuccess : (data)=> {
-        queryClient.invalidateQueries({queryKey : ["client-profile"]})
-        toast.success(data.message)
+  function handleJoinCategory(category: string) {
+    joinCategory(category, {
+      onSuccess: (data) => {
+        queryClient.invalidateQueries({ queryKey: ["client-profile"] });
+        toast.success(data.message);
       },
-      onError :(err)=> {
-        handleError(err)
-      }
-    })
+      onError: (err) => {
+        handleError(err);
+      },
+    });
   }
 
-  function handleIsServiceCreating(){
-    setServiceCreating(!isServiceCreating)
+  function handleIsServiceCreating() {
+    setServiceCreating(!isServiceCreating);
     localStorage.removeItem("serviceDraft");
-    setIsServiceEditData(undefined)
-    handleIsServiceEditing
+    setIsServiceEditData(undefined);
+    handleIsServiceEditing;
   }
 
-  function handleisWorkSampleEditing(workSample : IWorkSampleResponse) {
-    console.log('in handleisWorkSampleEditing =>>>>>');
+  function handleisWorkSampleEditing(workSample: IWorkSampleResponse) {
+    console.log("in handleisWorkSampleEditing =>>>>>");
     setIsWorkSampleCreating(true);
-    console.log('got the data for eidt : ',workSample);
-    setWorkSample(workSample)
+    console.log("got the data for eidt : ", workSample);
+    setWorkSample(workSample);
   }
 
   if (isLoading) {
@@ -157,8 +169,7 @@ export default function UserProfile() {
       </div>
     );
   }
-  
-  
+
   if (isError || !userData) {
     return (
       <div className="flex justify-center items-center min-h-screen text-red-500">
@@ -166,27 +177,25 @@ export default function UserProfile() {
       </div>
     );
   }
-  
 
   return (
     <div className="mt-14">
       <Header />
       <div className="container mx-auto p-4 lg:p-6">
-        {userType?.role === "vendor" && (
-          !hasCategory ? (
+        {userType?.role === "vendor" &&
+          (!hasCategory ? (
             <div className="mb-4">
               <Button variant="outline" onClick={handleModalOpen}>
-          Choose a Category
+                Choose a Category
               </Button>
             </div>
           ) : (
             <div className="mb-4">
               <Button variant="outline" onClick={handleModalOpen}>
-          Add Category
+                Add Category
               </Button>
             </div>
-          )
-        )}
+          ))}
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Desktop Sidebar */}
           <aside className="hidden lg:block w-64 shrink-0">
@@ -224,7 +233,9 @@ export default function UserProfile() {
             <Card className={`p-6`}>
               <div className="flex justify-between items-center mb-6">
                 {/* Dynamic Title */}
-                <h2 className="text-2xl font-bold">{tabTitles[activeTab] || "Dashboard"}</h2>
+                <h2 className="text-2xl font-bold">
+                  {tabTitles[activeTab] || "Dashboard"}
+                </h2>
 
                 {activeTab === "profile" && (
                   <Button
@@ -250,38 +261,75 @@ export default function UserProfile() {
                   ) : (
                     <ProfileInfo data={userData} />
                   )
-                ) :''}
+                ) : (
+                  ""
+                )}
 
                 {activeTab === "services" ? (
                   isServiceCreating ? (
-                    <ServiceForm handleIsCreatingService={handleIsServiceCreating} editData={serviceEditData} vendorData={vendorData ? vendorData.vendor : undefined}/>
+                    <ServiceForm
+                      handleIsCreatingService={handleIsServiceCreating}
+                      editData={serviceEditData}
+                      vendorData={vendorData ? vendorData.vendor : undefined}
+                    />
                   ) : (
-                    <VendorServices handleIsCreateService={handleIsServiceCreating} handleIsEditingService={handleIsServiceEditing} />
+                    <VendorServices
+                      handleIsCreateService={handleIsServiceCreating}
+                      handleIsEditingService={handleIsServiceEditing}
+                    />
                   )
-                ) : ''}
-
+                ) : (
+                  ""
+                )}
 
                 {activeTab === "work-sample" ? (
                   isWorkSampleCreating ? (
-                    <WorkSampleUpload workSampleData={workSample} vendorId={userType?._id || ""} handleCancelCreatingWorkSample={handleIsWorkSampleCreating}/>
+                    <WorkSampleUpload
+                      workSampleData={workSample}
+                      vendorId={userType?._id || ""}
+                      handleCancelCreatingWorkSample={
+                        handleIsWorkSampleCreating
+                      }
+                    />
+                  ) : (
+                    <VendorWorkSample
+                      handleIsWorkSampleEditing={handleisWorkSampleEditing}
+                      handleIsCreateWorkSample={handleIsWorkSampleCreating}
+                    />
                   )
-                  :(
-                    <VendorWorkSample handleIsWorkSampleEditing={handleisWorkSampleEditing} handleIsCreateWorkSample={handleIsWorkSampleCreating} />
-                  )
-                  ) 
-                  : (
-                    ""
-                  )
-                }
+                ) : (
+                  ""
+                )}
+
+                {activeTab === "bookings-history" &&
+                  userType?.role === "client" && (
+                    <ClientBookingListing userType={userType?.role} />
+                  )}
+
+                {activeTab === "bookings" && userType?.role === "vendor" && (
+                  <VendorBookingListing userType={userType?.role} />
+                )}
+
+                {activeTab === "wallet" && userType?.role === "client" && (
+                  <ClientWallet/>
+                )}
+
+                {activeTab === "wallet" && userType?.role === "vendor" && (
+                  <VendorWallet/>
+                )}
               </div>
             </Card>
           </main>
         </div>
       </div>
 
-      {isModal &&
-      <VendorCategoryModal isOpen = {isModal} onClose={handleModalClose} onSave={handleJoinCategory}/>
-      }
+      {isModal && (
+        <VendorCategoryModal
+          isOpen={isModal}
+          onClose={handleModalClose}
+          onSave={handleJoinCategory}
+        />
+      )}
     </div>
   );
 }
