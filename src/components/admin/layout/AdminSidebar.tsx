@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom"
-import { BarChart, Calendar, DollarSign, Layers, LayoutDashboard, Settings, Tag, Users } from "lucide-react"
+import { Calendar, CalendarCheck, DollarSign, Layers, LayoutDashboard, Settings, Tag, Users } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -60,10 +60,10 @@ export function AdminSidebar() {
       isActive: pathname === "/admin/categories",
     },
     {
-      title: "Reports & Analytics",
-      icon: BarChart,
-      href: "/admin/reports",
-      isActive: pathname === "/admin/reports",
+      title: "Community & Contest",
+      icon: CalendarCheck,
+      href: "/admin/contest",
+      isActive: pathname === "/admin/contest",
     },
   ]
 

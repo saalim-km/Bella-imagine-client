@@ -13,7 +13,6 @@ import Header from "../headers/Header";
 export const Admin404 = () => {
   return (
     <>
-      <Header/>
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
         <Card className="w-full max-w-3xl">
           <CardHeader className="bg-primary">
