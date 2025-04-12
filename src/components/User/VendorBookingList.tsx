@@ -97,17 +97,6 @@ export default function VendorBookingList({
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          {/* <Select value={st} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[180px]">
-              <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="confirmed">Confirmed</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
-            </SelectContent>
-          </Select> */}
         </div>
       </div>
 

@@ -34,6 +34,8 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import moment from "moment";
 import ReviewRatingSystem from "./ReviewRatingModal";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 export interface BookingList {
   serviceDetails: {
@@ -76,6 +78,11 @@ export function BookingDetailsModal({
   trigger,
 }: BookingDetailsModalProps) {
   const [open, setOpen] = useState(false);
+  const userType = useSelector((state: RootState) => {
+    if (state.vendor.vendor) return state.vendor.vendor;
+    if (state.client.client) return state.client.client;
+    return null;
+  });
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -285,7 +292,7 @@ export function BookingDetailsModal({
               </div>
             </motion.div>
 
-            {booking.isClientApproved && booking.isVendorApproved && (
+            {booking.isClientApproved && booking.isVendorApproved && userType?.role === 'client' && (
               <motion.div
                 variants={itemVariants}
                 className="space-y-3 flex justify-end"
