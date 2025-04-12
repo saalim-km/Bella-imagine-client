@@ -132,25 +132,9 @@ const ContestManagement = () => {
                       <Trophy className="h-5 w-5 text-yellow-500" />
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      <li className="flex justify-between items-center">
-                        <span>Weekly Challenge: Street Photography</span>
-                        <Badge count={32} label="entries" />
-                      </li>
-                      <li className="flex justify-between items-center">
-                        <span>Photo of the Month: Nature</span>
-                        <Badge count={75} label="entries" />
-                      </li>
-                      <li className="flex justify-between items-center">
-                        <span>Best of 2024</span>
-                        <Badge count={210} label="entries" />
-                      </li>
-                    </ul>
-                  </CardContent>
                   <CardFooter>
                     <Button asChild variant="outline" className="w-full">
-                      <Link to="/admin/contests">
+                      <Link to="/admin/contest/list">
                         <List className="h-4 w-4 mr-2" />
                         View All Contests
                       </Link>
@@ -165,40 +149,9 @@ const ContestManagement = () => {
                       <ImagePlus className="h-5 w-5 text-purple-500" />
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      <li className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <span>Urban Vibes</span>
-                          <span className="text-xs text-muted-foreground">
-                            by Sophie Chen
-                          </span>
-                        </div>
-                        <span className="text-xs">1h ago</span>
-                      </li>
-                      <li className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <span>Mountain Sunrise</span>
-                          <span className="text-xs text-muted-foreground">
-                            by James Wilson
-                          </span>
-                        </div>
-                        <span className="text-xs">3h ago</span>
-                      </li>
-                      <li className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <span>Wedding Dance</span>
-                          <span className="text-xs text-muted-foreground">
-                            by Emma Davis
-                          </span>
-                        </div>
-                        <span className="text-xs">5h ago</span>
-                      </li>
-                    </ul>
-                  </CardContent>
                   <CardFooter>
                     <Button asChild variant="outline" className="w-full">
-                      <Link to="/admin/contests/entries/weekly">
+                      <Link to="/admin/contest/">
                         <Award className="h-4 w-4 mr-2" />
                         Review Entries
                       </Link>

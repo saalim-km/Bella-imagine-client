@@ -11,6 +11,7 @@ import { Admin404 } from '@/components/404/Admin404'
 import AdminWalletPage from '@/pages/admin/AdminTransactionsPage'
 import ContestPage from '@/pages/admin/ContestPage'
 import CreateContestPage from '@/pages/admin/CreateContestPage'
+import ContestListPage from '@/pages/admin/ContestListPage'
 
 const AdminRoute = () => {
   return (
@@ -24,6 +25,7 @@ const AdminRoute = () => {
       <Route path='/payments' element = {<AuthAdminRoute element={<AdminWalletPage/>} allowedRoles={["admin"]}/>}/>
       <Route path='/contest' element = {<AuthAdminRoute element={<ContestPage/>} allowedRoles={["admin"]}/>}/>
       <Route path='/contest/create' element = {<AuthAdminRoute element={<CreateContestPage/>} allowedRoles={["admin"]}/>}/>
+      <Route path='/contest/list' element = {<AuthAdminRoute element={<ContestListPage/>} allowedRoles={["admin"]}/>}/>
       <Route path='*' element={<Admin404/>}/>
     </Routes>
   )

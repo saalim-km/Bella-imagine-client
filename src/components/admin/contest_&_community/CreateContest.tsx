@@ -33,12 +33,15 @@ import { cn } from "@/lib/utils";
 import { useAllCategoryQuery } from "@/hooks/admin/useAllCategory";
 import { contestValidationSchema } from "@/utils/formikValidators/contest/contest.validator";
 import { IContest } from "@/types/Contest";
+import { useCreateContestMutation } from "@/hooks/contest/useContest";
+import { toast } from "sonner";
+import { handleError } from "@/utils/Error/errorHandler";
 
 const ContestCreate = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const editId = searchParams.get("edit");
-
+  const {mutate : createContest} = useCreateContestMutation()
   const [isEditing, setIsEditing] = useState(false);
 
 
@@ -96,7 +99,15 @@ const ContestCreate = () => {
   const handleSubmit = async (
     values : IContest
   ) => {
-    console.log(values);
+    createContest(values,{
+      onSuccess : (data)=> {
+        toast.success(data.message)
+        navigate(-1)
+      },
+      onError:  (err)=> {
+        handleError(err)
+      }
+    })
   };
 
   return (
