@@ -33,7 +33,7 @@ const ContestManagement = () => {
         </div>
 
         <Button asChild>
-          <Link to="/admin/contests/create">
+          <Link to="/admin/contest/create">
             <CalendarPlus className="h-4 w-4 mr-2" />
             Create New Contest
           </Link>
@@ -209,7 +209,7 @@ const ContestManagement = () => {
             </CardContent>
             <CardFooter>
               <Button asChild className="w-full">
-                <Link to="/admin/contests/create">
+                <Link to="/admin/contest/create">
                   <CalendarPlus className="h-4 w-4 mr-2" />
                   Create New Contest
                 </Link>
