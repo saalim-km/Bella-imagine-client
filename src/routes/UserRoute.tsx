@@ -11,6 +11,7 @@ import ForgotPassPage from "@/pages/User/ForgotPassPage";
 import { Client404 } from "@/components/404/Client404";
 import VendorDetails from "@/pages/User/VendorDetailsPage";
 import BookingServicePage from "@/pages/User/BookingServicePage";
+import CommunityPage from "@/pages/User/contest_community/CommunityPage";
 
 const ClientRoute = () => {
   return (
@@ -23,6 +24,7 @@ const ClientRoute = () => {
       <Route path="/profile" element = {<AuthClientRoute element={<UserProfile/>} allowedRoles={["client","vendor"]}/>}/>
       <Route path="/photographer/:id" element = {<AuthClientRoute element={<VendorDetails/>} allowedRoles={["client","vendor"]}/>}/>
       <Route path="/booking/:id/:vendorId" element = {<AuthClientRoute element={<BookingServicePage/>} allowedRoles={["client","vendor"]}/>}/>
+      <Route path="/community" element = {<AuthClientRoute element={<CommunityPage/>} allowedRoles={["client","vendor"]}/>}/>
       <Route path="/client/forgot-password" element = {<NoClientAuthRoute element={<ForgotPassPage userType="client"/>}/>}/>
       <Route path="*" element = {<Client404/>}/>
     </Routes>

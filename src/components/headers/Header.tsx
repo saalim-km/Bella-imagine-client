@@ -158,9 +158,37 @@ export default function Header({ onClick }: IHeader) {
             <NavLink to="/vendors" active={location.pathname === "/vendors"}>
               Photographers
             </NavLink>
-            <NavLink to="/community" active={location.pathname === "/community"}>
-              Community & Contest
-            </NavLink>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+              <motion.div
+                className={`relative text-base font-semibold ${textColor} cursor-pointer transition-colors px-3 py-2 rounded-md hover:bg-gray-100/50 dark:hover:bg-gray-800/50`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Community & Contest
+              </motion.div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+              <DropdownMenuItem
+                onClick={() => navigate("/community")}
+                className="text-base py-2"
+              >
+                Community
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => navigate("/leaderboard")}
+                className="text-base py-2"
+              >
+                Leaderboard
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => navigate("/contest")}
+                className="text-base py-2"
+              >
+                Contest
+              </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
         )}
 
