@@ -17,3 +17,9 @@ export interface IContest {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+
+export interface PaginatedRequestContest {
+  status ?: string
+  search ?: string
+}
