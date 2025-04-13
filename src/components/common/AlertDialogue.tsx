@@ -34,6 +34,7 @@ export const ReusableAlertDialog: React.FC<ReusableAlertDialogProps> = ({
   onCancel,
   confirmVariant = "destructive",
 }) => {
+  
   const handleConfirm = () => {
     onConfirm();
   };
