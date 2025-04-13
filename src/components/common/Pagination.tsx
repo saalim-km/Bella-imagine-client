@@ -13,6 +13,7 @@ const Pagination: React.FC<PaginationProps> = ({
   totalPages,
   onPageChange,
 }) => {
+  console.log(`in pagination component , totalPage : ${totalPages} , currentPage : ${currentPage}`);
   const pageNumbers = [];
   console.log(totalPages, "total pages");
   for (let i = 1; i <= totalPages; i++) {

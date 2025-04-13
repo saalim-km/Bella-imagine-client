@@ -17,7 +17,7 @@ interface DataTableProps<T> {
   columns: ColumnDef<T>[]
   currentPage?: number
   totalPages?: number
-  onPageChange?: (page: number) => void
+  onPageChange : (page: number) => void
   emptyMessage?: string
   className?: string
   isLoading?: boolean
@@ -64,11 +64,9 @@ export function DataTable<T extends Record<string, any>>({
         </Table>
       )}
 
-      {totalPages > 1 && onPageChange && (
         <div className="mt-4">
           <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={onPageChange} />
         </div>
-      )}
     </Card>
   )
 }

@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { ProfileInfo } from '@/components/User/ProfileInfo'
 import { useVendorDetailsQuery } from '@/hooks/admin/useVendor'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const UserDetailsPage = () => {
     const {id , role} = useParams()
@@ -16,9 +17,10 @@ const UserDetailsPage = () => {
   return (
     <AdminLayout>
         <div>
-            <Button variant={"outline"} onClick={()=> navigate('/admin/vendor-requests')} >
-              Go Back
-            </Button>
+        <Button variant="ghost" className="mb-2" onClick={() => navigate(-1)}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
             {data?.user && <ProfileInfo data={data.user}/>}
         </div>
     </AdminLayout>

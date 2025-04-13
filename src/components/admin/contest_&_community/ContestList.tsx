@@ -45,7 +45,11 @@ const ContestList = () => {
     search: filters.searchQuery,
     status: filters.status,
   });
-  const totalPages = Math.max(1, Math.ceil(contestData?.total || 1 / 5));
+  const totalContest = contestData?.total || 0
+  console.log('total contest : ',totalContest);
+  const totalPages = Math.max(1, Math.ceil(totalContest / 5));
+  console.log('total pages : ',totalPages);
+
   const handleDelete = () => {
     if (selectedContest) {
       toast({
