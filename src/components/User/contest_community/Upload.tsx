@@ -22,8 +22,11 @@ import { Upload, Image, X } from "lucide-react";
 import { useAllClientCategories } from "@/hooks/client/useClient";
 import { Category } from "@/services/categories/categoryService";
 import { uploadToCloudinary } from "@/utils/upload-cloudinary/cloudinary";
-import { useAllClientContestQuery } from "@/hooks/contest/useContest";
+import { useAllClientContestQuery, useParticipateContestMutation } from "@/hooks/contest/useContest";
 import { toast } from "sonner";
+import { IContestUpload } from "@/types/Contest";
+import { useNavigate } from "react-router-dom";
+import { handleError } from "@/utils/Error/errorHandler";
 
 const UploadPhoto = () => {
   
@@ -34,7 +37,8 @@ const UploadPhoto = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile , setImageFile] = useState<File>()
   const [uploading, setUploading] = useState(false);
-
+  const {mutate : uploadContest} = useParticipateContestMutation()
+  const navigate = useNavigate()
   const {data : clientCategories } = useAllClientCategories()
   const categories : Category[] = clientCategories?.data || []
   
@@ -87,15 +91,24 @@ const UploadPhoto = () => {
 
 
     const imageUrl = await uploadToCloudinary(imageFile)
-    const data = {
+    const data : IContestUpload = {
         title : title,
         caption : caption,
-        category : category,
-        contest : contest,
+        categoryId : category,
+        contestId : contest,
         image : imageUrl
     }
     console.log('got the data : ',data);
-    console.log(imageUrl);
+    uploadContest(data,{
+      onSuccess : (data)=> {
+        setUploading(false)
+        toast.success(data.message)
+        navigate(-1)
+      },
+      onError : (err)=> {
+        handleError(err)
+      }
+    })
   };
   
   return (
@@ -170,7 +183,7 @@ const UploadPhoto = () => {
               
               {/* Caption */}
               <div className="space-y-2">
-                <Label htmlFor="caption">Caption (optional)</Label>
+                <Label htmlFor="caption">Caption</Label>
                 <Textarea
                   id="caption"
                   placeholder="Tell the story behind your photo"
@@ -199,7 +212,7 @@ const UploadPhoto = () => {
               
               {/* Contest */}
               <div className="space-y-2">
-                <Label htmlFor="contest">Contest (optional)</Label>
+                <Label htmlFor="contest">Contest</Label>
                 <Select value={contest} onValueChange={setContest}>
                   <SelectTrigger>
                     <SelectValue placeholder="Enter a contest" />

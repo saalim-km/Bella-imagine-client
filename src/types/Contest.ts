@@ -23,3 +23,12 @@ export interface PaginatedRequestContest {
   status ?: string
   search ?: string
 }
+
+
+export interface IContestUpload {
+  title: string;
+  caption: string;
+  image : string;
+  categoryId: string;
+  contestId: string;
+}
