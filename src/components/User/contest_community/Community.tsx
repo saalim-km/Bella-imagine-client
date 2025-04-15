@@ -66,29 +66,12 @@ const Community = () => {
     }
   ];
   
-//   const activeContests = [
-//     {
-//       id: "weekly",
-//       title: "Weekly Challenge: Street Photography",
-//       description: "Capture the essence of urban life and street scenes.",
-//       endsIn: "4 days",
-//       participants: 32
-//     },
-//     {
-//       id: "monthly",
-//       title: "Photo of the Month: Nature",
-//       description: "Show us your best nature shots - landscapes, wildlife, plants.",
-//       endsIn: "15 days",
-//       participants: 75
-//     }
-//   ];
-  
   const {data : contests} = useAllClientContestQuery({status : 'active'})
   const activeContests = contests?.data || []
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-950 py-16 md:py-24 mt-20">
+      <section className="relative py-16 md:py-24 mt-20">
         <div className="container px-4 md:px-6">
           <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
             <motion.div 
@@ -107,13 +90,13 @@ const Community = () => {
               </div>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button size="lg" asChild>
-                  <Link to="/community">
+                  <Link to="/community/feed">
                     <Users className="mr-2 h-5 w-5" />
                     Explore Community
                   </Link>
                 </Button>
                 <Button size="lg" variant="outline" asChild>
-                  <Link to="/upload">
+                  <Link to="/contest/upload">
                     <Upload className="mr-2 h-5 w-5" />
                     Upload Your Photo
                   </Link>
@@ -151,7 +134,7 @@ const Community = () => {
       </section>
       
       {/* Featured Photos Section */}
-      <section className="py-12 bg-white dark:bg-gray-950">
+      <section className="py-12">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div>
@@ -255,7 +238,7 @@ const Community = () => {
                 </CardContent>
                 <CardFooter>
                   <Button asChild className="w-full">
-                    <Link to="/upload">
+                    <Link to="/contest/upload">
                       Submit Your Entry
                     </Link>
                   </Button>
@@ -279,7 +262,7 @@ const Community = () => {
             <CardContent className="flex justify-center">
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button size="lg" asChild>
-                  <Link to="/upload">
+                  <Link to="/contest/upload">
                     <Upload className="mr-2 h-5 w-5" />
                     Upload Now
                   </Link>

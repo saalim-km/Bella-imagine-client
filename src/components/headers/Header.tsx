@@ -30,7 +30,6 @@ export default function Header({ onClick }: IHeader) {
   const { textColor, isDarkMode } = useThemeConstants();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   const user = useSelector((state: RootState) => {
     if (state.vendor.vendor) return state.vendor.vendor;
     if (state.client.client) return state.client.client;
@@ -54,7 +53,8 @@ export default function Header({ onClick }: IHeader) {
   const isLoggedIn = !!user;
   const isAdminPage = location.pathname.startsWith("/admin");
 
-  // Scroll effect
+  const isCommunityActive = location.pathname === '/community' || location.pathname === '/contests'
+
   useState(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -158,37 +158,9 @@ export default function Header({ onClick }: IHeader) {
             <NavLink to="/vendors" active={location.pathname === "/vendors"}>
               Photographers
             </NavLink>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-              <motion.div
-                className={`relative text-base font-semibold ${textColor} cursor-pointer transition-colors px-3 py-2 rounded-md hover:bg-gray-100/50 dark:hover:bg-gray-800/50`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Community & Contest
-              </motion.div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-48">
-              <DropdownMenuItem
-                onClick={() => navigate("/community")}
-                className="text-base py-2"
-              >
-                Community
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => navigate("/leaderboard")}
-                className="text-base py-2"
-              >
-                Leaderboard
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => navigate("/contest")}
-                className="text-base py-2"
-              >
-                Contest
-              </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <NavLink to="/community" active={isCommunityActive}>
+              Community
+            </NavLink>
           </nav>
         )}
 

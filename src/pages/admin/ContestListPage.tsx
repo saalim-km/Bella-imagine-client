@@ -1,4 +1,4 @@
-import ContestList from '@/components/admin/contest_&_community/ContestList'
+import ContestList from '@/components/admin/community_contest/ContestList'
 import { AdminLayout } from '@/components/admin/layout/AdminLayout'
 import React from 'react'
 

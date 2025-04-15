@@ -12,7 +12,7 @@ export const contestValidationSchema = Yup.object({
   contestType: Yup.string()
     .oneOf(["weekly", "monthly", "yearly"], "Invalid contest type")
     .required("Contest type is required"),
-  categoryId: Yup.string()
+  categoryId: Yup.string()  
     .required("Category is required"), 
   startDate: Yup.date()
     .required("Start date is required")
