@@ -156,12 +156,13 @@ export default function VendorBookingList({
                       <SelectValue placeholder="Status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="pending">pending</SelectItem>
-                      <SelectItem value="confirmed">confirmed</SelectItem>
-                      <SelectItem value="completed">completed</SelectItem>
+                      <SelectItem value="pending" disabled = {booking.status !== 'pending'}>pending</SelectItem>
+                      <SelectItem value="confirmed" disabled = {booking.status === 'completed'}>confirmed</SelectItem>
+                      <SelectItem value="completed" disabled = {booking.status === 'cancelled'}>completed</SelectItem>
                       <SelectItem
                         value="cancelled"
                         className="text-destructive"
+                        disabled = {booking.status === 'completed'}
                       >
                         cancelled
                       </SelectItem>
