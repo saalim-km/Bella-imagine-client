@@ -97,17 +97,6 @@ export default function VendorBookingList({
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          {/* <Select value={st} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[180px]">
-              <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="confirmed">Confirmed</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
-            </SelectContent>
-          </Select> */}
         </div>
       </div>
 
@@ -167,12 +156,13 @@ export default function VendorBookingList({
                       <SelectValue placeholder="Status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="pending">pending</SelectItem>
-                      <SelectItem value="confirmed">confirmed</SelectItem>
-                      <SelectItem value="completed">completed</SelectItem>
+                      <SelectItem value="pending" disabled = {booking.status !== 'pending'}>pending</SelectItem>
+                      <SelectItem value="confirmed" disabled = {booking.status === 'completed'}>confirmed</SelectItem>
+                      <SelectItem value="completed" disabled = {booking.status === 'cancelled'}>completed</SelectItem>
                       <SelectItem
                         value="cancelled"
                         className="text-destructive"
+                        disabled = {booking.status === 'completed'}
                       >
                         cancelled
                       </SelectItem>

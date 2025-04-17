@@ -30,7 +30,6 @@ export default function Header({ onClick }: IHeader) {
   const { textColor, isDarkMode } = useThemeConstants();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   const user = useSelector((state: RootState) => {
     if (state.vendor.vendor) return state.vendor.vendor;
     if (state.client.client) return state.client.client;
@@ -54,7 +53,8 @@ export default function Header({ onClick }: IHeader) {
   const isLoggedIn = !!user;
   const isAdminPage = location.pathname.startsWith("/admin");
 
-  // Scroll effect
+  const isCommunityActive = location.pathname === '/community' || location.pathname === '/contests'
+
   useState(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -158,8 +158,8 @@ export default function Header({ onClick }: IHeader) {
             <NavLink to="/vendors" active={location.pathname === "/vendors"}>
               Photographers
             </NavLink>
-            <NavLink to="/community" active={location.pathname === "/community"}>
-              Community & Contest
+            <NavLink to="/community" active={isCommunityActive}>
+              Community
             </NavLink>
           </nav>
         )}

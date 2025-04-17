@@ -304,7 +304,7 @@ export default function UserProfile() {
                 {activeTab === "bookings-history" &&
                   userType?.role === "client" && (
                     <ClientBookingListing userType={userType?.role} />
-                  )}
+                )}
 
                 {activeTab === "bookings" && userType?.role === "vendor" && (
                   <VendorBookingListing userType={userType?.role} />

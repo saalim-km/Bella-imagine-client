@@ -65,30 +65,33 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
 
         {/* Portfolio gallery */}
         <div className="flex flex-col">
+        <div className="relative w-full">
           <ScrollArea className="w-full rounded-md border">
-            <div className="flex w-max space-x-3 p-4">
+            <div className="flex space-x-4 p-4 pb-8">
               {vendorData.workSamples && vendorData.workSamples.length > 0 ? (
-                vendorData.workSamples.map(
+                vendorData.workSamples.flatMap(
                   (work, workIndex) =>
                     work.media &&
                     work.media.map((src, mediaIndex) => (
-                      <img
-                        key={`${workIndex}-${mediaIndex}`}
-                        src={src.url || "/placeholder.svg"}
-                        alt={`Portfolio ${workIndex + 1}-${mediaIndex + 1}`}
-                        className="h-52 object-cover rounded-md flex-shrink-0"
-                        draggable="false"
-                      />
-                    ))
+                      <div key={`${workIndex}-${mediaIndex}`} className="flex-shrink-0">
+                        <img
+                          src={src.url || "/placeholder.svg"}
+                          alt={`Portfolio ${workIndex + 1}-${mediaIndex + 1}`}
+                          className="h-44 w-auto object-cover rounded-md"
+                          draggable="false"
+                        />  
+                      </div>
+                    )),
                 )
               ) : (
-                <div className="h-48 w-full bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center">
+                <div className="h-44 w-64 bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center">
                   <p className="text-gray-500 dark:text-gray-400">No portfolio images</p>
                 </div>
               )}
             </div>
-            <ScrollBar orientation="horizontal" />
+            <ScrollBar orientation="horizontal" className="h-2.5" />
           </ScrollArea>
+        </div>
 
           {/* Description */}
           <div className="">

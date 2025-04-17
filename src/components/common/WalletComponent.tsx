@@ -98,36 +98,6 @@ export default function WalletComponent({
   userRole,
 }: WalletComponentProps) {
   const [activeTab, setActiveTab] = useState<string>("all");
-  // const [searchTerm, setSearchTerm] = useState<string>("");
-
-  // Filter transactions based on active tab and search term
-  // const filteredTransactions = transactions.flatMap((wallet) =>
-  //   wallet.paymentId
-  //     .filter((payment) => {
-  //       const matchesTab =
-  //         activeTab === "all" ||
-  //         payment.purpose.toLowerCase() === activeTab.toLowerCase();
-
-  //       const matchesSearch =
-  //         searchTerm === "" ||
-  //         payment.transactionId
-  //           .toLowerCase()
-  //           .includes(searchTerm.toLowerCase()) ||
-  //         wallet.userId.firstName
-  //           .toLowerCase()
-  //           .includes(searchTerm.toLowerCase()) ||
-  //         wallet.userId.lastName
-  //           .toLowerCase()
-  //           .includes(searchTerm.toLowerCase()) ||
-  //         wallet.userId.email.toLowerCase().includes(searchTerm.toLowerCase());
-
-  //       return matchesTab && matchesSearch;
-  //     })
-  //     .map((payment) => ({
-  //       ...wallet,
-  //       paymentId: payment,
-  //     }))
-  // );
 
   return (
     <div className="flex flex-col gap-6">
@@ -152,14 +122,6 @@ export default function WalletComponent({
               <p className="text-xs text-muted-foreground">Available Balance</p>
             </div>
           </CardContent>
-          {/* <CardFooter className="flex justify-between gap-2">
-            <Button onClick={onDeposit} className="flex-1" variant="default">
-              <ArrowDownIcon className="mr-2 h-4 w-4" /> Deposit
-            </Button>
-            <Button onClick={onWithdraw} className="flex-1" variant="outline">
-              <ArrowUpIcon className="mr-2 h-4 w-4" /> Withdraw
-            </Button>
-          </CardFooter> */}
         </Card>
 
         <Card className="col-span-1">
@@ -218,48 +180,6 @@ export default function WalletComponent({
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <CardTitle>Transaction History</CardTitle>
-            {/* <div className="flex items-center gap-2">
-              <div className="relative w-full md:w-auto">
-                <Input
-                  placeholder="Search transactions..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full md:w-[250px]"
-                />
-              </div>
-              <Button variant="outline" size="icon" onClick={onRefresh}>
-                <RefreshCw className="h-4 w-4" />
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon">
-                    <Filter className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => setActiveTab("all")}>
-                    All Transactions
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setActiveTab("deposit")}>
-                    Deposits
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setActiveTab("withdrawal")}>
-                    Withdrawals
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setActiveTab("payment")}>
-                    Payments
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setActiveTab("refund")}>
-                    Refunds
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <Button variant="outline" size="icon">
-                <Download className="h-4 w-4" />
-              </Button>
-            </div> */}
           </div>
         </CardHeader>
         <CardContent>
@@ -268,14 +188,6 @@ export default function WalletComponent({
             value={activeTab}
             onValueChange={setActiveTab}
           >
-            {/* <TabsList className="grid grid-cols-2 md:grid-cols-5 mb-4">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="deposit">Deposits</TabsTrigger>
-              <TabsTrigger value="withdrawal">Withdrawals</TabsTrigger>
-              <TabsTrigger value="payment">Payments</TabsTrigger>
-              <TabsTrigger value="refund">Refunds</TabsTrigger>
-            </TabsList> */}
-
             <TabsContent value={activeTab} className="mt-0">
               <ScrollArea className="w-full rounded-md">
                 <Table>

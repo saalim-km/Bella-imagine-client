@@ -35,6 +35,7 @@ const PaymentForm: React.FC<PaymentWrapperProps> = ({
 
   console.log('data in paymentform :', bookingData);
   async function handlePayment() {
+    setLoading(true)
     if (!stripe || !elements) {
       return;
     }
@@ -59,6 +60,7 @@ const PaymentForm: React.FC<PaymentWrapperProps> = ({
       },
       {
         onSuccess: async (data) => {
+          setLoading(false);
           const { error: stripeError, paymentIntent } =
             await stripe.confirmCardPayment(data.clientSecret, {
               payment_method: {
@@ -80,6 +82,7 @@ const PaymentForm: React.FC<PaymentWrapperProps> = ({
           }
         },
         onError: (error: any) => {
+          setLoading(false)
           toast.error(error.response.data.message);
         },
       }
