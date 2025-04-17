@@ -114,7 +114,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ service , vendorId }) => {
         }}
         eventDate={bookingState.selectedDate || ''}
         eventName={service.serviceTitle}
-        />
+        />  
       </div>
     </div>
   );
