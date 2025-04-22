@@ -37,6 +37,7 @@ import VendorBookingList from "@/components/User/VendorBookingList";
 import { VendorBookingListing } from "../vendor/vendorBookingListing";
 import ClientWallet from "./ClientWalletPage";
 import VendorWallet from "../vendor/VendorWallet";
+import ChatPage from "./ChatPage";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -322,6 +323,10 @@ export default function UserProfile() {
                   <VendorWallet/>
                 )}
 
+
+                {activeTab === "messsage-details" && (
+                  <ChatPage />
+                )}
               </div>
             </Card>
           </main>

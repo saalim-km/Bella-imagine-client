@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Conversation, Message, User } from "@/types/Chat";
+
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Conversation, Message, User } from '@/types/Chat';
 
 interface ChatState {
   conversations: Conversation[];
@@ -20,16 +21,13 @@ const initialState: ChatState = {
 };
 
 export const chatSlice = createSlice({
-  name: "chat",
+  name: 'chat',
   initialState,
   reducers: {
     setConversations: (state, action: PayloadAction<Conversation[]>) => {
       state.conversations = action.payload;
     },
-    setSelectedConversationId: (
-      state,
-      action: PayloadAction<string | null>
-    ) => {
+    setSelectedConversationId: (state, action: PayloadAction<string | null>) => {
       state.selectedConversationId = action.payload;
     },
     setMessages: (state, action: PayloadAction<Message[]>) => {
@@ -45,9 +43,7 @@ export const chatSlice = createSlice({
       state.showConversations = action.payload;
     },
     updateConversation: (state, action: PayloadAction<Conversation>) => {
-      const index = state.conversations.findIndex(
-        (conv) => conv.id === action.payload.id
-      );
+      const index = state.conversations.findIndex(conv => conv.id === action.payload.id);
       if (index !== -1) {
         state.conversations[index] = action.payload;
       }
@@ -56,9 +52,7 @@ export const chatSlice = createSlice({
       state.messages.push(action.payload);
     },
     updateMessage: (state, action: PayloadAction<Message>) => {
-      const index = state.messages.findIndex(
-        (msg) => msg.id === action.payload.id
-      );
+      const index = state.messages.findIndex(msg => msg.id === action.payload.id);
       if (index !== -1) {
         state.messages[index] = action.payload;
       }

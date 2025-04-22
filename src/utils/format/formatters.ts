@@ -1,4 +1,3 @@
-
 import { Message } from "@/types/Chat";
 
 export function formatTime(timestamp: string): string {
