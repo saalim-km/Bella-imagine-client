@@ -48,6 +48,8 @@ const tabTitles: Record<string, string> = {
   "upload-work": "Upload Work",
   services: "Services",
   "work-sample": "Work Sample",
+  messages : "Messages",
+  "messsage-details" : "Message",
 };
 
 export default function UserProfile() {
@@ -90,6 +92,7 @@ export default function UserProfile() {
   const hasCategory =
     userType?.role === "vendor" && vendorData?.vendor?.categories?.length !== 0;
 
+  const userTypeForChat = userType?.role === "client" ? "Client" : "Vendor";
   function handleIsServiceEditing(data: IServiceResponse) {
     setIsServiceEditData(data);
     setServiceCreating(!isServiceCreating);
@@ -161,6 +164,7 @@ export default function UserProfile() {
     console.log("got the data for eidt : ", workSample);
     setWorkSample(workSample);
   }
+
 
   if (isLoading) {
     return (
@@ -317,6 +321,7 @@ export default function UserProfile() {
                 {activeTab === "wallet" && userType?.role === "vendor" && (
                   <VendorWallet/>
                 )}
+
               </div>
             </Card>
           </main>
