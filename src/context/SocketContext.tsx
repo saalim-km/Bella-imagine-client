@@ -18,7 +18,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
   const [socket, setSocket] = useState<Socket | null>(null);
   const [connectionError, setConnectionError] = useState<string | null>(null);
-
+  console.log(connectionError);
   useEffect(() => {
     if (socket && socket.connected) {
       return;
