@@ -8,7 +8,6 @@ const clientNavItems = [
   { icon: Calendar, label: "Bookings & History", id: "bookings-history" },
   { icon: CreditCard, label: "Wallet & Transactions", id: "wallet" },
   { icon: Image, label: "Received Work", id: "received-work" },
-  { icon: MessageCircle, label: "Message", id: "messsage-details" },
 ];
 
 const vendorNavItems = [
@@ -17,7 +16,6 @@ const vendorNavItems = [
   { icon: Upload, label: "Upload Work for Clients", id: "upload-work" },
   { icon: LucideCamera, label: "Services", id: "services" },
   { icon: ImageDown, label: "Work Sample", id: "work-sample" },
-  { icon: MessageCircle, label: "Message", id: "messsage-details" },
 ];
 
 interface SidebarProps {

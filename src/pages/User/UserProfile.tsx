@@ -37,7 +37,6 @@ import VendorBookingList from "@/components/User/VendorBookingList";
 import { VendorBookingListing } from "../vendor/vendorBookingListing";
 import ClientWallet from "./ClientWalletPage";
 import VendorWallet from "../vendor/VendorWallet";
-import { ChatPage } from "../chat/ChatPage";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -49,13 +48,10 @@ const tabTitles: Record<string, string> = {
   "upload-work": "Upload Work",
   services: "Services",
   "work-sample": "Work Sample",
-  messages : "Messages",
-  "messsage-details" : "Message",
 };
 
 export default function UserProfile() {
   const queryClient = useQueryClient();
-  const [showChat, setShowChat] = useState(false);
   const { mutate: joinCategory } = useJoinCategoryRequestMutation();
   const { mutate: updateVendor } = useUpdateVendorMutation();
   const { mutate: updateClient } = useUpdateClientMutation();
@@ -322,11 +318,6 @@ export default function UserProfile() {
 
                 {activeTab === "wallet" && userType?.role === "vendor" && (
                   <VendorWallet/>
-                )}
-
-
-                {activeTab === "messsage-details" && (
-                  <ChatPage userType={userType?.role === 'vendor' ? "Vendor" : "Client"}/>
                 )}
               </div>
             </Card>
