@@ -1,75 +1,118 @@
+// slices/chatSlice.ts
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Conversation, Message, User } from '@/types/Chat';
+interface Contact {
+  id: string; // clientId or vendorId
+  chatRoomId: string;
+  name: string;
+  avatar?: string;
+  lastMessage?: string;
+  lastMessageTime?: string;
+  unreadCount?: number;
+  status?: "online" | "offline";
+}
+
+interface Message {
+  _id: string;
+  chatRoomId: string;
+  content: string;
+  senderId: string;
+  senderType: "Client" | "Vendor";
+  read: boolean;
+  createdAt: Date;
+}
+
+export interface IChatRoom {
+  _id?: string 
+  clientId: string;
+  vendorId: string;
+  bookingId: string;
+  lastMessage: {
+    content: string,
+    senderId: string ,
+    senderType: "Client" | "Vendor"
+    createdAt: Date 
+  },
+  unreadCountClient: number;
+  unreadCountVendor: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
 interface ChatState {
-  conversations: Conversation[];
-  selectedConversationId: string | null;
-  messages: Message[];
-  users: User[];
-  loading: boolean;
-  showConversations: boolean;
+  contacts: Contact[];
+  messages: { [chatRoomId: string]: Message[] };
+  selectedChatRoomId: string | null;
 }
 
 const initialState: ChatState = {
-  conversations: [],
-  selectedConversationId: null,
-  messages: [],
-  users: [],
-  loading: true,
-  showConversations: true,
+  contacts: [],
+  messages: {},
+  selectedChatRoomId: null,
 };
 
-export const chatSlice = createSlice({
-  name: 'chat',
+const chatSlice = createSlice({
+  name: "chat",
   initialState,
   reducers: {
-    setConversations: (state, action: PayloadAction<Conversation[]>) => {
-      state.conversations = action.payload;
+    setContacts: (state, action: PayloadAction<Contact[]>) => {
+      state.contacts = action.payload;
     },
-    setSelectedConversationId: (state, action: PayloadAction<string | null>) => {
-      state.selectedConversationId = action.payload;
-    },
-    setMessages: (state, action: PayloadAction<Message[]>) => {
-      state.messages = action.payload;
-    },
-    setUsers: (state, action: PayloadAction<User[]>) => {
-      state.users = action.payload;
-    },
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload;
-    },
-    setShowConversations: (state, action: PayloadAction<boolean>) => {
-      state.showConversations = action.payload;
-    },
-    updateConversation: (state, action: PayloadAction<Conversation>) => {
-      const index = state.conversations.findIndex(conv => conv.id === action.payload.id);
-      if (index !== -1) {
-        state.conversations[index] = action.payload;
-      }
+    setMessages: (
+      state,
+      action: PayloadAction<{ chatRoomId: string; messages: Message[] }>
+    ) => {
+      // Ensure messages is an array
+      console.log('chat room id =>',action.payload.chatRoomId, 'messages =>', action.payload.messages)
+      const messages = Array.isArray(action.payload.messages) ? action.payload.messages : [];
+      state.messages[action.payload.chatRoomId] = messages
     },
     addMessage: (state, action: PayloadAction<Message>) => {
-      state.messages.push(action.payload);
-    },
-    updateMessage: (state, action: PayloadAction<Message>) => {
-      const index = state.messages.findIndex(msg => msg.id === action.payload.id);
-      if (index !== -1) {
-        state.messages[index] = action.payload;
+      const chatRoomId = action.payload.chatRoomId;
+      // Ensure chatRoomId key is an array
+      if (!Array.isArray(state.messages[chatRoomId])) {
+        console.warn(`state.messages[${chatRoomId}] was not an array, resetting to []`, state.messages[chatRoomId]);
+        state.messages[chatRoomId] = [];
       }
+      state.messages[chatRoomId].push(action.payload);
+
+      const contact = state.contacts.find((c) => c.chatRoomId === chatRoomId);
+      if (contact) {
+        contact.lastMessage = action.payload.content;
+        contact.lastMessageTime = new Date(action.payload.createdAt).toISOString();
+        if (
+          (action.payload.senderType === "Vendor" && state.selectedChatRoomId !== chatRoomId) ||
+          (action.payload.senderType === "Client" && state.selectedChatRoomId !== chatRoomId)
+        ) {
+          contact.unreadCount = (contact.unreadCount || 0) + 1;
+        }
+      }
+    },
+    setSelectedChatRoomId: (state, action: PayloadAction<string | null>) => {
+      state.selectedChatRoomId = action.payload;
+      if (action.payload) {
+        const contact = state.contacts.find((c) => c.chatRoomId === action.payload);
+        if (contact) contact.unreadCount = 0;
+      }
+    },
+    updateContactStatus: (
+      state,
+      action: PayloadAction<{ contactId: string; status: "online" | "offline" }>
+    ) => {
+      state.contacts = state.contacts.map((contact) =>
+        contact.id === action.payload.contactId
+          ? { ...contact, status: action.payload.status }
+          : contact
+      );
     },
   },
 });
 
 export const {
-  setConversations,
-  setSelectedConversationId,
+  setContacts,
   setMessages,
-  setUsers,
-  setLoading,
-  setShowConversations,
-  updateConversation,
   addMessage,
-  updateMessage,
+  setSelectedChatRoomId,
+  updateContactStatus,
 } = chatSlice.actions;
-
 export default chatSlice.reducer;

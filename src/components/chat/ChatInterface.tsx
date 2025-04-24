@@ -1,264 +1,207 @@
-
-import { useEffect } from "react";
-import { ConversationList } from "./ConversationList";
-import { ChatHeader } from "./ChatHeader";
-import { MessageList } from "./MessageList";
-import { MessageInput } from "./MessageInput";
-import { Message, Reaction } from "@/types/Chat";
-import { chatService } from "@/services/chat/chatService";
-import { toast } from "sonner";
-import { useIsMobile } from "@/hooks/use-mobile";
-import {
-  setConversations,
-  setSelectedConversationId,
-  setMessages,
-  setUsers,
-  setLoading,
-  setShowConversations,
-  updateConversation,
-  addMessage,
-  updateMessage,
-} from "@/store/slices/chatSlice";
-import { useDispatch } from "react-redux";
+// components/chat/ChatInterface.tsx
+import { useState, useRef, useEffect } from "react";
+import { Send, Paperclip } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { useDispatch } from "react-redux";
+import { addMessage, setMessages } from "@/store/slices/chatSlice";
+import { useSocket } from "@/context/SocketContext";
 
-export function ChatInterface() {
+interface Message {
+  _id: string;
+  chatRoomId: string;
+  content: string;
+  senderId: string;
+  senderType: "Client" | "Vendor";
+  read: boolean;
+  createdAt: Date;
+}
+
+interface ChatInterfaceProps {
+  recipientName: string;
+  recipientAvatar?: string;
+  messages?: Message[];
+  onSendMessage?: (message: string) => void;
+  onTyping?: () => void;
+  className?: string;
+  userType: "Client" | "Vendor";
+  chatRoomId: string;
+}
+
+export function ChatInterface({
+  recipientName = "John Doe",
+  recipientAvatar = "/placeholder.svg?height=40&width=40",
+  messages = [],
+  onSendMessage,
+  onTyping,
+  className,
+  userType = "Client",
+  chatRoomId,
+}: ChatInterfaceProps) {
   const dispatch = useDispatch();
-  const {
-    conversations,
-    selectedConversationId,
-    messages,
-    users,
-    loading,
-    showConversations,
-  } = useSelector((state : RootState) => state.chat);
-  
-  const isMobile = useIsMobile();
-  const currentUserId = "current-user";
+  const [newMessage, setNewMessage] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const selectedConversation = conversations.find((conv) => conv.id === selectedConversationId);
-  const recipientUser = selectedConversation?.participants.find(
-    (user) => user.id !== currentUserId
+  const socket = useSocket();
+
+  const userId = useSelector((state: RootState) =>
+    userType === "Client" ? state.client.client?._id : state.vendor.vendor?._id
   );
 
-  useEffect(() => {
-    const loadConversations = async () => {
-      try {
-        const fetchedConversations = await chatService.getConversations();
-        dispatch(setConversations(fetchedConversations));
-        
-        const allUsers = new Map();
-        fetchedConversations.forEach((conversation) => {
-          conversation.participants.forEach((user) => {
-            allUsers.set(user.id, user);
-          });
-        });
-        
-        dispatch(setUsers(Array.from(allUsers.values())));
-        
-        if (fetchedConversations.length > 0 && !selectedConversationId) {
-          dispatch(setSelectedConversationId(fetchedConversations[0].id));
-        }
-        
-        dispatch(setLoading(false));
-      } catch (error) {
-        console.error("Error loading conversations:", error);
-        toast.error("Failed to load conversations");
-        dispatch(setLoading(false));
-      }
-    };
-    
-    loadConversations();
-  }, []);
-
-  useEffect(() => {
-    if (!selectedConversationId) return;
-    
-    const loadMessages = async () => {
-      try {
-        const fetchedMessages = await chatService.getMessages(selectedConversationId);
-        dispatch(setMessages(fetchedMessages));
-        
-        if (isMobile) {
-          dispatch(setShowConversations(false));
-        }
-        
-        const updatedConversations = conversations.map((conv) =>
-          conv.id === selectedConversationId ? { ...conv, unreadCount: 0 } : conv
-        );
-        dispatch(setConversations(updatedConversations));
-        
-      } catch (error) {
-        console.error("Error loading messages:", error);
-        toast.error("Failed to load messages");
-      }
-    };
-    
-    loadMessages();
-  }, [selectedConversationId]);
-
-  const handleSendMessage = (newMessage: Message) => {
-    dispatch(addMessage(newMessage));
-    
-    const updatedConversations = conversations.map((conv) =>
-      conv.id === selectedConversationId
-        ? { ...conv, lastMessage: newMessage }
-        : conv
-    );
-    
-    dispatch(setConversations(updatedConversations));
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleDeleteMessage = async (messageId: string) => {
-    try {
-      const success = await chatService.deleteMessage(messageId);
-      
-      if (success) {
-        dispatch(updateMessage({ ...messages.find(m => m.id === messageId)!, isDeleted: true }));
-        
-        const updatedConversations = conversations.map((conv) => {
-          if (conv.id === selectedConversationId && conv.lastMessage?.id === messageId) {
-            return {
-              ...conv,
-              lastMessage: { ...conv.lastMessage, isDeleted: true },
-            };
-          }
-          return conv;
-        });
-        
-        dispatch(setConversations(updatedConversations));
-      }
-    } catch (error) {
-      console.error("Error deleting message:", error);
-      toast.error("Failed to delete message");
-    }
-  };
+  useEffect(() => {
+    console.log("hello", messages);
+    scrollToBottom();
+  }, [messages]);
 
-  const handleReactToMessage = async (messageId: string, emoji: string) => {
-    try {
-      // Find the message to update
-      const message = messages.find(m => m.id === messageId);
-      if (!message) return;
+  useEffect(() => {
+    console.log('-----------socket - chat room id - userId-------------', socket, chatRoomId, userId)
+    if (socket && chatRoomId && userId) {
+      socket.emit("messageRead", { chatRoomId, userId, userType });
 
-      // Create a reaction object
-      const reaction: Reaction = {
-        emoji,
-        userId: currentUserId,
-        username: "You" // In a real app, this would come from the user profile
+      socket.on("message", (message: Message) => {
+        dispatch(addMessage(message));
+        scrollToBottom();
+      });
+
+      socket.on("messagesUpdated", (updatedMessages: Message[]) => {
+        console.log("Received messagesUpdated:", updatedMessages); // Debug log
+        dispatch(setMessages({ chatRoomId, messages: updatedMessages }));
+      });
+
+      socket.on("chatUpdate", (chatRoom: any) => {
+        console.log(`${userType} chat updated:`, chatRoom);
+      });
+
+      return () => {
+        socket.off("message");
+        socket.off("messagesUpdated");
+        socket.off("chatUpdate");
       };
+    }
+  }, [socket, chatRoomId, userId, userType, dispatch]);
 
-      // Check if user already reacted with this emoji
-      const existingReactionIndex = message.reactions.findIndex(
-        r => r.userId === currentUserId && r.emoji === emoji
-      );
-
-      let success;
-      let updatedReactions;
-
-      if (existingReactionIndex >= 0) {
-        // Remove reaction if it already exists
-        success = await chatService.removeReaction(messageId, currentUserId, emoji);
-        updatedReactions = message.reactions.filter((_, index) => index !== existingReactionIndex);
-      } else {
-        // Add new reaction
-        success = await chatService.addReaction(messageId, reaction);
-        updatedReactions = [...message.reactions, reaction];
-      }
-
-      if (success) {
-        // Update the message with new reactions
-        dispatch(updateMessage({
-          ...message,
-          reactions: updatedReactions
-        }));
-      }
-    } catch (error) {
-      console.error("Error updating reaction:", error);
-      toast.error("Failed to update reaction");
+  const handleSendMessage = () => {
+    if (newMessage.trim()) {
+      onSendMessage?.(newMessage);
+      setNewMessage("");
     }
   };
 
-  const handleSelectConversation = (conversationId: string) => {
-    dispatch(setSelectedConversationId(conversationId));
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
   };
 
-  const toggleView = () => {
-    dispatch(setShowConversations(!showConversations));
+  const handleTyping = () => {
+    if (newMessage.trim()) {
+      onTyping?.();
+    }
   };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-chat-primary"></div>
-      </div>
-    );
-  }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-chat-background">
-      <div 
-        className={`${
-          isMobile 
-            ? (showConversations ? "block w-full" : "hidden") 
-            : "w-80 border-r"
-        } `}
-      >
-        <ConversationList
-          conversations={conversations}
-          currentUserId={currentUserId}
-          selectedConversationId={selectedConversationId}
-          onSelectConversation={handleSelectConversation}
-        />
+    <Card className={cn("flex flex-col h-[600px] w-full", className)}>
+      <div className="flex items-center p-4 border-b space-x-2">
+        <Avatar className="w-12 h-12">
+          <AvatarImage src={recipientAvatar} alt={`${recipientName}`} />
+          <AvatarFallback>
+            {recipientName.split(" ")[0][0].toUpperCase()}
+            {recipientName.split(" ")[1][0]
+              ? recipientName.split(" ")[1][0].toUpperCase()
+              : ""}
+          </AvatarFallback>
+        </Avatar>
+        <div>
+          <h3 className="font-medium">{recipientName}</h3>
+          <p className="text-sm text-muted-foreground">
+            {userType === "Client" ? "Vendor" : "Client"}
+          </p>
+        </div>
       </div>
-
-      <div 
-        className={`${
-          isMobile 
-            ? (showConversations ? "hidden" : "block w-full") 
-            : "flex-1"
-        } flex flex-col h-full`}
-      >
-        {selectedConversationId && recipientUser ? (
-          <>
-            <ChatHeader 
-              user={recipientUser}
-            />
-            <MessageList
-              messages={messages}
-              currentUserId={currentUserId}
-              users={users}
-              onDeleteMessage={handleDeleteMessage}
-              onReactToMessage={handleReactToMessage}
-            />
-            <MessageInput
-              conversationId={selectedConversationId}
-              onSendMessage={handleSendMessage}
-            />
-
-            {isMobile && (
-              <button
-                className="absolute top-4 left-4  rounded-full p-2 shadow-md"
-                onClick={toggleView}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M19 12H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 19L5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </button>
-            )}
-          </>
-        ) : (
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-center">
-              <h2 className="text-xl font-medium mb-2">Welcome to ChatterVerse</h2>
-              <p className="text-muted-foreground max-w-md">
-                Select a conversation to start chatting or create a new conversation.
-              </p>
-            </div>
+            <p className="text-muted-foreground text-center">
+              No messages yet. Start the conversation!
+            </p>
           </div>
+        ) : (
+          Array.isArray(messages) &&
+          messages.map((message) => (
+            <div
+              key={message._id}
+              className={cn(
+                "flex",
+                message.senderType === userType
+                  ? "justify-end"
+                  : "justify-start"
+              )}
+            >
+              <div
+                className={cn(
+                  "max-w-[80%] rounded-lg p-3",
+                  message.senderType === userType
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted"
+                )}
+              >
+                <p className="break-words">{message.content}</p>
+                <p className="text-xs mt-1 opacity-70">
+                  {new Date(message.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
+              </div>
+            </div>
+          ))
         )}
+        {isTyping && <p className="text-sm text-muted-foreground">Typing...</p>}
+        <div ref={messagesEndRef} />
       </div>
-    </div>
+      <div className="p-4 border-t">
+        <div className="flex items-end gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-full h-10 w-10 flex-shrink-0"
+            type="button"
+          >
+            <Paperclip className="h-5 w-5" />
+            <span className="sr-only">Attach file</span>
+          </Button>
+          <Textarea
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={(e) => {
+              handleTyping();
+              handleKeyDown(e);
+            }}
+            placeholder="Type your message..."
+            className="min-h-[80px] resize-none"
+          />
+          <Button
+            onClick={handleSendMessage}
+            disabled={!newMessage.trim()}
+            className="rounded-full h-10 w-10 flex-shrink-0 p-0"
+            type="button"
+          >
+            <Send className="h-5 w-5" />
+            <span className="sr-only">Send message</span>
+          </Button>
+        </div>
+      </div>
+    </Card>
   );
 }

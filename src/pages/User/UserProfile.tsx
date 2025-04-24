@@ -37,7 +37,7 @@ import VendorBookingList from "@/components/User/VendorBookingList";
 import { VendorBookingListing } from "../vendor/vendorBookingListing";
 import ClientWallet from "./ClientWalletPage";
 import VendorWallet from "../vendor/VendorWallet";
-import ChatPage from "./ChatPage";
+import { ChatPage } from "../chat/ChatPage";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -55,6 +55,7 @@ const tabTitles: Record<string, string> = {
 
 export default function UserProfile() {
   const queryClient = useQueryClient();
+  const [showChat, setShowChat] = useState(false);
   const { mutate: joinCategory } = useJoinCategoryRequestMutation();
   const { mutate: updateVendor } = useUpdateVendorMutation();
   const { mutate: updateClient } = useUpdateClientMutation();
@@ -325,7 +326,7 @@ export default function UserProfile() {
 
 
                 {activeTab === "messsage-details" && (
-                  <ChatPage />
+                  <ChatPage userType={userType?.role === 'vendor' ? "Vendor" : "Client"}/>
                 )}
               </div>
             </Card>
