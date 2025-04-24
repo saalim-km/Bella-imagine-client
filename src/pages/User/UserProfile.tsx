@@ -37,6 +37,7 @@ import VendorBookingList from "@/components/User/VendorBookingList";
 import { VendorBookingListing } from "../vendor/vendorBookingListing";
 import ClientWallet from "./ClientWalletPage";
 import VendorWallet from "../vendor/VendorWallet";
+import { ChatPage } from "../chat/ChatPage";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -48,10 +49,13 @@ const tabTitles: Record<string, string> = {
   "upload-work": "Upload Work",
   services: "Services",
   "work-sample": "Work Sample",
+  messages : "Messages",
+  "messsage-details" : "Message",
 };
 
 export default function UserProfile() {
   const queryClient = useQueryClient();
+  const [showChat, setShowChat] = useState(false);
   const { mutate: joinCategory } = useJoinCategoryRequestMutation();
   const { mutate: updateVendor } = useUpdateVendorMutation();
   const { mutate: updateClient } = useUpdateClientMutation();
@@ -90,6 +94,7 @@ export default function UserProfile() {
   const hasCategory =
     userType?.role === "vendor" && vendorData?.vendor?.categories?.length !== 0;
 
+  const userTypeForChat = userType?.role === "client" ? "Client" : "Vendor";
   function handleIsServiceEditing(data: IServiceResponse) {
     setIsServiceEditData(data);
     setServiceCreating(!isServiceCreating);
@@ -161,6 +166,7 @@ export default function UserProfile() {
     console.log("got the data for eidt : ", workSample);
     setWorkSample(workSample);
   }
+
 
   if (isLoading) {
     return (
@@ -316,6 +322,11 @@ export default function UserProfile() {
 
                 {activeTab === "wallet" && userType?.role === "vendor" && (
                   <VendorWallet/>
+                )}
+
+
+                {activeTab === "messsage-details" && (
+                  <ChatPage userType={userType?.role === 'vendor' ? "Vendor" : "Client"}/>
                 )}
               </div>
             </Card>

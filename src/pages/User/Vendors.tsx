@@ -23,14 +23,14 @@ const Vendors = () => {
     const { data: categories } = useAllClientCategories();
     const { data: vendors, isLoading, isError } = useAllVendorsListQuery({
         page: currentPage,
-        limit: 2,
+        limit: 6,
         category: selectedCategory,
         languages: filters.language,
         location: filters.location,
     });
     console.log('vendors : ',vendors);
     const totalVendors = vendors?.total || 0
-    const totalPages = Math.max(1, Math.ceil(totalVendors / 2))
+    const totalPages = Math.max(1, Math.ceil(totalVendors / 6))
 
     const handlePageChange = (newPage: number) => {
         if (newPage > 0 && newPage <= totalPages) {

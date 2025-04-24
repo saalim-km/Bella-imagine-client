@@ -15,6 +15,7 @@ import { IVendorsResponse } from "@/types/User";
 import { getLocationFromCordinates } from "@/utils/location/get-location.utils";
 import { handleError } from "@/utils/Error/errorHandler";
 import { popularLanguages } from "./EditProfileForm";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface FilterProps {
   categories: Category[];
@@ -60,26 +61,28 @@ export default function Filters({
             <ChevronDown className="ml-2 h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className={bgColor}>
+        <DropdownMenuContent className={`${bgColor} w-64`}>
           <DropdownMenuLabel>Language</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className={`${textColor} ${!selectedLanguage ? "font-bold" : ""}`}
-            onClick={() => handleLanguageSelect("")}
-          >
-            All Languages
-          </DropdownMenuItem>
-          {popularLanguages.map((language, index) => (
+          <ScrollArea className="h-48">
             <DropdownMenuItem
-              key={index}
-              className={`${textColor} ${
-                selectedLanguage === language ? "font-bold" : ""
-              }`}
-              onClick={() => handleLanguageSelect(language)}
+              className={`${textColor} ${!selectedLanguage ? "font-bold" : ""}`}
+              onClick={() => handleLanguageSelect("")}
             >
-              {language}
+              All Languages
             </DropdownMenuItem>
-          ))}
+            {popularLanguages.map((language, index) => (
+              <DropdownMenuItem
+                key={index}
+                className={`${textColor} ${
+                  selectedLanguage === language ? "font-bold" : ""
+                }`}
+                onClick={() => handleLanguageSelect(language)}
+              >
+                {language}
+              </DropdownMenuItem>
+            ))}
+          </ScrollArea>
         </DropdownMenuContent>
       </DropdownMenu>
 

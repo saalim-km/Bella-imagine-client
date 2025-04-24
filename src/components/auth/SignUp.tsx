@@ -16,6 +16,7 @@ import { useGoogleLoginMutataion } from "@/hooks/auth/useGoogleLogin";
 import { clientLogin } from "@/store/slices/clientSlice";
 import { useDispatch } from "react-redux";
 import { vendorLogin } from "@/store/slices/vendorSlice";
+import { Eye, EyeOff } from "lucide-react";
 
 interface SignUpProps {
   onSubmit: (data: IUser) => void;
@@ -31,6 +32,8 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
   const [isSending, setIsSending] = useState(false);
   const [userData, setUserData] = useState<IUser>({} as IUser);
   const { isDarkMode, textColor, buttonPrimary, bgColor } = useThemeConstants();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { mutate: sendVerificationOTP } = useSendOtp();
   const { mutate: verifyOtp } = useOtpVerifyMutataion();
@@ -149,7 +152,7 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
               password: "",
               confirmPassword: "",
             }}
-            validationSchema={signupSchema}z
+            validationSchema={signupSchema}
             onSubmit={(values) => {
               const user = {
                 name: values.name,
@@ -197,9 +200,9 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
                     className="text-red-500 text-sm mt-1"
                   />
                 </div>
-                <div>
+                <div className="relative">
                   <Field
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     name="password"
                     placeholder="Password"
                     className={`rounded-md h-12 w-full p-2 ${
@@ -208,15 +211,21 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
                         : "bg-white border text-black border-gray-300"
                     }`}
                   />
+                  <span
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-3 cursor-pointer text-gray-500"
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </span>
                   <ErrorMessage
                     name="password"
                     component="div"
                     className="text-red-500 text-sm mt-1"
                   />
                 </div>
-                <div>
+                <div className="relative">
                   <Field
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     name="confirmPassword"
                     placeholder="Confirm Password"
                     className={`rounded-md h-12 w-full p-2 ${
@@ -225,6 +234,12 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
                         : "bg-white border text-black border-gray-300"
                     }`}
                   />
+                  <span
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-3 cursor-pointer text-gray-500"
+                  >
+                    {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </span>
                   <ErrorMessage
                     name="confirmPassword"
                     component="div"

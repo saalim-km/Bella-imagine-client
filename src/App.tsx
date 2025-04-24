@@ -5,9 +5,19 @@ import AdminRoute from "./routes/AdminRoute";
 import ClientRoute from "./routes/UserRoute";
 import { Toaster } from "sonner";
 import { Custom404 } from "./components/404/Custom404";
+import { SocketProvider } from "./context/SocketContext";
 
 
-const App = () => {
+function AppLayout() {
+  return (
+    <SocketProvider>
+      <App/>
+    </SocketProvider>
+  )
+}
+
+
+function App () {
   useEffect(() => {
     const observer = new MutationObserver(() => {
       document.body.removeAttribute("data-scroll-locked");
@@ -30,4 +40,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default AppLayout;

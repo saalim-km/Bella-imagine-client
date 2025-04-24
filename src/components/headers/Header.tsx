@@ -227,7 +227,7 @@ export default function Header({ onClick }: IHeader) {
                 >
                   Settings
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-base py-2">
+                <DropdownMenuItem className="text-base py-2" onClick={()=> navigate('/messages')}>
                   Messages
                 </DropdownMenuItem>
                 <DropdownMenuItem

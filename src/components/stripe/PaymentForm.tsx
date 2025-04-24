@@ -47,6 +47,7 @@ const PaymentForm: React.FC<PaymentWrapperProps> = ({
 
     if (error) {
       toast.error(error.message || "An error occurred while creating payment method");
+      setLoading(false);
       return;
     }
     
