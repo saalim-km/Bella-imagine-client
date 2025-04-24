@@ -16,7 +16,7 @@ interface ClientOneToOneChatPageProps {
 function ClientOneToOneChatPage({ vendorId, onClose }: ClientOneToOneChatPageProps) {
   const userId = useSelector<RootState>((state) => state.client.client?._id);
   const userType = "Client";
-  const { socket, messages, sendMessage, fetchChatHistory } = useChat(userId as string || "", userType);
+  const { socket, sendMessage, fetchChatHistory } = useChat(userId as string || "", userType);
   const [chatRoomId, setChatRoomId] = useState<string | null>(null);
   const [vendor, setVendor] = useState<{ name: string; avatar?: string } | null>(null);
 
@@ -72,9 +72,9 @@ function ClientOneToOneChatPage({ vendorId, onClose }: ClientOneToOneChatPagePro
         <ChatInterface
           recipientName={vendor.name}
           recipientAvatar={vendor.avatar}
-          messages={messages.filter((m) => m.chatRoomId === chatRoomId)}
           onSendMessage={handleSendMessage}
           userType="Client"
+          chatRoomId={chatRoomId}
         />
       ) : (
         <div className="flex items-center justify-center h-full">

@@ -66,6 +66,7 @@ export function ChatPage({ userType }: ChatPageProps) {
 
 
   const handleSendMessage = (message: string) => {
+    console.log(message);
     if (!selectedChatRoomId) return;
     const selectedContact = contacts.find(
       (c) => c.chatRoomId === selectedChatRoomId
