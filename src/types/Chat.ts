@@ -40,7 +40,8 @@ export type Message = {
 
 export type Conversation = {
   _id: string;
-  participants: User[];
+  client : User;
+  vendor : User;
   lastMessage?: Message;
   unreadCount: number;
 };

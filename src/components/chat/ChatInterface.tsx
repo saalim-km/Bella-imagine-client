@@ -33,6 +33,7 @@ export function ChatInterface() {
     users,
     showConversations,
   } = useSelector((state: RootState) => state.chat);
+  console.log('conversations from : chatinterface',conversations);                                          
   const isMobile = useIsMobile();
   const client = useSelector((state: RootState) => state.client.client);
   const vendor = useSelector((state: RootState) => state.vendor.vendor);
@@ -43,9 +44,11 @@ export function ChatInterface() {
     (conv) => conv._id === selectedConversationId
   );
   
-  const recipientUser = selectedConversation?.participants.find(
-    (user) => user._id !== userFromRedux?._id
-  );
+  const recipientUser = selectedConversation
+  ? (userFromRedux?._id === selectedConversation.client._id
+      ? selectedConversation.vendor
+      : selectedConversation.client)
+  : undefined;
 
   console.log("selected conversation : ", selectedConversation);
   console.log("got receipent user : ", recipientUser);

@@ -27,12 +27,16 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (!user || !user._id || !userType) return;
 
+    if(socket) {
+      socket.disconnect()
+    }
+
     const socketInstance = initSocket(user._id, userType);
 
     setSocket(socketInstance);
 
     socketInstance.on("connect", () => {
-      console.log("Socket connected:", socketInstance.id);
+      console.log("Socket connected ✅", socketInstance.id);
       setIsConnected(true);
     });
 
@@ -42,9 +46,13 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     return () => {
-      // Optional: remove listeners here if needed
+      if(socketInstance) {
+        socketInstance.off("connect");
+        socketInstance.off("disconnect")
+        socketInstance.disconnect()
+      }
     };
-  }, [user?._id, userType]);
+  }, [user?._id , userType]);
 
   return (
     <SocketContext.Provider value={{ socket, isConnected }}>

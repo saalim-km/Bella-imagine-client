@@ -22,11 +22,12 @@ export function ConversationList({
 }: ConversationListProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+
   // Filter conversations based on search query
-  const filteredConversations = conversations.filter((conversation) => {
-    const otherUser = getOtherUser(conversation, currentUserId);
-    return otherUser.name.toLowerCase().includes(searchQuery.toLowerCase());
-  });
+  // const filteredConversations = conversations.filter((conversation) => {
+  //   const otherUser = getOtherUser(conversation, currentUserId);
+  //   return otherUser.name.toLowerCase().includes(searchQuery.toLowerCase());
+  // });
 
   return (
     <div className="flex flex-col h-full">
@@ -44,8 +45,9 @@ export function ConversationList({
         </div>
       </div>
       <div className="flex-1 overflow-y-auto">
-        {filteredConversations.map((conversation) => {
+        {conversations.map((conversation) => {
           const otherUser = getOtherUser(conversation, currentUserId);
+          console.log('other user',otherUser);
           return (
             <div
               key={conversation._id}
@@ -57,7 +59,7 @@ export function ConversationList({
               <div className="relative mr-3">
                 <Avatar>
                   <AvatarImage src={otherUser.avatar} alt={otherUser.name} />
-                  <AvatarFallback>{otherUser.name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback>{otherUser.name?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 {otherUser.isOnline && (
                   <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-chat-success animate-pulse-dot ring-1 ring-white bg-green-600" />
@@ -68,7 +70,7 @@ export function ConversationList({
                   <h3 className="font-medium truncate">{otherUser.name}</h3>
                   {conversation.lastMessage && (
                     <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
-                      {formatTime(conversation.lastMessage.timestamp)}
+                      {formatTime(conversation.lastMessage.timestamp!)}
                     </span>
                   )}
                 </div>
@@ -92,17 +94,16 @@ export function ConversationList({
             </div>
           );
         })}
-      </div>
+      </div>  
     </div>
   );
 }
 
 
 function getOtherUser(conversation: Conversation, currentUserId: string): User {
-  return (
-    conversation.participants.find((user) => user._id !== currentUserId) ||
-    conversation.participants[0]
-  );
+  return conversation.client._id === currentUserId
+    ? conversation.vendor
+    : conversation.client;
 }
 
 // Helper function to format message timestamp
