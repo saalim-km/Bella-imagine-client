@@ -1,7 +1,10 @@
+import { TRole } from "./User";
 
 export type User = {
-  id: string;
+  _id: string;
   name: string;
+  email: string;
+  role: TRole;
   avatar: string;
   isOnline: boolean;
   lastSeen?: string;
@@ -13,30 +16,30 @@ export type Reaction = {
   username: string;
 };
 
-export type MessageType = 'text' | 'image' | 'video' | 'file' | 'location';
+export type MessageType = 'text' | 'media' | 'location';
 
 export type Message = {
-  id: string;
+  _id?: string;  
   senderId: string;
   text: string;
-  timestamp: string;
+  timestamp?: string;
+  conversationId : string;
   type: MessageType;
   mediaUrl?: string;
-  mediaType?: string;
-  fileName?: string;
-  fileSize?: number;
   location?: {
     latitude: number;
     longitude: number;
     address?: string;
   };
-  reactions: Reaction[];
-  status: 'sent' | 'delivered' | 'read';
-  isDeleted: boolean;
+  reactions?: Reaction[];
+  isRead ?: boolean;
+  status?: 'sent' | 'delivered' | 'read';
+  userType ?: TRole;
+  isDeleted?: boolean;
 };
 
 export type Conversation = {
-  id: string;
+  _id: string;
   participants: User[];
   lastMessage?: Message;
   unreadCount: number;

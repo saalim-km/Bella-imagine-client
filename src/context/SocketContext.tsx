@@ -1,70 +1,56 @@
-import { RootState } from "@/store/store";
-import { createContext, useContext, useState, useEffect } from "react";
+// src/socket/SocketProvider.tsx
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import io from "socket.io-client";
-import type { Socket } from "socket.io-client";
+import { RootState } from "@/store/store";
+import { initSocket, getSocket } from "@/config/socket"
+import { Socket } from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:3002";
-const SOCKET_PATH = "/api/v_1/_chat";
+interface SocketContextType {
+  socket: Socket | null;
+  isConnected: boolean;
+}
 
-const SocketContext = createContext<Socket | null>(null);
+const SocketContext = createContext<SocketContextType>({
+  socket: null,
+  isConnected: false,
+});
 
-export function SocketProvider({ children }: { children: React.ReactNode }) {
+export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const client = useSelector((state: RootState) => state.client.client);
   const vendor = useSelector((state: RootState) => state.vendor.vendor);
-
   const user = client || vendor;
-  const userType = client ? "Client" : vendor ? "Vendor" : undefined;
+  const userType = client ? "client" : vendor ? "vendor" : undefined;
 
+  const [isConnected, setIsConnected] = useState(false);
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    if (socket && socket.connected && user  ) {
-      return;
-    }
+    if (!user || !user._id || !userType) return;
 
-    const socketInstance = io(SOCKET_URL, {
-      path: SOCKET_PATH,
-      reconnection: true,
-      transports: ["websocket", "polling"],
-      auth: user ? { userId: user._id, userType } : undefined,
-    });
-
-    if (user && userType) {
-      socketInstance.emit("join", { userId: user._id, userType });
-    }
-
-    socketInstance.on("connect", () => {
-      console.log("Socket connected:", socketInstance.id);
-    });
-
-    socketInstance.on("connect_error", (error: Error) => {
-      console.error("Socket connection error:", error.message);
-    });
-
-    socketInstance.on("error", (error: { message: string }) => {
-      console.error("Socket error from server:", error.message);
-      if (error.message.includes("Unauthorized")) {
-        socketInstance.disconnect();
-      }
-    });
+    const socketInstance = initSocket(user._id, userType);
 
     setSocket(socketInstance);
 
+    socketInstance.on("connect", () => {
+      console.log("Socket connected:", socketInstance.id);
+      setIsConnected(true);
+    });
+
+    socketInstance.on("disconnect", () => {
+      console.log("Socket disconnected");
+      setIsConnected(false);
+    });
+
     return () => {
-      socketInstance.disconnect();
+      // Optional: remove listeners here if needed
     };
   }, [user?._id, userType]);
 
   return (
-    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
+    <SocketContext.Provider value={{ socket, isConnected }}>
+      {children}
+    </SocketContext.Provider>
   );
-}
-
-export const useSocket = () => {
-  const socket = useContext(SocketContext);
-  if (socket === null) { // Check for null, not undefined, since default is null
-    throw new Error("useSocket must be used within a SocketProvider");
-  }
-  return socket;
 };
+
+export const useSocket = () => useContext(SocketContext);

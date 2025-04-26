@@ -12,7 +12,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Textarea } from "@/components/ui/textarea";
 import { chatService } from "@/services/chat/chatService";
 import { toast } from "sonner";
-import { MessageType } from "@/types/Chat";
+import { Message, MessageType } from "@/types/Chat";
+import { uploadToCloudinary } from "@/utils/upload-cloudinary/cloudinary";
 
 interface MessageInputProps {
   conversationId: string;
@@ -43,22 +44,17 @@ export function MessageInput({ conversationId, onSendMessage }: MessageInputProp
         setIsUploading(true);
         
         if (mediaPreview.file) {
-          const uploadResult = await chatService.uploadMedia(mediaPreview.file);
-          
+          const uploadResult = await uploadToCloudinary(mediaPreview.file)
           messageToSend = {
             text: message,
-            type: uploadResult.type,
-            mediaUrl: uploadResult.url,
-            mediaType: mediaPreview.file.type,
-            fileName: uploadResult.name,
-            fileSize: uploadResult.size,
+            type: "media",
+            mediaUrl: uploadResult,
           };
         }
       }
 
-      const newMessage = await chatService.sendMessage(conversationId, messageToSend);
       
-      onSendMessage(newMessage);
+      onSendMessage(messageToSend);
       
       setMessage("");
       setMediaPreview(null);
@@ -167,7 +163,7 @@ export function MessageInput({ conversationId, onSendMessage }: MessageInputProp
         )}
         
         <button
-          className="absolute top-1 right-1 bg-black/50 rounded-full p-1 text-white"
+          className="absolute top-1 right-1 bg-black/50 rounded-full p-1 "
           onClick={() => setMediaPreview(null)}
         >
           <X size={14} />

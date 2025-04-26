@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { ChatHeader } from "./ChatHeader";
 import { Message, Reaction } from "@/types/Chat";
@@ -22,6 +21,8 @@ import { MessageInput } from "./MessageInput";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { useSocket } from "@/context/SocketContext";
+import { TRole } from "@/types/User";
 
 export function ChatInterface() {
   const dispatch = useDispatch();
@@ -30,95 +31,93 @@ export function ChatInterface() {
     selectedConversationId,
     messages,
     users,
-    loading,
     showConversations,
-  } = useSelector((state : RootState) => state.chat);
-  
+  } = useSelector((state: RootState) => state.chat);
   const isMobile = useIsMobile();
-  const currentUserId = "current-user";
+  const client = useSelector((state: RootState) => state.client.client);
+  const vendor = useSelector((state: RootState) => state.vendor.vendor);
+  const { socket } = useSocket();
+  const userFromRedux = client ? client : vendor;
 
-  const selectedConversation = conversations.find((conv) => conv.id === selectedConversationId);
+  const selectedConversation = conversations.find(
+    (conv) => conv._id === selectedConversationId
+  );
+  
   const recipientUser = selectedConversation?.participants.find(
-    (user) => user.id !== currentUserId
+    (user) => user._id !== userFromRedux?._id
   );
 
-  useEffect(() => {
-    const loadConversations = async () => {
-      try {
-        const fetchedConversations = await chatService.getConversations();
-        dispatch(setConversations(fetchedConversations));
-        
-        const allUsers = new Map();
-        fetchedConversations.forEach((conversation) => {
-          conversation.participants.forEach((user) => {
-            allUsers.set(user.id, user);
-          });
-        });
-        
-        dispatch(setUsers(Array.from(allUsers.values())));
-        
-        if (fetchedConversations.length > 0 && !selectedConversationId) {
-          dispatch(setSelectedConversationId(fetchedConversations[0].id));
-        }
-        
-        dispatch(setLoading(false));
-      } catch (error) {
-        console.error("Error loading conversations:", error);
-        toast.error("Failed to load conversations");
-        dispatch(setLoading(false));
-      }
-    };
-    
-    loadConversations();
-  }, []);
+  console.log("selected conversation : ", selectedConversation);
+  console.log("got receipent user : ", recipientUser);
 
-  useEffect(() => {
-    if (!selectedConversationId) return;
-    
-    const loadMessages = async () => {
-      try {
-        const fetchedMessages = await chatService.getMessages(selectedConversationId);
-        dispatch(setMessages(fetchedMessages));
-        
-        if (isMobile) {
-          dispatch(setShowConversations(false));
-        }
-        
-        const updatedConversations = conversations.map((conv) =>
-          conv.id === selectedConversationId ? { ...conv, unreadCount: 0 } : conv
-        );
-        dispatch(setConversations(updatedConversations));
-        
-      } catch (error) {
-        console.error("Error loading messages:", error);
-        toast.error("Failed to load messages");
-      }
-    };
-    
-    loadMessages();
-  }, [selectedConversationId]);
+  // useEffect(() => {
+  //   if (!selectedConversationId) return;
 
-  const handleSendMessage = (newMessage: Message) => {
+  //   const loadMessages = async () => {
+  //     try {
+  //       const fetchedMessages = await chatService.getMessages(selectedConversationId);
+  //       dispatch(setMessages(fetchedMessages));
+
+  //       if (isMobile) {
+  //         dispatch(setShowConversations(false));
+  //       }
+
+  //       // const updatedConversations = conversations.map((conv) =>
+  //       //   conv._id === selectedConversationId ? { ...conv, unreadCount: 0 } : conv
+  //       // );
+  //       // dispatch(setConversations(updatedConversations));
+
+  //     } catch (error) {
+  //       console.error("Error loading messages:", error);
+  //       toast.error("Failed to load messages");
+  //     }
+  //   };
+
+  //   loadMessages();
+  // }, [selectedConversationId]);
+
+  const handleSendMessage = (message : Message) => {
+    console.log('initial message : ',message);
+    const newMessage : Message = {
+      senderId : userFromRedux?._id as string,
+      text : message.text || "",
+      type : message.type,
+      conversationId : selectedConversationId as string,
+      mediaUrl : message.mediaUrl || "",
+      userType : userFromRedux?.role as TRole
+    }
+    console.log('new message : ',newMessage);
+    if (!socket) return;
+
+    socket.emit("send_message", newMessage);
     dispatch(addMessage(newMessage));
-    
+
     const updatedConversations = conversations.map((conv) =>
-      conv.id === selectedConversationId
+      conv._id === selectedConversationId
         ? { ...conv, lastMessage: newMessage }
         : conv
     );
-    
+
     dispatch(setConversations(updatedConversations));
   };
 
   const handleDeleteMessage = async (messageId: string) => {
     try {
       const success = await chatService.deleteMessage(messageId);
-      
+
       if (success) {
-        dispatch(updateMessage({ ...messages.find(m => m.id === messageId)!, isDeleted: true }));
-        
+        dispatch(
+          updateMessage({
+            ...messages.find((m) => m._id === messageId)!,
+            isDeleted: true,
+          })
+        );
+
         const updatedConversations = conversations.map((conv) => {
-          if (conv.id === selectedConversationId && conv.lastMessage?.id === messageId) {
+          if (
+            conv._id === selectedConversationId &&
+            conv.lastMessage?._id === messageId
+          ) {
             return {
               ...conv,
               lastMessage: { ...conv.lastMessage, isDeleted: true },
@@ -126,7 +125,7 @@ export function ChatInterface() {
           }
           return conv;
         });
-        
+
         dispatch(setConversations(updatedConversations));
       }
     } catch (error) {
@@ -138,40 +137,48 @@ export function ChatInterface() {
   const handleReactToMessage = async (messageId: string, emoji: string) => {
     try {
       // Find the message to update
-      const message = messages.find(m => m.id === messageId);
+      const message = messages.find((m) => m._id === messageId);
       if (!message) return;
 
       // Create a reaction object
       const reaction: Reaction = {
         emoji,
-        userId: currentUserId,
-        username: "You" // In a real app, this would come from the user profile
+        userId: userFromRedux?._id!,
+        username: "You", // In a real app, this would come from the user profile
       };
 
       // Check if user already reacted with this emoji
-      const existingReactionIndex = message.reactions.findIndex(
-        r => r.userId === currentUserId && r.emoji === emoji
+      const existingReactionIndex = message?.reactions?.findIndex(
+        (r) => r.userId === userFromRedux?._id! && r.emoji === emoji
       );
 
       let success;
       let updatedReactions;
 
-      if (existingReactionIndex >= 0) {
+      if (existingReactionIndex! >= 0) {
         // Remove reaction if it already exists
-        success = await chatService.removeReaction(messageId, currentUserId, emoji);
-        updatedReactions = message.reactions.filter((_, index) => index !== existingReactionIndex);
+        success = await chatService.removeReaction(
+          messageId,
+          userFromRedux?._id!,
+          emoji
+        );
+        updatedReactions = message.reactions!.filter(
+          (_, index) => index !== existingReactionIndex
+        );
       } else {
         // Add new reaction
         success = await chatService.addReaction(messageId, reaction);
-        updatedReactions = [...message.reactions, reaction];
+        updatedReactions = [...message.reactions!, reaction];
       }
 
       if (success) {
         // Update the message with new reactions
-        dispatch(updateMessage({
-          ...message,
-          reactions: updatedReactions
-        }));
+        dispatch(
+          updateMessage({
+            ...message,
+            reactions: updatedReactions,
+          })
+        );
       }
     } catch (error) {
       console.error("Error updating reaction:", error);
@@ -180,6 +187,7 @@ export function ChatInterface() {
   };
 
   const handleSelectConversation = (conversationId: string) => {
+    console.log("selected conversation id : ", conversationId);
     dispatch(setSelectedConversationId(conversationId));
   };
 
@@ -187,46 +195,36 @@ export function ChatInterface() {
     dispatch(setShowConversations(!showConversations));
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-chat-primary"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex h-screen overflow-hidden bg-chat-background">
-      <div 
+      <div
         className={`${
-          isMobile 
-            ? (showConversations ? "block w-full" : "hidden") 
+          isMobile
+            ? showConversations
+              ? "block w-full"
+              : "hidden"
             : "w-80 border-r"
-        } bg-white`}
+        } `}
       >
         <ConversationList
           conversations={conversations}
-          currentUserId={currentUserId}
+          currentUserId={userFromRedux?._id!}
           selectedConversationId={selectedConversationId}
           onSelectConversation={handleSelectConversation}
         />
       </div>
 
-      <div 
+      <div
         className={`${
-          isMobile 
-            ? (showConversations ? "hidden" : "block w-full") 
-            : "flex-1"
+          isMobile ? (showConversations ? "hidden" : "block w-full") : "flex-1"
         } flex flex-col h-full`}
       >
         {selectedConversationId && recipientUser ? (
           <>
-            <ChatHeader 
-              user={recipientUser}
-            />
+            <ChatHeader user={recipientUser} />
             <MessageList
               messages={messages}
-              currentUserId={currentUserId}
+              currentUserId={userFromRedux?._id!}
               users={users}
               onDeleteMessage={handleDeleteMessage}
               onReactToMessage={handleReactToMessage}
@@ -241,9 +239,27 @@ export function ChatInterface() {
                 className="absolute top-4 left-4 bg-white rounded-full p-2 shadow-md"
                 onClick={toggleView}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M19 12H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 19L5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M19 12H5"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M12 19L5 12L12 5"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </button>
             )}
@@ -251,9 +267,10 @@ export function ChatInterface() {
         ) : (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <h2 className="text-xl font-medium mb-2">Welcome to ChatterVerse</h2>
+              <h2 className="text-xl font-medium mb-2">Welcome to Chat</h2>
               <p className="text-muted-foreground max-w-md">
-                Select a conversation to start chatting or create a new conversation.
+                Select a conversation to start chatting or create a new
+                conversation.
               </p>
             </div>
           </div>

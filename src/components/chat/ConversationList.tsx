@@ -1,11 +1,11 @@
-
 import { useState } from "react";
 import { Conversation, User } from "@/types/Chat";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, ArrowLeft } from "lucide-react";
 import { formatMessagePreview } from "@/lib/formatters";
 import { Button } from "../ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface ConversationListProps {
   conversations: Conversation[];
@@ -21,7 +21,7 @@ export function ConversationList({
   onSelectConversation,
 }: ConversationListProps) {
   const [searchQuery, setSearchQuery] = useState("");
-
+  const navigate = useNavigate();
   // Filter conversations based on search query
   const filteredConversations = conversations.filter((conversation) => {
     const otherUser = getOtherUser(conversation, currentUserId);
@@ -31,9 +31,7 @@ export function ConversationList({
   return (
     <div className="flex flex-col h-full">
       <div className="p-3 border-b">
-      <Button>
-            Go back
-          </Button>
+        <Button variant={'ghost'} className="mb-2" onClick={()=> navigate(-1)}> <ArrowLeft/> Go back</Button>
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -50,11 +48,11 @@ export function ConversationList({
           const otherUser = getOtherUser(conversation, currentUserId);
           return (
             <div
-              key={conversation.id}
+              key={conversation._id}
               className={`flex items-center p-3 cursor-pointer hover:bg-accent transition-colors ${
-                selectedConversationId === conversation.id ? "bg-accent" : ""
+                selectedConversationId === conversation._id ? "bg-accent" : ""
               }`}
-              onClick={() => onSelectConversation(conversation.id)}
+              onClick={() => onSelectConversation(conversation._id)}
             >
               <div className="relative mr-3">
                 <Avatar>
@@ -77,10 +75,12 @@ export function ConversationList({
                 <div className="flex justify-between items-center">
                   {conversation.lastMessage ? (
                     <p className="text-sm text-muted-foreground truncate max-w-[180px]">
-                      {formatMessagePreview (conversation.lastMessage)}
+                      {formatMessagePreview(conversation.lastMessage)}
                     </p>
                   ) : (
-                    <p className="text-sm text-muted-foreground">Start a conversation</p>
+                    <p className="text-sm text-muted-foreground">
+                      Start a conversation
+                    </p>
                   )}
                   {conversation.unreadCount > 0 && (
                     <span className="ml-2 bg-chat-primary  text-xs rounded-full h-5 min-w-5 flex items-center justify-center px-1.5">
@@ -97,9 +97,12 @@ export function ConversationList({
   );
 }
 
-// Helper function to get the other user in a conversation
+
 function getOtherUser(conversation: Conversation, currentUserId: string): User {
-  return conversation.participants.find((user) => user.id !== currentUserId) || conversation.participants[0];
+  return (
+    conversation.participants.find((user) => user._id !== currentUserId) ||
+    conversation.participants[0]
+  );
 }
 
 // Helper function to format message timestamp
@@ -107,18 +110,18 @@ function formatTime(timestamp: string): string {
   const date = new Date(timestamp);
   const now = new Date();
   const isToday = date.toDateString() === now.toDateString();
-  
+
   if (isToday) {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   } else {
     const yesterday = new Date(now);
     yesterday.setDate(yesterday.getDate() - 1);
     const isYesterday = date.toDateString() === yesterday.toDateString();
-    
+
     if (isYesterday) {
-      return 'Yesterday';
+      return "Yesterday";
     } else {
-      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      return date.toLocaleDateString([], { month: "short", day: "numeric" });
     }
   }
 }

@@ -47,9 +47,7 @@ export function MessageItem({ message, sender, isCurrentUser, onDelete, onReact 
     ? "bg-chat-primary text-white rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-lg ml-auto"
     : "bg-muted rounded-tl-sm rounded-tr-lg rounded-br-lg rounded-bl-lg";
 
-  const isImage = message.type === "image";
-  const isVideo = message.type === "video";
-  const isFile = message.type === "file";
+  const isMedia = message.type === 'media'
   const isLocation = message.type === "location";
 
   const renderMessageContent = () => {
@@ -64,7 +62,7 @@ export function MessageItem({ message, sender, isCurrentUser, onDelete, onReact 
     switch (message.type) {
       case "text":
         return <p className="whitespace-pre-wrap break-words">{message.text}</p>;
-      case "image":
+      case "media":
         return (
           <div className="relative">
             <img
@@ -75,7 +73,7 @@ export function MessageItem({ message, sender, isCurrentUser, onDelete, onReact 
             {message.text && <p className="mt-1 whitespace-pre-wrap break-words">{message.text}</p>}
           </div>
         );
-      case "video":
+      case "media":
         return (
           <div className="relative">
             <video
@@ -86,7 +84,7 @@ export function MessageItem({ message, sender, isCurrentUser, onDelete, onReact 
             {message.text && <p className="mt-1 whitespace-pre-wrap break-words">{message.text}</p>}
           </div>
         );
-      case "file":
+      case "media":
         return (
           <div className="flex items-center bg-background/10 p-2 rounded-md">
             <div className="bg-background/20 p-2 rounded-md mr-2">
@@ -100,12 +98,6 @@ export function MessageItem({ message, sender, isCurrentUser, onDelete, onReact 
                 />
                 <path d="M14 2V8H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium truncate">{message.fileName}</p>
-              {message.fileSize && (
-                <p className="text-xs opacity-70">{formatFileSize(message.fileSize)}</p>
-              )}
             </div>
           </div>
         );
@@ -161,34 +153,34 @@ export function MessageItem({ message, sender, isCurrentUser, onDelete, onReact 
         </div>
       )}
       <div className="max-w-[75%]">
-        <div className={`p-3 relative ${messageStyles}`}>
-          {renderMessageContent()}
-          <div className="text-xs opacity-70 mt-1 text-right">
-            {formatTime(message.timestamp)}
-            {isCurrentUser && (
-              <span className="ml-1">
+        <div className={`p-3 relative ${messageStyles.replace(/bg-[^\s]+|text-[^\s]+/g, "")}`}>
+              {renderMessageContent()}
+              <div className="text-xs mt-1 text-right">
+              {formatTime(message.timestamp!)}
+              {isCurrentUser && (
+                <span className="ml-1">
                 {message.status === "sent" && "✓"}
                 {message.status === "delivered" && "✓✓"}
                 {message.status === "read" && "✓✓"}
-              </span>
-            )}
-          </div>
-        </div>
+                </span>
+              )}
+              </div>
+            </div>
 
         {/* Reactions display */}
-        {message.reactions.length > 0 && (
+        {/* {message?.reactions!.length > 0 && (
           <div className={`flex mt-1 gap-1 ${isCurrentUser ? "justify-end" : "justify-start"}`}>
-            {message.reactions.map((reaction, index) => (
+            {message.reactions!.map((reaction, index) => (
               <div 
                 key={index}
-                className="bg-background rounded-full px-1.5 py-0.5 text-xs flex items-center shadow-sm border"
+                className=" rounded-full px-1.5 py-0.5 text-xs flex items-center shadow-sm border"
               >
                 <span className="mr-1">{reaction.emoji}</span>
                 <span className="text-xs text-muted-foreground">{reaction.username}</span>
               </div>
             ))}
           </div>
-        )}
+        )} */}
 
         {/* Message actions */}
         <div className={`flex mt-1 ${isCurrentUser ? "justify-end" : "justify-start"}`}>
@@ -207,9 +199,9 @@ export function MessageItem({ message, sender, isCurrentUser, onDelete, onReact 
                   {commonEmojis.map((emoji) => (
                     <button
                       key={emoji}
-                      className="text-xl hover:bg-accent p-1 rounded transition-colors"
+                      className="text-xl hover:bg-accent p-1 rounded"
                       onClick={() => {
-                        onReact(message.id, emoji);
+                        onReact(message._id!, emoji);
                         setShowReactionMenu(false);
                       }}
                     >
@@ -260,7 +252,7 @@ export function MessageItem({ message, sender, isCurrentUser, onDelete, onReact 
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction 
               onClick={() => {
-                onDelete(message.id);
+                onDelete(message._id!);
                 setShowDeleteDialog(false);
               }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
