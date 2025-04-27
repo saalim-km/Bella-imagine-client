@@ -33,7 +33,8 @@ export function ChatInterface() {
     users,
     showConversations,
   } = useSelector((state: RootState) => state.chat);
-  console.log('conversations from : chatinterface',conversations);                                          
+  console.log('conversations from : chatinterface',conversations); 
+  console.log('users from chatinterface',users);                                         
   const isMobile = useIsMobile();
   const client = useSelector((state: RootState) => state.client.client);
   const vendor = useSelector((state: RootState) => state.vendor.vendor);
@@ -50,8 +51,7 @@ export function ChatInterface() {
       : selectedConversation.client)
   : undefined;
 
-  console.log("selected conversation : ", selectedConversation);
-  console.log("got receipent user : ", recipientUser);
+  console.log('recipent user : ',recipientUser);
 
   // useEffect(() => {
   //   if (!selectedConversationId) return;
@@ -79,6 +79,7 @@ export function ChatInterface() {
   //   loadMessages();
   // }, [selectedConversationId]);
 
+
   const handleSendMessage = (message : Message) => {
     console.log('initial message : ',message);
     const newMessage : Message = {
@@ -93,15 +94,15 @@ export function ChatInterface() {
     if (!socket) return;
 
     socket.emit("send_message", newMessage);
-    dispatch(addMessage(newMessage));
+    // dispatch(addMessage(newMessage));
 
-    const updatedConversations = conversations.map((conv) =>
-      conv._id === selectedConversationId
-        ? { ...conv, lastMessage: newMessage }
-        : conv
-    );
+    // const updatedConversations = conversations.map((conv) =>
+    //   conv._id === selectedConversationId
+    //     ? { ...conv, lastMessage: newMessage }
+    //     : conv
+    // );
 
-    dispatch(setConversations(updatedConversations));
+    // dispatch(setConversations(updatedConversations));
   };
 
   const handleDeleteMessage = async (messageId: string) => {
@@ -210,6 +211,7 @@ export function ChatInterface() {
         } `}
       >
         <ConversationList
+          users={users}
           conversations={conversations}
           currentUserId={userFromRedux?._id!}
           selectedConversationId={selectedConversationId}

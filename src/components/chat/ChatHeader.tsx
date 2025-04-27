@@ -15,6 +15,7 @@ interface ChatHeaderProps {
 }
 
 export function ChatHeader({ user }: ChatHeaderProps) {
+  console.log('user in the chatheader L ',user);
   return (
     <div className="flex items-center justify-between px-4 py-3 border-b">
       <div className="flex items-center space-x-3">
@@ -24,13 +25,13 @@ export function ChatHeader({ user }: ChatHeaderProps) {
             <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
           </Avatar>
           {user.isOnline && (
-            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-chat-success animate-pulse-dot ring-2 ring-white bg-green-600" />
+            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-chat-success animate-pulse-dot ring-2 ring-white bg-red-600" />
           )}
         </div>
         <div>
           <h2 className="font-semibold">{user.name}</h2>
           <p className="text-xs text-muted-foreground">
-            {user.isOnline ? 'Online' : user.lastSeen ? `Last seen ${formatLastSeen(user.lastSeen)}` : 'Offline'}
+            {user.isOnline ? 'Online' : ''}
           </p>
         </div>
       </div>

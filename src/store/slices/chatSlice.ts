@@ -1,6 +1,8 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Conversation, Message, User } from '@/types/Chat';
+import { TRole } from '@/types/User';
+import { string } from 'zod';
 
 interface ChatState {
   conversations: Conversation[];
@@ -57,6 +59,16 @@ export const chatSlice = createSlice({
         state.messages[index] = action.payload;
       }
     },
+    updateContactStatus: (state , action : PayloadAction<{userId : string , userType : TRole , status : true | false}>)=> {
+      state.users = state.users.map((user) : User => {
+        return user._id === action.payload.userId ? {...user, isOnline: action.payload.status} : user;
+      });
+    },
+    updateLastSeen : (state , action : PayloadAction<{userId : string , lastSeen : string}>)=> {
+      state.users = state.users.map((user):  User=> {
+        return user._id === action.payload.userId ? {...user,lastSeen : action.payload.lastSeen} : user;
+      })
+    }
   },
 });
 
@@ -70,6 +82,8 @@ export const {
   updateConversation,
   addMessage,
   updateMessage,
+  updateContactStatus,
+  updateLastSeen
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

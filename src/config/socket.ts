@@ -8,14 +8,12 @@ const SOCKET_PATH = "/path/_chat";
 let socket: Socket | null = null;
 
 export const initSocket = (userId: string, userType: TRole): Socket => {
-  if (!socket) {
-    socket = io(SOCKET_URL, {
+    const socket = io(SOCKET_URL, {
       path: SOCKET_PATH,
       transports: ["websocket", "polling"],
       reconnection: true,
       auth: { userId, userType },
     });
-  }
 
   return socket;
 };

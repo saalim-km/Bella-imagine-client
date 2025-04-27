@@ -1,21 +1,22 @@
-// src/socket/SocketProvider.tsx
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { initSocket, getSocket } from "@/config/socket"
+import { initSocket } from "@/config/socket"
 import { Socket } from "socket.io-client";
 
 interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
+  reconnect: () => void;
 }
 
 const SocketContext = createContext<SocketContextType>({
   socket: null,
   isConnected: false,
+  reconnect: () => {}
 });
 
-export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
+export const SocketProvider = ({ children }: { children: React.ReactNode }) => {  
   const client = useSelector((state: RootState) => state.client.client);
   const vendor = useSelector((state: RootState) => state.vendor.vendor);
   const user = client || vendor;
@@ -23,39 +24,69 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [isConnected, setIsConnected] = useState(false);
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [socketKey, setSocketKey] = useState(0); // Add a key to force re-initialization
+
+  // Function to force socket reconnection
+  const reconnect = () => {
+    console.log("Forcing socket reconnection");
+    if (socket) {
+      socket.disconnect();
+      setSocket(null);
+    }
+    setSocketKey(prev => prev + 1);
+  };
 
   useEffect(() => {
-    if (!user || !user._id || !userType) return;
-
-    if(socket) {
-      socket.disconnect()
+    if (!user || !user._id || !userType) {
+      
+      // Disconnect if no user
+      if (socket) {
+        console.log("No user, disconnecting socket");
+        socket.disconnect();
+        setSocket(null);
+        setIsConnected(false);
+      }
+      return;
     }
 
+    console.log('Initializing socket connection for', user._id, userType);
+    
+    // Always create a new socket instance when this effect runs
     const socketInstance = initSocket(user._id, userType);
 
-    setSocket(socketInstance);
+    if (!socketInstance) {
+      console.error("Failed to initialize socket");
+      return;
+    }
 
+    // Join immediately after connection
     socketInstance.on("connect", () => {
       console.log("Socket connected ✅", socketInstance.id);
+      socketInstance.emit('join', { userId: user._id, userType });
       setIsConnected(true);
+      setSocket(socketInstance);
     });
 
-    socketInstance.on("disconnect", () => {
+    socketInstance.on("disconnect", () => { 
       console.log("Socket disconnected");
       setIsConnected(false);
     });
 
+    // Clean up function
     return () => {
-      if(socketInstance) {
+      console.log("Cleaning up socket connection");
+      if (socketInstance) {
         socketInstance.off("connect");
-        socketInstance.off("disconnect")
-        socketInstance.disconnect()
+        socketInstance.off("disconnect");
+        socketInstance.disconnect();
+        setSocket(null);
+        setIsConnected(false);
       }
     };
-  }, [user?._id , userType]);
+  }, [user?._id, userType, socketKey]); // Add socketKey as dependency
 
   return (
-    <SocketContext.Provider value={{ socket, isConnected }}>
+    <SocketContext.Provider value={{ socket, isConnected, reconnect }}>
       {children}
     </SocketContext.Provider>
   );

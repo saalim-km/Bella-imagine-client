@@ -1,39 +1,28 @@
-import { chatAxiosInstance } from '@/api/chat.axios'
 import { ChatInterface } from '@/components/chat/ChatInterface'
-import { Spinner } from '@/components/ui/spinner'
-import { useSocket } from '@/context/SocketContext'
-import { useContactsQuery, useConversations } from '@/hooks/chat/useChat'
 import { useSocketEvents } from '@/hooks/chat/useSocketEvents'
-import { getConversations } from '@/services/chat/chatService'
-import { setConversations, setUsers } from '@/store/slices/chatSlice'
 import { RootState } from '@/store/store'
 import { TRole } from '@/types/User'
-import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { use, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { toast } from 'sonner'
 
 const ChatPage = () => {
   const client = useSelector((state: RootState) => state.client.client);
   const vendor = useSelector((state: RootState) => state.vendor.vendor);
-  const dispatch = useDispatch()
-  // initializing events
-  useSocketEvents()
   const user = client ? client : vendor;
-  const {data : contacts , isLoading , isError} = useContactsQuery({userId :  user?._id as string, userType : user?.role as TRole })
-  const {data : conversations} = useConversations({userId : user?._id as string, userType : user?.role!})
-  console.log('got converasations :',conversations);
-  if(contacts && conversations) {
-    dispatch(setUsers(contacts))
-    dispatch(setConversations(conversations))
-  }
+
+  // Calling Events
+  const {fetchContacts , socket , fetchConversations} = useSocketEvents({userId : user?._id!,userType : user?.role as TRole})
   
 
-  if(isLoading) {
-    return(
-      <Spinner/>
-    )
-  }
+  useEffect(()=> {
+    fetchConversations()
+  },[socket , user?._id , fetchContacts])
+
+  useEffect(()=> {
+    fetchContacts()
+  },[socket , fetchContacts , user?._id])
+
+
   return (
     <ChatInterface/>
   )
