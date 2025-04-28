@@ -129,10 +129,10 @@ export default function Header({ onClick }: IHeader) {
 
   return (
     <motion.header
-      className={`fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 py-4 transition-all duration-300 ${
-        scrolled
+      className={`fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 py-4 transition-all duration-300  ${
+        isDarkMode
           ? "bg-white/80 dark:bg-neutral-900/80 backdrop-blur-lg shadow-md"
-          : "bg-transparent"
+          : "bg-white/80 dark:bg-neutral-900/80 backdrop-blur-lg shadow-md"
       }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}

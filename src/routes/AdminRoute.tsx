@@ -9,9 +9,6 @@ import CategoryPage from '@/pages/admin/CategoryPage'
 import { Route, Routes } from 'react-router-dom'
 import { Admin404 } from '@/components/404/Admin404'
 import AdminWalletPage from '@/pages/admin/AdminTransactionsPage'
-import ContestPage from '@/pages/admin/ContestPage'
-import CreateContestPage from '@/pages/admin/CreateContestPage'
-import ContestListPage from '@/pages/admin/ContestListPage'
 
 const AdminRoute = () => {
   return (
@@ -23,9 +20,6 @@ const AdminRoute = () => {
       <Route path='/categories' element = {<AuthAdminRoute element={<CategoryPage/>} allowedRoles={["admin"]}/>}/>
       <Route path='/user/:id/:role' element = {<AuthAdminRoute element={<UserDetailsPage/>} allowedRoles={["admin"]}/>}/>
       <Route path='/payments' element = {<AuthAdminRoute element={<AdminWalletPage/>} allowedRoles={["admin"]}/>}/>
-      <Route path='/contest' element = {<AuthAdminRoute element={<ContestPage/>} allowedRoles={["admin"]}/>}/>
-      <Route path='/contest/create' element = {<AuthAdminRoute element={<CreateContestPage/>} allowedRoles={["admin"]}/>}/>
-      <Route path='/contest/list' element = {<AuthAdminRoute element={<ContestListPage/>} allowedRoles={["admin"]}/>}/>
       <Route path='*' element={<Admin404/>}/>
     </Routes>
   )
