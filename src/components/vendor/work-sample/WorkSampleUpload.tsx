@@ -1,5 +1,5 @@
 import { useState } from 'react'; 
-import { useCloudinary } from '@/hooks/coudinary/useCloudinary';
+import { useCloudinary } from '@/hooks/cloudinary/useCloudinary';
 import { toast } from 'sonner';
 import TagInput from './TagInput';
 import ImagePreview, { MediaItem } from "./ImagePreview";

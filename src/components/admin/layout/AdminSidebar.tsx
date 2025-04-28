@@ -60,10 +60,10 @@ export function AdminSidebar() {
       isActive: pathname === "/admin/categories",
     },
     {
-      title: "Community & Contest",
+      title: "Community",
       icon: CalendarCheck,
-      href: "/admin/contest",
-      isActive: pathname === "/admin/contest",
+      href: "/admin/community",
+      isActive: pathname === "/admin/community",
     },
   ]
 
