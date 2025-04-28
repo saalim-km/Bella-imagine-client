@@ -54,9 +54,11 @@ export const chatSlice = createSlice({
       state.messages.push(action.payload);
     },
     updateMessage: (state, action: PayloadAction<Message>) => {
-      const index = state.messages.findIndex(msg => msg._id === action.payload._id);
-      if (index !== -1) {
-        state.messages[index] = action.payload;
+      if(!state.messages.some((msg)=> msg._id === action.payload._id)){
+        const index = state.messages.findIndex(msg => msg._id === action.payload._id);
+        if (index !== -1) {
+          state.messages[index] = action.payload;
+        }
       }
     },
     updateContactStatus: (state , action : PayloadAction<{userId : string , userType : TRole , status : true | false}>)=> {

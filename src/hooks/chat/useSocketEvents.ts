@@ -1,6 +1,6 @@
 import { useSocket } from "@/context/SocketContext";
-import { setConversations, setUsers, updateContactStatus, updateLastSeen } from "@/store/slices/chatSlice";
-import { Conversation, User } from "@/types/Chat";
+import { setConversations, setMessages, setUsers, updateContactStatus, updateLastSeen } from "@/store/slices/chatSlice";
+import { Conversation, Message, User } from "@/types/Chat";
 import { TRole } from "@/types/User";
 import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
@@ -29,7 +29,12 @@ export function useSocketEvents({userId , userType} : {userId : string , userTyp
 
         socket.on('update_lastseen',({userId , lastSeen})=> {
             console.log(`in update_lastseen event in frontend ${userId} , lastseen : ${lastSeen}`);
-            // dispatch(updateLastSeen({userId: userId , lastSeen : lastSeen}))
+            dispatch(updateLastSeen({userId: userId , lastSeen : lastSeen}))
+        })
+
+        socket.on('messages',(messages : Message[])=> {
+            console.log('go the messages',messages);
+            dispatch(setMessages(messages))
         })
         
         return ()=> {
@@ -59,6 +64,12 @@ export function useSocketEvents({userId , userType} : {userId : string , userTyp
         }
     },[socket , userId , userType , dispatch])
 
+    const fetchMessages = useCallback((conversationId : string)=> {
+        if(socket) {
+            socket.emit('get_messages',{conversationId})
+        }
+    },[socket,userId,userType,dispatch])
 
-    return { socket , fetchContacts , fetchConversations}
+
+    return { socket , fetchContacts , fetchConversations , fetchMessages}
 }

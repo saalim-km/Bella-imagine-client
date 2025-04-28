@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { ChatHeader } from "./ChatHeader";
 import { Message, Reaction } from "@/types/Chat";
-import { chatService } from "@/services/chat/chatService";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
@@ -23,6 +22,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useSocket } from "@/context/SocketContext";
 import { TRole } from "@/types/User";
+import { useSocketEvents } from "@/hooks/chat/useSocketEvents";
 
 export function ChatInterface() {
   const dispatch = useDispatch();
@@ -33,105 +33,103 @@ export function ChatInterface() {
     users,
     showConversations,
   } = useSelector((state: RootState) => state.chat);
-  console.log('conversations from : chatinterface',conversations); 
-  console.log('users from chatinterface',users);                                         
+  console.log("conversations from : chatinterface", conversations);
+  console.log("users from chatinterface", users);
   const isMobile = useIsMobile();
   const client = useSelector((state: RootState) => state.client.client);
   const vendor = useSelector((state: RootState) => state.vendor.vendor);
   const { socket } = useSocket();
   const userFromRedux = client ? client : vendor;
-
+  const { fetchMessages } = useSocketEvents({
+    userId: userFromRedux?._id as string,
+    userType: userFromRedux?.role as TRole,
+  });
   const selectedConversation = conversations.find(
     (conv) => conv._id === selectedConversationId
   );
-  
+
   const recipientUser = selectedConversation
-  ? (userFromRedux?._id === selectedConversation.client._id
+    ? userFromRedux?._id === selectedConversation.client._id
       ? selectedConversation.vendor
-      : selectedConversation.client)
-  : undefined;
+      : selectedConversation.client
+    : undefined;
 
-  console.log('recipent user : ',recipientUser);
+  console.log("recipent user : ", recipientUser);
 
-  // useEffect(() => {
-  //   if (!selectedConversationId) return;
+  useEffect(() => {
+    console.log("conversation useeffect riggered", selectedConversationId);
+    fetchMessages(selectedConversationId as string);
+  }, [selectedConversationId]);
 
-  //   const loadMessages = async () => {
-  //     try {
-  //       const fetchedMessages = await chatService.getMessages(selectedConversationId);
-  //       dispatch(setMessages(fetchedMessages));
+  useEffect(() => {
+    if (socket) {
+      socket.on("new_message", (newMessage: Message) => {
+        console.log("new message event trigger ❌❌❌❌❌❌❌",newMessage);
+        dispatch(addMessage(newMessage));
+      });
 
-  //       if (isMobile) {
-  //         dispatch(setShowConversations(false));
-  //       }
-
-  //       // const updatedConversations = conversations.map((conv) =>
-  //       //   conv._id === selectedConversationId ? { ...conv, unreadCount: 0 } : conv
-  //       // );
-  //       // dispatch(setConversations(updatedConversations));
-
-  //     } catch (error) {
-  //       console.error("Error loading messages:", error);
-  //       toast.error("Failed to load messages");
-  //     }
-  //   };
-
-  //   loadMessages();
-  // }, [selectedConversationId]);
-
-
-  const handleSendMessage = (message : Message) => {
-    console.log('initial message : ',message);
-    const newMessage : Message = {
-      senderId : userFromRedux?._id as string,
-      text : message.text || "",
-      type : message.type,
-      conversationId : selectedConversationId as string,
-      mediaUrl : message.mediaUrl || "",
-      userType : userFromRedux?.role as TRole
+      return () => {
+        socket.off("new_message");
+      };
     }
-    console.log('new message : ',newMessage);
+  }, [socket, dispatch, messages]);
+
+  const handleSendMessage = (message: Message) => {
+    console.log("initial message : ", message);
+    const newMessage: Message = {
+      senderId: userFromRedux?._id as string,
+      text: message.text || "",
+      type: message.type,
+      timestamp : new Date().toISOString(),
+      conversationId: selectedConversationId as string,
+      mediaUrl: message.mediaUrl || "",
+      userType: userFromRedux?.role as TRole,
+    };
+    console.log("new message : ", newMessage);
     if (!socket) return;
 
-    socket.emit("send_message", newMessage);
-    // dispatch(addMessage(newMessage));
+    socket.emit("send_message", {
+      message: newMessage,
+      recipentId: recipientUser?._id,
+    });
 
-    // const updatedConversations = conversations.map((conv) =>
-    //   conv._id === selectedConversationId
-    //     ? { ...conv, lastMessage: newMessage }
-    //     : conv
-    // );
+    const updatedConversations = conversations.map((conv) =>
+      conv._id === selectedConversationId
+        ? { ...conv, lastMessage: newMessage }
+        : conv
+    );
 
-    // dispatch(setConversations(updatedConversations));
+    dispatch(setConversations(updatedConversations));
   };
 
   const handleDeleteMessage = async (messageId: string) => {
     try {
-      const success = await chatService.deleteMessage(messageId);
+      console.log(messageId);
+      // const success = await chatService.deleteMessage(messageId);
 
-      if (success) {
-        dispatch(
-          updateMessage({
-            ...messages.find((m) => m._id === messageId)!,
-            isDeleted: true,
-          })
-        );
+      // if (success) {
+      //   dispatch(
+      //     updateMessage({
+      //       ...messages.find((m) => m._id === messageId)!,
+      //       isDeleted: true,
+      //     })
+      //   );
 
-        const updatedConversations = conversations.map((conv) => {
-          if (
-            conv._id === selectedConversationId &&
-            conv.lastMessage?._id === messageId
-          ) {
-            return {
-              ...conv,
-              lastMessage: { ...conv.lastMessage, isDeleted: true },
-            };
-          }
-          return conv;
-        });
+      //   const updatedConversations = conversations.map((conv) => {
+      //     if (
+      //       conv._id === selectedConversationId &&
+      //       conv.lastMessage?._id === messageId
+      //     ) {
+      //       return {
+      //         ...conv,
+      //         lastMessage: { ...conv.lastMessage, isDeleted: true },
+      //       };
+      //     }
+      //     return conv;
+      //   });
 
-        dispatch(setConversations(updatedConversations));
-      }
+      //   dispatch(setConversations(updatedConversations));
+      // }
     } catch (error) {
       console.error("Error deleting message:", error);
       toast.error("Failed to delete message");
@@ -159,21 +157,21 @@ export function ChatInterface() {
       let success;
       let updatedReactions;
 
-      if (existingReactionIndex! >= 0) {
-        // Remove reaction if it already exists
-        success = await chatService.removeReaction(
-          messageId,
-          userFromRedux?._id!,
-          emoji
-        );
-        updatedReactions = message.reactions!.filter(
-          (_, index) => index !== existingReactionIndex
-        );
-      } else {
-        // Add new reaction
-        success = await chatService.addReaction(messageId, reaction);
-        updatedReactions = [...message.reactions!, reaction];
-      }
+      // if (existingReactionIndex! >= 0) {
+      //   // Remove reaction if it already exists
+      //   success = await chatService.removeReaction(
+      //     messageId,
+      //     userFromRedux?._id!,
+      //     emoji
+      //   );
+      //   updatedReactions = message.reactions!.filter(
+      //     (_, index) => index !== existingReactionIndex
+      //   );
+      // } else {
+      //   // Add new reaction
+      //   success = await chatService.addReaction(messageId, reaction);
+      //   updatedReactions = [...message.reactions!, reaction];
+      // }
 
       if (success) {
         // Update the message with new reactions
