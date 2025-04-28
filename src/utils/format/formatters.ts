@@ -18,12 +18,8 @@ export function formatMessagePreview(message: Message): string {
   switch (message.type) {
     case "text":
       return message.text;
-    case "image":
+    case "media":
       return "📷 Image";
-    case "video":
-      return "🎥 Video";
-    case "file":
-      return `📎 ${message.fileName || "File"}`;
     case "location":
       return "📍 Location";
     default:

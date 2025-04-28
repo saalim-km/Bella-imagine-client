@@ -1,6 +1,8 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Conversation, Message, User } from '@/types/Chat';
+import { TRole } from '@/types/User';
+import { string } from 'zod';
 
 interface ChatState {
   conversations: Conversation[];
@@ -43,7 +45,7 @@ export const chatSlice = createSlice({
       state.showConversations = action.payload;
     },
     updateConversation: (state, action: PayloadAction<Conversation>) => {
-      const index = state.conversations.findIndex(conv => conv.id === action.payload.id);
+      const index = state.conversations.findIndex(conv => conv._id === action.payload._id);
       if (index !== -1) {
         state.conversations[index] = action.payload;
       }
@@ -52,11 +54,23 @@ export const chatSlice = createSlice({
       state.messages.push(action.payload);
     },
     updateMessage: (state, action: PayloadAction<Message>) => {
-      const index = state.messages.findIndex(msg => msg.id === action.payload.id);
-      if (index !== -1) {
-        state.messages[index] = action.payload;
+      if(!state.messages.some((msg)=> msg._id === action.payload._id)){
+        const index = state.messages.findIndex(msg => msg._id === action.payload._id);
+        if (index !== -1) {
+          state.messages[index] = action.payload;
+        }
       }
     },
+    updateContactStatus: (state , action : PayloadAction<{userId : string , userType : TRole , status : true | false}>)=> {
+      state.users = state.users.map((user) : User => {
+        return user._id === action.payload.userId ? {...user, isOnline: action.payload.status} : user;
+      });
+    },
+    updateLastSeen : (state , action : PayloadAction<{userId : string , lastSeen : string}>)=> {
+      state.users = state.users.map((user):  User=> {
+        return user._id === action.payload.userId ? {...user,lastSeen : action.payload.lastSeen} : user;
+      })
+    }
   },
 });
 
@@ -70,6 +84,8 @@ export const {
   updateConversation,
   addMessage,
   updateMessage,
+  updateContactStatus,
+  updateLastSeen
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

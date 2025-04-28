@@ -19,10 +19,11 @@ export function MessageList({
   onReactToMessage,
 }: MessageListProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  console.log('got the messages here : ',messages);
 
   // Sort messages by timestamp
   const sortedMessages = [...messages].sort(
-    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    (a, b) => new Date(a.timestamp!).getTime() - new Date(b.timestamp!).getTime()
   );
 
   // Scroll to bottom when messages change
@@ -34,7 +35,7 @@ export function MessageList({
   const groupedMessages: { [date: string]: Message[] } = {};
   
   sortedMessages.forEach((message) => {
-    const date = new Date(message.timestamp).toLocaleDateString();
+    const date = new Date(message.timestamp!).toLocaleDateString();
     if (!groupedMessages[date]) {
       groupedMessages[date] = [];
     }
@@ -43,17 +44,12 @@ export function MessageList({
 
   // Find sender for a message
   const getSender = (senderId: string): User => {
-    return users.find((user) => user.id === senderId) || {
-      id: senderId,
-      name: "Unknown User",
-      avatar: "",
-      isOnline: false,
-    };
+    return users.find((user) => user._id === senderId)!
   };
 
   return (
     <div className="flex-1 overflow-y-auto p-4">
-      {Object.entries(groupedMessages).map(([date, dateMessages]) => (
+      {Object.entries(groupedMessages).map(([date, dateMessages]) => (  
         <div key={date}>
           <div className="flex justify-center my-3">
             <span className="text-xs bg-muted px-2 py-1 rounded-full text-muted-foreground">
@@ -67,7 +63,7 @@ export function MessageList({
             
             return (
               <MessageItem
-                key={message.id}
+                key={message._id}
                 message={message}
                 sender={sender}
                 isCurrentUser={isCurrentUser}

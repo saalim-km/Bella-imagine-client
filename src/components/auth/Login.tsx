@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import { clientLogin } from "@/store/slices/clientSlice";
 import { handleError } from "@/utils/Error/errorHandler";
 import { vendorLogin } from "@/store/slices/vendorSlice";
+import { useSocket } from "@/context/SocketContext";
 
 interface loginProps {
   userType: TRole;
@@ -26,6 +27,8 @@ export default function Login({ userType, onSubmit, isSending }: loginProps) {
   const { mutate: Login } = useGoogleLoginMutataion();
   const navigate = useNavigate();
   const { isDarkMode, textColor, buttonPrimary } = useThemeConstants();
+  const {reconnect , socket} = useSocket()
+
   
   function handleGoogleLogin(credentialResponse: CredentialResponse) {
     console.log(credentialResponse);
@@ -40,8 +43,16 @@ export default function Login({ userType, onSubmit, isSending }: loginProps) {
           toast.success(data.message);
           if (userType === "vendor") {
             dispatch(vendorLogin(data.user));
+            if(socket){
+            reconnect()
+
+            }
           } else {
             dispatch(clientLogin(data.user));
+            if(socket){
+              reconnect()
+  
+              }
           }
           navigate("/home");
         },

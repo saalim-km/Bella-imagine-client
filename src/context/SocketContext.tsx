@@ -1,70 +1,95 @@
-import { RootState } from "@/store/store";
-import { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import io from "socket.io-client";
-import type { Socket } from "socket.io-client";
+import { RootState } from "@/store/store";
+import { initSocket } from "@/config/socket"
+import { Socket } from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:3002";
-const SOCKET_PATH = "/api/v_1/_chat";
+interface SocketContextType {
+  socket: Socket | null;
+  isConnected: boolean;
+  reconnect: () => void;
+}
 
-const SocketContext = createContext<Socket | null>(null);
+const SocketContext = createContext<SocketContextType>({
+  socket: null,
+  isConnected: false,
+  reconnect: () => {}
+});
 
-export function SocketProvider({ children }: { children: React.ReactNode }) {
+export const SocketProvider = ({ children }: { children: React.ReactNode }) => {  
   const client = useSelector((state: RootState) => state.client.client);
   const vendor = useSelector((state: RootState) => state.vendor.vendor);
-
   const user = client || vendor;
-  const userType = client ? "Client" : vendor ? "Vendor" : undefined;
+  const userType = client ? "client" : vendor ? "vendor" : undefined;
 
+  const [isConnected, setIsConnected] = useState(false);
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [socketKey, setSocketKey] = useState(0); // Add a key to force re-initialization
+
+  // Function to force socket reconnection
+  const reconnect = () => {
+    console.log("Forcing socket reconnection");
+    if (socket) {
+      socket.disconnect();
+      setSocket(null);
+    }
+    setSocketKey(prev => prev + 1);
+  };
 
   useEffect(() => {
-    if (socket && socket.connected && user  ) {
+    if (!user || !user._id || !userType) {
+      
+      // Disconnect if no user
+      if (socket) {
+        console.log("No user, disconnecting socket");
+        socket.disconnect();
+        setSocket(null);
+        setIsConnected(false);
+      }
       return;
     }
 
-    const socketInstance = io(SOCKET_URL, {
-      path: SOCKET_PATH,
-      reconnection: true,
-      transports: ["websocket", "polling"],
-      auth: user ? { userId: user._id, userType } : undefined,
-    });
+    console.log('Initializing socket connection for', user._id, userType);
+    
+    // Always create a new socket instance when this effect runs
+    const socketInstance = initSocket(user._id, userType);
 
-    if (user && userType) {
-      socketInstance.emit("join", { userId: user._id, userType });
+    if (!socketInstance) {
+      console.error("Failed to initialize socket");
+      return;
     }
 
+    // Join immediately after connection
     socketInstance.on("connect", () => {
-      console.log("Socket connected:", socketInstance.id);
+      console.log("Socket connected ✅", socketInstance.id);
+      socketInstance.emit('join', { userId: user._id, userType });
+      setIsConnected(true);
+      setSocket(socketInstance);
     });
 
-    socketInstance.on("connect_error", (error: Error) => {
-      console.error("Socket connection error:", error.message);
+    socketInstance.on("disconnect", () => { 
+      console.log("Socket disconnected");
+      setIsConnected(false);
     });
 
-    socketInstance.on("error", (error: { message: string }) => {
-      console.error("Socket error from server:", error.message);
-      if (error.message.includes("Unauthorized")) {
-        socketInstance.disconnect();
-      }
-    });
-
-    setSocket(socketInstance);
-
+    // Clean up function
     return () => {
-      socketInstance.disconnect();
+      console.log("Cleaning up socket connection");
+      if (socketInstance) {
+        socketInstance.off("connect");
+        socketInstance.off("disconnect");
+        socketInstance.disconnect();
+        setSocket(null);
+        setIsConnected(false);
+      }
     };
-  }, [user?._id, userType]);
+  }, [user?._id, userType, socketKey]); // Add socketKey as dependency
 
   return (
-    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
+    <SocketContext.Provider value={{ socket, isConnected, reconnect }}>
+      {children}
+    </SocketContext.Provider>
   );
-}
-
-export const useSocket = () => {
-  const socket = useContext(SocketContext);
-  if (socket === null) { // Check for null, not undefined, since default is null
-    throw new Error("useSocket must be used within a SocketProvider");
-  }
-  return socket;
 };
+
+export const useSocket = () => useContext(SocketContext);

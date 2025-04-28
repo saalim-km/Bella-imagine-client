@@ -21,12 +21,14 @@ import { vendorLogout } from "@/store/slices/vendorSlice";
 import { useAllVendortNotification } from "@/hooks/vendor/useVendor";
 import { useAllClientNotification } from "@/hooks/client/useClient";
 import type { RootState } from "@/store/store";
+import { useSocket } from "@/context/SocketContext";
 
 interface IHeader {
   onClick?: () => void;
 }
 
 export default function Header({ onClick }: IHeader) {
+  const {reconnect , socket} = useSocket()
   const { textColor, isDarkMode } = useThemeConstants();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -73,8 +75,14 @@ export default function Header({ onClick }: IHeader) {
         toast.success(data.message);
         if (user?.role === "vendor") {
           dispatch(vendorLogout());
+          if(socket) {
+            socket.disconnect()
+          }
         } else {
           dispatch(clientLogout());
+          if(socket) {
+            socket.disconnect()
+          }
         }
       },
       onError: (error) => {

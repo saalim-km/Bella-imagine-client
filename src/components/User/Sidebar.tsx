@@ -43,8 +43,8 @@ export function Sidebar({
       <div className="flex flex-col h-full">
         {/* Profile Section */}
         <div className="flex items-center space-x-4 mb-6">
-          <Avatar className="w-12 h-12">
-            <AvatarImage src={profileImage} alt={`${name}`} />
+          <Avatar className="w-16 h-16">
+            <AvatarImage src={profileImage} alt={`${name}`} className="object-cover"/>
             <AvatarFallback>
               {name?.charAt(0).toUpperCase()}
             </AvatarFallback>
