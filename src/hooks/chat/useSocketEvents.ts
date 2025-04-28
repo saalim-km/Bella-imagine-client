@@ -40,6 +40,8 @@ export function useSocketEvents({userId , userType} : {userId : string , userTyp
         return ()=> {
             socket.off('connect_error');
             socket.off('user_status');
+            socket.off('update_lastseen');
+            socket.off('messages');
         }
     },[socket,userId,userType])
 

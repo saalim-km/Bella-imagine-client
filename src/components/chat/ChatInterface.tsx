@@ -33,8 +33,6 @@ export function ChatInterface() {
     users,
     showConversations,
   } = useSelector((state: RootState) => state.chat);
-  console.log("conversations from : chatinterface", conversations);
-  console.log("users from chatinterface", users);
   const isMobile = useIsMobile();
   const client = useSelector((state: RootState) => state.client.client);
   const vendor = useSelector((state: RootState) => state.vendor.vendor);
@@ -57,7 +55,6 @@ export function ChatInterface() {
   console.log("recipent user : ", recipientUser);
 
   useEffect(() => {
-    console.log("conversation useeffect riggered", selectedConversationId);
     fetchMessages(selectedConversationId as string);
   }, [selectedConversationId]);
 
@@ -75,7 +72,6 @@ export function ChatInterface() {
   }, [socket, dispatch, messages]);
 
   const handleSendMessage = (message: Message) => {
-    console.log("initial message : ", message);
     const newMessage: Message = {
       senderId: userFromRedux?._id as string,
       text: message.text || "",
@@ -85,7 +81,6 @@ export function ChatInterface() {
       mediaUrl: message.mediaUrl || "",
       userType: userFromRedux?.role as TRole,
     };
-    console.log("new message : ", newMessage);
     if (!socket) return;
 
     socket.emit("send_message", {
