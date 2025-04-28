@@ -1,37 +1,18 @@
-import type React from "react"
-import { useState } from "react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { clientKeys, useAllClientQuery, useBlockClient, useUnBlockClient } from "@/hooks/admin/useClients"
-import { toast } from "sonner"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { useQueryClient } from "@tanstack/react-query"
-import { DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu"
-import { buildQueryParams } from "@/utils/queryGenerator"
-import Pagination from "@/components/common/Pagination"
-import { Spinner } from "@/components/ui/spinner"
-import { useNavigate } from "react-router-dom"
-import { handleError } from "@/utils/Error/errorHandler"
-
+import type React from "react";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { CardHeader, CardTitle } from "@/components/ui/card";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { useAllClientQuery, useBlockClient, useUnBlockClient, clientKeys } from "@/hooks/admin/useClients";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { buildQueryParams } from "@/utils/queryGenerator";
+import { handleError } from "@/utils/Error/errorHandler";
+import { DataTable, type ColumnDef } from "@/components/common/Table";
 
 const FILTER_OPTIONS = [
   { label: "Active", value: "isActive" },
@@ -43,17 +24,20 @@ const FILTER_OPTIONS = [
 ];
 
 export function ClientTable() {
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
-  const { mutate: block } = useBlockClient()
-  const { mutate: unBlock } = useUnBlockClient()
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([])
-  const [appliedFilters, setAppliedFilters] = useState<string[]>([])
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [appliedSearchTerm, setAppliedSearchTerm] = useState("")
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 4
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { mutate: block } = useBlockClient();
+  const { mutate: unBlock } = useUnBlockClient();
+  
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [appliedFilters, setAppliedFilters] = useState<string[]>([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedClient, setSelectedClient] = useState<{ id: string; action: "block" | "unblock" } | null>(null);
+  
+  const itemsPerPage = 4;
 
   const toggleFilter = (key: string) => {
     setSelectedFilters((prev) => {
@@ -65,210 +49,178 @@ export function ClientTable() {
       } else if (key === "older") {
         updatedFilters = updatedFilters.filter((item) => item !== "latest");
       }
-  
       return updatedFilters;
     });
   };
 
   const applyFilters = () => {
-    setAppliedFilters(selectedFilters)
-    setCurrentPage(1)
-    setDropdownOpen(false)
-  }
+    setAppliedFilters(selectedFilters);
+    setCurrentPage(1);
+    setDropdownOpen(false);
+  };
 
   const handleSearchSubmit = () => {
-    setAppliedSearchTerm(searchTerm)
-    setCurrentPage(1)
-  }
+    setAppliedSearchTerm(searchTerm);
+    setCurrentPage(1);
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      handleSearchSubmit()
+      handleSearchSubmit();
     }
-  }
-
-  const [selectedClient, setSelectedClient] = useState<{
-    id: string
-    action: "block" | "unblock"
-  } | null>(null)
+  };
 
   function confirmAction(clientId: string, action: "block" | "unblock") {
-    setSelectedClient({ id: clientId, action })
+    setSelectedClient({ id: clientId, action });
   }
 
   function handleConfirm() {
-    if (!selectedClient) return
+    if (!selectedClient) return;
+    const { id, action } = selectedClient;
 
-    const { id, action } = selectedClient
+    const mutation = action === "block" ? block : unBlock;
+    mutation(id, {
+      onSuccess: (data) => {
+        queryClient.invalidateQueries({ queryKey: clientKeys.lists() });
+        toast.success(data.message);
+      },
+      onError: (err) => {
+        handleError(err);
+      },
+    });
 
-    if (action === "block") {
-      block(id, {
-        onSuccess: (data) => {
-          queryClient.invalidateQueries({ queryKey: clientKeys.lists() })
-          toast.success(data.message)
-        },
-        onError: (err) => {
-          handleError(err)
-        },
-      })
-    } else {
-      unBlock(id, {
-        onSuccess: (data) => {
-          queryClient.invalidateQueries({ queryKey: clientKeys.lists() })
-          toast.success(data.message)
-        },
-        onError: (err) => {
-          handleError(err)
-        },
-      })
-    }
-    setSelectedClient(null)
+    setSelectedClient(null);
   }
 
-  const filterOptions = buildQueryParams(appliedFilters)
+  const filterOptions = buildQueryParams(appliedFilters);
   const { data: clientsData, isLoading } = useAllClientQuery(
     {
       ...filterOptions,
       search: appliedSearchTerm,
     },
-    { page: currentPage, limit: itemsPerPage },
-  )
+    { page: currentPage, limit: itemsPerPage }
+  );
 
-  const clients = clientsData?.clients.data || []
-  const totalClients = clientsData?.clients.total || 0
-  const totalPages = Math.max(1, Math.ceil(totalClients / itemsPerPage))
+  const clients = clientsData?.clients.data || [];
+  const totalClients = clientsData?.clients.total || 0;
+  const totalPages = Math.max(1, Math.ceil(totalClients / itemsPerPage));
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value)
-  }
+    setSearchTerm(e.target.value);
+  };
 
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && newPage <= totalPages) {
-      setCurrentPage(newPage)
+      setCurrentPage(newPage);
     }
-  }
+  };
+
+  const columns: ColumnDef<typeof clients[0]>[] = [
+    {
+      id: "name",
+      header: "Name",
+      accessorKey: "name",
+      className: "font-medium",
+    },
+    {
+      id: "email",
+      header: "Email",
+      accessorKey: "email",
+    },
+    {
+      id: "status",
+      header: "Status",
+      cell: (client) => (
+        <Badge variant={client.isActive ? "default" : "secondary"}>
+          {client.isActive ? "Active" : "Inactive"}
+        </Badge>
+      ),
+    },
+    {
+      id: "joinDate",
+      header: "Join Date",
+      cell: (client) => new Date(client.createdAt).toLocaleDateString("en-GB"),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: (client) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm">Actions</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem asChild>
+              <a onClick={() => navigate(`/admin/user/${client._id}/client`)}>View Details</a>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-red-600"
+              onClick={() => client._id && confirmAction(client._id, client.isblocked ? "unblock" : "block")}
+            >
+              {client.isblocked ? "Unblock" : "Block"}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Clients</CardTitle>
-            <div className="flex items-center gap-2">
-              <div className="flex">
-                <Input 
-                  placeholder="Search clients..." 
-                  className="w-[200px] rounded-r-none" 
-                  value={searchTerm} 
-                  onChange={handleSearchChange}
-                  onKeyDown={handleKeyDown}
-                />
-                <Button 
-                variant={"outline"}
-                  className="rounded-l-none" 
-                  onClick={handleSearchSubmit}
+      <CardHeader className="flex items-center justify-between">
+        <CardTitle>Clients</CardTitle>
+        <div className="flex items-center gap-2">
+          <div className="flex">
+            <Input
+              placeholder="Search clients..."
+              className="w-[200px] rounded-r-none"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              onKeyDown={handleKeyDown}
+            />
+            <Button variant="outline" className="rounded-l-none" onClick={handleSearchSubmit}>
+              Search
+            </Button>
+          </div>
+          <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                Filter {appliedFilters.length > 0 && `(${appliedFilters.length})`}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              {FILTER_OPTIONS.map((option) => (
+                <DropdownMenuCheckboxItem
+                  key={option.value}
+                  checked={selectedFilters.includes(option.value)}
+                  onCheckedChange={() => toggleFilter(option.value)}
+                  onSelect={(e) => e.preventDefault()}
                 >
-                  Search
+                  {option.label}
+                </DropdownMenuCheckboxItem>
+              ))}
+              <DropdownMenuSeparator />
+              <div className="flex justify-end p-2">
+                <Button variant="outline" size="sm" onClick={applyFilters}>
+                  Apply Filters
                 </Button>
               </div>
-              <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    Filter {appliedFilters.length > 0 && `(${appliedFilters.length})`}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  {FILTER_OPTIONS.map((option) => (
-                    <DropdownMenuCheckboxItem
-                      key={option.value}
-                      checked={selectedFilters.includes(option.value)}
-                      onCheckedChange={() => toggleFilter(option.value)}
-                      onSelect={(e) => e.preventDefault()} // Prevent closing on select
-                    >
-                      {option.label}
-                    </DropdownMenuCheckboxItem>
-                  ))}
-                  <DropdownMenuSeparator />
-                  <div className="flex justify-end p-2">
-                    <Button variant={"outline"} size="sm" onClick={applyFilters}>
-                      Apply Filters
-                    </Button>
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-           <Spinner/>
-          ) : (
-            <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Join Date</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {clients.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8">
-                        No clients found matching your filters
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    clients.map((client) => (
-                      <TableRow key={client._id}>
-                        <TableCell className="font-medium">{client.name}</TableCell>
-                        <TableCell>{client.email}</TableCell>
-                        <TableCell>
-                          <Badge variant={client.isActive ? "default" : "secondary"}>
-                            {client.isActive ? "Active" : "InActive"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{new Date(client.createdAt).toLocaleDateString("en-GB")}</TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                              >
-                                Actions
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem asChild>
-                                <a onClick={()=> navigate(`/admin/user/${client._id}/client`)}>View Details</a>
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                className="text-red-600"
-                                onClick={() => client._id && confirmAction(client._id, client.isblocked ? "unblock" : "block")}
-                              >
-                                {client.isblocked ? "Unblock" : "Block"}
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </CardHeader>
 
-              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange}/>
-            </>
-          )}
-        </CardContent>
-      </Card>
+      <DataTable
+        data={clients}
+        columns={columns}
+        isLoading={isLoading}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        emptyMessage="No clients found matching your filters"
+      />
 
-      {/* Confirmation Dialog */}
       {selectedClient && (
         <AlertDialog open={true} onOpenChange={(open) => !open && setSelectedClient(null)}>
           <AlertDialogContent>
@@ -290,5 +242,5 @@ export function ClientTable() {
         </AlertDialog>
       )}
     </>
-  )
+  );
 }
