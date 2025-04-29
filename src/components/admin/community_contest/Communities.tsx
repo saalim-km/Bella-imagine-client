@@ -1,62 +1,34 @@
-"use client";
-
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Plus,
-  MoreHorizontal,
-  Search,
-  Star,
-  StarOff,
-  Pencil,
-  Trash2,
-} from "lucide-react";
-import { fetchCommunities } from "@/lib/api";
+import { Plus, Search, Star, StarOff, Pencil, Trash2 } from "lucide-react";
 import { BigModal } from "@/components/modals/BigModalReusable";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, type ColumnDef } from "@/components/common/Table";
 import { ReusableDropdown } from "@/components/common/ReusableDropdown";
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
+import { Link } from "react-router-dom";
+import { Community } from "@/types/Community";
+import { useGetlAllCommunity } from "@/hooks/community-contest/useCommunity";
 
 // Define the Community interface
-interface Community {
-  _id: number;
-  name: string;
-  members: number;
-  featured: boolean;
-  created: string;
-  description?: string;
-  coverImageUrl?: string;
-  iconImageUrl?: string;
-  memberCount?: number;
-  postCount?: number;
-  isPrivate?: boolean;
-  isFeatured?: boolean;
-  rules?: string[];
-  createdAt?: string;
-  updatedAt?: string;
-}
 
 export default function Communities() {
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [communityToDelete, setCommunityToDelete] = useState<number | null>(
-    null
-  );
+  const [communityToDelete, setCommunityToDelete] = useState<number | null>(null);
   const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
-  const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(
-    null
-  );
+  const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const { data: communities = [], isLoading } = useQuery<Community[]>({
-    queryKey: ["communities"],
-    queryFn: fetchCommunities,
-  });
-
-  const filteredCommunities = communities.filter((community) =>
+  const itemsPerPage = 4;
+  console.log('current page for fetching : ',currentPage);
+  const {data  , isLoading } = useGetlAllCommunity({page : currentPage , limit : itemsPerPage})
+  const communities = data?.data || [];
+  const totalPages = Math.max(1, Math.ceil(data?.total! / itemsPerPage));
+  
+  const filteredCommunities = communities.filter((community: Community) =>
     community.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -70,6 +42,13 @@ export default function Communities() {
     setViewDetailsOpen(true);
   };
 
+
+  
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
   // Columns for All Communities Tab
   const allColumns: ColumnDef<Community>[] = [
     {
@@ -151,96 +130,6 @@ export default function Communities() {
     },
   ];
 
-  // Columns for Featured Communities Tab
-  const featuredColumns: ColumnDef<Community>[] = [
-    {
-      id: "name",
-      header: "Name",
-      cell: (community) => (
-        <a
-          href={`/communities/${community._id}`}
-          className="hover:underline font-medium"
-        >
-          {community.name}
-        </a>
-      ),
-    },
-    {
-      id: "members",
-      header: "Members",
-      accessorKey: "members",
-    },
-    {
-      id: "featuredSince",
-      header: "Featured Since",
-      cell: () => "May 10, 2025",
-    },
-    {
-      id: "order",
-      header: "Order",
-      cell: () => (
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" className="h-8 w-8">
-            ↑
-          </Button>
-          <Button variant="outline" size="icon" className="h-8 w-8">
-            ↓
-          </Button>
-        </div>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: () => (
-        <Button variant="ghost" size="sm">
-          <StarOff className="mr-2 h-4 w-4" />
-          Unfeature
-        </Button>
-      ),
-    },
-  ];
-
-  // Columns for Newest Communities Tab
-  const newestColumns: ColumnDef<Community>[] = [
-    {
-      id: "name",
-      header: "Name",
-      cell: (community) => (
-        <a
-          href={`/communities/${community._id}`}
-          className="hover:underline font-medium"
-        >
-          {community.name}
-        </a>
-      ),
-    },
-    {
-      id: "members",
-      header: "Members",
-      accessorKey: "members",
-    },
-    {
-      id: "created",
-      header: "Created",
-      accessorKey: "created",
-    },
-    {
-      id: "status",
-      header: "Status",
-      cell: () => <Badge variant="outline">New</Badge>,
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: () => (
-        <Button variant="ghost" size="icon">
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      ),
-    },
-  ];
-
   return (
     <div className="space-y-6">
       {/* Top Section */}
@@ -251,12 +140,12 @@ export default function Communities() {
             Manage photography communities on the platform
           </p>
         </div>
-        <Button asChild>
-          <a href="/communities/new" className="flex items-center">
+        <Link to={"/admin/community/new"}>
+          <Button>
             <Plus className="mr-2 h-4 w-4" />
             New Community
-          </a>
-        </Button>
+          </Button>
+        </Link>
       </div>
 
       {/* Search Bar */}
@@ -277,8 +166,6 @@ export default function Communities() {
       <Tabs defaultValue="all" className="w-full">
         <TabsList>
           <TabsTrigger value="all">All Communities</TabsTrigger>
-          <TabsTrigger value="featured">Featured</TabsTrigger>
-          <TabsTrigger value="newest">Newest</TabsTrigger>
         </TabsList>
 
         {/* All */}
@@ -286,33 +173,10 @@ export default function Communities() {
           <DataTable
             data={filteredCommunities}
             columns={allColumns}
-            onPageChange={() => {}}
+            onPageChange={handlePageChange}
             isLoading={isLoading}
-          />
-        </TabsContent>
-
-        {/* Featured */}
-        <TabsContent value="featured" className="mt-4">
-          <DataTable
-            data={filteredCommunities.filter((c) => c.featured)}
-            columns={featuredColumns}
-            onPageChange={() => {}}
-            isLoading={isLoading}
-          />
-        </TabsContent>
-
-        {/* Newest */}
-        <TabsContent value="newest" className="mt-4">
-          <DataTable
-            data={[...filteredCommunities]
-              .sort(
-                (a, b) =>
-                  new Date(b.created).getTime() - new Date(a.created).getTime()
-              )
-              .slice(0, 5)}
-            columns={newestColumns}
-            onPageChange={() => {}}
-            isLoading={isLoading}
+            totalPages={totalPages}
+            currentPage={currentPage}
           />
         </TabsContent>
       </Tabs>
@@ -413,8 +277,6 @@ export default function Communities() {
           </div>
         )}
       </BigModal>
-
-
     </div>
   );
 }
