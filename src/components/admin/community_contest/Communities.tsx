@@ -99,8 +99,8 @@ export default function Communities() {
       id: "status",
       header: "Status",
       cell: (community) => (
-        <Badge variant={community.featured ? "default" : "outline"}>
-          {community.featured ? "Featured" : "Standard"}
+        <Badge variant={community.isFeatured ? "secondary" : "outline"}>
+          {community.isFeatured ? "Featured" : "Standard"}
         </Badge>
       ),
     },
@@ -140,17 +140,6 @@ export default function Communities() {
               {
                 label: "Manage Members",
                 href: `/communities/${community._id}/members`,
-              },
-              { type: "separator" },
-              {
-                label: community.featured ? "Unfeature" : "Feature",
-                onClick: () =>
-                  console.log(community.featured ? "Unfeature" : "Feature"), // Replace with actual feature/unfeature logic
-                icon: community.featured ? (
-                  <StarOff className="h-4 w-4" />
-                ) : (
-                  <Star className="h-4 w-4" />
-                ),
               },
               { type: "separator" },
               {

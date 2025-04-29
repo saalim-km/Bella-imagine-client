@@ -1,4 +1,4 @@
-import { createCommunityService, deleteCommunityService, getAllCommunites, getCommunityBySlugService } from "@/services/community-contest/communityService"
+import { createCommunityService, deleteCommunityService, getAllCommunites, getCommunityBySlugService, updateCommunityService } from "@/services/community-contest/communityService"
 import { useMutation, useQuery } from "@tanstack/react-query"
 
 export const useCreateCommunityMutation = ()=> {
@@ -24,5 +24,11 @@ export const useGetCommunityBySlug = (slug : string)=> {
     return useQuery({
         queryKey : ['community',slug],
         queryFn:  ()=> getCommunityBySlugService(slug)
+    })
+}
+
+export const useUpdateCommunity = ()=> {
+    return useMutation({
+        mutationFn : updateCommunityService
     })
 }

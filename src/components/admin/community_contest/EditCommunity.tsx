@@ -11,22 +11,14 @@ import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from "@/utils/upload-
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useCreateCommunityMutation } from "@/hooks/community-contest/useCommunity";
+import { Link, useNavigate } from "react-router-dom";
+import { useCreateCommunityMutation, useUpdateCommunity } from "@/hooks/community-contest/useCommunity";
 import { Community } from "@/types/Community";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/errorHandler";
 
 interface CommunityFormProps {
-  initialData?: {
-    name: string;
-    description: string;
-    rules: string[];
-    coverImageUrl: string | null;
-    iconImageUrl: string | null;
-    isPrivate: boolean;
-    isFeatured: boolean;
-  };
+  community?: Community;
   isSubmitting?: boolean;
 }
 
@@ -35,20 +27,27 @@ const validationSchema = Yup.object({
   description: Yup.string().required("Description is required"),
 });
 
-export function EditCommunityForm({ initialData, isSubmitting }: CommunityFormProps) {
-    const location = useLocation()
-    console.log('location here : ',location.pathname);
-  const navigate = useNavigate()
-  const [rules, setRules] = useState<string[]>(initialData?.rules || []);
+export default function EditCommunityForm({ community, isSubmitting }: CommunityFormProps) {
+  const navigate = useNavigate();
+  const [rules, setRules] = useState<string[]>(community?.rules || []);
   const [newRule, setNewRule] = useState("");
-  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(initialData?.coverImageUrl || null);
-  const [iconImageUrl, setIconImageUrl] = useState<string | null>(initialData?.iconImageUrl || null);
-  const [isPrivate, setIsPrivate] = useState(initialData?.isPrivate || false);
-  const [isFeatured, setIsFeatured] = useState(initialData?.isFeatured || false);
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(community?.coverImageUrl || null);
+  const [iconImageUrl, setIconImageUrl] = useState<string | null>(community?.iconImageUrl || null);
+  const [isPrivate, setIsPrivate] = useState(community?.isPrivate || false);
+  const [isFeatured, setIsFeatured] = useState(community?.isFeatured || false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [uploadingIcon, setUploadingIcon] = useState(false);
   const [debugInfo, setDebugInfo] = useState<any>(null);
-  const {mutate : createCommunity} = useCreateCommunityMutation()
+  const {mutate : updateCommunity} = useUpdateCommunity()
+  const { mutate: createCommunity } = useCreateCommunityMutation();
+
+  // Logging Cloudinary configuration
+  useEffect(() => {
+    console.log("Cloudinary Configuration:", {
+      cloudName: CLOUDINARY_CLOUD_NAME,
+      uploadPreset: CLOUDINARY_UPLOAD_PRESET,
+    });
+  }, []);
 
   // Handler for cover image upload
   const handleCoverUploadSuccess = (results: any[]) => {
@@ -70,6 +69,7 @@ export function EditCommunityForm({ initialData, isSubmitting }: CommunityFormPr
 
     setCoverImageUrl(result.info.secure_url);
     console.log("Cover image URL set to:", result.info.secure_url);
+    toast.success("Cover image uploaded successfully");
   };
 
   // Handler for icon image upload
@@ -92,6 +92,7 @@ export function EditCommunityForm({ initialData, isSubmitting }: CommunityFormPr
 
     setIconImageUrl(result.info.secure_url);
     console.log("Icon image URL set to:", result.info.secure_url);
+    toast.success("Icon image uploaded successfully");
   };
 
   // Cloudinary hook for cover image
@@ -135,6 +136,7 @@ export function EditCommunityForm({ initialData, isSubmitting }: CommunityFormPr
       console.error("Error opening cover widget:", error);
       setUploadingCover(false);
       setDebugInfo({ message: "Error opening cover widget", error });
+      toast.error("Failed to open cover image uploader");
     }
   };
 
@@ -147,6 +149,7 @@ export function EditCommunityForm({ initialData, isSubmitting }: CommunityFormPr
       console.error("Error opening icon widget:", error);
       setUploadingIcon(false);
       setDebugInfo({ message: "Error opening icon widget", error });
+      toast.error("Failed to open icon image uploader");
     }
   };
 
@@ -171,27 +174,27 @@ export function EditCommunityForm({ initialData, isSubmitting }: CommunityFormPr
   return (
     <Formik
       initialValues={{
-        name: initialData?.name || "",
-        description: initialData?.description || "",
+        name: community?.name || "",
+        description: community?.description || "",
       }}
       validationSchema={validationSchema}
       onSubmit={(values) => {
-        const formData:Partial<Community> = {
+        const formData: Partial<Community> = {
           ...values,
           rules,
           coverImageUrl: coverImageUrl ?? undefined,
-          iconImageUrl : iconImageUrl ?? undefined,
+          iconImageUrl: iconImageUrl ?? undefined,
           isPrivate,
           isFeatured,
+          slug : community?.slug
         };
-        console.log(formData);
-        createCommunity(formData,{
-          onSuccess:  (data)=> {
+        updateCommunity({communityId : community?._id! , dto : formData},{
+          onSuccess : (data)=> {
             toast.success(data.message)
             navigate('/admin/community')
           },
           onError : (error)=> {
-            handleError(error);
+            handleError(error)
           }
         })
       }}
@@ -218,6 +221,7 @@ export function EditCommunityForm({ initialData, isSubmitting }: CommunityFormPr
               name="name"
               placeholder="Community name"
               className="w-full"
+              aria-required="true"
             />
             <ErrorMessage name="name" component="p" className="text-xs text-red-500" />
           </div>
@@ -232,6 +236,7 @@ export function EditCommunityForm({ initialData, isSubmitting }: CommunityFormPr
               placeholder="Community description"
               rows={3}
               className="w-full"
+              aria-required="true"
             />
             <ErrorMessage name="description" component="p" className="text-xs text-red-500" />
           </div>
@@ -245,6 +250,7 @@ export function EditCommunityForm({ initialData, isSubmitting }: CommunityFormPr
                 onChange={(e) => setNewRule(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Add a rule"
+                aria-label="Add a community rule"
               />
               <Button type="button" onClick={handleAddRule} size="sm" variant="outline">
                 Add
@@ -260,6 +266,7 @@ export function EditCommunityForm({ initialData, isSubmitting }: CommunityFormPr
                       variant="ghost"
                       size="sm"
                       onClick={() => handleRemoveRule(index)}
+                      aria-label={`Remove rule: ${rule}`}
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -279,6 +286,7 @@ export function EditCommunityForm({ initialData, isSubmitting }: CommunityFormPr
                 disabled={!isCoverReady || isCoverLoading || uploadingCover}
                 size="sm"
                 variant="secondary"
+                aria-label="Upload cover image"
               >
                 {isCoverLoading ? "Loading..." : uploadingCover ? "Uploading..." : "Upload"}
                 {!isCoverLoading && !uploadingCover && <Upload className="ml-2 h-4 w-4" />}
@@ -306,6 +314,7 @@ export function EditCommunityForm({ initialData, isSubmitting }: CommunityFormPr
                 disabled={!isIconReady || isIconLoading || uploadingIcon}
                 size="sm"
                 variant="secondary"
+                aria-label="Upload icon image"
               >
                 {isIconLoading ? "Loading..." : uploadingIcon ? "Uploading..." : "Upload"}
                 {!isIconLoading && !uploadingIcon && <Upload className="ml-2 h-4 w-4" />}
@@ -326,11 +335,11 @@ export function EditCommunityForm({ initialData, isSubmitting }: CommunityFormPr
           {/* Toggles */}
           <div className="flex gap-4">
             <div className="flex items-center gap-2">
-              <Switch id="isPrivate" checked={isPrivate} onCheckedChange={setIsPrivate} />
+              <Switch id="isPrivate" checked={isPrivate} onCheckedChange={setIsPrivate} aria-label="Toggle private status" />
               <Label htmlFor="isPrivate">Private</Label>
             </div>
             <div className="flex items-center gap-2">
-              <Switch id="isFeatured" checked={isFeatured} onCheckedChange={setIsFeatured} />
+              <Switch id="isFeatured" checked={isFeatured} onCheckedChange={setIsFeatured} aria-label="Toggle featured status" />
               <Label htmlFor="isFeatured">Featured</Label>
             </div>
           </div>
@@ -338,7 +347,9 @@ export function EditCommunityForm({ initialData, isSubmitting }: CommunityFormPr
           {/* Submit */}
           <div className="flex justify-end gap-2">
             <Link to="/admin/community">
-              <Button variant="ghost">Cancel</Button>
+              <Button variant="ghost" aria-label="Cancel community form">
+                Cancel
+              </Button>
             </Link>
             <Button
               type="submit"
@@ -352,8 +363,9 @@ export function EditCommunityForm({ initialData, isSubmitting }: CommunityFormPr
                 !values.description
               }
               size="sm"
+              aria-label={community ? "Update community" : "Create community"}
             >
-              {isSubmitting || formikSubmitting ? "Saving..." : initialData ? "Update" : "Create"}
+              {isSubmitting || formikSubmitting ? "Saving..." : community ? "Update" : "Create"}
             </Button>
           </div>
         </Form>

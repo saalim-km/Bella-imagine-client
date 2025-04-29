@@ -24,3 +24,8 @@ export const getCommunityBySlugService = async(slug : string) : Promise<Communit
     const response = await adminAxiosInstance.get(`/community/${slug}`);
     return response.data;
 }
+
+export const updateCommunityService = async({communityId , dto} : {communityId : string , dto : Partial<Community>}) : Promise<ApiResponse> => {
+    const response = await adminAxiosInstance.put(`/community`, {communityId : communityId , dto : dto});
+    return response.data;
+}
