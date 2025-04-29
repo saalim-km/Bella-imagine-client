@@ -10,29 +10,43 @@ import { ReusableDropdown } from "@/components/common/ReusableDropdown";
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
 import { Link } from "react-router-dom";
 import { Community } from "@/types/Community";
-import { useGetlAllCommunity } from "@/hooks/community-contest/useCommunity";
+import {
+  useDeleteCommunity,
+  useGetlAllCommunity,
+} from "@/hooks/community-contest/useCommunity";
+import { toast } from "sonner";
+import { handleError } from "@/utils/Error/errorHandler";
 
 // Define the Community interface
 
 export default function Communities() {
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [communityToDelete, setCommunityToDelete] = useState<number | null>(null);
+  const [communityToDelete, setCommunityToDelete] = useState<string | null>(
+    null
+  );
   const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
-  const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(null);
+  const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(
+    null
+  );
   const [currentPage, setCurrentPage] = useState(1);
 
   const itemsPerPage = 4;
-  console.log('current page for fetching : ',currentPage);
-  const {data  , isLoading } = useGetlAllCommunity({page : currentPage , limit : itemsPerPage})
+  console.log("current page for fetching : ", currentPage);
+  const {
+    data,
+    isLoading,
+    refetch: refetchCommunities,
+  } = useGetlAllCommunity({ page: currentPage, limit: itemsPerPage });
+  const { mutate: deleteCommunity } = useDeleteCommunity();
   const communities = data?.data || [];
   const totalPages = Math.max(1, Math.ceil(data?.total! / itemsPerPage));
-  
+
   const filteredCommunities = communities.filter((community: Community) =>
     community.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleDeleteClick = (communityId: number) => {
+  const handleDeleteClick = (communityId: string) => {
     setCommunityToDelete(communityId);
     setDeleteDialogOpen(true);
   };
@@ -42,8 +56,20 @@ export default function Communities() {
     setViewDetailsOpen(true);
   };
 
+  const handleDeleteCommunity = () => {
+    deleteCommunity(communityToDelete as string, {
+      onSuccess: (data) => {
+        toast.success(data.message);
+        setCommunityToDelete(null);
+        refetchCommunities();
+      },
+      onError: (err) => {
+        setCommunityToDelete(null);
+        handleError(err);
+      },
+    });
+  };
 
-  
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && newPage <= totalPages) {
       setCurrentPage(newPage);
@@ -67,7 +93,7 @@ export default function Communities() {
     {
       id: "members",
       header: "Members",
-      accessorKey: "members",
+      accessorKey: "memberCount",
     },
     {
       id: "status",
@@ -79,9 +105,20 @@ export default function Communities() {
       ),
     },
     {
-      id: "created",
-      header: "Created",
-      accessorKey: "created",
+      id: "createdAt",
+      header: "CreatedAt",
+      cell: (community) => {
+        const date = new Date(community.createdAt!).toLocaleDateString(
+          "en-US",
+          {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          }
+        );
+
+        return <Badge variant={"default"}>{date}</Badge>;
+      },
     },
     {
       id: "actions",
@@ -185,8 +222,11 @@ export default function Communities() {
       <ReusableAlertDialog
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        onCancel={() => setDeleteDialogOpen(false)}
-        onConfirm={() => console.log("trigger community delete")}
+        onCancel={() => {
+          setDeleteDialogOpen(false);
+          setCommunityToDelete(null);
+        }}
+        onConfirm={handleDeleteCommunity}
         title="Delete Community"
         description="Are you sure you want to delete this community? This action cannot be undone and all community data will be
             permanently removed."
@@ -266,12 +306,26 @@ export default function Communities() {
               <p>
                 Created At:{" "}
                 {selectedCommunity.createdAt &&
-                  new Date(selectedCommunity.createdAt).toLocaleDateString()}
+                  new Date(selectedCommunity.createdAt!).toLocaleDateString(
+                    "en-US",
+                    {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    }
+                  )}
               </p>
               <p>
                 Last Updated:{" "}
                 {selectedCommunity.updatedAt &&
-                  new Date(selectedCommunity.updatedAt).toLocaleDateString()}
+                  new Date(selectedCommunity.updatedAt!).toLocaleDateString(
+                    "en-US",
+                    {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    }
+                  )}
               </p>
             </div>
           </div>

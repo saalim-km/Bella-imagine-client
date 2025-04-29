@@ -13,3 +13,9 @@ export const getAllCommunites = async(dto : { page : number , limit : number}) :
     const response = await adminAxiosInstance.get('/community',{params : dto})
     return response.data;
 }
+
+export const deleteCommunityService = async(communityId : string): Promise<ApiResponse> => {
+    console.log('community delte service trigger : ',communityId);
+    const response = await adminAxiosInstance.delete(`/community`,{data : {communityId : communityId}});
+    return response.data;
+}

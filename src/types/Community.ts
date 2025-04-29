@@ -1,5 +1,6 @@
 export interface Community {
-  _id: number;
+  _id: string;
+  slug?: string;   
   name: string;
   members: number;
   featured: boolean;

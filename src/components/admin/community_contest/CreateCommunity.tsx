@@ -15,6 +15,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCreateCommunityMutation } from "@/hooks/community-contest/useCommunity";
 import { Community } from "@/types/Community";
 import { toast } from "sonner";
+import { handleError } from "@/utils/Error/errorHandler";
 
 interface CommunityFormProps {
   initialData?: {
@@ -188,8 +189,7 @@ export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps)
             navigate('/admin/community')
           },
           onError : (error)=> {
-            console.log(error);
-            
+            handleError(error);
           }
         })
       }}
