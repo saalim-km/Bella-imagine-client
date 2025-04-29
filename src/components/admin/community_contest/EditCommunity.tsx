@@ -35,9 +35,9 @@ const validationSchema = Yup.object({
   description: Yup.string().required("Description is required"),
 });
 
-export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps) {
+export function EditCommunityForm({ initialData, isSubmitting }: CommunityFormProps) {
     const location = useLocation()
-    console.log(location.pathname);
+    console.log('location here : ',location.pathname);
   const navigate = useNavigate()
   const [rules, setRules] = useState<string[]>(initialData?.rules || []);
   const [newRule, setNewRule] = useState("");

@@ -19,3 +19,8 @@ export const deleteCommunityService = async(communityId : string): Promise<ApiRe
     const response = await adminAxiosInstance.delete(`/community`,{data : {communityId : communityId}});
     return response.data;
 }
+
+export const getCommunityBySlugService = async(slug : string) : Promise<Community> =>{
+    const response = await adminAxiosInstance.get(`/community/${slug}`);
+    return response.data;
+}

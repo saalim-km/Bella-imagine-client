@@ -134,7 +134,7 @@ export default function Communities() {
               },
               {
                 label: "Edit",
-                href: `/communities/${community._id}/edit`,
+                href: `/admin/community/edit/${community.slug}`,
                 icon: <Pencil className="h-4 w-4" />,
               },
               {

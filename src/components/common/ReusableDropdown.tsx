@@ -5,6 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Button } from "@/components/ui/button"
 import { MoreHorizontal } from "lucide-react"
 import type { ReactNode } from "react"
+import { Link } from "react-router-dom"
 
 interface DropdownAction {
   label?: string
@@ -39,13 +40,13 @@ export function ReusableDropdown({ actions }: ReusableDropdownProps) {
           if (action.href) {
             return (
               <DropdownMenuItem asChild key={index}>
-                <a
-                  href={action.href}
+                <Link
+                  to={action.href}
                   className={`flex items-center ${action.danger ? "text-destructive focus:text-destructive" : ""}`}
                 >
                   {action.icon && <span className="mr-2">{action.icon}</span>}
                   {action.label}
-                </a>
+                </Link>
               </DropdownMenuItem>
             )
           }
