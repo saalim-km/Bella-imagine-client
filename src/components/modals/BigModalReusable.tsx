@@ -1,10 +1,10 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { ReactNode } from "react"
+import React, { ReactNode } from "react"
 
 interface BigModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  title: string
+  title: string | React.ReactNode
   description?: string
   children: ReactNode
   className?: string

@@ -236,8 +236,12 @@ export default function Communities() {
       <BigModal
         open={viewDetailsOpen}
         onOpenChange={setViewDetailsOpen}
-        title={selectedCommunity?.name || "Community Details"}
-        description={selectedCommunity?.description || ""}
+        title={    <>
+          {selectedCommunity?.slug}
+          <br/>
+          <br/>
+          {selectedCommunity?.name}
+        </>}
       >
         {selectedCommunity && (
           <div className="space-y-6">
