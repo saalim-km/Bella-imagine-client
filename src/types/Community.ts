@@ -1,3 +1,5 @@
+import { IClient } from "@/services/client/clientService";
+
 export interface Community {
   _id: string;
   slug?: string;   
@@ -15,4 +17,18 @@ export interface Community {
   rules?: string[];
   createdAt?: string;
   updatedAt?: string;
+}
+
+
+export interface Post {
+  _id: string;
+  title: string;
+  content: string;
+  images?: string[];
+  user: IClient
+  communityId: string;
+  createdAt: string;
+  voteCount: number;
+  commentCount: number;
+  tags?: string[];
 }

@@ -1,4 +1,5 @@
 import { adminAxiosInstance } from "@/api/admin.axios";
+import { clientAxiosInstance } from "@/api/client.axios";
 import { communityAxiosInstance } from "@/api/community.axios"
 import { ApiResponse } from "@/hooks/vendor/useVendor";
 import { Community } from "@/types/Community"
@@ -27,5 +28,10 @@ export const getCommunityBySlugService = async(slug : string) : Promise<Communit
 
 export const updateCommunityService = async({communityId , dto} : {communityId : string , dto : Partial<Community>}) : Promise<ApiResponse> => {
     const response = await adminAxiosInstance.put(`/community`, {communityId : communityId , dto : dto});
+    return response.data;
+}
+
+export const getCommunityBySlugForClient = async(slug : string):Promise<Community>=> {
+    const response = await clientAxiosInstance.get(`/client/community/${slug}`)
     return response.data;
 }
