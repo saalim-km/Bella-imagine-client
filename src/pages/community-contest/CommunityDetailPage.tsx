@@ -32,7 +32,7 @@ const CommunityDetailPage = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen mt-20">
+    <div className="flex flex-col min-h-screen mt-16">
       <CommunityHeader community={community}/>
       <PageLayout containerClassName="py-6">
         <div className="flex flex-col md:flex-row gap-6">
