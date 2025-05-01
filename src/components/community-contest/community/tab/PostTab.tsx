@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
@@ -14,21 +13,27 @@ interface PostsTabProps {
 }
 
 export function PostsTab({ posts, isMember, communityId }: PostsTabProps) {
-  const [sortOption, setSortOption] = useState<"new" | "top" | "trending">("new");
+  console.log("is user member : ", isMember);
+  const [sortOption, setSortOption] = useState<"new" | "top" | "trending">(
+    "new"
+  );
 
   return (
     <div className="space-y-4">
       <div className="flex gap-2 w-full sm:w-auto justify-end">
-        <Button
-          asChild
-          disabled={!isMember}
-        >
+        {isMember ? (
           <Link to={`/communities/${communityId}/create-post`}>
-            <Plus className="mr-2 h-4 w-4" /> New Post
+            <Button>
+              <Plus className="mr-2 h-4 w-4" /> New Post
+            </Button>
           </Link>
-        </Button>
+        ) : (
+          <Button disabled>
+            <Plus className="mr-2 h-4 w-4" /> New Post
+          </Button>
+        )}
       </div>
-      
+
       {/* {posts.length > 0 ? (
         <PostGrid posts={posts} />
       ) : (

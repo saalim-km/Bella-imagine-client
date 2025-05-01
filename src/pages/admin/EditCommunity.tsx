@@ -10,15 +10,19 @@ const EditCommunityPage = () => {
   const communitySlug = location.pathname.split("/").pop();
   console.log("community slug : ", communitySlug);
 
-  const { data: community, isLoading } = useGetCommunityBySlug(communitySlug!);
+  const { data: community, isLoading , refetch} = useGetCommunityBySlug(communitySlug!);
   console.log("community : ", community);
+
+  function refetchUpdatedData(){
+    refetch()
+  }
 
   if (isLoading) {
     return <Spinner />;
   }
   return (
     <AdminLayout>
-      <EditCommunityForm community={community}/>
+      <EditCommunityForm community={community?.community} refetch={refetchUpdatedData}/>
     </AdminLayout>
   );
 };

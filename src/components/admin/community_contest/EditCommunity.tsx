@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Link, useNavigate } from "react-router-dom";
-import { useCreateCommunityMutation, useUpdateCommunity } from "@/hooks/community-contest/useCommunity";
+import { useUpdateCommunity } from "@/hooks/community-contest/useCommunity";
 import { Community } from "@/types/Community";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/errorHandler";
@@ -20,6 +20,7 @@ import { handleError } from "@/utils/Error/errorHandler";
 interface CommunityFormProps {
   community?: Community;
   isSubmitting?: boolean;
+  refetch : () => void
 }
 
 const validationSchema = Yup.object({
@@ -27,7 +28,7 @@ const validationSchema = Yup.object({
   description: Yup.string().required("Description is required"),
 });
 
-export default function EditCommunityForm({ community, isSubmitting }: CommunityFormProps) {
+export default function EditCommunityForm({ community, isSubmitting , refetch}: CommunityFormProps) {
   const navigate = useNavigate();
   const [rules, setRules] = useState<string[]>(community?.rules || []);
   const [newRule, setNewRule] = useState("");
@@ -39,7 +40,6 @@ export default function EditCommunityForm({ community, isSubmitting }: Community
   const [uploadingIcon, setUploadingIcon] = useState(false);
   const [debugInfo, setDebugInfo] = useState<any>(null);
   const {mutate : updateCommunity} = useUpdateCommunity()
-  const { mutate: createCommunity } = useCreateCommunityMutation();
 
   // Logging Cloudinary configuration
   useEffect(() => {
@@ -191,6 +191,7 @@ export default function EditCommunityForm({ community, isSubmitting }: Community
         updateCommunity({communityId : community?._id! , dto : formData},{
           onSuccess : (data)=> {
             toast.success(data.message)
+            refetch();
             navigate('/admin/community')
           },
           onError : (error)=> {
