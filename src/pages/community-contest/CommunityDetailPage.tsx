@@ -109,6 +109,7 @@ const CommunityDetailPage = () => {
 
               <TabsContent value="posts">
                 <PostsTab
+                  slug={community.slug!}
                   posts={[]} // Replace with fetched posts if available
                   isMember={communityData.isMember}
                   communityId={community._id}

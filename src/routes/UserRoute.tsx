@@ -14,6 +14,7 @@ import BookingServicePage from "@/pages/User/BookingServicePage";
 import ChatPage from "@/pages/chat/ChatPage";
 import CommunityHomePage from "@/pages/community-contest/CommunityHomePage";
 import CommunityDetailPage from "@/pages/community-contest/CommunityDetailPage";
+import CreatePostPage from "@/pages/community-contest/CreatePostPage";
 
 const ClientRoute = () => {
   return (
@@ -29,6 +30,9 @@ const ClientRoute = () => {
       <Route path="/messages" element = {<AuthClientRoute element={<ChatPage/>} allowedRoles={["client","vendor"]}/>}/>
       <Route path="/community" element = {<AuthClientRoute element={<CommunityHomePage/>} allowedRoles={["client","vendor"]}/>}/>
       <Route path="/community/r/:slug" element = {<AuthClientRoute element={<CommunityDetailPage/>} allowedRoles={["client","vendor"]}/>}/>
+      <Route path="/community/post/r/:slug" element = {<AuthClientRoute element={<CreatePostPage/>} allowedRoles={["client","vendor"]}/>}/>
+
+
       <Route path="/client/forgot-password" element = {<NoClientAuthRoute element={<ForgotPassPage userType="client"/>}/>}/>
       <Route path="*" element = {<Client404/>}/>
     </Routes> 
