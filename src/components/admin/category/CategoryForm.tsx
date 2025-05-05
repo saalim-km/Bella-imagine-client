@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { categoryKeys, CategoryType, useAllCategoryMutation, useUpdateCategoryMutation } from "@/hooks/admin/useAllCategory";
+import { categoryKeys, CategoryType, updateCategory, useAllCategoryMutation, useUpdateCategoryMutation } from "@/hooks/admin/useAllCategory";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { AxiosResponse } from "@/hooks/auth/useOtpVerify";
@@ -24,7 +24,7 @@ export function CategoryForm({ initialData, onClose }: CategoryFormProps) {
 
   // Separate mutation hooks for adding and updating categories
   const { mutate: addCategory } = useAllCategoryMutation();
-  const { mutate: updateCategory } = useUpdateCategoryMutation();
+  const { mutate: updateCategoryMutate } = updateCategory();
 
   return (
     <div className="p-4 border rounded-lg shadow-md ">
@@ -41,7 +41,21 @@ export function CategoryForm({ initialData, onClose }: CategoryFormProps) {
           const isActive = values.status === "active";
 
           if (initialData) {
-            console.log('edited data : ',values);
+            updateCategoryMutate({id : initialData._id , data : {
+              title : values.title,
+              status : isActive
+            }},
+              {
+                onSuccess: (data) => {
+                  toast.success(data.message);
+                  queryClient.invalidateQueries({ queryKey: categoryKeys.lists() });
+                  onClose();
+                },
+                onError: (err) => {
+                  handleError(err);
+                },
+              }
+            )
           } else {
             addCategory(
               { title: values.title, status: isActive },

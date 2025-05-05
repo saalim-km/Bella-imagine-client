@@ -51,7 +51,7 @@ export const clientProfileSchema = Yup.object().shape({
     .test(
       "fileSize",
       "File size is too large (max 5MB)",
-      (value) => !value || value.size <= MAX_FILE_SIZE
+      (value) => !value || (value instanceof File && value.size <= MAX_FILE_SIZE)
     )
     .test(
       "fileFormat",

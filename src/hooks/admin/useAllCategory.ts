@@ -1,5 +1,5 @@
 import AdminService from "@/services/admin/adminService";
-import { getAllCategoryJoinRequests, updateCategoryJoinRequest, updateCategoryStatus } from "@/services/categories/categoryService";
+import { getAllCategoryJoinRequests, updateCategoryJoinRequest, updateCategoryService, updateCategoryStatus } from "@/services/categories/categoryService";
 import { PaginationParams } from "@/types/Admin";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -64,5 +64,11 @@ export const useGetAllCategoryRequest = ()=> {
 export const useUpdateCategoryRequest = ()=> {
   return useMutation({
     mutationFn : updateCategoryJoinRequest,
+  })
+}
+
+export const updateCategory = ()=> {
+  return useMutation({
+    mutationFn : updateCategoryService
   })
 }
