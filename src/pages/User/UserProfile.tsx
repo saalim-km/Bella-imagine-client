@@ -37,6 +37,8 @@ import VendorBookingList from "@/components/User/VendorBookingList";
 import { VendorBookingListing } from "../vendor/vendorBookingListing";
 import ClientWallet from "./ClientWalletPage";
 import VendorWallet from "../vendor/VendorWallet";
+import { useDispatch } from "react-redux";
+import { updateVendorSlice } from "@/store/slices/vendorSlice";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -62,6 +64,7 @@ export default function UserProfile() {
   const [serviceEditData, setIsServiceEditData] = useState<IServiceResponse>();
   const [isWorkSampleCreating, setIsWorkSampleCreating] = useState(false);
   const [workSample, setWorkSample] = useState<IWorkSampleResponse>();
+  const dispatch = useDispatch()
   const userType = useSelector((state: RootState) => {
     if (state.vendor.vendor) return state.vendor.vendor;
     if (state.client.client) return state.client.client;
@@ -102,11 +105,20 @@ export default function UserProfile() {
   }
 
   function handleUpdateProfile(data: IProfileUpdate) {
-    console.log("data for update : ", data);
+    if(data.imageFile){
+      data = {
+        ...data,
+        profileImage : data.imageFile
+      }
+    }
+    delete data.imageFile;
+    console.log('data for update : ',data);
     if (userType?.role === "vendor") {
-      console.log(data);
+      console.log('usertype is vendor ✅❌');
       updateVendor(data, {
         onSuccess: (data) => {
+          console.log('user profile in callback',data.vendor.profileImage);
+          dispatch(updateVendorSlice(data.vendor.profileImage))
           queryClient.invalidateQueries({ queryKey: ["vendor-profile"] });
           toast.success(data.message);
         },
@@ -116,6 +128,7 @@ export default function UserProfile() {
         },
       });
     } else {
+      console.log('usertype is not vendor 💀❌❌');
       updateClient(data, {
         onSuccess: (data) => {
           queryClient.invalidateQueries({ queryKey: ["client-profile"] });

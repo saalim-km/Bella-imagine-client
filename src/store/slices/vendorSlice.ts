@@ -27,17 +27,26 @@ const vendorSlice = createSlice({
         vendorLogout : (state)=> {
             state.vendor = null;
             localStorage.removeItem("vendorSession");
+        },
+        updateVendorSlice : (state, action) => {
+            if (state.vendor) {
+                state.vendor = {
+                    ...state.vendor,
+                    avatar: action.payload,
+                };
+            }
         }
     }
 })
 
-const {vendorLogin , vendorLogout} = vendorSlice.actions
+const {vendorLogin , vendorLogout , updateVendorSlice} = vendorSlice.actions
 
 
 
 export {
     vendorLogin , 
-    vendorLogout
+    vendorLogout,
+    updateVendorSlice
 }
 
 export default vendorSlice.reducer

@@ -33,6 +33,7 @@ interface ClientProfileUpdate {
   phoneNumber: number;
   location: string;
   profileImage?: File | string; 
+  imageFile ?: File
 }
 
 
@@ -45,6 +46,7 @@ interface VendorProfileUpdate {
     profileDescription: string;
     profileImage?: File | string; 
     verificationDocuments : string[]
+    imageFile ?: File
 }
 
 export interface IProfileUpdateResponse {
@@ -72,7 +74,7 @@ export interface IVendorsResponse extends IClient {
   portfolioWebsite : string;
   languages ?: string[];
   description ?: string;
-  verificationDocuments : string[]
+  verificationDocument : string
   yearsOfExperience : number,
   categories : Category[],
   services : IServiceResponse[],

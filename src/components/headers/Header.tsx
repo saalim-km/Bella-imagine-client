@@ -22,6 +22,7 @@ import { useAllVendortNotification } from "@/hooks/vendor/useVendor";
 import { useAllClientNotification } from "@/hooks/client/useClient";
 import type { RootState } from "@/store/store";
 import { useSocket } from "@/context/SocketContext";
+import { handleError } from "@/utils/Error/errorHandler";
 
 interface IHeader {
   onClick?: () => void;
@@ -37,7 +38,6 @@ export default function Header({ onClick }: IHeader) {
     if (state.client.client) return state.client.client;
     return null;
   });
-  console.log('user in the header : ',user);
   const { data: vendorNot } = useAllVendortNotification(
     user?.role === "vendor"
   );
@@ -88,7 +88,7 @@ export default function Header({ onClick }: IHeader) {
         }
       },
       onError: (error) => {
-        console.error(error);
+        handleError(error)
       },
     });
   };
