@@ -236,16 +236,16 @@ export default function Communities() {
           <div className="space-y-6">
             {/* Images */}
             <div className="flex flex-col md:flex-row gap-4">
-              {selectedCommunity.coverImageUrl && (
+              {selectedCommunity.coverImage && (
                 <img
-                  src={selectedCommunity.coverImageUrl}
+                  src={selectedCommunity.coverImage}
                   alt="Cover"
                   className="w-full md:w-2/3 h-48 object-cover rounded-md"
                 />
               )}
-              {selectedCommunity.iconImageUrl && (
+              {selectedCommunity.iconImage && (
                 <img
-                  src={selectedCommunity.iconImageUrl}
+                  src={selectedCommunity.iconImage}
                   alt="Icon"
                   className="w-24 h-24 rounded-full border p-1 bg-white"
                 />

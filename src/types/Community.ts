@@ -8,8 +8,8 @@ export interface Community {
   featured: boolean;
   created: string;
   description?: string;
-  coverImageUrl?: string;
-  iconImageUrl?: string;
+  coverImage?: string;
+  iconImage?: string;
   memberCount?: number;
   postCount?: number;
   isPrivate?: boolean;

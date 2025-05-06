@@ -5,7 +5,11 @@ import { Community } from "@/types/Community"
 import { PaginatedResponse } from "@/types/vendor";
 
 export const createCommunityService = async(dto : Partial<Community>) : Promise<ApiResponse>=> {
-    const response = await adminAxiosInstance.post('/community',dto);
+    const response = await adminAxiosInstance.post('/community',dto,{
+        headers : {
+            'Content-Type' : 'multipart/form-data'
+        }
+    });
     return response.data;
 }
 
@@ -26,7 +30,11 @@ export const getCommunityBySlugService = async(slug : string) : Promise<{communi
 }
 
 export const updateCommunityService = async({communityId , dto} : {communityId : string , dto : Partial<Community>}) : Promise<ApiResponse> => {
-    const response = await adminAxiosInstance.put(`/community`, {communityId : communityId , dto : dto});
+    const response = await adminAxiosInstance.put(`/community`, {communityId : communityId , dto : dto} , {
+        headers : {
+            'Content-Type' : 'multipart/form-data'
+        }
+    });
     return response.data;
 }
 
