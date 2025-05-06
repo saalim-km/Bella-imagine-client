@@ -12,7 +12,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Message, MessageType } from "@/types/Chat";
-import { uploadToCloudinary } from "@/utils/upload-cloudinary/cloudinary";
 
 interface MessageInputProps {
   conversationId: string;
@@ -42,19 +41,16 @@ export function MessageInput({ conversationId, onSendMessage }: MessageInputProp
       if (mediaPreview) {
         setIsUploading(true);
         
-        if (mediaPreview.file) {
-          const uploadResult = await uploadToCloudinary(mediaPreview.file)
-          messageToSend = {
-            text: message,
-            type: "media",
-            mediaUrl: uploadResult,
-          };
-        }
+        // The file will be handled by the backend
+        messageToSend = {
+          text: message,
+          type: "media",
+          file: mediaPreview.file,
+        };
       }
 
-      
-      onSendMessage(messageToSend);
-      
+      // onSendMessage(messageToSend);
+      console.log(messageToSend);
       setMessage("");
       setMediaPreview(null);
       setIsUploading(false);
