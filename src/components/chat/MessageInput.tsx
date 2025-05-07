@@ -11,7 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Message, MessageType } from "@/types/Chat";
+import { MessageType } from "@/types/Chat";
+import { useUploadChatMedia } from "@/hooks/chat/useChat";
+import { handleError } from "@/utils/Error/errorHandler";
 
 interface MessageInputProps {
   conversationId: string;
@@ -19,6 +21,7 @@ interface MessageInputProps {
 }
 
 export function MessageInput({ conversationId, onSendMessage }: MessageInputProps) {
+  const {mutate : uploadMedia} = useUploadChatMedia()
   const [message, setMessage] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [mediaPreview, setMediaPreview] = useState<{
@@ -31,28 +34,49 @@ export function MessageInput({ conversationId, onSendMessage }: MessageInputProp
 
   const handleSendMessage = async () => {
     if ((!message.trim() && !mediaPreview) || isUploading) return;
+    setIsUploading(true);
 
     try {
+      let messageType: MessageType = "text";
       let messageToSend: any = {
         text: message,
-        type: "text" as MessageType,
+        type: messageType,
       };
 
       if (mediaPreview) {
-        setIsUploading(true);
-        
-        // The file will be handled by the backend
-        messageToSend = {
-          text: message,
-          type: "media",
-          file: mediaPreview.file,
-        };
+        // Determine message type based on media
+        if (mediaPreview.type === "image") {
+          messageType = "image";
+        } else if (mediaPreview.type === "video") {
+          messageType = "video";
+        } else {
+          messageType = "document";
+        }
+
+        uploadMedia(
+          { media: mediaPreview.file as File, conversationId },
+          {
+            onSuccess: (data) => {
+              messageToSend = {
+                text: message,
+                type: messageType,
+                mediaKey: data.key,
+              };
+              onSendMessage(messageToSend);
+              setMediaPreview(null);
+            },
+            onError: (error) => {
+              handleError(error);
+              setMediaPreview(null);
+            },
+          }
+        );
+      } else {
+        // If no media, keep as text type
+        onSendMessage(messageToSend);
       }
 
-      // onSendMessage(messageToSend);
-      console.log(messageToSend);
       setMessage("");
-      setMediaPreview(null);
       setIsUploading(false);
     } catch (error) {
       console.error("Error sending message:", error);
