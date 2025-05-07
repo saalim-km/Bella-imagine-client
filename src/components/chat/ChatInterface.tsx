@@ -47,10 +47,14 @@ export function ChatInterface() {
   );
 
   const recipientUser = selectedConversation
-    ? userFromRedux?._id === selectedConversation.client._id
-      ? selectedConversation.vendor
-      : selectedConversation.client
+    ? users.find(
+        (user) =>
+          user._id !== userFromRedux?._id &&
+          (user._id === selectedConversation.client._id ||
+           user._id === selectedConversation.vendor._id)
+      )
     : undefined;
+
 
   console.log("recipent user : ", recipientUser);
 
