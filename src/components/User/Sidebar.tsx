@@ -36,7 +36,6 @@ export function Sidebar({
   hasCategory,
 }: SidebarProps) {
   const navItems = role === "client" ? clientNavItems : vendorNavItems;
-  console.log(`user profile image ${profileImage}`);
 
   return (
     <Card className={`h-full p-4`}>

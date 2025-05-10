@@ -7,7 +7,6 @@ import { useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { toast } from "sonner"
 import { clientProfileSchema, vendorProfileSchema } from "@/utils/formikValidators/user/profile.validator"
-import { uploadToCloudinary, uploadMultipleToCloudinary } from "@/utils/upload-cloudinary/cloudinary"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Command, CommandInput, CommandList, CommandItem, CommandEmpty } from "@/components/ui/command"
 import { Globe, File, FileText, FileImage, X, Upload, CheckCircle2 } from "lucide-react"
@@ -54,7 +53,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
   const [newLanguage, setNewLanguage] = useState("")
   const [open, setOpen] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [documentPreviews, setDocumentPreviews] = useState<DocumentPreview[]>([])
+  const [documentPreview, setDocumentPreview] = useState<DocumentPreview | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
   const {bgColor} = useThemeConstants()
 
@@ -66,8 +65,8 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
     location: data?.location || "",
     profileImage: data?.profileImage || "",
     imageFile: null, 
-    verificationDocuments: [],
-    verificationDocumentUrls: (data as IVendor)?.verificationDocuments || [],
+    verificationDocument: null,
+    verificationDocumentUrl: (data as IVendor)?.verificationDocuments?.[0] || "",
     ...(isVendor
       ? {
           profileDescription: (data as IVendor)?.description || "",
@@ -79,57 +78,8 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     try {
-      console.log('editform data : ',values);
       setIsUploading(true)
-      const uploadPromises = []
-      let uploadCount = 0
-      const totalUploads = (values.imageFile ? 1 : 0) + (values.verificationDocuments?.length || 0)
-      
-      // Only upload to Cloudinary if there's a new image file
-      if (values.imageFile) {
-        uploadPromises.push(
-          uploadToCloudinary(values.imageFile).then(secureUrl => {
-            values.profileImage = secureUrl
-            uploadCount++
-            setUploadProgress(Math.round((uploadCount / totalUploads) * 100))
-            return secureUrl
-          })
-        )
-      }
-
-
-      if (values.verificationDocuments?.length > 0) {
-        uploadPromises.push(
-          uploadMultipleToCloudinary(values.verificationDocuments).then(urls => {
-            values.verificationDocumentUrls = [
-              ...(values.verificationDocumentUrls || []),
-              ...urls
-            ]
-            uploadCount += values.verificationDocuments.length
-            setUploadProgress(Math.round((uploadCount / totalUploads) * 100))
-            return urls
-          })
-        )
-      }
-
-      if (uploadPromises.length > 0) {
-        await Promise.all(uploadPromises)
-      }
-
-      const updatedValues = { ...values }
-      delete updatedValues.imageFile
-      delete updatedValues.verificationDocuments
-
-      // Remove empty fields from the update payload
-      Object.keys(updatedValues).forEach((key) => {
-        if (updatedValues[key] === "" || updatedValues[key] === null) {
-          delete updatedValues[key]
-        }
-      })
-
-      console.log("Updated profile data:", updatedValues)
-
-      handleUpdateProfile?.(updatedValues)
+      handleUpdateProfile?.(values)
       setIsEditing(false)
     } catch (error) {
       handleError(error)
@@ -168,66 +118,46 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
 
   const handleDocumentSelect = (
     event: React.ChangeEvent<HTMLInputElement>,
-    setFieldValue: any,
-    values: any
+    setFieldValue: any
   ) => {
-    const files = event.target.files;
+    const file = event.target.files?.[0];
     
-    if (!files || files.length === 0) return;
+    if (!file) return;
     
     const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "application/pdf"];
-    const newDocuments: File[] = [];
-    const newPreviews: DocumentPreview[] = [];
     
-    Array.from(files).forEach(file => {
-      if (!allowedTypes.includes(file.type)) {
-        toast.error(`File "${file.name}" is not supported. Only PDF, PNG, JPG, and JPEG formats are allowed.`);
-        return;
-      }
-      
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error(`File "${file.name}" exceeds the 5MB size limit.`);
-        return;
-      }
-      
-      newDocuments.push(file);
-      
-      const preview: DocumentPreview = {
-        file,
-        preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : '',
-        name: file.name,
-        type: file.type
-      };
-      
-      newPreviews.push(preview);
-    });
-    
-    if (newDocuments.length > 0) {
-      setDocumentPreviews(prev => [...prev, ...newPreviews]);
-      setFieldValue("verificationDocuments", [...(values.verificationDocuments || []), ...newDocuments]);
-    }
-  };
-
-  const removeDocument = (index: number, setFieldValue: any, values: any) => {
-    const newPreviews = [...documentPreviews];
-    const previewToRemove = newPreviews[index];
-    
-    if (previewToRemove.preview) {
-      URL.revokeObjectURL(previewToRemove.preview);
+    if (!allowedTypes.includes(file.type)) {
+      toast.error(`File "${file.name}" is not supported. Only PDF, PNG, JPG, and JPEG formats are allowed.`);
+      return;
     }
     
-    newPreviews.splice(index, 1);
-    setDocumentPreviews(newPreviews);
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(`File "${file.name}" exceeds the 5MB size limit.`);
+      return;
+    }
     
-    const newDocuments = [...(values.verificationDocuments || [])];
-    newDocuments.splice(index, 1);
-    setFieldValue("verificationDocuments", newDocuments);
+    const preview: DocumentPreview = {
+      file,
+      preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : '',
+      name: file.name,
+      type: file.type
+    };
+    
+    setDocumentPreview(preview);
+    setFieldValue("verificationDocument", file);
   };
 
-  const removeExistingDocument = (url: string, index: number, setFieldValue: any, values: any) => {
-    const newUrls = [...(values.verificationDocumentUrls || [])];
-    newUrls.splice(index, 1);
-    setFieldValue("verificationDocumentUrls", newUrls);
+  const removeDocument = (setFieldValue: any) => {
+    if (documentPreview?.preview) {
+      URL.revokeObjectURL(documentPreview.preview);
+    }
+    
+    setDocumentPreview(null);
+    setFieldValue("verificationDocument", null);
+  };
+
+  const removeExistingDocument = (setFieldValue: any) => {
+    setFieldValue("verificationDocumentUrl", "");
     toast.success("Document removed");
   };
 
@@ -254,7 +184,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                 transition={{ duration: 0.3 }}
               >
                 <Avatar className="w-20 h-20 border-2 border-primary/20">
-                  <AvatarImage src={imagePreview || values.profileImage} alt={values.name} />
+                  <AvatarImage className="object-cover" src={imagePreview || values.profileImage} alt={values.name} />
                   <AvatarFallback className="bg-primary/10">{values.name.charAt(0)}</AvatarFallback>
                 </Avatar>
               </motion.div>
@@ -429,132 +359,67 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
 
               {/* Verification Documents Section */}
               {
-                data?.verificationDocuments.length === 0 && (
+                !data?.verificationDocument && (
                   <div className="space-y-4 pt-2">
                   <div className="border-t pt-4">
-                    <Label htmlFor="verificationDocuments" className="text-base font-medium">
-                      Verification Documents
+                    <Label htmlFor="verificationDocument" className="text-base font-medium">
+                      Verification Document
                     </Label>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Upload identification documents (Aadhar Card, Passport, Driver's License etc.)
+                      Upload an identification document (Aadhar Card, Passport, Driver's License etc.)
                     </p>
                     
                     <div className="mt-3 relative">
                       <div className="border-2 border-dashed rounded-lg p-8 text-center border-primary/20 hover:border-primary/30 transition-colors group cursor-pointer">
                         <Input
                           type="file"
-                          onChange={(e) => handleDocumentSelect(e, setFieldValue, values)}
+                          onChange={(e) => handleDocumentSelect(e, setFieldValue)}
                           disabled={isUploading}
-                          id="verificationDocuments"
-                          multiple
+                          id="verificationDocument"
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                         />
                         <div className="flex flex-col items-center justify-center">
                           <Upload className="h-8 w-8 text-muted-foreground group-hover:text-foreground transition-colors mb-2" />
                           <p className="text-sm font-medium group-hover:text-foreground transition-colors">
-                            Drag files here or click to browse
+                            Drag file here or click to browse
                           </p>
                           <p className="text-xs text-muted-foreground mt-1">
-                            PDF, PNG, JPG or JPEG (max 5MB per file)
+                            PDF, PNG, JPG or JPEG (max 5MB)
                           </p>
                         </div>
                       </div>
                     </div>
-                    <ErrorMessage name="verificationDocuments" component={TextError} />
+                    <ErrorMessage name="verificationDocument" component={TextError} />
                   </div>
   
-                  {/* Previews of new documents to be uploaded */}
-                  {documentPreviews.length > 0 && (
+                  {/* Preview of new document to be uploaded */}
+                  {documentPreview && (
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">New Documents</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <AnimatePresence>
-                          {documentPreviews.map((doc, index) => (
-                            <motion.div
-                              key={`new-${index}`}
-                              className="relative flex items-center p-3 rounded-lg border bg-card"
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, scale: 0.95 }}
-                              transition={{ duration: 0.2 }}
-                            >
-                              {getDocumentIcon(doc.type)}
-                              <div className="ml-3 flex-1 min-w-0">
-                                <p className="text-sm font-medium truncate">{doc.name}</p>
-                                <p className="text-xs text-muted-foreground">{(doc.file.size / (1024 * 1024)).toFixed(2)} MB</p>
-                              </div>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => removeDocument(index, setFieldValue, values)}
-                              >
-                                <X className="h-4 w-4 hover:text-destructive transition-colors" />
-                              </Button>
-                            </motion.div>
-                          ))}
-                        </AnimatePresence>
-                      </div>
-                    </div>
-                  )}
-  
-                  {/* Display previously uploaded documents */}
-                  {values.verificationDocumentUrls?.length > 0 && (
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Existing Documents</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <AnimatePresence>
-                          {values.verificationDocumentUrls.map((url: string, index: number) => {
-                            const isPdf = url.endsWith('.pdf');
-                            const isImage = /\.(jpe?g|png|webp)$/i.test(url);
-                            return (
-                              <motion.div
-                                key={`existing-${index}`}
-                                className="relative flex items-center p-3 rounded-lg border bg-card"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.95 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                {isPdf ? (
-                                  <FileText className="h-6 w-6 text-red-500" />
-                                ) : isImage ? (
-                                  <FileImage className="h-6 w-6 text-blue-500" />
-                                ) : (
-                                  <File className="h-6 w-6 text-gray-500" />
-                                )}
-                                <div className="ml-3 flex-1 min-w-0">
-                                  <p className="text-sm font-medium truncate">Document {index + 1}</p>
-                                  <p className="text-xs text-muted-foreground">Uploaded</p>
-                                </div>
-                                <div className="flex">
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 mr-1"
-                                    asChild
-                                  >
-                                    <a href={url} target="_blank" rel="noopener noreferrer">
-                                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                                    </a>
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8"
-                                    onClick={() => removeExistingDocument(url, index, setFieldValue, values)}
-                                  >
-                                    <X className="h-4 w-4 hover:text-destructive transition-colors" />
-                                  </Button>
-                                </div>
-                              </motion.div>
-                            );
-                          })}
-                        </AnimatePresence>
-                      </div>
+                      <Label className="text-sm font-medium">New Document</Label>
+                      <motion.div
+                        className="relative flex items-center p-3 rounded-lg border bg-card"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        {getDocumentIcon(documentPreview.type)}
+                        <div className="ml-3 flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{documentPreview.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {(documentPreview.file.size / (1024 * 1024)).toFixed(2)} MB
+                          </p>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => removeDocument(setFieldValue)}
+                        >
+                          <X className="h-4 w-4 hover:text-destructive transition-colors" />
+                        </Button>
+                      </motion.div>
                     </div>
                   )}
                   </div>

@@ -1,5 +1,5 @@
 import { BookingList } from "@/components/User/ClinetBookingList";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { AxiosResponse } from "../auth/useOtpVerify";
 
 interface FetchBookingsParams {
@@ -28,7 +28,7 @@ export const useBookingQuery = (
   return useQuery({
     queryKey: ["paginated-booking", page, limit, sort, search, statusFilter],
     queryFn: () => queryFunc({ page, limit, sort, search, statusFilter }),
-    placeholderData: (prevData) => prevData,
+    placeholderData: keepPreviousData,
     enabled : enabled
   });
 };

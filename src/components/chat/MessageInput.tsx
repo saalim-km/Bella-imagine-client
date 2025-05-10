@@ -11,8 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Message, MessageType } from "@/types/Chat";
-import { uploadToCloudinary } from "@/utils/upload-cloudinary/cloudinary";
+import { MessageType } from "@/types/Chat";
+import { useUploadChatMedia } from "@/hooks/chat/useChat";
+import { handleError } from "@/utils/Error/errorHandler";
 
 interface MessageInputProps {
   conversationId: string;
@@ -20,6 +21,7 @@ interface MessageInputProps {
 }
 
 export function MessageInput({ conversationId, onSendMessage }: MessageInputProps) {
+  const {mutate : uploadMedia} = useUploadChatMedia()
   const [message, setMessage] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [mediaPreview, setMediaPreview] = useState<{
@@ -32,31 +34,49 @@ export function MessageInput({ conversationId, onSendMessage }: MessageInputProp
 
   const handleSendMessage = async () => {
     if ((!message.trim() && !mediaPreview) || isUploading) return;
+    setIsUploading(true);
 
     try {
+      let messageType: MessageType = "text";
       let messageToSend: any = {
         text: message,
-        type: "text" as MessageType,
+        type: messageType,
       };
 
       if (mediaPreview) {
-        setIsUploading(true);
-        
-        if (mediaPreview.file) {
-          const uploadResult = await uploadToCloudinary(mediaPreview.file)
-          messageToSend = {
-            text: message,
-            type: "media",
-            mediaUrl: uploadResult,
-          };
+        // Determine message type based on media
+        if (mediaPreview.type === "image") {
+          messageType = "image";
+        } else if (mediaPreview.type === "video") {
+          messageType = "video";
+        } else {
+          messageType = "document";
         }
+
+        uploadMedia(
+          { media: mediaPreview.file as File, conversationId },
+          {
+            onSuccess: (data) => {
+              messageToSend = {
+                text: message,
+                type: messageType,
+                mediaKey: data.key,
+              };
+              onSendMessage(messageToSend);
+              setMediaPreview(null);
+            },
+            onError: (error) => {
+              handleError(error);
+              setMediaPreview(null);
+            },
+          }
+        );
+      } else {
+        // If no media, keep as text type
+        onSendMessage(messageToSend);
       }
 
-      
-      onSendMessage(messageToSend);
-      
       setMessage("");
-      setMediaPreview(null);
       setIsUploading(false);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -223,20 +243,6 @@ export function MessageInput({ conversationId, onSendMessage }: MessageInputProp
               onClick={() => fileInputRef.current?.click()}
             >
               <Paperclip className="h-5 w-5 text-muted-foreground" />
-            </Button>
-            
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-9 w-9 rounded-full"
-              onClick={() => {
-                if (fileInputRef.current) {
-                  fileInputRef.current.accept = "image/*";
-                  fileInputRef.current.click();
-                }
-              }}
-            >
-              <Image className="h-5 w-5 text-muted-foreground" />
             </Button>
             
             <Button 

@@ -47,9 +47,6 @@ export function MessageItem({ message, sender, isCurrentUser, onDelete, onReact 
     ? "bg-chat-primary text-white rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-lg ml-auto"
     : "bg-muted rounded-tl-sm rounded-tr-lg rounded-br-lg rounded-bl-lg";
 
-  const isMedia = message.type === 'media'
-  const isLocation = message.type === "location";
-
   const renderMessageContent = () => {
     if (message.isDeleted) {
       return (
@@ -62,29 +59,29 @@ export function MessageItem({ message, sender, isCurrentUser, onDelete, onReact 
     switch (message.type) {
       case "text":
         return <p className="whitespace-pre-wrap break-words">{message.text}</p>;
-      case "media":
+      case "image": 
         return (
           <div className="relative">
             <img
-              src={message.mediaUrl}
+              src={message.mediaKey}
               alt="Image"
               className="rounded-md max-w-xs max-h-60 object-contain"
             />
             {message.text && <p className="mt-1 whitespace-pre-wrap break-words">{message.text}</p>}
           </div>
         );
-      case "media":
+      case "video":
         return (
           <div className="relative">
             <video
-              src={message.mediaUrl}
+              src={message.mediaKey}
               controls
               className="rounded-md max-w-xs max-h-60 object-contain"
             />
             {message.text && <p className="mt-1 whitespace-pre-wrap break-words">{message.text}</p>}
           </div>
         );
-      case "media":
+      case "document":
         return (
           <div className="flex items-center bg-background/10 p-2 rounded-md">
             <div className="bg-background/20 p-2 rounded-md mr-2">

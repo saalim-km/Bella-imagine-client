@@ -16,7 +16,7 @@ export type Reaction = {
   username: string;
 };
 
-export type MessageType = 'text' | 'media' | 'location';
+export type MessageType = 'text' | 'image' | 'location' | 'video' | 'document'
 
 export type Message = {
   _id?: string;  
@@ -25,7 +25,7 @@ export type Message = {
   timestamp?: string;
   conversationId : string;
   type: MessageType;
-  mediaUrl?: string;
+  mediaKey?: string;
   location?: {
     latitude: number;
     longitude: number;

@@ -5,6 +5,7 @@ import { vendorAxiosInstance } from "@/api/vendor.axios";
 import { CategoryType } from "@/hooks/admin/useAllCategory";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
 import { IVendor } from "../vendor/vendorService";
+import { data } from "react-router-dom";
 
 export type Category = {
   _id: string;
@@ -72,43 +73,8 @@ export const vendorJoinCategory = async (category: string) => {
 };
 
 
-
-// export const getVendorInCategoryStatus = async () => {
-//   const response = await vendorAxiosInstance.get<{
-//     success: boolean;
-//     status: string | undefined;
-//   }>("/vendor/category/status");
-//   return response.data;
-// };
-
-// export const addAndEditCategory = async (categoryData: {
-//   id?: string;
-//   status?: string;
-//   name?: string;
-// }) => {
-//   if (categoryData.id) {
-//     if (categoryData.status) {
-//       const response = await adminAxiosInstance.patch(
-//         `/admin/categories/${categoryData.id}`
-//       );
-//       return response.data;
-//     } else {
-//       const response = await adminAxiosInstance.put(
-//         `/admin/categories/${categoryData.id}`,
-//         categoryData
-//       );
-//       return response.data;
-//     }
-//   } else {
-//     const response = await adminAxiosInstance.post(
-//       "/admin/categories",
-//       categoryData
-//     );
-//     return response.data;
-//   }
-// };
-
-// export const getAllCategoriesForClient = async () => {
-//   const response = await clientAxiosInstance.get<CategoryResponse>(ENDPOINTS.CLIENT_CATEGORIES);
-//   return response.data;
-// };
+export const updateCategoryService = async(dto : {id : string , data : Partial<Category>}) : Promise<ApiResponse>=> {
+  delete dto.data._id;
+  const response = await adminAxiosInstance.put('/categories', dto)
+  return response.data
+}

@@ -1,18 +1,11 @@
+import { chatAxionInstance } from "@/api/chat.axios"
 
-
-import { chatAxiosInstance } from "@/api/chat.axios";
-import { TRole } from "@/types/User";
-
-export const getContacts = async(userId : string , userType : TRole)=> {
-  const response = await chatAxiosInstance.get(`/${userId}/${userType}`)
-  console.log(response);
-  return response.data;
+export interface IUploadMediaResponse {
+    key : string,
+    mediaUrl : string
 }
 
-export const getConversations = async(userId : string , userType : string)=> {
-  console.log('before calling getconversation');
-  console.log(userType);
-  const response = await chatAxiosInstance.get(`/conversations/${userId}/${userType}`)
-  console.log(response.data);
-  return response.data
+export const uploadMediaChatService = async(payload : {media : File , conversationId : string}): Promise<IUploadMediaResponse> => {
+    const response = await chatAxionInstance.post('/upload-media',payload,{headers : {'Content-Type' : 'multipart/form-data'}})
+    return response.data
 }

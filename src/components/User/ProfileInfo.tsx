@@ -111,16 +111,12 @@ export function ProfileInfo({ data, className }: ProfileInfoProps) {
               >
                 {showDocs ? "Hide Docs" : "Show Docs"}
               </Button>
-              {showDocs && data.verificationDocuments && (
+              {showDocs && data.verificationDocument && (
                 <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {data.verificationDocuments.map((doc, index) => (
                     <img 
-                      key={index} 
-                      src={doc} 
-                      alt={`Document ${index + 1}`} 
+                      src={data.verificationDocument} 
                       className="w-full h-auto  object-cover rounded-md shadow-sm"
                     />
-                  ))}
                 </div>
               )}
             </>

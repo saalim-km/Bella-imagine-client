@@ -26,7 +26,6 @@ export const validLocations = new Set([
 ])
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const MAX_DOCUMENTS = 2;
 
 const SUPPORTED_IMAGE_FORMATS = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 const SUPPORTED_DOCUMENT_FORMATS = [...SUPPORTED_IMAGE_FORMATS, "application/pdf"];
@@ -52,7 +51,7 @@ export const clientProfileSchema = Yup.object().shape({
     .test(
       "fileSize",
       "File size is too large (max 5MB)",
-      (value) => !value || value.size <= MAX_FILE_SIZE
+      (value) => !value || (value instanceof File && value.size <= MAX_FILE_SIZE)
     )
     .test(
       "fileFormat",
@@ -91,21 +90,16 @@ export const vendorProfileSchema = Yup.object().shape({
       "Unsupported file format",
       (value) => !value || SUPPORTED_IMAGE_FORMATS.includes(value.type)
     ),
-  verificationDocuments: Yup.array()
+  verificationDocument: Yup.mixed()
     .nullable()
     .test(
-      "maxFiles",
-      `Maximum ${MAX_DOCUMENTS} documents allowed`,
-      (value) => !value || value.length <= MAX_DOCUMENTS
-    )
-    .test(
       "fileSize",
-      "One or more files are too large (max 5MB each)",
-      (value) => !value || value.every(file => file.size <= MAX_FILE_SIZE)
+      "File size is too large (max 5MB)",
+      (value) => !value || value.size <= MAX_FILE_SIZE
     )
     .test(
       "fileFormat",
       "Unsupported file format. Only PDF, PNG, JPG, and JPEG are allowed",
-      (value) => !value || value.every(file => SUPPORTED_DOCUMENT_FORMATS.includes(file.type))
+      (value) => !value || SUPPORTED_DOCUMENT_FORMATS.includes(value.type)
     ),
 });

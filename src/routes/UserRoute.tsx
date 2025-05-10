@@ -11,10 +11,10 @@ import ForgotPassPage from "@/pages/User/ForgotPassPage";
 import { Client404 } from "@/components/404/Client404";
 import VendorDetails from "@/pages/User/VendorDetailsPage";
 import BookingServicePage from "@/pages/User/BookingServicePage";
-import CommunityPage from "@/pages/User/contest_community/CommunityPage";
-import ContestsPage from "@/pages/User/contest_community/ContestsPage";
-import UploadPage from "@/pages/User/contest_community/UploadPage";
 import ChatPage from "@/pages/chat/ChatPage";
+import CommunityHomePage from "@/pages/community-contest/CommunityHomePage";
+import CommunityDetailPage from "@/pages/community-contest/CommunityDetailPage";
+import CreatePostPage from "@/pages/community-contest/CreatePostPage";
 
 const ClientRoute = () => {
   return (
@@ -27,14 +27,15 @@ const ClientRoute = () => {
       <Route path="/profile" element = {<AuthClientRoute element={<UserProfile/>} allowedRoles={["client","vendor"]}/>}/>
       <Route path="/photographer/:id" element = {<AuthClientRoute element={<VendorDetails/>} allowedRoles={["client","vendor"]}/>}/>
       <Route path="/booking/:id/:vendorId" element = {<AuthClientRoute element={<BookingServicePage/>} allowedRoles={["client","vendor"]}/>}/>
-      <Route path="/community" element = {<AuthClientRoute element={<CommunityPage/>} allowedRoles={["client","vendor"]}/>}/>
-      <Route path="/contests" element = {<AuthClientRoute element={<ContestsPage/>} allowedRoles={["client","vendor"]}/>}/>
-      <Route path="/contest/upload" element = {<AuthClientRoute element={<UploadPage/>} allowedRoles={["client","vendor"]}/>}/>
       <Route path="/messages" element = {<AuthClientRoute element={<ChatPage/>} allowedRoles={["client","vendor"]}/>}/>
+      <Route path="/community" element = {<AuthClientRoute element={<CommunityHomePage/>} allowedRoles={["client","vendor"]}/>}/>
+      <Route path="/community/r/:slug" element = {<AuthClientRoute element={<CommunityDetailPage/>} allowedRoles={["client","vendor"]}/>}/>
+      <Route path="/community/post/r/:slug" element = {<AuthClientRoute element={<CreatePostPage/>} allowedRoles={["client","vendor"]}/>}/>
+
 
       <Route path="/client/forgot-password" element = {<NoClientAuthRoute element={<ForgotPassPage userType="client"/>}/>}/>
       <Route path="*" element = {<Client404/>}/>
-    </Routes>
+    </Routes> 
   );
 };
 

@@ -79,7 +79,7 @@ export function ConversationList({
               >
                 <div className="relative mr-3">
                   <Avatar>
-                    <AvatarImage src={otherUser.avatar} alt={otherUser.name} />
+                    <AvatarImage className="object-cover" src={otherUser.avatar} alt={otherUser.name} />
                     <AvatarFallback>{otherUser.name?.charAt(0)}</AvatarFallback>
                   </Avatar>
                   {otherUser.isOnline && (

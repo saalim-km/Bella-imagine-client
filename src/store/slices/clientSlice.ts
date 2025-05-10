@@ -5,6 +5,7 @@ interface Client {
     name : string;
     email : string;
     role : string;
+    avatar : string;
 }
 
 interface ClientState {

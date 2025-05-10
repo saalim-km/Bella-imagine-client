@@ -47,10 +47,14 @@ export function ChatInterface() {
   );
 
   const recipientUser = selectedConversation
-    ? userFromRedux?._id === selectedConversation.client._id
-      ? selectedConversation.vendor
-      : selectedConversation.client
+    ? users.find(
+        (user) =>
+          user._id !== userFromRedux?._id &&
+          (user._id === selectedConversation.client._id ||
+           user._id === selectedConversation.vendor._id)
+      )
     : undefined;
+
 
   console.log("recipent user : ", recipientUser);
 
@@ -72,17 +76,18 @@ export function ChatInterface() {
   }, [socket, dispatch, messages]);
 
   const handleSendMessage = (message: Message) => {
+    console.log('got the message in handlemessage : ',message);
     const newMessage: Message = {
       senderId: userFromRedux?._id as string,
-      text: message.text || "",
+      text: message.text,
       type: message.type,
       timestamp : new Date().toISOString(),
       conversationId: selectedConversationId as string,
-      mediaUrl: message.mediaUrl || "",
+      mediaKey: message.mediaKey || "",
       userType: userFromRedux?.role as TRole,
     };
     if (!socket) return;
-
+    console.log('new message before snding : ',newMessage);
     socket.emit("send_message", {
       message: newMessage,
       recipentId: recipientUser?._id,

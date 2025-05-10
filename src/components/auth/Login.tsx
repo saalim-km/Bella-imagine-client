@@ -31,7 +31,6 @@ export default function Login({ userType, onSubmit, isSending }: loginProps) {
 
   
   function handleGoogleLogin(credentialResponse: CredentialResponse) {
-    console.log(credentialResponse);
     Login(
       {
         credential: credentialResponse.credential,
@@ -44,15 +43,13 @@ export default function Login({ userType, onSubmit, isSending }: loginProps) {
           if (userType === "vendor") {
             dispatch(vendorLogin(data.user));
             if(socket){
-            reconnect()
-
+              reconnect()
             }
           } else {
             dispatch(clientLogin(data.user));
             if(socket){
               reconnect()
-  
-              }
+            }
           }
           navigate("/home");
         },

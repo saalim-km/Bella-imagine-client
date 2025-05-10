@@ -37,9 +37,13 @@ export const getClientDetails = async (): Promise<IClientReponse> => {
 export const updateClientDetails = async (
   data: IProfileUpdate
 ): Promise<IProfileUpdateResponse> => {
+  console.log('in updateclient profile service : ✅ ',data);
   const response = await clientAxiosInstance.put(
     ENDPOINTS.CLIENT_DETAILS,
-    data
+    data,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
   );
   return response.data;
 };
