@@ -184,7 +184,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                 transition={{ duration: 0.3 }}
               >
                 <Avatar className="w-20 h-20 border-2 border-primary/20">
-                  <AvatarImage src={imagePreview || values.profileImage} alt={values.name} />
+                  <AvatarImage className="object-cover" src={imagePreview || values.profileImage} alt={values.name} />
                   <AvatarFallback className="bg-primary/10">{values.name.charAt(0)}</AvatarFallback>
                 </Avatar>
               </motion.div>
@@ -419,47 +419,6 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                         >
                           <X className="h-4 w-4 hover:text-destructive transition-colors" />
                         </Button>
-                      </motion.div>
-                    </div>
-                  )}
-  
-                  {/* Display previously uploaded document */}
-                  {!values.verificationDocument && (
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Existing Document</Label>
-                      <motion.div
-                        className="relative flex items-center p-3 rounded-lg border bg-card"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <div className="ml-3 flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">Verification Document</p>
-                          <p className="text-xs text-muted-foreground">Uploaded</p>
-                        </div>
-                        <div className="flex">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 mr-1"
-                            asChild
-                          >
-                            <a href={values.verificationDocumentUrl} target="_blank" rel="noopener noreferrer">
-                              <CheckCircle2 className="h-4 w-4 text-primary" />
-                            </a>
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => removeExistingDocument(setFieldValue)}
-                          >
-                            <X className="h-4 w-4 hover:text-destructive transition-colors" />
-                          </Button>
-                        </div>
                       </motion.div>
                     </div>
                   )}

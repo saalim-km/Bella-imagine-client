@@ -29,8 +29,8 @@ export const getCommunityBySlugService = async(slug : string) : Promise<{communi
     return response.data;
 }
 
-export const updateCommunityService = async({communityId , dto} : {communityId : string , dto : Partial<Community>}) : Promise<ApiResponse> => {
-    const response = await adminAxiosInstance.put(`/community`, {communityId : communityId , dto : dto} , {
+export const updateCommunityService = async(dto : Partial<Community>) : Promise<ApiResponse> => {
+    const response = await adminAxiosInstance.put(`/community`, dto , {
         headers : {
             'Content-Type' : 'multipart/form-data'
         }

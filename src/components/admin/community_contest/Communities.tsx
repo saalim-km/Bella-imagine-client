@@ -225,7 +225,7 @@ export default function Communities() {
       <BigModal
         open={viewDetailsOpen}
         onOpenChange={setViewDetailsOpen}
-        title={    <>
+        title={<>
           {selectedCommunity?.slug}
           <br/>
           <br/>

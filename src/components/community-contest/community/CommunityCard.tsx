@@ -43,7 +43,7 @@ export function CommunityCard({ community, className }: CommunityCardProps) {
       <Link to={`/community/${community.slug}`}>
         <div className="relative aspect-video w-full overflow-hidden">
           <img
-            src={community.coverImageUrl || "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?fit=crop&w=600&h=300"}
+            src={community.coverImage || "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?fit=crop&w=600&h=300"}
             alt={community.name}
             className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
             loading="lazy"

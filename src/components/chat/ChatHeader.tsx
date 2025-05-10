@@ -21,7 +21,7 @@ export function ChatHeader({ user }: ChatHeaderProps) {
       <div className="flex items-center space-x-3">
         <div className="relative">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={user.avatar} alt={user.name} />
+            <AvatarImage className="object-cover" src={user.avatar} alt={user.name} />
             <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
           </Avatar>
           {user.isOnline && (

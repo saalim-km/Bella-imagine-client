@@ -47,9 +47,6 @@ export function MessageItem({ message, sender, isCurrentUser, onDelete, onReact 
     ? "bg-chat-primary text-white rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-lg ml-auto"
     : "bg-muted rounded-tl-sm rounded-tr-lg rounded-br-lg rounded-bl-lg";
 
-  const isMedia = message.type === 'media'
-  const isLocation = message.type === "location";
-
   const renderMessageContent = () => {
     if (message.isDeleted) {
       return (

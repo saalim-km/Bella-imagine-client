@@ -19,7 +19,7 @@ export function CommunityHeader({ community }: CommunityHeaderProps) {
     <div className="relative">
       <div className="h-40 md:h-60 w-full overflow-hidden">
         <img
-          src={community.coverImageUrl || "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?fit=crop&w=1200&h=300"}
+          src={community.coverImage || "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?fit=crop&w=1200&h=300"}
           alt={community.name}
           className="w-full h-full object-cover"
         />
@@ -29,9 +29,9 @@ export function CommunityHeader({ community }: CommunityHeaderProps) {
           <div className="flex flex-col md:flex-row md:items-center gap-4">
             <div className="bg-background rounded-full p-1 shadow-lg">
               <div className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-accent flex items-center justify-center  text-xl md:text-3xl font-bold overflow-hidden">
-                {community.coverImageUrl ? (
+                {community.coverImage ? (
                   <img 
-                    src={community.iconImageUrl}
+                    src={community.iconImage}
                     alt={community.name}
                     className="w-full h-full object-cover"
                   />

@@ -249,20 +249,6 @@ export function MessageInput({ conversationId, onSendMessage }: MessageInputProp
               variant="ghost" 
               size="icon" 
               className="h-9 w-9 rounded-full"
-              onClick={() => {
-                if (fileInputRef.current) {
-                  fileInputRef.current.accept = "image/*";
-                  fileInputRef.current.click();
-                }
-              }}
-            >
-              <Image className="h-5 w-5 text-muted-foreground" />
-            </Button>
-            
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-9 w-9 rounded-full"
               onClick={handleShareLocation}
             >
               <MapPin className="h-5 w-5 text-muted-foreground" />
