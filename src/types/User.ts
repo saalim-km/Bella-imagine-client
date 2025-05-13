@@ -114,6 +114,9 @@ export interface Booking {
     startTime: string;
     endTime: string;
   };
-
+    location: {
+    lat: number
+    lng: number
+  }
   totalPrice: number;
 }

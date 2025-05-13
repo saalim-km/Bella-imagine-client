@@ -127,7 +127,7 @@ export default function Header({ onClick }: IHeader) {
 
   return (
     <motion.header
-      className={`fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 py-2 transition-all duration-300  bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/50`}
+      className={`fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 py-2 transition-all duration-300 backdrop-blur-3xl`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
