@@ -22,15 +22,13 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
   const navigate = useNavigate()
   const [isBookingSuccess, setIsBookingSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
   const [bookingState, setBookingState] = useState<BookingState>({
     selectedDate: null,
     selectedTimeSlot: null,
     selectedDuration: service.sessionDurations.length > 0 ? service.sessionDurations[0] : null,
-    vendorId: vendorId,
-    location: {
-      lat: 0,
-      lng: 0,
-    },
+    vendorId,
+    location: { lat: 0, lng: 0 },
   })
 
   const handleDateSelect = (date: string) => {
@@ -55,97 +53,90 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
     }))
   }
 
+  const handleLocationSelect = (location: { lat: number; lng: number }) => {
+    setBookingState((prev) => ({
+      ...prev,
+      location,
+    }))
+  }
+
   const handleConfirmBooking = () => {
     toast.success("Booking confirmed!", {
       description: "Your booking has been confirmed successfully.",
-    })
-
-    console.log("Booking confirmed:", {
-      service: service.serviceTitle,
-      date: bookingState.selectedDate,
-      timeSlot: bookingState.selectedTimeSlot,
-      duration: bookingState.selectedDuration,
-      location : {
-        lat: bookingState.location.lat,
-        lng: bookingState.location.lng,
-      }
     })
 
     setBookingState({
       selectedDate: null,
       selectedTimeSlot: null,
       selectedDuration: service.sessionDurations.length > 0 ? service.sessionDurations[0] : null,
-      vendorId: vendorId,
-      location: {
-        lat: 0,
-        lng: 0,
-      },
+      vendorId,
+      location: { lat: 0, lng: 0 },
     })
-    console.log(bookingState);
-  }
-
-  const handleLocationSelect = (location: { lat: number; lng: number }) => {
-    setBookingState((prev) => ({
-      ...prev,
-      location: {
-        lat: location.lat,
-        lng: location.lng,
-      },
-    }))
   }
 
   return (
-      <div className="container mx-auto py-8 px-4 mt-16 relative">
-        {isLoading && <LoadingOverlay message="Processing your booking..." />}
+    <div className="container mx-auto px-4 py-10 mt-16 relative">
+      {isLoading && <LoadingOverlay message="Processing your booking..." />}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Booking Steps */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Step 1: Service and Duration */}
+          <section>
             <ServiceDetails
               service={service}
               selectedDuration={bookingState.selectedDuration}
               onDurationSelect={handleDurationSelect}
             />
+          </section>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <DateSelector
-                availableDates={service.availableDates}
-                selectedDate={bookingState.selectedDate}
-                onDateSelect={handleDateSelect}
-              />
-
-              <TimeSlotSelector
-                availableDates={service.availableDates}
-                selectedDate={bookingState.selectedDate}
-                selectedTimeSlot={bookingState.selectedTimeSlot}
-                onTimeSlotSelect={handleTimeSlotSelect}
-              />
-            </div>
-
-            {/* Moved LocationPicker here for better UX flow */}
-            <LocationPicker onLocationSelect={handleLocationSelect} initialLocation={bookingState.location} />
-          </div>
-
-          <div>
-            <BookingConfirmation
-              service={service}
-              bookingState={bookingState}
-              onConfirmBooking={handleConfirmBooking}
-              setIsBookingSuccess={() => setIsBookingSuccess(true)}
-              setIsLoading={setIsLoading}
+          {/* Step 2: Location Selection */}
+          <section>
+            <h2 className="text-lg font-semibold mb-2">Where is the service needed?</h2>
+            <LocationPicker
+              onLocationSelect={handleLocationSelect}
+              initialLocation={bookingState.location}
             />
-          </div>
+          </section>
+
+          {/* Step 3: Date and Time */}
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <DateSelector
+              availableDates={service.availableDates}
+              selectedDate={bookingState.selectedDate}
+              onDateSelect={handleDateSelect}
+            />
+            <TimeSlotSelector
+              availableDates={service.availableDates}
+              selectedDate={bookingState.selectedDate}
+              selectedTimeSlot={bookingState.selectedTimeSlot}
+              onTimeSlotSelect={handleTimeSlotSelect}
+            />
+          </section>
         </div>
 
-        <BookingSuccessModal
-          isOpen={isBookingSuccess}
-          onClose={() => {
-            setIsBookingSuccess(false)
-            navigate("/")
-          }}
-          eventDate={bookingState.selectedDate || ""}
-          eventName={service.serviceTitle}
-        />
+        {/* Sidebar: Booking Summary and Confirm */}
+        <aside className="sticky top-24 h-fit">
+          <BookingConfirmation
+            service={service}
+            bookingState={bookingState}
+            onConfirmBooking={handleConfirmBooking}
+            setIsBookingSuccess={() => setIsBookingSuccess(true)}
+            setIsLoading={setIsLoading}
+          />
+        </aside>
       </div>
+
+      <BookingSuccessModal
+        isOpen={isBookingSuccess}
+        onClose={() => {
+          setIsBookingSuccess(false)
+          navigate("/")
+        }}
+        eventDate={bookingState.selectedDate || ""}
+        eventName={service.serviceTitle}
+      />
+    </div>
   )
 }
 

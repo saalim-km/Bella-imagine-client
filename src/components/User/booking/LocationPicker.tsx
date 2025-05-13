@@ -16,7 +16,7 @@ interface LocationPickerProps {
 }
 
 const LocationPicker: React.FC<LocationPickerProps> = ({ onLocationSelect, initialLocation }) => {
-  const [marker, setMarker] = useState(initialLocation?.lat !== 0 ? initialLocation : DEFAULT_CENTER)
+  const [marker, setMarker] = useState(initialLocation?.lat !== 0 ? initialLocation : DEFAULT_CENTER) 
   const [map, setMap] = useState<google.maps.Map | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null)

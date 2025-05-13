@@ -79,7 +79,9 @@ const PaymentForm: React.FC<PaymentWrapperProps> = ({
                 paymentIntentId: paymentIntent.id,
               });
               setIsSuccess();
-              toast.success("Payment completed.");
+              toast.success("Payment completed",{
+                description : "Your payment has been successfully completed.",
+              }); 
             } catch (error) {
               console.error("Error in confirm payment =>", error);
             }
