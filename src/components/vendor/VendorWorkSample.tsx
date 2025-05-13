@@ -242,7 +242,7 @@ const VendorWorkSample = ({ handleIsCreateWorkSample , handleIsWorkSampleEditing
 
           {workSamples.length === 0 && (
             <div className="text-center py-10 text-muted-foreground">
-              No work samples found. Try adjusting your search or filters.
+              No work samples found
             </div>
           )}
 

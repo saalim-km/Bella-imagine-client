@@ -13,7 +13,6 @@ const clientNavItems = [
 const vendorNavItems = [
   { icon: Calendar, label: "Bookings", id: "bookings" },
   { icon: CreditCard, label: "Wallet & Transactions", id: "wallet" },
-  { icon: Upload, label: "Upload Work for Clients", id: "upload-work" },
   { icon: LucideCamera, label: "Services", id: "services" },
   { icon: ImageDown, label: "Work Sample", id: "work-sample" },
 ];

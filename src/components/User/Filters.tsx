@@ -43,10 +43,11 @@ export default function Filters({
   const { bgColor, textColor, borderColor } = useThemeConstants();
 
   const handleLocation = (position: GeolocationPosition) => {
-    getLocationFromCordinates(
-      position.coords.latitude,
-      position.coords.longitude
-    );
+    // getLocationFromCordinates(
+    //   position.coords.latitude,
+    //   position.coords.longitude
+    // );
+    console.log(position);
   };
 
   const handleLocationErr = (err: any) => {
