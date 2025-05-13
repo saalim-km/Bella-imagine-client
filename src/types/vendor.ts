@@ -30,7 +30,11 @@ export interface BookingState {
   selectedDate: string | null;
   selectedTimeSlot: TimeSlot | null;
   selectedDuration: SessionDuration | null;
-  vendorId ?: string
+  vendorId ?: string,
+  location : {
+    lat: number;
+    lng: number;
+  }
 }
 
 export interface Location {

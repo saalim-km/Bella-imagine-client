@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import { store } from "./store/store.ts";
 import AppLayout from "./App.tsx";
 const queryClient = new QueryClient();
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 createRoot(document.getElementById("root")!).render(
     <Provider store={store}>
@@ -16,6 +17,7 @@ createRoot(document.getElementById("root")!).render(
           <ThemeProvider>
             <QueryClientProvider client={queryClient}>
               <AppLayout />
+              <ReactQueryDevtools initialIsOpen={false}/>
             </QueryClientProvider>
           </ThemeProvider>
         </ErrorBoundary>

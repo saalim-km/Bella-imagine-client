@@ -31,6 +31,7 @@ import { buildQueryParams } from "@/utils/queryGenerator";
 import Pagination from "@/components/common/Pagination";
 import { Spinner } from "@/components/ui/spinner";
 import { useNavigate } from "react-router-dom";
+import { handleError } from "@/utils/Error/errorHandler";
 
 const FILTER_OPTIONS = [
   { label: "Active", value: "isActive" },
@@ -106,7 +107,7 @@ export function UserTable() {
           toast.success(data?.message);
         },
         onError: (err) => {
-          console.log(err);
+          handleError(err)
         },
       });
     } else {
@@ -116,7 +117,7 @@ export function UserTable() {
           toast.success(data?.message);
         },
         onError: (err) => {
-          console.log(err);
+          handleError(err)
         },
       });
     }

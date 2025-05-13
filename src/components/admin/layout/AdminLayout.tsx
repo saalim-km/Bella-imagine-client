@@ -22,6 +22,7 @@ import { logoutAdmin } from "@/services/auth/authService"
 import { toast } from "sonner"
 import { adminLogout } from "@/store/slices/adminSlice"
 import ThemeToggle from "@/components/common/ThemeToggle"
+import { handleError } from "@/utils/Error/errorHandler"
 
 interface AdminLayoutProps {
   children: ReactNode
@@ -42,7 +43,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             dispatch(adminLogout())
         },
         onError : (error)=> {
-            console.log(error);
+            handleError(error)
         }
     })
   }

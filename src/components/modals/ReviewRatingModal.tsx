@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { useReviewMutation } from "@/hooks/review/useReview";
 import { createNewReview } from "@/services/review/reviewService";
 import { toast } from "sonner";
+import { handleError } from "@/utils/Error/errorHandler";
 
 interface StarRatingProps {
   rating: number;
@@ -68,7 +69,7 @@ export default function ReviewRatingSystem({ vendorId, bookingId }: { vendorId: 
       },
       {
         onSuccess: (data) => toast.success(data.message),
-        onError: (error: any) => toast.error(error.response.data.message),
+        onError: (error: any) => handleError(error),
       }
     );
 

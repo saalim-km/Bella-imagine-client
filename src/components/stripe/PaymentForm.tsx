@@ -12,37 +12,40 @@ import { Booking } from "@/types/User";
 import { useVendorBookingPaymentMutation } from "@/hooks/payment/usePayment";
 import { clientAxiosInstance } from "@/api/client.axios";
 
-// Load Stripe with your public key
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY); 
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 interface PaymentWrapperProps {
   amount: number;
   setIsSuccess: () => void;
-  bookingData : Booking
+  bookingData: Booking;
   onError: (error: string) => void;
+  onPaymentStart: () => void;
+  disabled?: boolean;
 }
 
 const PaymentForm: React.FC<PaymentWrapperProps> = ({
   amount,
   setIsSuccess,
   onError,
-  bookingData
+  bookingData,
+  onPaymentStart,
+  disabled = false,
 }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
-  const {mutate : proceedPayment} = useVendorBookingPaymentMutation()
+  const [cardComplete, setCardComplete] = useState(false);
+  const { mutate: proceedPayment } = useVendorBookingPaymentMutation();
 
-  console.log('data in paymentform :', bookingData);
   async function handlePayment() {
-    setLoading(true)
-    if (!stripe || !elements) {
-      return;
-    }
+    setLoading(true);
+    onPaymentStart();
+
+    if (!stripe || !elements) return;
 
     const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: 'card',
-      card: elements?.getElement(CardElement)!,
+      type: "card",
+      card: elements.getElement(CardElement)!,
     });
 
     if (error) {
@@ -50,7 +53,7 @@ const PaymentForm: React.FC<PaymentWrapperProps> = ({
       setLoading(false);
       return;
     }
-    
+
     proceedPayment(
       {
         amount,
@@ -65,7 +68,7 @@ const PaymentForm: React.FC<PaymentWrapperProps> = ({
           const { error: stripeError, paymentIntent } =
             await stripe.confirmCardPayment(data.clientSecret, {
               payment_method: {
-                card: elements?.getElement(CardElement)!,
+                card: elements.getElement(CardElement)!,
               },
             });
           if (stripeError) {
@@ -78,13 +81,13 @@ const PaymentForm: React.FC<PaymentWrapperProps> = ({
               setIsSuccess();
               toast.success("Payment completed.");
             } catch (error) {
-              console.log("Error in confirm payement=>", error);
+              console.error("Error in confirm payment =>", error);
             }
           }
         },
         onError: (error: any) => {
-          setLoading(false)
-          toast.error(error.response.data.message);
+          setLoading(false);
+          toast.error(error.response?.data?.message || "Payment failed.");
         },
       }
     );
@@ -95,6 +98,7 @@ const PaymentForm: React.FC<PaymentWrapperProps> = ({
       <h2 className="text-lg font-medium">Complete Your Payment</h2>
       <div className="border p-4 rounded-md">
         <CardElement
+          onChange={(event) => setCardComplete(event.complete)}
           options={{
             style: {
               base: {
@@ -111,7 +115,11 @@ const PaymentForm: React.FC<PaymentWrapperProps> = ({
           }}
         />
       </div>
-      <Button onClick={handlePayment} disabled={loading} className="w-full bg-blue-600 hover:bg-blue-400">
+      <Button
+        onClick={handlePayment}
+        disabled={loading || disabled || !cardComplete}
+        className="w-full bg-blue-600 hover:bg-blue-400"
+      >
         {loading ? "Processing..." : `Pay ₹ ${amount.toFixed(2)}`}
       </Button>
     </div>
