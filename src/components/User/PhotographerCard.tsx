@@ -118,7 +118,6 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
               <Button variant="outline" onClick={() => navigate(`/photographer/${vendorData._id}`)}>
                 Visit profile
               </Button>
-              <Button variant={"outline"}>Send message</Button>
             </div>
           </div>
         </div>

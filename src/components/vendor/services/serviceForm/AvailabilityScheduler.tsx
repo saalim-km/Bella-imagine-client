@@ -3,11 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar, Clock, Plus, X } from "lucide-react";
-import { format } from 'date-fns';
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { Calendar, Clock, X } from "lucide-react";
 
 interface RecurringAvailability {
   dayOfWeek: number;
@@ -31,19 +27,7 @@ const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Frida
 export const AvailabilityScheduler: React.FC<AvailabilitySchedulerProps> = ({
   recurringAvailability,
   updateRecurringAvailability,
-  bufferTime,
-  updateBufferTime,
-  maxBookingsPerDay,
-  updateMaxBookingsPerDay,
-  blackoutDates,
-  updateBlackoutDates
 }) => {
-  const addRecurringSlot = () => {
-    updateRecurringAvailability([
-      ...recurringAvailability,
-      { dayOfWeek: 1, startTime: "09:00", endTime: "17:00" }
-    ]);
-  };
 
   const removeRecurringSlot = (index: number) => {
     const newSlots = recurringAvailability.filter((_, i) => i !== index);
@@ -58,17 +42,6 @@ export const AvailabilityScheduler: React.FC<AvailabilitySchedulerProps> = ({
       newSlots[index][field] = value as string;
     }
     updateRecurringAvailability(newSlots);
-  };
-
-  const addBlackoutDate = (date: Date) => {
-    const dateString = format(date, 'yyyy-MM-dd');
-    if (!blackoutDates.includes(dateString)) {
-      updateBlackoutDates([...blackoutDates, dateString]);
-    }
-  };
-
-  const removeBlackoutDate = (dateToRemove: string) => {
-    updateBlackoutDates(blackoutDates.filter(date => date !== dateToRemove));
   };
 
   return (

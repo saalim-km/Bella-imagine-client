@@ -1,14 +1,14 @@
 
 import React from "react";
-import { IVendorsResponse } from "@/types/User";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Globe, CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { IVendorDetails } from "@/types/vendor";
 
 interface VendorProfileProps {
-  vendor: IVendorsResponse;
+  vendor: IVendorDetails;
 }
 
 const VendorProfile: React.FC<VendorProfileProps> = ({ vendor }) => {
@@ -67,7 +67,7 @@ const VendorProfile: React.FC<VendorProfileProps> = ({ vendor }) => {
           <div className="space-y-4">
             <div>
               <h3 className="text-sm font-medium text-gray-500 mb-2">Categories</h3>
-              {vendor.categories.map((category,indx)=> (
+              {vendor.categories?.map((category,indx)=> (
                 <Badge variant={"outline"} className="rounded-2xl" key={indx}>{category.title}</Badge>
               ))}
             </div>

@@ -10,9 +10,7 @@ import {
   TimeSlot, 
   DateSlot, 
   isOverlappingTimeSlot,
-  isDuplicateDate,
   isFutureDate,
-  isValidTime,
   isEndTimeAfterStartTime
 } from "@/utils/formikValidators/vendorService/avalability-date-validator";
 
@@ -30,13 +28,6 @@ const to12HourFormat = (time: string) => {
   return `${adjustedHours}:${minutes.toString().padStart(2, '0')} ${period}`;
 };
 
-// Convert 12-hour to 24-hour format
-const to24HourFormat = (time: string, period: 'AM' | 'PM') => {
-  let [hours, minutes] = time.split(':').map(Number);
-  if (period === 'PM' && hours !== 12) hours += 12;
-  if (period === 'AM' && hours === 12) hours = 0;
-  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-};
 
 // Generate time options in 12-hour format
 const generateTimeOptions = () => {
