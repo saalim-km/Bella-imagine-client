@@ -38,7 +38,6 @@ import {
   validateSection,
 } from "@/utils/formikValidators/vendorService/base.validator";
 import {
-  useAllVendorCategoryQuery,
   useCreateServiceMutation,
   useUpdateVendorServiceMutation,
 } from "@/hooks/vendor/useVendor";
@@ -115,14 +114,9 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
       },
     ],
     location: {
-      options: {
-        studio: false,
-        onLocation: false,
-      },
       travelFee: 0,
-      city: "",
-      state: "",
-      country: "",
+      lat : 0,
+      lng : 0,
     },
     equipment: [],
     cancellationPolicies: [""],
@@ -135,6 +129,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: async (values) => {
+      console.log('service form submitted',values);
       if(editData) {
         console.log('updated data : ', values);
         updateService(values,{
@@ -314,7 +309,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
         ) {
           return section === "basic";
         } else if (
-          ["sessionDurations", "features", "depositRequirement"].includes(key)
+          ["sessionDurations", "features"].includes(key)
         ) {
           return section === "session";
         } else if (["location", "equipment"].includes(key)) {
@@ -330,7 +325,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
           ].includes(key)
         ) {
           return section === "availability";
-        } else if (["portfolioImages", "customFields"].includes(key)) {
+        } else if (["portfolioImages"].includes(key)) {
           return section === "portfolio";
         } else if (
           [
@@ -391,16 +386,6 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
     }
   };
 
-  const hasValidData = () => {
-    return (
-      formik.values.serviceTitle.trim() !== "" ||
-      formik.values.category !== undefined ||
-      formik.values.serviceDescription.trim() !== "" ||
-      formik.values.yearsOfExperience !== 0 ||
-      formik.values.styleSpecialty.length > 0 || 
-      formik.values.tags.length > 0 
-    );
-  };
 
   const handleConfirmExit = () => {
     setAllowReload(true);
@@ -412,8 +397,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
       const hasUnsavedChanges =
         formik.values.serviceTitle !== "" ||
         formik.values.serviceDescription !== "" ||
-        formik.values.availableDates.length > 0 ||
-        formik.values.customFields.length > 0
+        formik.values.availableDates.length > 0 ;
 
       if (hasUnsavedChanges && !allowReload) {
         e.preventDefault();
@@ -821,15 +805,6 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
                     markFieldAsTouched("location.city");
                     markFieldAsTouched("location.state");
                     markFieldAsTouched("location.country");
-                    
-                    // Clear location errors if valid
-                    if (location.city && location.state && location.country) {
-                      const newErrors = { ...validationErrors };
-                      delete newErrors["location.city"];
-                      delete newErrors["location.state"];
-                      delete newErrors["location.country"];
-                      setValidationErrors(newErrors);
-                    }
                   }}
                 />
                 {(validationErrors["location.city"] ||
@@ -1115,6 +1090,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
         </div>
       }            
       <ReusableAlertDialog
+        onCancel={() => setShowExitDialog(false)}
         open={showExitDialog}
         onOpenChange={setShowExitDialog}
         title="Unsaved Changes"
@@ -1126,6 +1102,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
       />
 
       <ReusableAlertDialog
+        onCancel={() => setShowExitDialogDraft(false)}
         open={showExitDialogDraft}
         onOpenChange={setShowExitDialogDraft}
         title="Save to Draft?"

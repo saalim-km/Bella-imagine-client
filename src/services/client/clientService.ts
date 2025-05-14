@@ -67,9 +67,11 @@ export const getAllClientCategories = async (): Promise<{
 };
 
 export const getPhotographerDetails = async (
-  id: string
+  id: string,
+  servicePage : number,
+  samplePage : number
 ): Promise<IVendorsResponse> => {
-  const response = await clientAxiosInstance.get(`/client/photographer/${id}`);
+  const response = await clientAxiosInstance.get(`/client/photographer/${id}`,{params :{servicePage,samplePage}});
   return response.data;
 };
 

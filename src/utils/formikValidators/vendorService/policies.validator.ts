@@ -1,6 +1,5 @@
 
 import { Yup } from './yup-extension.validator';
-import { isEmptyInput } from './helper.validator';
 
 export const policiesSchema = Yup.object({
   paymentRequired: Yup.boolean(),

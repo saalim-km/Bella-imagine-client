@@ -1,4 +1,6 @@
 import { Category } from "@/services/categories/categoryService";
+import { IVendorReponse } from "./User";
+import { IVendor } from "@/services/vendor/vendorService";
 
 // -----------common type-------------|
 export interface PaginatedResponse<T> {
@@ -12,7 +14,7 @@ export interface TimeSlot {
   startTime: string;
   endTime: string;
   capacity: number;
-  isBooked: boolean;
+  isBooked?: boolean;
 }
 
 export interface DateSlot {
@@ -38,26 +40,9 @@ export interface BookingState {
 }
 
 export interface Location {
-  options: {
-    studio: boolean;
-    onLocation: boolean;
-  };
-  travelFee: number;
-  city: string;
-  state: string;
-  country: string;
-}
-
-export interface CustomField {
-  name: string;
-  type: string;
-  required: boolean;
-  options: string[];
-}
-
-export interface DepositRequirement {
-  amount: number;
-  isPercentage: boolean;
+  travelFee : number;
+  lat : number;
+  lng : number;
 }
 
 export interface IService {
@@ -181,4 +166,25 @@ export interface IWorkSampleFilter {
   createdAt?: 1 | -1;
   page ?: number;
   limit ?: number
+}
+
+
+
+// vendor details type
+
+export type TsamplePagination = {
+  page: number;
+  limit: number;
+  total: number;
+}
+
+export type TservicePagination = {
+  page: number;
+  limit: number;
+  total: number;
+}
+export interface IVendorDetails extends IVendor {
+  services : IServiceResponse[];
+  samplePagination : TsamplePagination;
+  servicePagination : TservicePagination;
 }

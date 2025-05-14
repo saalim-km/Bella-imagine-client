@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { AlertCircle, Plus, Trash } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 
 interface PolicySectionProps {
   label: string;

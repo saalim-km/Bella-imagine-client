@@ -74,18 +74,10 @@ const ServiceDetails: React.FC<ServiceDetailsProps> = ({
         <div>
           <h3 className="font-medium mb-2">Location</h3>
           <div className="text-sm">
-            {service.location.options.onLocation && <p>• Available in studio</p>}
-            {service.location.options.studio && (
+            {service.location.travelFee && (
               <p>
                 • Available on location 
                 {service.location.travelFee ? ` (Travel fee: ₹${service.location.travelFee.toFixed(2)})` : ""}
-              </p>
-            )}
-            {service.location.city && (
-              <p className="mt-1">
-                {service.location.city}
-                {service.location.state ? `, ${service.location.state}` : ""}
-                {service.location.country ? `, ${service.location.country}` : ""}
               </p>
             )}
           </div>

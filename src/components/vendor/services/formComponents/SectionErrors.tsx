@@ -32,11 +32,11 @@ const getErrorsForSection = (errors: FormikErrors<any>, section: string): string
   // Map fields to their respective sections
   const sectionFieldMap: Record<string, string[]> = {
     basic: ['serviceTitle', 'category', 'yearsOfExperience', 'styleSpecialty', 'tags', 'serviceDescription'],
-    session: ['sessionDurations', 'features', 'depositRequirement'],
+    session: ['sessionDurations', 'features'],
     location: ['location', 'equipment'],
-    availability: ['availableDates', 'recurringAvailability', 'bufferTime', 'maxBookingsPerDay', 'blackoutDates'],
-    portfolio: ['portfolioImages', 'customFields'],
-    policies: ['paymentRequired', 'cancellationPolicies', 'termsAndConditions']
+    availability: ['availableDates'],
+    portfolio: ['portfolioImages'],
+    policies: ['cancellationPolicies', 'termsAndConditions']
   };
   
   // Get field names for the current section

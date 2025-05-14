@@ -50,10 +50,10 @@ export const useAllClientCategories = ()=> {
   })
 }
 
-export const useGetPhotographerDetails = (id : string)=> {
+export const useGetPhotographerDetails = (id : string,servicepage : number,samplePage : number)=> {
   return useQuery({
-    queryKey : ["photographer",id],
-    queryFn : ()=> getPhotographerDetails(id)
+    queryKey : ["photographer",id,servicepage,samplePage],
+    queryFn : ()=> getPhotographerDetails(id,servicepage,samplePage)
   })
 }
 

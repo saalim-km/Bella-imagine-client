@@ -30,7 +30,7 @@ const VendorServicesPage = ({ handleIsCreateService , handleIsEditingService}: I
     category: appliedFilters.category,
     location: appliedFilters.location,
     page: currentPage,
-    limit: 2,
+    limit: 3,
   };
 
   const { data, isLoading, error } = useVendorServices(queryFilters);
@@ -54,7 +54,7 @@ const VendorServicesPage = ({ handleIsCreateService , handleIsEditingService}: I
   };
 
   const services: IServiceResponse[] = data?.data || [];
-  const totalPages = Math.max(1, Math.ceil((data?.total || 0) / 2));
+  const totalPages = Math.max(1, Math.ceil((data?.total || 0) / 3));
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
@@ -142,7 +142,6 @@ const VendorServicesPage = ({ handleIsCreateService , handleIsEditingService}: I
                   <div className="flex justify-between items-center">
                     <div>
                       <p className="font-semibold">Category: {service.category?.title.toString()}</p>
-                      <p>Location: {service.location.city || "N/A"}, {service.location.state || "N/A"}</p>
                     </div>
                     <div className="text-right">
                       <p className="font-bold ">From ₹{service.sessionDurations[0]?.price || "N/A"}</p>
