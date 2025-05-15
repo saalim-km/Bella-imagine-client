@@ -1,8 +1,8 @@
-import Header from '@/components/headers/Header'
+import Header from '@/components/common/Header'
 import { Spinner } from '@/components/ui/spinner'
 import BookingPage from '@/components/User/booking/BookingComp'
 import { useGetServiceQuery } from '@/hooks/client/useClient'
-import { IServiceResponse } from '@/types/vendor'
+import { IServiceResponse } from '@/types/interfaces/vendor'
 import { useParams } from 'react-router-dom'
 
 const BookingServicePage = () => {

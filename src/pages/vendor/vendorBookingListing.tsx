@@ -4,7 +4,7 @@ import {
 import VendorBookingList from "@/components/User/VendorBookingList";
   import { useBookingQuery } from "@/hooks/booking/useBooking";
   import { getVendorBookings } from "@/services/booking/bookingService";
-  import { TRole } from "@/types/User";
+  import { TRole } from "@/types/interfaces/User";
   import { motion } from "framer-motion";
   import { useEffect, useState } from "react";
   

@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Search, ChevronDown, ChevronUp } from "lucide-react";
 import Pagination from "../common/Pagination";
 import moment from "moment";
-import { formatPrice } from "@/utils/format/format-price.utils";
+import { formatPrice } from "@/utils/formatters/format-price.utils";
 import { Button } from "../ui/button";
 import {
   Select,

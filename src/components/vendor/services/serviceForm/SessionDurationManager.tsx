@@ -4,7 +4,7 @@ import { AlertCircle, Plus, Trash } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { SessionDuration } from "@/types/vendor";
+import { SessionDuration } from "@/types/interfaces/vendor";
 
 interface SessionDurationManagerProps {
   durations: SessionDuration[];

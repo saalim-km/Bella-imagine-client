@@ -10,8 +10,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { buildQueryParams } from "@/utils/queryGenerator";
-import { handleError } from "@/utils/Error/errorHandler";
+import { buildQueryParams } from "@/utils/helper/query-generator";
+import { handleError } from "@/utils/Error/error-handler.utils";
 import { DataTable, type ColumnDef } from "@/components/common/Table";
 
 const FILTER_OPTIONS = [

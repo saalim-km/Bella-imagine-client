@@ -1,6 +1,6 @@
 
 import { useEffect, useRef } from "react";
-import { Message, User } from "@/types/Chat";
+import { Message, User } from "@/types/interfaces/Chat";
 import { MessageItem } from "./MessageItem";
 
 interface MessageListProps {

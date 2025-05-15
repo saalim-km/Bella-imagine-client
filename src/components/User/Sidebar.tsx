@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useThemeConstants } from "@/utils/theme/themeUtills";
+import { useThemeConstants } from "@/utils/theme/theme.utils";
 import { User, Calendar, CreditCard, Image, Camera, Upload, Ticket, ImageDown, CameraOffIcon, CameraIcon, LucideCamera, MessageCircle } from "lucide-react";
 
 const clientNavItems = [

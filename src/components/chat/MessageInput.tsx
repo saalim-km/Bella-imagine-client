@@ -11,9 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { MessageType } from "@/types/Chat";
+import { MessageType } from "@/types/interfaces/Chat";
 import { useUploadChatMedia } from "@/hooks/chat/useChat";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
 
 interface MessageInputProps {
   conversationId: string;

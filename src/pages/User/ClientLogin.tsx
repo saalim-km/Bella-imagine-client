@@ -1,10 +1,10 @@
 import Footer from "@/components/common/Footer";
-import Header from "@/components/headers/Header";
+import Header from "@/components/common/Header";
 import Login from "@/components/auth/Login";
 import { useLoginMutation } from "@/hooks/auth/useLogin";
-import { ILogin } from "@/types/User";
+import { ILogin } from "@/types/interfaces/User";
 import { toast } from "sonner";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
 import { useDispatch } from "react-redux";
 import { clientLogin } from "@/store/slices/clientSlice";
 import { useState } from "react";

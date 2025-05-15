@@ -1,6 +1,6 @@
 // src/socket/socket.ts
 import { io, Socket } from "socket.io-client";
-import { TRole } from "@/types/User";
+import { TRole } from "@/types/interfaces/User";
 
 const SOCKET_URL = "http://localhost:3002";
 const SOCKET_PATH = "/path/_chat";

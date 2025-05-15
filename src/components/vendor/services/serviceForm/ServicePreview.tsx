@@ -8,7 +8,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
-import { IService } from "@/types/vendor";
+import { IService } from "@/types/interfaces/vendor";
 
 interface ServicePreviewProps {
   serviceData: IService;

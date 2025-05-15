@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { DataTable, type ColumnDef } from "@/components/common/Table";
 import { toast } from "sonner";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
 import { Input } from "@/components/ui/input";
 
 export function CategoryManagement() {
@@ -52,6 +52,7 @@ export function CategoryManagement() {
     },
     { page: currentPage, limit: 4 },
   );
+  
   function handleEdit(category: CategoryType) {
     setSelectedCategory(category);
     setIsEditing(true);
@@ -152,7 +153,7 @@ export function CategoryManagement() {
     },
   ];
 
-  if (isLoading) return <Spinner />;
+  if (isLoading) return <Spinner/>;
 
   return (
     <div className="p-4">

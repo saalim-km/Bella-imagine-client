@@ -34,9 +34,9 @@ import {
 } from '@/components/ui/card';
 import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from '@/utils/upload-cloudinary/cloudinary';
 import { useUpdateWorkSample, useVendorServices, useVendorWorkSampleUploadMutataion } from '@/hooks/vendor/useVendor';
-import { IServiceResponse, IWorkSampleRequest, IWorkSampleResponse } from '@/types/vendor';
+import { IServiceResponse, IWorkSampleRequest, IWorkSampleResponse } from '@/types/interfaces/vendor';
 import { Spinner } from '@/components/ui/spinner';
-import { handleError } from '@/utils/Error/errorHandler';
+import { handleError } from '@/utils/Error/error-handler.utils';
 
 export interface WorkSampleFormData {
   _id?: string;

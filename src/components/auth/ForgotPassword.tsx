@@ -9,11 +9,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { OTPVerificationModal } from "../modals/ForgotPassOtpModal"
-import { useThemeConstants } from "@/utils/theme/themeUtills"
-import { TRole } from "@/types/User"
+import { useThemeConstants } from "@/utils/theme/theme.utils"
+import { TRole } from "@/types/interfaces/User"
 import { useSendOtp } from "@/hooks/auth/useSendOtp"
 import { toast } from "sonner"
-import { handleError } from "@/utils/Error/errorHandler"
+import { handleError } from "@/utils/Error/error-handler.utils"
 import { useNavigate } from "react-router-dom"
 
 

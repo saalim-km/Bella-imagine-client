@@ -9,13 +9,13 @@ import { DataTable, type ColumnDef } from "@/components/common/Table";
 import { ReusableDropdown } from "@/components/common/ReusableDropdown";
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
 import { Link } from "react-router-dom";
-import { Community } from "@/types/Community";
+import { Community } from "@/types/interfaces/Community";
 import {
   useDeleteCommunity,
   useGetlAllCommunity,
 } from "@/hooks/community-contest/useCommunity";
 import { toast } from "sonner";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
 
 // Define the Community interface
 

@@ -2,7 +2,7 @@ import { AdminLayout } from '@/components/admin/layout/AdminLayout'
 import AdminTransactionsComponent from '@/components/admin/payment/AdminTransactionComp'
 import { Spinner } from '@/components/ui/spinner';
 import { useAdminTransactionsQuery } from '@/hooks/service/useTranactions';
-import { PopulatedPayments } from '@/types/Payment';
+import { PopulatedPayments } from '@/types/interfaces/Payment';
 import { useEffect, useState } from 'react';
 import AdminWallet from './AdminWalltetPage';
 

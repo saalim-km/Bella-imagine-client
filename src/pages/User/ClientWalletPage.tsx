@@ -1,7 +1,7 @@
 import WalletComponent from "@/components/common/WalletComponent";
 import { Spinner } from "@/components/ui/spinner";
 import { useClientWallet } from "@/hooks/wallet/useWallet";
-import { PopulatedWallet } from "@/types/Wallet";
+import { PopulatedWallet } from "@/types/interfaces/Wallet";
 import { useEffect, useState } from "react";
 
 

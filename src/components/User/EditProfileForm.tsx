@@ -3,18 +3,21 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Formik, Form, Field, ErrorMessage } from "formik"
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { toast } from "sonner"
 import { clientProfileSchema, vendorProfileSchema } from "@/utils/formikValidators/user/profile.validator"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Command, CommandInput, CommandList, CommandItem, CommandEmpty } from "@/components/ui/command"
-import { Globe, File, FileText, FileImage, X, Upload, CheckCircle2 } from "lucide-react"
-import type { IClient } from "@/services/client/clientService"
+import { Globe, File, FileText, FileImage, X, Upload } from "lucide-react"
 import type { IVendor } from "@/services/vendor/vendorService"
-import { useThemeConstants } from "@/utils/theme/themeUtills"
 import { motion, AnimatePresence } from "framer-motion"
-import { handleError } from "@/utils/Error/errorHandler"
+import { useThemeConstants } from "@/utils/theme/theme.utils"
+import { handleError } from "@/utils/Error/error-handler.utils"
+import { GoogleMap, Marker, LoadScript, Autocomplete } from "@react-google-maps/api"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Loader2 } from "lucide-react"
+import { DEFAULT_CENTER, libraries } from "@/utils/config/map.config"
 
 export const popularLanguages = [
   "English",
@@ -34,19 +37,20 @@ export const popularLanguages = [
   "Sanskrit",
 ]
 
-interface DocumentPreview {
+export interface DocumentPreview {
   file: File;
   preview: string;
   name: string;
   type: string;
 }
 
-interface EditProfileFormProps {
+export interface EditProfileFormProps {
   role: "client" | "vendor"
   setIsEditing: (isEditing: boolean) => void
-  data?: IClient | IVendor
+  data?: IVendor
   handleUpdateProfile?: (values: any) => void
 }
+
 
 export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpdateProfile }: EditProfileFormProps) {
   const [isUploading, setIsUploading] = useState(false)
@@ -56,17 +60,26 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
   const [documentPreview, setDocumentPreview] = useState<DocumentPreview | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
   const {bgColor} = useThemeConstants()
+  // Location picker states
+  const [marker, setMarker] = useState(data?.location || DEFAULT_CENTER)
+  const [map, setMap] = useState<google.maps.Map | null>(null)
+  const [isMapLoading, setIsMapLoading] = useState(true)
+  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const isVendor = role === "vendor"
 
   const initialValues = {
     name: data?.name || "",
     phoneNumber: data?.phoneNumber || "",
-    location: data?.location || "",
-    profileImage: data?.profileImage || "",
+    location: {
+      address: data?.location?.address || "",
+      lat: data?.location?.lat || 0,
+      lng: data?.location?.lng || 0
+    },
+    profileImage: data?.profileImage || "", 
     imageFile: null, 
     verificationDocument: null,
-    verificationDocumentUrl: (data as IVendor)?.verificationDocuments?.[0] || "",
     ...(isVendor
       ? {
           profileDescription: (data as IVendor)?.description || "",
@@ -75,6 +88,25 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
         }
       : { email: data?.email || "" }),
   }
+
+  // Try to get user's current location
+  useEffect(() => {
+    if (navigator.geolocation && initialValues.location.lat === 0) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          }
+          setMarker(userLocation)
+          if (map) map.panTo(userLocation)
+        },
+        (error) => {
+          console.error("Error getting location:", error)
+        },
+      )
+    }
+  }, [map])
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     try {
@@ -156,10 +188,44 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
     setFieldValue("verificationDocument", null);
   };
 
-  const removeExistingDocument = (setFieldValue: any) => {
-    setFieldValue("verificationDocumentUrl", "");
-    toast.success("Document removed");
-  };
+  const handleMapClick = (e: google.maps.MapMouseEvent , setFieldValue : Function) => {
+    if (e.latLng) {
+      const lat = e.latLng.lat()
+      const lng = e.latLng.lng()
+      const newLocation = { lat, lng }
+      setMarker(newLocation)
+      setFieldValue("location.lat", lat)
+      setFieldValue("location.lng", lng)
+      // Reverse geocode to get address
+      const geocoder = new google.maps.Geocoder()
+      geocoder.geocode({ location: newLocation }, (results, status) => {
+        if (status === "OK" && results?.[0]) {
+          setFieldValue("location.address", results[0].formatted_address)
+        }
+      })
+    }
+  }
+
+  const handlePlaceChanged = (setFieldValue : Function) => {
+    if (autocompleteRef.current) {
+      const place = autocompleteRef.current.getPlace()
+      if (place && place.geometry && place.geometry.location) {
+        const lat = place.geometry.location.lat()
+        const lng = place.geometry.location.lng()
+        const newLocation = { lat, lng }
+        setMarker(newLocation)
+        setFieldValue("location.lat", lat)
+        setFieldValue("location.lng", lng)
+        setFieldValue("location.address", place.formatted_address || "")
+        if (map) map.panTo(newLocation)
+      }
+    }
+  }
+
+  const handleMapLoad = (mapInstance: google.maps.Map) => {
+    setMap(mapInstance)
+    setIsMapLoading(false)
+  }
 
   const CustomInput = ({ field, form, ...props }: any) => <Input {...field} {...props} />
 
@@ -246,9 +312,70 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
           </div>
 
           <div>
-            <Label htmlFor="location" className="text-base font-medium">Location (city or state)</Label>
-            <Field name="location" as={CustomInput} id="location" className="mt-1" />
-            <ErrorMessage name="location" component={TextError} />
+            <Label className="text-base font-medium">Location</Label>
+            <Card className="mt-1">
+              <CardHeader>
+                <CardTitle className="text-lg">Select Location</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <LoadScript
+                  googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}
+                  libraries={libraries}
+                  loadingElement={
+                    <div className="flex justify-center items-center h-[400px]">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                      <span className="ml-2">Loading map...</span>
+                    </div>
+                  }
+                >
+                  <div className="space-y-4">
+                    <Autocomplete
+                      onLoad={(autocomplete) => {
+                        autocompleteRef.current = autocomplete
+                      }}
+                      onPlaceChanged={()=> handlePlaceChanged(setFieldValue)}
+                    >
+                      <Input
+                        ref={inputRef}
+                        type="text"
+                        placeholder="Search for a location"
+                        className="w-full"
+                        aria-label="Search for a location"
+                        value={values.location.address}
+                        onChange={(e) => setFieldValue("location.address", e.target.value)}
+                      />
+                    </Autocomplete>
+
+                    <div className="relative w-full h-[300px] rounded-md overflow-hidden">
+                      {isMapLoading && (
+                        <div className="absolute inset-0 flex justify-center items-center bg-muted/50">
+                          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        </div>
+                      )}
+                      <GoogleMap
+                        center={marker}
+                        zoom={14}
+                        mapContainerStyle={{ width: "100%", height: "100%" }}
+                        onClick={(e)=> handleMapClick(e,setFieldValue)}
+                        onLoad={handleMapLoad}
+                        options={{
+                          streetViewControl: false,
+                          mapTypeControl: false,
+                          fullscreenControl: true,
+                        }}
+                      >
+                        {marker && <Marker position={marker} />}
+                      </GoogleMap>
+                    </div>
+
+                    <p className="text-sm text-muted-foreground">
+                      Click on the map to select your exact location or search for an address above.
+                    </p>
+                  </div>
+                </LoadScript>
+              </CardContent>
+            </Card>
+            <ErrorMessage name="location.address" component={TextError} />
           </div>
 
           {isVendor && (
@@ -456,7 +583,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
               Cancel
             </Button>
             <Button 
-            variant={"outline"}
+              variant={"outline"}
               type="submit" 
               disabled={isSubmitting || isUploading}
               className="px-5"

@@ -1,8 +1,8 @@
 import { adminAxiosInstance } from "@/api/admin.axios";
 import { clientAxiosInstance } from "@/api/client.axios";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
-import { Community } from "@/types/Community"
-import { PaginatedResponse } from "@/types/vendor";
+import { Community } from "@/types/interfaces/Community"
+import { PaginatedResponse } from "@/types/interfaces/vendor";
 
 export const createCommunityService = async(dto : Partial<Community>) : Promise<ApiResponse>=> {
     const response = await adminAxiosInstance.post('/community',dto,{

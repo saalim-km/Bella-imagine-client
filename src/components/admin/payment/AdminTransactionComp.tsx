@@ -22,9 +22,9 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { ArrowDownIcon, ArrowUpIcon, MoreHorizontal } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PaymentStatus, Purpose } from "@/types/Wallet";
+import { PaymentStatus, Purpose } from "@/types/interfaces/Wallet";
 import moment from "moment";
-import { PopulatedPayments } from "@/types/Payment";
+import { PopulatedPayments } from "@/types/interfaces/Payment";
 
 // Helper function to format currency
 const formatCurrency = (amount: number, currency = "USD") => {

@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useThemeConstants } from "@/utils/theme/themeUtills";
+import { useThemeConstants } from "@/utils/theme/theme.utils";
 import { Button } from "../ui/button";
 import { IVendor } from "@/services/vendor/vendorService";
 import { IClient } from "@/services/client/clientService";

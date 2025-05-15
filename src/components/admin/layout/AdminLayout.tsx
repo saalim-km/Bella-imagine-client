@@ -22,7 +22,7 @@ import { logoutAdmin } from "@/services/auth/authService"
 import { toast } from "sonner"
 import { adminLogout } from "@/store/slices/adminSlice"
 import ThemeToggle from "@/components/common/ThemeToggle"
-import { handleError } from "@/utils/Error/errorHandler"
+import { handleError } from "@/utils/Error/error-handler.utils"
 
 interface AdminLayoutProps {
   children: ReactNode

@@ -4,7 +4,7 @@ import LocationHeader from '@/components/User/LocationHeader';
 import PhotographerCard from '@/components/User/PhotographerCard';
 import Footer from '@/components/common/Footer';
 import Pagination from '@/components/common/Pagination';
-import Header from '@/components/headers/Header';
+import Header from '@/components/common/Header';
 import LocationModal from '@/components/modals/LocationModal';
 import { Spinner } from '@/components/ui/spinner';
 import { useAllClientCategories, useAllVendorsListQuery } from '@/hooks/client/useClient';

@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 import Logo from "../common/Logo";
 import { useNavigate } from "react-router";
 import { useTheme } from "@/context/ThemeContext";
-import { useThemeConstants } from "@/utils/theme/themeUtills";
+import { useThemeConstants } from "@/utils/theme/theme.utils";
 
 interface ModalProps {
   isOpen: boolean;

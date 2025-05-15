@@ -3,7 +3,7 @@ import ClientBookingList, {
 } from "@/components/User/ClinetBookingList";
 import { useBookingQuery } from "@/hooks/booking/useBooking";
 import { getClientBookings } from "@/services/booking/bookingService";
-import { TRole } from "@/types/User";
+import { TRole } from "@/types/interfaces/User";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 

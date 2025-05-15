@@ -7,8 +7,7 @@ import { Sidebar } from "@/components/User/Sidebar";
 import { ProfileInfo } from "@/components/User/ProfileInfo";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import Header from "@/components/headers/Header";
-import Spinner from "@/components/common/LogoSpinner";
+import Header from "@/components/common/Header";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import {
@@ -19,26 +18,27 @@ import {
   useUpdateVendorMutation,
   useVendorDetailsQuery,
 } from "@/hooks/vendor/useVendor";
-import { IProfileUpdate } from "@/types/User";
+import { IProfileUpdate } from "@/types/interfaces/User";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { VendorCategoryModal } from "@/components/modals/VendorCategoryModal";
 import { useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
 import { ServiceForm } from "@/components/vendor/services/serviceForm/Service";
 import VendorServices from "@/components/vendor/VendorServices";
-import { IServiceResponse, IWorkSampleResponse } from "@/types/vendor";
+import { IServiceResponse, IWorkSampleResponse } from "@/types/interfaces/vendor";
 import VendorWorkSample from "@/components/vendor/VendorWorkSample";
 import WorkSampleUpload, {
   WorkSampleFormData,
 } from "@/components/vendor/work-sample/WorkSampleUpload";
 import { ClientBookingListing } from "./ClientBookingListing";
-import VendorBookingList from "@/components/User/VendorBookingList";
 import { VendorBookingListing } from "../vendor/vendorBookingListing";
 import ClientWallet from "./ClientWalletPage";
 import VendorWallet from "../vendor/VendorWallet";
 import { useDispatch } from "react-redux";
 import { updateVendorSlice } from "@/store/slices/vendorSlice";
+import { Spinner } from "@/components/ui/spinner";
+import { IVendor } from "@/services/vendor/vendorService";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -270,7 +270,7 @@ export default function UserProfile() {
                     <EditProfileForm
                       setIsEditing={setIsEditing}
                       role={userData.role}
-                      data={userData}
+                      data={userData as IVendor}
                       handleUpdateProfile={handleUpdateProfile}
                     />
                   ) : (

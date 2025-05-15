@@ -7,7 +7,7 @@ import {
   updateClientDetails,
 } from "@/services/client/clientService";
 import { getAllClientNotification } from "@/services/notification/notificationService";
-import { IVendorsFilter } from "@/types/User";
+import { IVendorsFilter } from "@/types/interfaces/User";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 

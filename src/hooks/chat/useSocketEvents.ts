@@ -1,7 +1,7 @@
 import { useSocket } from "@/context/SocketContext";
 import { setConversations, setMessages, setUsers, updateContactStatus, updateLastSeen } from "@/store/slices/chatSlice";
-import { Conversation, Message, User } from "@/types/Chat";
-import { TRole } from "@/types/User";
+import { Conversation, Message, User } from "@/types/interfaces/Chat";
+import { TRole } from "@/types/interfaces/User";
 import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";

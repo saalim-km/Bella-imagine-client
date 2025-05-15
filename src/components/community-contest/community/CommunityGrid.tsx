@@ -1,5 +1,5 @@
 
-import { Community } from "@/types/Community";
+import { Community } from "@/types/interfaces/Community";
 import { CommunityCard } from "./CommunityCard";
 
 interface CommunityGridProps {

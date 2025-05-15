@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Search, Filter } from "lucide-react";
 import Pagination from "../common/Pagination";
 import { useAllVendorCategoryQuery, useVendorServices } from "@/hooks/vendor/useVendor";
-import { IService, IServiceResponse } from "@/types/vendor";
+import { IService, IServiceResponse } from "@/types/interfaces/vendor";
 import { Spinner } from "../ui/spinner";
 import { Badge } from "../ui/badge";
 

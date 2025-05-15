@@ -1,6 +1,6 @@
 
 import { useState, useRef } from "react";
-import { Message, User } from "@/types/Chat";
+import { Message, User } from "@/types/interfaces/Chat";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MoreHorizontal, Trash, Copy } from "lucide-react";
 import { 

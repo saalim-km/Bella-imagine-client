@@ -41,8 +41,8 @@ import {
   useCreateServiceMutation,
   useUpdateVendorServiceMutation,
 } from "@/hooks/vendor/useVendor";
-import { IService, IServiceResponse } from "@/types/vendor";
-import { handleError } from "@/utils/Error/errorHandler";
+import { IService, IServiceResponse } from "@/types/interfaces/vendor";
+import { handleError } from "@/utils/Error/error-handler.utils";
 import ToolTip from "@/components/common/ToolTip";
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
 import { IVendor } from "@/services/vendor/vendorService";

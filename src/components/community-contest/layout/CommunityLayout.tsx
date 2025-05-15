@@ -20,6 +20,6 @@ export function PageLayout({ children, containerClassName = "py-8 md:py-10" }: P
   );
 }
 
-import { cn } from "@/lib/utils";import Header from "@/components/headers/Header";
+import { cn } from "@/lib/utils";import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 

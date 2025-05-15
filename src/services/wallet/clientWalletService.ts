@@ -1,5 +1,5 @@
 import { clientAxiosInstance } from "@/api/client.axios";
-import { PopulatedWallet } from "@/types/Wallet";
+import { PopulatedWallet } from "@/types/interfaces/Wallet";
 
 export interface WalletDetailsResponse {
   walletData: PopulatedWallet;

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import AdminService from "@/services/admin/adminService"
 import { ENDPOINTS } from "@/api/endpoints"
-import { Notification, PaginatedResponse, PaginationParams, ApiResponse } from "@/types/Admin"
+import { Notification, PaginatedResponse, PaginationParams, ApiResponse } from "@/types/interfaces/Admin"
 
 // Query keys
 export const notificationKeys = {

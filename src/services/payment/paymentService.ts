@@ -1,5 +1,5 @@
 import { clientAxiosInstance } from "@/api/client.axios";
-import { Booking } from "@/types/User";
+import { Booking } from "@/types/interfaces/User";
 
 export type Purpose = "vendor-booking" | "role-upgrade" | "ticket-purchase";
 

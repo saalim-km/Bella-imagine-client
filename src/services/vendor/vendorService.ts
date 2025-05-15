@@ -1,7 +1,7 @@
 import { vendorAxiosInstance } from "@/api/vendor.axios";
 import { IClient } from "../client/clientService";
 import { ENDPOINTS } from "@/api/endpoints";
-import { IProfileUpdate, IVendorReponse } from "@/types/User";
+import { IProfileUpdate, IVendorReponse } from "@/types/interfaces/User";
 import {
   IService,
   IServiceFilter,
@@ -10,7 +10,7 @@ import {
   IWorkSampleFilter,
   PaginatedResponse,
   IWorkSampleResponse,
-} from "@/types/vendor";
+} from "@/types/interfaces/vendor";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
 import { data } from "react-router-dom";
 import { Category } from "../categories/categoryService";

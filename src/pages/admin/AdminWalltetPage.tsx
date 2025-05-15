@@ -1,7 +1,7 @@
 import { Spinner } from "@/components/ui/spinner";
 import WalletComponent from "@/components/common/WalletComponent";
 import { useAdminWallet } from "@/hooks/wallet/useWallet";
-import { PopulatedWallet, WalletTransactions } from "@/types/Wallet";
+import { PopulatedWallet, WalletTransactions } from "@/types/interfaces/Wallet";
 import { useEffect, useState } from "react";
 
 export default function AdminWallet() {

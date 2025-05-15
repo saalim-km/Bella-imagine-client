@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { IVendorsResponse } from "@/types/User";
-import { useThemeConstants } from "@/utils/theme/themeUtills";
+import { IVendorsResponse } from "@/types/interfaces/User";
+import { useThemeConstants } from "@/utils/theme/theme.utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Search, RotateCcw } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";

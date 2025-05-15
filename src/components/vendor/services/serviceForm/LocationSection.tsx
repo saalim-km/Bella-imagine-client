@@ -2,16 +2,18 @@ import React, { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Location } from "@/types/vendor";
+import { Location } from "@/types/interfaces/vendor";
 import { GoogleMap, Marker, LoadScript, Autocomplete } from "@react-google-maps/api";
 import { Loader2 } from "lucide-react";
+import { DEFAULT_CENTER, libraries } from "@/utils/config/map.config";
 
-const DEFAULT_CENTER = { lat: 9.9312, lng: 76.2673, travelFee: -1 };
+
 
 interface LocationSectionProps {
   location: Location;
   updateLocation: (location: Location) => void;
 }
+
 
 export const LocationSection: React.FC<LocationSectionProps> = ({
   location,
@@ -113,7 +115,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
 
         <LoadScript
           googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}
-          libraries={["places"]}
+          libraries={libraries}
           loadingElement={
             <div className="flex justify-center items-center h-[400px]">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />

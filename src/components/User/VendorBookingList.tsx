@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { BookingList } from "./ClinetBookingList";
 import moment from "moment";
-import { formatPrice } from "@/utils/format/format-price.utils";
+import { formatPrice } from "@/utils/formatters/format-price.utils";
 import { BookingDetailsModal } from "../modals/BookingDetailsModal";
 import { Button } from "../ui/button";
 import Pagination from "../common/Pagination";

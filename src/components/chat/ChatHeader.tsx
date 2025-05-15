@@ -1,5 +1,5 @@
 
-import { User } from "@/types/Chat";
+import { User } from "@/types/interfaces/Chat";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Phone, Video, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";

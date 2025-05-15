@@ -18,7 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Community } from "@/types/Community";
+import { Community } from "@/types/interfaces/Community";
 
 
 interface CommunityCardProps {

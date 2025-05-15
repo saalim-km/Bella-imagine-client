@@ -9,11 +9,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Filter } from "lucide-react";
-import { useThemeConstants } from "@/utils/theme/themeUtills";
+import { useThemeConstants } from "@/utils/theme/theme.utils";
 import { Category } from "@/services/categories/categoryService";
-import { IVendorsResponse } from "@/types/User";
-import { getLocationFromCordinates } from "@/utils/location/get-location.utils";
-import { handleError } from "@/utils/Error/errorHandler";
+import { IVendorsResponse } from "@/types/interfaces/User";
+import { getLocationFromCordinates } from "@/utils/helper/get-location.utils";
+import { handleError } from "@/utils/Error/error-handler.utils";
 import { popularLanguages } from "./EditProfileForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
 

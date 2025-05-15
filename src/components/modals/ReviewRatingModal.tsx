@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { useReviewMutation } from "@/hooks/review/useReview";
 import { createNewReview } from "@/services/review/reviewService";
 import { toast } from "sonner";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
 
 interface StarRatingProps {
   rating: number;

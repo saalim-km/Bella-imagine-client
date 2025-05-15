@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { ChatHeader } from "./ChatHeader";
-import { Message, Reaction } from "@/types/Chat";
+import { Message, Reaction } from "@/types/interfaces/Chat";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
@@ -21,7 +21,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useSocket } from "@/context/SocketContext";
-import { TRole } from "@/types/User";
+import { TRole } from "@/types/interfaces/User";
 import { useSocketEvents } from "@/hooks/chat/useSocketEvents";
 
 export function ChatInterface() {

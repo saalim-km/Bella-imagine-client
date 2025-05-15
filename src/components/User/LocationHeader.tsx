@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/context/ThemeContext";
-import { useThemeConstants } from "@/utils/theme/themeUtills";
+import { useThemeConstants } from "@/utils/theme/theme.utils";
 
 interface HeaderProps {
   onOpenModal: () => void;

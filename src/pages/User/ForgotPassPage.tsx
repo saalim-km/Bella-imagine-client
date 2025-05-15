@@ -1,7 +1,7 @@
 import { ForgotPassword } from '@/components/auth/ForgotPassword'
 import Footer from '@/components/common/Footer'
-import Header from '@/components/headers/Header'
-import { TRole } from '@/types/User'
+import Header from '@/components/common/Header'
+import { TRole } from '@/types/interfaces/User'
 import React from 'react'
 
 const ForgotPassPage = ({userType} : {userType : TRole}) => {

@@ -2,13 +2,10 @@ import { Link } from "react-router-dom";
 import {
   ArrowLeft,
   LayoutDashboard,
-  Settings,
-  Calendar,
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import Header from "../headers/Header";
 
 export const Admin404 = () => {
   return (

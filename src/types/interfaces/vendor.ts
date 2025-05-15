@@ -187,4 +187,5 @@ export interface IVendorDetails extends IVendor {
   services : IServiceResponse[];
   samplePagination : TsamplePagination;
   servicePagination : TservicePagination;
+  workSamples : IWorkSampleResponse[]
 }

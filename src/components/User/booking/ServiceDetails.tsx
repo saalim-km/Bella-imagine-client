@@ -3,7 +3,7 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { IServiceResponse, SessionDuration } from "@/types/vendor";
+import { IServiceResponse, SessionDuration } from "@/types/interfaces/vendor";
 
 interface ServiceDetailsProps {
   service: IServiceResponse;

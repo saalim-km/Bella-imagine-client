@@ -1,5 +1,5 @@
 
-import { Message } from "@/types/chat";
+import { Message } from "@/types/interfaces/Chat";
 
 export function formatTime(timestamp: string): string {
   const date = new Date(timestamp);

@@ -7,12 +7,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Search, Filter } from "lucide-react";
 import Pagination from "../common/Pagination";
 import { useAllVendorWorkSample, useDeleteWorkSample, useVendorServices } from "@/hooks/vendor/useVendor";
-import { IWorkSampleResponse } from "@/types/vendor";
+import { IWorkSampleResponse } from "@/types/interfaces/vendor";
 import { Spinner } from "../ui/spinner";
 import { Badge } from "../ui/badge";
 import { ReusableAlertDialog } from "../common/AlertDialogue";
 import { toast } from "sonner";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
 
 interface IVendorWorkSamplePageProps {
   handleIsCreateWorkSample(): void;

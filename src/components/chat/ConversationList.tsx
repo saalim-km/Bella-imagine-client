@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Conversation, User } from "@/types/Chat";
+import { Conversation, User } from "@/types/interfaces/Chat";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Search, ArrowLeft } from "lucide-react";

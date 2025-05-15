@@ -32,7 +32,7 @@ export interface ICategoryRequest {
   _id: string;
   vendorId: Partial<IVendor>;
   categoryId: Partial<Category>;
-  status: "pending" | "accepted" | "rejected";
+  status: "pending" | "approved" | "rejected";
   createdAt: string;
   updatedAt: string;
   __v: number;

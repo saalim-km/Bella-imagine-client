@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState } from "react"
-import type { TimeSlot, BookingState, SessionDuration, IServiceResponse } from "@/types/vendor"
+import type { TimeSlot, BookingState, SessionDuration, IServiceResponse } from "@/types/interfaces/vendor"
 import { toast } from "sonner"
 import ServiceDetails from "./ServiceDetails"
 import DateSelector from "./DateSelector"

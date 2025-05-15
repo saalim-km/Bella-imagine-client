@@ -1,10 +1,10 @@
-import Header from "@/components/headers/Header";
+import Header from "@/components/common/Header";
 import Signup from "@/components/auth/SignUp";
 import AccountTypeModal from "@/components/modals/AccountTypeModal";
 import { useState } from "react";
 import Footer from "@/components/common/Footer";
 import { useRegisterMutation } from "@/hooks/auth/useRegister";
-import { IUser } from "@/types/User";
+import { IUser } from "@/types/interfaces/User";
 import { toast } from "sonner";
 import { useSocket } from "@/context/SocketContext";
 

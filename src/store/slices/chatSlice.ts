@@ -1,7 +1,7 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Conversation, Message, User } from '@/types/Chat';
-import { TRole } from '@/types/User';
+import { Conversation, Message, User } from '@/types/interfaces/Chat';
+import { TRole } from '@/types/interfaces/User';
 import { string } from 'zod';
 
 interface ChatState {

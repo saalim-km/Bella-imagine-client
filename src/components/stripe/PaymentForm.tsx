@@ -8,7 +8,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Booking } from "@/types/User";
+import { Booking } from "@/types/interfaces/User";
 import { useVendorBookingPaymentMutation } from "@/hooks/payment/usePayment";
 import { clientAxiosInstance } from "@/api/client.axios";
 

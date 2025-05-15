@@ -3,7 +3,7 @@ import { authAxiosInstance } from "@/api/auth.axios";
 import { clientAxiosInstance } from "@/api/client.axios";
 import { ENDPOINTS } from "@/api/endpoints";
 import { vendorAxiosInstance } from "@/api/vendor.axios";
-import { ILogin, IUser, TRole } from "@/types/User";
+import { ILogin, IUser, TRole } from "@/types/interfaces/User";
 import { AxiosResponse } from "axios";
 // import { vendorAxiosInstance } from "@/api/vendor.axios";
 // import { UserDTO } from "@/types/User";

@@ -3,7 +3,7 @@ import React from "react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DateSlot } from "@/types/vendor";
+import { DateSlot } from "@/types/interfaces/vendor";
 
 interface DateSelectorProps {
   availableDates: DateSlot[];

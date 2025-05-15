@@ -12,7 +12,7 @@ import { CommunityInfo } from "@/components/community-contest/community/Communit
 import { useGetCommunityBySlugQueryClient, useJoinCommunity, useLeaveCommunity } from "@/hooks/community-contest/useCommunity";
 import { Spinner } from "@/components/ui/spinner";
 import { CommunityHeader } from "@/components/community-contest/community/CommunityHeader";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";

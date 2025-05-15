@@ -6,10 +6,15 @@ import {
   IProfileUpdateResponse,
   IVendorsFilter,
   IVendorsResponse,
-} from "@/types/User";
-import { IServiceResponse, PaginatedResponse } from "@/types/vendor";
+} from "@/types/interfaces/User";
+import { IServiceResponse, PaginatedResponse } from "@/types/interfaces/vendor";
 import { Category } from "../categories/categoryService";
-import { ApiResponse } from "@/hooks/vendor/useVendor";
+
+export type TLocation = {
+  lat: number;
+  lng: number;
+  address ?: string
+}
 
 export interface IClient {
   _id?: string;
@@ -18,7 +23,7 @@ export interface IClient {
   profileImage?: string;
   password?: string;
   phoneNumber?: number;
-  location?: string;
+  location?: TLocation;
   googleId?: string;
   role: "client" | "vendor";
   savedPhotographers?: string[];

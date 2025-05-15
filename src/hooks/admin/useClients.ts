@@ -1,6 +1,6 @@
 import AdminService from "@/services/admin/adminService";
 import { IClient } from "@/services/client/clientService";
-import { PaginationParams,  } from "@/types/Admin";
+import { PaginationParams,  } from "@/types/interfaces/Admin";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 

@@ -1,5 +1,5 @@
 import axios from "axios"
-import { handleError } from "../Error/errorHandler";
+import { handleError } from "../Error/error-handler.utils";
 
 export async function getLocationFromCordinates(latitude : number, longitude : number) {
     const url = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`

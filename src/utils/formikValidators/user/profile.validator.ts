@@ -37,14 +37,11 @@ export const clientProfileSchema = Yup.object().shape({
     /^(\+\d{1,3}[- ]?)?\d{10}$/,
     "Phone number must be 10 digits"
   ),
-  location: Yup.string()
-  .test(
-    "isValidLocation",
-    "Location must be a valid location in India",
-    (value) => {
-      return !value || validLocations.has(value);
-    }
-  ),
+  location: Yup.object().shape({
+    address: Yup.string().required("Location address is required"),
+    lat: Yup.number().required("Latitude is required").min(-90).max(90),
+    lng: Yup.number().required("Longitude is required").min(-180).max(180),
+  }),
   profileImage: Yup.string(),
   imageFile: Yup.mixed()
     .nullable()
@@ -66,14 +63,11 @@ export const vendorProfileSchema = Yup.object().shape({
     /^(\+\d{1,3}[- ]?)?\d{10}$/,
     "Phone number must be 10 digits"
   ),
-  location: Yup.string()
-    .test(
-      "isValidLocation",
-      "Location must be a valid location in India",
-      (value) => {
-        return !value || validLocations.has(value);
-      }
-    ),
+location: Yup.object().shape({
+    address: Yup.string().required("Location address is required"),
+    lat: Yup.number().required("Latitude is required").min(-90).max(90),
+    lng: Yup.number().required("Longitude is required").min(-180).max(180),
+  }),
   profileDescription: Yup.string(),
   profileImage: Yup.string(),
   portfolioWebsite: Yup.string().url("Invalid URL"),

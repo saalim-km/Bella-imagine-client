@@ -1,6 +1,6 @@
 import AdminService from "@/services/admin/adminService";
 import { getAllCategoryJoinRequests, updateCategoryJoinRequest, updateCategoryService, updateCategoryStatus } from "@/services/categories/categoryService";
-import { PaginationParams } from "@/types/Admin";
+import { PaginationParams } from "@/types/interfaces/Admin";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const categoryKeys = {

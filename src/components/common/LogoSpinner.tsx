@@ -1,6 +1,6 @@
 "use client"
 
-import { useThemeConstants } from "@/utils/theme/themeUtills"
+import { useThemeConstants } from "@/utils/theme/theme.utils"
 import { motion } from "framer-motion"
 
 interface LoadingSpinnerProps {

@@ -2,17 +2,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { categoryKeys, CategoryType, updateCategory, useAllCategoryMutation, useUpdateCategoryMutation } from "@/hooks/admin/useAllCategory";
+import { categoryKeys, updateCategory, useAllCategoryMutation } from "@/hooks/admin/useAllCategory";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { AxiosResponse } from "@/hooks/auth/useOtpVerify";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
 import { useQueryClient } from "@tanstack/react-query";
+import { CategoryFormProps } from "@/types/component-types/admin/admin-component.types";
 
-interface CategoryFormProps {
-  initialData?: CategoryType | null;
-  onClose: () => void;
-}
+
 
 const CategorySchema = Yup.object().shape({
   title: Yup.string().trim().required("Category title is required"),

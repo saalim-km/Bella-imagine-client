@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAllVendorQuery, useBlockVendor, useUnBlockVendor, vendorKeys } from "@/hooks/admin/useVendor";
-import { useThemeConstants } from "@/utils/theme/themeUtills";
+import { useThemeConstants } from "@/utils/theme/theme.utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -27,11 +27,11 @@ import {
   AlertDialogHeader,
 } from "@/components/ui/alert-dialog";
 import { DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
-import { buildQueryParams } from "@/utils/queryGenerator";
+import { buildQueryParams } from "@/utils/helper/query-generator";
 import Pagination from "@/components/common/Pagination";
 import { Spinner } from "@/components/ui/spinner";
 import { useNavigate } from "react-router-dom";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
 
 const FILTER_OPTIONS = [
   { label: "Active", value: "isActive" },

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Home, Search, Calendar, Ticket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import Header from "../headers/Header";
+import Header from "../common/Header";
 
 export const Client404 = () => {
   return (

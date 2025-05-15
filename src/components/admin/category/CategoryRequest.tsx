@@ -2,8 +2,9 @@ import { useGetAllCategoryRequest, useUpdateCategoryRequest } from "@/hooks/admi
 import { DataTable, ColumnDef } from "@/components/common/Table";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
 import { Badge } from "@/components/ui/badge";
+import { ICategoryRequest } from "@/services/categories/categoryService";
 
 const CategoryRequest = () => {
   const { data, isLoading, refetch } = useGetAllCategoryRequest();
@@ -41,7 +42,7 @@ const CategoryRequest = () => {
 
   const categoryRequests = data?.categoryRequest ?? [];
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<ICategoryRequest>[] = [
     {
       id: "vendor",
       header: "Vendor",
@@ -80,10 +81,10 @@ const CategoryRequest = () => {
       cell: (row) =>
         row.status === "pending" && (
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => handleApprove(row.categoryId._id, row.vendorId._id)}>
+            <Button variant="outline" onClick={() => handleApprove(row.categoryId._id!, row.vendorId._id!)}>
               Approve
             </Button>
-            <Button variant="destructive" onClick={() => handleReject(row.categoryId._id, row.vendorId._id)}>
+            <Button variant="destructive" onClick={() => handleReject(row.categoryId._id!, row.vendorId._id!)}>
               Reject
             </Button>
           </div>
@@ -94,7 +95,12 @@ const CategoryRequest = () => {
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold mb-4">Category Join Requests</h2>
-      <DataTable data={categoryRequests} columns={columns} isLoading={isLoading} />
+      <DataTable
+        data={categoryRequests as ICategoryRequest[]}
+        columns={columns}
+        isLoading={isLoading}
+        onPageChange={() => {}}
+      />
     </div>
   );
 };

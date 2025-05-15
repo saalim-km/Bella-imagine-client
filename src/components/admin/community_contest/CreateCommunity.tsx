@@ -11,9 +11,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Link, useNavigate } from "react-router-dom";
 import { useCreateCommunityMutation } from "@/hooks/community-contest/useCommunity";
-import { Community } from "@/types/Community";
+import { Community } from "@/types/interfaces/Community";
 import { toast } from "sonner";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
 
 interface CommunityFormProps {
   initialData?: {

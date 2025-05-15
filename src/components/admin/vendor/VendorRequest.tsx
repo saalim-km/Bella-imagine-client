@@ -33,9 +33,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useThemeConstants } from "@/utils/theme/themeUtills";
-import { buildQueryParams } from "@/utils/queryGenerator";
-import { handleError } from "@/utils/Error/errorHandler";
+import { useThemeConstants } from "@/utils/theme/theme.utils";
+import { buildQueryParams } from "@/utils/helper/query-generator";
+import { handleError } from "@/utils/Error/error-handler.utils";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";

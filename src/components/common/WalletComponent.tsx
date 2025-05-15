@@ -39,9 +39,9 @@ import {
   PopulatedWallet,
   Purpose,
   WalletTransactions,
-} from "@/types/Wallet";
+} from "@/types/interfaces/Wallet";
 import moment from "moment";
-import { formatPrice } from "@/utils/format/format-price.utils";
+import { formatPrice } from "@/utils/formatters/format-price.utils";
 
 const StatusBadge = ({ status }: { status: PaymentStatus }) => {
   const statusVariants = {
