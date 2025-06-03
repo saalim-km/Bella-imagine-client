@@ -1,4 +1,4 @@
-import { AdminLayout } from "@/components/admin/layout/AdminLayout";
+import { AdminLayout } from "@/components/layout/AdminLayout";
 import { VendorRequestsTable } from "@/components/admin/vendor/VendorRequest";
 
 export function VendorRequestsPage() {

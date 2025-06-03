@@ -1,5 +1,5 @@
 import EditCommunityForm  from "@/components/admin/community_contest/EditCommunity";
-import { AdminLayout } from "@/components/admin/layout/AdminLayout";
+import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Spinner } from "@/components/ui/spinner";
 import { useGetCommunityBySlug } from "@/hooks/community-contest/useCommunity";
 import React, { useEffect } from "react";

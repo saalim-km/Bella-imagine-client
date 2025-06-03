@@ -60,7 +60,7 @@ export function NewPasswordForm({
     setIsSubmitting(true);
     console.log(email, userType, values.password);
     resetPassword(
-      { email: email, userType: userType, newPassword: values.password },
+      { email: email, role: userType, password: values.password },
       {
         onSuccess: (data) => {
           console.log(data.message);

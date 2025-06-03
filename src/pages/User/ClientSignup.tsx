@@ -1,12 +1,11 @@
-import Header from "@/components/common/Header";
 import Signup from "@/components/auth/SignUp";
 import AccountTypeModal from "@/components/modals/AccountTypeModal";
 import { useState } from "react";
-import Footer from "@/components/common/Footer";
 import { useRegisterMutation } from "@/hooks/auth/useRegister";
 import { IUser } from "@/types/interfaces/User";
 import { toast } from "sonner";
 import { useSocket } from "@/context/SocketContext";
+import { UserLayout } from "@/components/layout/UserLayout";
 
 const ClientSignup = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,20 +35,16 @@ const ClientSignup = () => {
 
   return (
     <>
-      <Header />
-      <div className="p-20">
-        <Signup
-          onClick={handleOpenModal}
-          userType="client"
-          onSubmit={handleRegister}
-        />
-        {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <AccountTypeModal isOpen={isModalOpen} onClose={handleOnClose} />
-          </div>
-        )}
-      </div>
-      <Footer />
+      <Signup
+        onClick={handleOpenModal}
+        userType="client"
+        onSubmit={handleRegister}
+      />
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <AccountTypeModal isOpen={isModalOpen} onClose={handleOnClose} />
+        </div>
+      )}
     </>
   );
 };

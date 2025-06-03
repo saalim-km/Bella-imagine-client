@@ -91,6 +91,7 @@ export function ChatInterface() {
     socket.emit("send_message", {
       message: newMessage,
       recipentId: recipientUser?._id,
+      recipentName : userFromRedux?.name
     });
 
     const updatedConversations = conversations.map((conv) =>

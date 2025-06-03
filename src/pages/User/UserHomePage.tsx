@@ -1,17 +1,12 @@
-import Footer from "@/components/common/Footer"
-import Header from "@/components/common/Header"
+import { UserLayout } from "@/components/layout/UserLayout";
 import Home from "@/components/User/Home";
-import HomePhotographerSearch from "@/components/User/HomePhotographerSearch";
 
 const ClientHomePage = () => {
-
   return (
-    <>
-        <Header/>
-        <Home/>
-        <Footer/>
-    </>
-  )
-}
+    <UserLayout>
+      <Home />
+    </UserLayout>
+  );
+};
 
-export default ClientHomePage
+export default ClientHomePage;

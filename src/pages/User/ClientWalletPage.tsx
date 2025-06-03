@@ -24,10 +24,9 @@ export default function ClientWallet() {
     }
   }, [data]);
 
-  // Handler functions
+
   const handleRefresh = () => {
     console.log("Refreshing wallet data...");
-    // Implement your refresh logic here
   };
 
   const handleDeposit = () => {

@@ -1,17 +1,10 @@
-import { ForgotPassword } from '@/components/auth/ForgotPassword'
-import Footer from '@/components/common/Footer'
-import Header from '@/components/common/Header'
-import { TRole } from '@/types/interfaces/User'
-import React from 'react'
+import { ForgotPassword } from "@/components/auth/ForgotPassword";
+import { UserLayout } from "@/components/layout/UserLayout";
+import { TRole } from "@/types/interfaces/User";
 
-const ForgotPassPage = ({userType} : {userType : TRole}) => {
-    console.log(`usertype =>  ${userType}`);
-  return (
-    <>
-        <Header/>
-        <ForgotPassword userType={userType}/>
-    </>
-  )
-}
+const ForgotPassPage = ({ userType }: { userType: TRole }) => {
+  console.log(`usertype =>  ${userType}`);
+  return <ForgotPassword userType={userType} />;
+};
 
-export default ForgotPassPage
+export default ForgotPassPage;

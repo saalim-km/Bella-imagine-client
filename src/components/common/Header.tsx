@@ -17,8 +17,6 @@ import { useLogoutMutation } from "@/hooks/auth/useLogout";
 import { logoutClient, logoutVendor } from "@/services/auth/authService";
 import { clientLogout } from "@/store/slices/clientSlice";
 import { vendorLogout } from "@/store/slices/vendorSlice";
-import { useAllVendortNotification } from "@/hooks/vendor/useVendor";
-import { useAllClientNotification } from "@/hooks/client/useClient";
 import type { RootState } from "@/store/store";
 import { useSocket } from "@/context/SocketContext";
 import { handleError } from "@/utils/Error/error-handler.utils";
@@ -29,7 +27,7 @@ interface IHeader {
 
 export default function Header({ onClick }: IHeader) {
   const { reconnect, socket } = useSocket();
-  const { textColor, isDarkMode } = useThemeConstants();
+  const { isDarkMode } = useThemeConstants();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const user = useSelector((state: RootState) => {
@@ -37,19 +35,9 @@ export default function Header({ onClick }: IHeader) {
     if (state.client.client) return state.client.client;
     return null;
   });
-  const { data: vendorNot } = useAllVendortNotification(
-    user?.role === "vendor"
-  );
-  const { data: clientNot } = useAllClientNotification(user?.role === "client");
 
-  const allNotifications: TNotification[] = useMemo(
-    () =>
-      user?.role === "vendor"
-        ? vendorNot?.notifications ?? []
-        : clientNot?.notifications ?? [],
-    [vendorNot, clientNot, user?.role]
-  );
-
+  const allNotifications: TNotification[] = useSelector((state: RootState) => state.notification)
+  console.log('got notification');
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -273,7 +261,7 @@ export default function Header({ onClick }: IHeader) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-50 bg-white lg:hidden"
+            className="fixed inset-0 z-50 bg-white lg:hidden text-black"
           >
             <div className="container h-full mx-auto px-6 py-8 flex flex-col">
               <div className="flex justify-between items-center">

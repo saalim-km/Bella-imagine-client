@@ -1,5 +1,5 @@
 import Communities from "@/components/admin/community_contest/Communities";
-import { AdminLayout } from "@/components/admin/layout/AdminLayout";
+import { AdminLayout } from "@/components/layout/AdminLayout";
 
 const CommunityManagement = () => {
   return (

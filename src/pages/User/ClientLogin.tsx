@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { clientLogin } from "@/store/slices/clientSlice";
 import { useState } from "react";
 import { useSocket } from "@/context/SocketContext";
+import { UserLayout } from "@/components/layout/UserLayout";
 
 const ClientLogin = () => {
   const { reconnect, socket } = useSocket();
@@ -23,7 +24,7 @@ const ClientLogin = () => {
         setIsSending(false);
         console.log(data);
         toast.success(data.message);
-        dispatch(clientLogin(data.user));
+        dispatch(clientLogin(data.data));
         if (socket) {
           reconnect();
         }
@@ -37,11 +38,7 @@ const ClientLogin = () => {
 
   return (
     <>
-      <Header />
-      <div className="mt-20">
-        <Login userType="client" onSubmit={handleLogin} isSending={isSending} />
-      </div>
-      <Footer />
+      <Login userType="client" onSubmit={handleLogin} isSending={isSending} />
     </>
   );
 };

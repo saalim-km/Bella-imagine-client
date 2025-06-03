@@ -60,7 +60,7 @@ export function ProfileInfo({ data, className }: ProfileInfoProps) {
             valueClassName={data?.isActive ? "text-status-active font-medium" : "text-status-inactive font-medium"}
           />
           <InfoItem icon={CalendarDays} label="Joined" value={formattedDate} />
-          <InfoItem icon={MapPin} label="Location" value={data?.location} />
+          <InfoItem icon={MapPin} label="Location" value={data?.location?.address} />
         </div>
       </section>
 

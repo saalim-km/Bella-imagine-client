@@ -1,4 +1,4 @@
-import { sendOtp } from "@/services/auth/authService"
+import { forgotPassword, sendOtp } from "@/services/auth/authService"
 import { useMutation } from "@tanstack/react-query"
 
 export const useSendOtp = ()=> {
@@ -9,6 +9,6 @@ export const useSendOtp = ()=> {
 
 export const useForgotPassSendOtp = ()=> {
     return useMutation({
-        mutationFn : sendOtp
+        mutationFn : forgotPassword
     })
 }

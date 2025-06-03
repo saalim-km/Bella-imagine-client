@@ -397,7 +397,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                 <Popover open={open} onOpenChange={setOpen}>
                   <PopoverTrigger asChild>
                     <div className="relative w-full mt-1">
-                      <Globe className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Globe className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"/>
                       <Input
                         placeholder="Type or select a language..."
                         className="pl-10"
@@ -474,7 +474,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                           }
                           className="ml-2 text-foreground/70 hover:text-foreground transition-colors"
                         >
-                          <X className="h-3 w-3" />
+                          <X className="h-3 w-3 text-gray"/>
                         </button>
                       </motion.div>
                     ))}

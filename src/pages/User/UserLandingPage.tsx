@@ -1,33 +1,29 @@
-import Landing from '@/components/User/Landing'
-import Footer from '@/components/common/Footer'
-import Header from '@/components/common/Header'
-import AccountTypeModal from '@/components/modals/AccountTypeModal'
-import { useState } from 'react'
+import Landing from "@/components/User/Landing";
+import { UserLayout } from "@/components/layout/UserLayout";
+import AccountTypeModal from "@/components/modals/AccountTypeModal";
+import { useState } from "react";
 
 const ClientLandingPage = () => {
-    const [isModalOpen , setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-    function handleOpenModal() {
-        setIsModalOpen(true)
-    }
-    function handleOnClose() {
-      setIsModalOpen(false)
-    }
-    
+  function handleOpenModal() {
+    setIsModalOpen(true);
+  }
+
+  function handleOnClose() {
+    setIsModalOpen(false);
+  }
+
   return (
-    <>
-        <Header onClick = {handleOpenModal}/>
-        <Landing/>
-        <Footer/>
+    <UserLayout setIsModalOpen={handleOpenModal}>
+      <Landing />
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <AccountTypeModal isOpen={isModalOpen} onClose={handleOnClose} />
+        </div>
+      )}
+    </UserLayout>
+  );
+};
 
-
-        {isModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center">
-                <AccountTypeModal isOpen={isModalOpen} onClose={handleOnClose} />
-            </div>
-        )}
-    </>
-  )
-}
-
-export default ClientLandingPage
+export default ClientLandingPage;

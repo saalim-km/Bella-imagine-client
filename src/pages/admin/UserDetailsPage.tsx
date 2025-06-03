@@ -1,4 +1,4 @@
-import { AdminLayout } from '@/components/admin/layout/AdminLayout'
+import { AdminLayout } from '@/components/layout/AdminLayout'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { ProfileInfo } from '@/components/User/ProfileInfo'

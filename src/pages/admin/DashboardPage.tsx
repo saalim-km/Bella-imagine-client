@@ -1,4 +1,4 @@
-import { AdminLayout } from "@/components/admin/layout/AdminLayout"
+import { AdminLayout } from "@/components/layout/AdminLayout"
 // import { StatsCards } from "@/components/admin/dashboard/stats-cards"
 // import { GrowthChart } from "@/components/admin/dashboard/growth-chart"
 // import { RecentTransactions } from "@/components/admin/dashboard/recent-transactions"

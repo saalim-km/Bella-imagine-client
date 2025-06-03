@@ -3,7 +3,7 @@ import { useState } from "react"
 // import { UserTable } from "@/components/admin/users/user-table"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AdminLayout } from "@/components/admin/layout/AdminLayout"
+import { AdminLayout } from "@/components/layout/AdminLayout"
 import { ClientTable } from "@/components/admin/users/ClientTable"
 import { UserTable } from "@/components/admin/users/VendorTable"
 

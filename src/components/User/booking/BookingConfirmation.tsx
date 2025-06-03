@@ -8,6 +8,7 @@ import { PaymentWrapper } from "@/components/stripe/PaymentForm"
 import type { Booking } from "@/types/interfaces/User"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
+import { useSocket } from "@/context/SocketContext"
 
 interface BookingConfirmationProps {
   service: IServiceResponse
@@ -25,6 +26,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
   setIsLoading,
 }) => {
   const { selectedDate, selectedTimeSlot, selectedDuration, vendorId, location } = bookingState
+  const {socket} = useSocket()
 
   const formatTime = (timeString: string | undefined) => {
     if (!timeString) return ""
@@ -62,6 +64,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
   }
 
   const handlePaymentSuccess = () => {
+    socket?.emit('createBooking',{bookingData : bookingData })
     setIsLoading(false)
     setIsBookingSuccess()
     onConfirmBooking()

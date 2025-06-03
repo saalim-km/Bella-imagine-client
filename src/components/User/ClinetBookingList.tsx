@@ -52,7 +52,11 @@ export interface BookingList {
   };
   isClientApproved: boolean;
   isVendorApproved: boolean;
-
+  location : {
+    lat : number;
+    lng : number;
+    travelFee : number;
+  }
   bookingDate: string;
   totalPrice: number;
   paymentStatus: string;
@@ -85,6 +89,7 @@ export default function ClientBookingList({
   search,
   setSearch,
 }: ClientBookingListProps) {
+  console.log('got the bookings', bookings);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [bookingId, setBookingId] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);

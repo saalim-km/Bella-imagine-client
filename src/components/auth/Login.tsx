@@ -103,7 +103,7 @@ export default function Login({ userType, onSubmit, isSending }: LoginProps) {
                 >
                   <Field
                     name="email"
-                    type="email"
+                    type="text"
                     placeholder="Email"
                     as={Input}
                     className="rounded-lg h-12 w-full  focus:ring-2 focus:ring-white/20 transition-all duration-300"

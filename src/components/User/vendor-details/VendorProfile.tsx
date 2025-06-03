@@ -40,7 +40,7 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
           <div className="flex items-center gap-4 text-white/80">
             <div className="flex items-center gap-1.5">
               <MapPin className="h-4 w-4" />
-              <span className="text-sm">{vendor.location}</span>
+              <span className="text-sm">{vendor.location?.address}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <Star className="h-4 w-4 text-yellow-400" />
@@ -122,6 +122,25 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
                   className="px-3 py-1 border-border/20 text-foreground/80 hover:text-foreground"
                 >
                   {specialty}
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-serif text-2xl text-foreground">
+                Languages speak
+              </h2>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {vendor.languages?.map((lang) => (
+                <Badge
+                  key={lang}
+                  variant="outline"
+                  className="px-3 py-1 border-border/20 text-foreground/80 hover:text-foreground"
+                >
+                  {lang}
                 </Badge>
               ))}
             </div>

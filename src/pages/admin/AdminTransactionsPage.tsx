@@ -1,4 +1,4 @@
-import { AdminLayout } from '@/components/admin/layout/AdminLayout'
+import { AdminLayout } from '@/components/layout/AdminLayout'
 import AdminTransactionsComponent from '@/components/admin/payment/AdminTransactionComp'
 import { Spinner } from '@/components/ui/spinner';
 import { useAdminTransactionsQuery } from '@/hooks/service/useTranactions';

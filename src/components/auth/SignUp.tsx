@@ -45,7 +45,7 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
   function handleOtpSend(user: IUser) {
     setIsSending(true);
     sendVerificationOTP(
-      { url: "/send-otp", email: user.email },
+      { url: "/send-otp", email: user.email, role: userType },
       {
         onSuccess: (data) => {
           toast.success(data.message);
@@ -121,35 +121,35 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen flex flex-col lg:flex-row justify-center backdrop-blur-md"
+      className="h-screen flex"
     >
       {/* Left Side - Image */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
-        className="relative w-full lg:w-2/5 min-h-[300px] lg:min-h-screen p-0 lg:p-8 hidden lg:block"
+        className="hidden lg:block w-1/2 h-full"
       >
         <img
           src="https://res.cloudinary.com/deh2nuqeb/image/upload/v1740628126/samrat-khadka-93wlS7VA_jg-unsplash_nynmsw.jpg"
-          alt="Wedding couple"
-          className="w-full h-full object-cover opacity-90 rounded-l-2xl"
+          alt="Wedding photography"
+          className="w-full h-full object-cover"
         />
       </motion.div>
 
       {/* Right Side - Signup Form */}
-      <div className="w-full lg:w-3/5 flex items-center justify-center p-4 sm:p-6 lg:p-12">
-        <div className="w-full max-w-md space-y-8">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 overflow-y-auto">
+        <div className="w-full max-w-md">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="text-center space-y-2"
+            className="text-center mb-8"
           >
-            <h1 className="font-serif text-3xl sm:text-4xl tracking-tight ">
+            <h1 className="font-serif text-3xl sm:text-4xl tracking-tight">
               I'm a {userType === "client" ? "Customer" : "Photographer"}
             </h1>
-            <p className="/60 text-sm">Create your account</p>
+            <p className="text-sm text-gray-600">Create your account</p>
           </motion.div>
 
           <Formik
@@ -171,7 +171,7 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
             }}
           >
             {({ isSubmitting }) => (
-              <Form className="space-y-6">
+              <Form className="space-y-4">
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -183,7 +183,7 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
                       type="text"
                       name="name"
                       placeholder="Name"
-                      className="rounded-lg h-12 w-full focus:ring-2 focus:ring-white/20 transition-all duration-300"
+                      className="rounded-lg h-12 w-full"
                     />
                     <ErrorMessage
                       name="name"
@@ -203,7 +203,7 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
                       type="email"
                       name="email"
                       placeholder="Email"
-                      className="rounded-lg h-12 w-full  focus:ring-2 focus:ring-white/20 transition-all duration-300"
+                      className="rounded-lg h-12 w-full"
                     />
                     <ErrorMessage
                       name="email"
@@ -223,11 +223,11 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
                       type={showPassword ? "text" : "password"}
                       name="password"
                       placeholder="Password"
-                      className="rounded-lg h-12 w-full  focus:ring-2 focus:ring-white/20 transition-all duration-300"
+                      className="rounded-lg h-12 w-full pr-10"
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-4 cursor-pointer /60 hover:"
+                      className="absolute right-3 top-4 cursor-pointer text-gray-400 hover:text-gray-600"
                     >
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </span>
@@ -249,13 +249,13 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
                       type={showConfirmPassword ? "text" : "password"}
                       name="confirmPassword"
                       placeholder="Confirm Password"
-                      className="rounded-lg h-12 w-full  focus:ring-2 focus:ring-white/20 transition-all duration-300"
+                      className="rounded-lg h-12 w-full pr-10"
                     />
                     <span
                       onClick={() =>
                         setShowConfirmPassword(!showConfirmPassword)
                       }
-                      className="absolute right-3 top-4 cursor-pointer /60 hover:"
+                      className="absolute right-3 top-4 cursor-pointer text-gray-400 hover:text-gray-600"
                     >
                       {showConfirmPassword ? (
                         <EyeOff size={20} />
@@ -277,8 +277,8 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
                 >
                   <Button
                     type="submit"
-                    className="w-full h-12 rounded-lg text-sm uppercase tracking-widest transition-all duration-300"
-                    disabled={isSending || isSubmitting}
+                    className="w-full h-12 rounded-lg text-sm uppercase tracking-widest"
+                    disabled={isSending}
                   >
                     {isSending ? "Sending OTP..." : "Sign up"}
                   </Button>
@@ -291,12 +291,12 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.5 }}
-            className="relative flex items-center justify-center my-6"
+            className="relative flex items-center justify-center my-4"
           >
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/20"></div>
+              <div className="w-full border-t border-gray-300"></div>
             </div>
-            <span className="relative px-3 text-sm /60">
+            <span className="relative px-3 text-sm text-gray-500 bg-white">
               or
             </span>
           </motion.div>
@@ -305,7 +305,7 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9, duration: 0.5 }}
-            className="flex justify-center"
+            className="flex justify-center mb-4"
           >
             <GoogleAuth handleGoogleSuccess={handleGoogle} />
           </motion.div>
@@ -314,24 +314,24 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.0, duration: 0.5 }}
-            className="text-center mt-6 space-y-2"
+            className="text-center text-sm"
           >
-            <p className="/60 text-sm">
-              Not a {userType === "client" ? "customer" : "photographer"}?
+            <p className="text-gray-600">
+              Not a {userType === "client" ? "customer" : "photographer"}?{" "}
+              <a
+                onClick={onClick}
+                className="text-blue-600 hover:underline cursor-pointer"
+              >
+                Select a different account type
+              </a>
             </p>
-            <a
-              onClick={onClick}
-              className="text-sm cursor-pointer text-blue-600 hover:underline"
-            >
-              Select a different account type
-            </a>
-            <p className="text-sm pt-2">
+            <p className="mt-2 text-gray-600">
               Already have an account?{" "}
               <a
                 onClick={() =>
                   navigate(userType === "vendor" ? "/vendor/login" : "/login")
                 }
-                className="/80 hover: transition-colors cursor-pointer text-blue-600 hover:underline"
+                className="text-blue-600 hover:underline cursor-pointer"
               >
                 Sign in
               </a>
