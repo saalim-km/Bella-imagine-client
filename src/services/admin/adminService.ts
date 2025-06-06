@@ -21,8 +21,9 @@ const AdminService = {
   patch: async <T>(url: string, data: any): Promise<T> => {
       const response = await adminAxiosInstance.patch(url,{},{
         params : {
-          userType : data.userType,
-          userId : data.userId
+          role : data.role,
+          id : data.id,
+          isblocked : data.isblock
         }
       });
       return response.data;
@@ -36,3 +37,11 @@ const AdminService = {
 };
 
 export default AdminService;
+
+
+export const updateVendorRequestService = async(params : {reason ?: string , id : string,status : any})=> {
+  const response = await adminAxiosInstance.patch('/vendor-request',{},{
+    params : params
+  })
+  return response.data;
+}

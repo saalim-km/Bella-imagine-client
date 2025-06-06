@@ -15,11 +15,7 @@ import { handleError } from "@/utils/Error/error-handler.utils";
 import { DataTable, type ColumnDef } from "@/components/common/Table";
 
 const FILTER_OPTIONS = [
-  { label: "Active", value: "isActive" },
-  { label: "Inactive", value: "notActive" },
   { label: "Blocked", value: "blocked" },
-  { label: "Not Blocked", value: "notBlocked" },
-  { label: "Latest Joined", value: "latest" },
   { label: "Older Member", value: "oldest" },
 ];
 

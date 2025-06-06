@@ -13,7 +13,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAllVendorQuery, useBlockVendor, useUnBlockVendor, vendorKeys } from "@/hooks/admin/useVendor";
-import { useThemeConstants } from "@/utils/theme/theme.utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -34,11 +33,7 @@ import { useNavigate } from "react-router-dom";
 import { handleError } from "@/utils/Error/error-handler.utils";
 
 const FILTER_OPTIONS = [
-  { label: "Active", value: "isActive" },
-  { label: "Inactive", value: "notActive" },
   { label: "Blocked", value: "blocked" },
-  { label: "Not Blocked", value: "notBlocked" },
-  { label: "Latest Joined", value: "latest" },
   { label: "Older Member", value: "oldest" },
 ];
 

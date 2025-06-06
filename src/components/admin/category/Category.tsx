@@ -36,10 +36,10 @@ export function CategoryManagement() {
   let filterOption;
   switch (filter) {
     case "active":
-      filterOption = { status: "active" };
+      filterOption = { status: true };
       break;
     case "inactive":
-      filterOption = { status: "inActive" };
+      filterOption = { status: false };
       break;
     default:
       filterOption = {};
