@@ -126,8 +126,8 @@ export function UserTable() {
     { ...filterOptions, search: appliedSearchTerm},{ page: currentPage, limit: itemsPerPage }  
   );
 
-  const vendors = vendorsData?.vendors?.data || [];
-  const totalVendors = vendorsData?.vendors?.total || 0;
+  const vendors = vendorsData?.data?.data || [];
+  const totalVendors = vendorsData?.data?.total || 0;
   const totalPages = Math.max(1, Math.ceil(totalVendors / itemsPerPage));
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

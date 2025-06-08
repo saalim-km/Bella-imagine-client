@@ -23,7 +23,7 @@ const AdminLogin = () => {
             setIsSending(false)
             console.log(data);
             toast.success(data.message)
-            dispatch(adminLogin(data.user))
+            dispatch(adminLogin(data.data))
             navigate('/admin/dashboard')
           },
           onError : (error)=> {

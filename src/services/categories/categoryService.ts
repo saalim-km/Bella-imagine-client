@@ -6,6 +6,7 @@ import { CategoryType } from "@/hooks/admin/useAllCategory";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
 import { IVendor } from "../vendor/vendorService";
 import { data } from "react-router-dom";
+import { PaginatedResponse } from "@/types/interfaces/vendor";
 
 export type Category = {
   _id: string;
@@ -24,7 +25,7 @@ export interface CategoryResponse {
 
 export interface RequestCategoryResponse {
   success : boolean,
-  categoryRequest : ICategoryRequest
+  data : ICategoryRequest
 }
 
 
@@ -38,20 +39,31 @@ export interface ICategoryRequest {
   __v: number;
 }
 
+export interface IUpdateCategoryStatus {
+  id : string;
+}
+
+export interface PaginatedDataRequest {
+  page : number;
+  limit : number;
+}
+
+export interface PaginatedCatRequestResponse {
+  data : PaginatedResponse<RequestCategoryResponse>
+}
 
 export const getAllCategories = async () => {
   const response = await vendorAxiosInstance.get<CategoryResponse>(ENDPOINTS.VENDOR_CATEGORIES);
   return response.data;
 };
 
-export const updateCategoryStatus = async(id : string , data : Partial<CategoryType>)=> {
-  const response = await adminAxiosInstance.patch('/categories',{id : id , data : data })
-  console.log(response);
+export const updateCategoryStatus = async(input : IUpdateCategoryStatus)=> {
+  const response = await adminAxiosInstance.patch('/categories',{},{params : input})
   return response.data;
 }
 
-export const getAllCategoryJoinRequests = async(): Promise<RequestCategoryResponse> => {
-  const response = await adminAxiosInstance.get('/category-request')
+export const getAllCategoryJoinRequests = async(input : PaginatedDataRequest): Promise<PaginatedCatRequestResponse> => {
+  const response = await adminAxiosInstance.get('/category-request',{params : input})
   console.log(response);
   return response.data
 }
@@ -74,7 +86,6 @@ export const vendorJoinCategory = async (category: string) => {
 
 
 export const updateCategoryService = async(dto : {id : string , data : Partial<Category>}) : Promise<ApiResponse>=> {
-  delete dto.data._id;
   const response = await adminAxiosInstance.put('/categories', dto)
   return response.data
 }

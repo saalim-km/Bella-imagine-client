@@ -1,13 +1,21 @@
-import { useGetAllCategoryRequest, useUpdateCategoryRequest } from "@/hooks/admin/useAllCategory";
+import {
+  useGetAllCategoryRequest,
+  useUpdateCategoryRequest,
+} from "@/hooks/admin/useAllCategory";
 import { DataTable, ColumnDef } from "@/components/common/Table";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { Badge } from "@/components/ui/badge";
 import { ICategoryRequest } from "@/services/categories/categoryService";
+import { useState } from "react";
 
 const CategoryRequest = () => {
-  const { data, isLoading, refetch } = useGetAllCategoryRequest();
+  const [currPage, setCurrPage] = useState(1);
+  const { data, isLoading, refetch } = useGetAllCategoryRequest({
+    limit: 5,
+    page: currPage,
+  });
   const { mutate: updateRequest } = useUpdateCategoryRequest();
 
   const handleApprove = (categoryId: string, vendorId: string) => {
@@ -40,7 +48,15 @@ const CategoryRequest = () => {
     );
   };
 
-  const categoryRequests = data?.categoryRequest ?? [];
+  const categoryRequests = data?.data.data;
+  const totalRequests = data?.data.total || 0;
+  const totalPages = Math.max(1, Math.ceil(totalRequests / 5));
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= data?.data.total!) {
+      setCurrPage(newPage);
+    }
+  };
 
   const columns: ColumnDef<ICategoryRequest>[] = [
     {
@@ -81,10 +97,20 @@ const CategoryRequest = () => {
       cell: (row) =>
         row.status === "pending" && (
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => handleApprove(row.categoryId._id!, row.vendorId._id!)}>
+            <Button
+              variant="outline"
+              onClick={() =>
+                handleApprove(row.categoryId._id!, row.vendorId._id!)
+              }
+            >
               Approve
             </Button>
-            <Button variant="destructive" onClick={() => handleReject(row.categoryId._id!, row.vendorId._id!)}>
+            <Button
+              variant="destructive"
+              onClick={() =>
+                handleReject(row.categoryId._id!, row.vendorId._id!)
+              }
+            >
               Reject
             </Button>
           </div>
@@ -98,8 +124,10 @@ const CategoryRequest = () => {
       <DataTable
         data={categoryRequests as ICategoryRequest[]}
         columns={columns}
+        totalPages={totalPages}
+        currentPage={currPage}
         isLoading={isLoading}
-        onPageChange={() => {}}
+        onPageChange={handlePageChange}
       />
     </div>
   );

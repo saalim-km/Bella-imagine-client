@@ -52,7 +52,9 @@ export function CategoryManagement() {
     },
     { page: currentPage, limit: 4 },
   );
+  const totalPages = Math.max(1, Math.ceil(data?.data.total! / 4));
   
+  console.log(data?.data);
   function handleEdit(category: CategoryType) {
     setSelectedCategory(category);
     setIsEditing(true);
@@ -76,7 +78,7 @@ export function CategoryManagement() {
   function handleToggleStatus(categoryId: string, status: boolean) {
     console.log(categoryId);
     updateCategory(
-      { id: categoryId, data: { status: !status } },
+      { id: categoryId },
       {
         onSuccess: (data: any) => {
           refetch();
@@ -199,10 +201,10 @@ export function CategoryManagement() {
       )}
 
       <DataTable
-        data={data?.categories || []}
+        data={data?.data.data || []}
         columns={columns}
         currentPage={currentPage}
-        totalPages={data?.totalPages || 1}
+        totalPages={totalPages || 1}
         onPageChange={handlePageChange}
         emptyMessage="No categories found"
         isLoading={isLoading}

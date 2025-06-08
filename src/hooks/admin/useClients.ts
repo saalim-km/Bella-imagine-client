@@ -10,7 +10,7 @@ export interface ClientRequest {
 }
 
 export type TPaginatedClientRequest =  {
-  clients : ClientRequest
+  data : ClientRequest
 }
 
 interface ApiResponse {

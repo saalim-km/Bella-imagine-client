@@ -97,8 +97,8 @@ export function ClientTable() {
     { page: currentPage, limit: itemsPerPage }
   );
 
-  const clients = clientsData?.clients.data || [];
-  const totalClients = clientsData?.clients.total || 0;
+  const clients = clientsData?.data.data || [];
+  const totalClients = clientsData?.data.total || 0;
   const totalPages = Math.max(1, Math.ceil(totalClients / itemsPerPage));
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
