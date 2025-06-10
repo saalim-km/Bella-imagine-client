@@ -26,20 +26,22 @@ const Vendors = () => {
   });
 
   const { data: categories } = useAllClientCategories();
+  console.log(categories);
   const {
     data: vendors,
     isLoading,
     isError,
   } = useAllVendorsListQuery({
     page: currentPage,
-    limit: 2,
+    limit: 6,
     category: selectedCategory,
     languages: filters.language,
     location: filters.location,
   });
+
   console.log("vendors : ", vendors);
-  const totalVendors = vendors?.total || 0;
-  const totalPages = Math.max(1, Math.ceil(totalVendors / 2));
+  const totalVendors = vendors?.data.total || 0;
+  const totalPages = Math.max(1, Math.ceil(totalVendors / 6));
 
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -85,13 +87,13 @@ const Vendors = () => {
         selectedLocation={filters.location}
       />
       <LocationModal
-        vendors={vendors?.data || []}
+        vendors={vendors?.data.data || []}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSelectLocation={handleLocationChange}
       />
       <Filters
-        vendors={vendors?.data || []}
+        vendors={vendors?.data.data || []}
         handleSpecialitySelect={(specialty) =>
           handleFilterChange("specialty", specialty)
         }
@@ -104,12 +106,12 @@ const Vendors = () => {
         selectedCategory={filters.category}
         selectedLanguage={filters.language}
         selectedSpeciality={filters.specialty}
-        categories={categories?.data || []}
+        categories={categories?.data.data || []}
         resetFilter={resetFilters}
       />
 
       {vendors &&
-        vendors.data.map((vendor) => (
+        vendors.data.data.map((vendor) => (
           <PhotographerCard key={vendor._id} vendorData={vendor} />
         ))}
 

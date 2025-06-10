@@ -19,9 +19,18 @@ const VendorDetails = () => {
   const [samplePage, setSamplePage] = useState<number>(1)
   const [selectedService, setSelectedService] = useState<IServiceResponse | null>(null)
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  let sampleLimit = 3;
+  let serviceLimit = 3;
+  const { data: vendor, isLoading, error } = useGetPhotographerDetails({sampleLimit : sampleLimit , samplePage : samplePage , serviceLimit : serviceLimit , servicePage : servicePage} , id)
 
-  const { data: vendor, isLoading, error } = useGetPhotographerDetails(id, servicePage, samplePage)
-  const vendorDetails = vendor as unknown as IVendorDetails;
+  if(!vendor){
+    return (
+      <p>Vendor not found please try again later</p>
+    )
+  }
+
+  const vendorDetails =  vendor.data
+  console.log(vendorDetails);
   const handleViewServiceDetails = (service: IServiceResponse) => {
     setSelectedService(service)
     setIsModalOpen(true)
@@ -92,9 +101,9 @@ const VendorDetails = () => {
               </p>
             </motion.div>
 
-            {vendor.services?.length > 0 ? (
+            {vendorDetails.services?.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {vendor.services.map((service: any) => (
+                {vendorDetails.services.map((service: any) => (
                   <ServiceCard key={service._id} service={service} onViewDetails={handleViewServiceDetails} />
                 ))}
               </div>

@@ -4,6 +4,7 @@ import {
   getClientDetails,
   getPhotographerDetails,
   getService,
+  GetVendorDetails,
   updateClientDetails,
 } from "@/services/client/clientService";
 import { getAllClientNotification } from "@/services/notification/notificationService";
@@ -36,7 +37,6 @@ export const useAllClientNotification = (enabled = true)=> {
 }
 
 export const useAllVendorsListQuery = (filter : IVendorsFilter) => {
-  console.log(`in vendors listing service `,filter);
   return useQuery({
     queryKey : ["client",filter],
     queryFn : ()=> getAllVendors(filter)
@@ -50,10 +50,10 @@ export const useAllClientCategories = ()=> {
   })
 }
 
-export const useGetPhotographerDetails = (id : string,servicepage : number,samplePage : number)=> {
+export const useGetPhotographerDetails = (input : GetVendorDetails , vendorId: string)=> {
   return useQuery({
-    queryKey : ["photographer",id,servicepage,samplePage],
-    queryFn : ()=> getPhotographerDetails(id,servicepage,samplePage)
+    queryKey : ["photographer",vendorId,input],
+    queryFn : ()=> getPhotographerDetails(input,vendorId)
   })
 }
 
