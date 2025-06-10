@@ -90,7 +90,7 @@ export const getPhotographerDetails = async (input : GetVendorDetails , vendorId
   return response.data;
 };
 
-export const getService = async (id: string): Promise<IServiceResponse> => {
+export const getService = async (id: string): Promise<BasePaginatedResponse<IServiceResponse>> => {
   const response = await clientAxiosInstance.get(`/client/service/${id}`);
   return response.data;
 };
