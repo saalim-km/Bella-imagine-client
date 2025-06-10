@@ -3,17 +3,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Location } from "@/types/interfaces/vendor";
-import { GoogleMap, Marker, LoadScript, Autocomplete } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  Marker,
+  LoadScript,
+  Autocomplete,
+} from "@react-google-maps/api";
 import { Loader2 } from "lucide-react";
-import { DEFAULT_CENTER, libraries } from "@/utils/config/map.config";
 
-
+const DEFAULT_CENTER = { lat: 9.9312, lng: 76.2673, travelFee: -1, address: '' };
 
 interface LocationSectionProps {
   location: Location;
   updateLocation: (location: Location) => void;
 }
-
 
 export const LocationSection: React.FC<LocationSectionProps> = ({
   location,
@@ -21,9 +24,10 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
 }) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [address, setAddress] = useState(location.address || "");
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [marker, setMarker] = useState<Location>(
+  const [marker, setMarker] = useState<Omit<Location, "address">>(
     location.lat && location.lng ? location : DEFAULT_CENTER
   );
 
@@ -36,9 +40,10 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
             travelFee: location.travelFee ?? -1,
+            address: address || ''
           };
           setMarker(userLoc);
-          updateLocation({ ...location, ...userLoc });
+          updateLocation(userLoc);
           map?.panTo(userLoc);
         },
         (error) => {
@@ -46,18 +51,21 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
         }
       );
     }
-  }, [location.lat, location.lng, map]);
+  }, [location.lat, location.lng, map, address]);
 
   const handlePlaceChanged = () => {
     if (autocompleteRef.current) {
       const place = autocompleteRef.current.getPlace();
+      const newAddress = place.formatted_address || address;
+      setAddress(newAddress);
+
       if (place?.geometry?.location) {
         const lat = place.geometry.location.lat();
         const lng = place.geometry.location.lng();
-        const newLoc = { lat, lng, travelFee: location.travelFee ?? -1 };
-        setMarker(newLoc);
-        updateLocation({ ...location, ...newLoc });
-        map?.panTo(newLoc);
+        const newLoc = { lat, lng, travelFee: location.travelFee ?? -1, address: newAddress };
+        setMarker({ lat, lng, travelFee: location.travelFee ?? -1 });
+        updateLocation(newLoc);
+        map?.panTo({ lat, lng });
       }
     }
   };
@@ -66,9 +74,9 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
     if (e.latLng) {
       const lat = e.latLng.lat();
       const lng = e.latLng.lng();
-      const newLoc = { lat, lng, travelFee: location.travelFee ?? -1 };
-      setMarker(newLoc);
-      updateLocation({ ...location, ...newLoc });
+      const newLoc = { lat, lng, travelFee: location.travelFee ?? -1, address };
+      setMarker({ lat, lng, travelFee: location.travelFee ?? -1 });
+      updateLocation(newLoc);
     }
   };
 
@@ -77,8 +85,17 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
     setIsLoading(false);
   };
 
-  const handleFieldChange = (field: string, value: string | number | boolean) => {
-    updateLocation({ ...location, [field]: value });
+  const handleFieldChange = (
+    field: string,
+    value: string | number | boolean
+  ) => {
+    updateLocation({ ...location, [field]: value, address });
+  };
+
+  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newAddress = e.target.value;
+    setAddress(newAddress);
+    updateLocation({ ...location, address: newAddress });
   };
 
   return (
@@ -115,7 +132,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
 
         <LoadScript
           googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}
-          libraries={libraries}
+          libraries={["places"]}
           loadingElement={
             <div className="flex justify-center items-center h-[400px]">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -133,9 +150,11 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
               <Input
                 ref={inputRef}
                 type="text"
-                placeholder={'Select a location you provide service'}
+                placeholder="Select a location you provide service"
                 className="w-full"
                 aria-label="Search for a location"
+                value={address}
+                onChange={handleAddressChange}
               />
             </Autocomplete>
 

@@ -114,6 +114,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
       },
     ],
     location: {
+      address :'',
       travelFee: 0,
       lat : 0,
       lng : 0,
@@ -180,10 +181,6 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
       toast.error("Basic details are needed to save a draft");
     }
   };
-
-  const handleUpdateService = ()=> {
-    console.log(formik.values);
-  }
 
   const markFieldAsTouched = (fieldName: string) => {
     setTouchedFields((prev) => ({ ...prev, [fieldName]: true }));

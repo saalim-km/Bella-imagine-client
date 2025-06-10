@@ -40,6 +40,7 @@ export interface BookingState {
 }
 
 export interface Location {
+  address : string;
   travelFee : number;
   lat : number;
   lng : number;
