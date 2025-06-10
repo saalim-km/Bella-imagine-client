@@ -10,6 +10,7 @@ import {
   Autocomplete,
 } from "@react-google-maps/api";
 import { Loader2 } from "lucide-react";
+import { libraries } from "@/utils/config/map.config";
 
 const DEFAULT_CENTER = { lat: 9.9312, lng: 76.2673, travelFee: -1, address: '' };
 
@@ -132,7 +133,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
 
         <LoadScript
           googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}
-          libraries={["places"]}
+          libraries={libraries}
           loadingElement={
             <div className="flex justify-center items-center h-[400px]">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
