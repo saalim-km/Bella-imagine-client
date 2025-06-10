@@ -17,7 +17,7 @@ const LocationInput = ({ value, onChange, error }: {
       const address = place.formatted_address || place.name
       const lat = place.geometry?.location?.lat()
       const lng = place.geometry?.location?.lng()
-
+      
       onChange(address!, lat && lng ? { lat, lng } : undefined)
     }
   }

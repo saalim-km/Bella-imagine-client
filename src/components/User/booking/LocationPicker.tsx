@@ -6,6 +6,7 @@ import { GoogleMap, Marker, LoadScript, Autocomplete } from "@react-google-maps/
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Loader2 } from "lucide-react"
+import { libraries } from "@/utils/config/map.config"
 
 // Default center (can be customized based on user's location)
 const DEFAULT_CENTER = { lat: 9.9312, lng: 76.2673 }
@@ -79,7 +80,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({ onLocationSelect, initi
       <CardContent>
         <LoadScript
           googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}
-          libraries={["places"]}
+          libraries={libraries}
           loadingElement={
             <div className="flex justify-center items-center h-[400px]">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />

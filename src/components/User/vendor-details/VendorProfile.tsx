@@ -150,7 +150,7 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
             <h2 className="font-serif text-2xl text-foreground">Experience</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="p-4 border border-border/10 rounded-lg bg-muted/5">
-                {vendor.services[0] &&  (
+                {vendor.services[0] && (
                   <>
                     <div className="text-3xl font-serif text-foreground mb-1">
                       {vendor.services[0].yearsOfExperience}
