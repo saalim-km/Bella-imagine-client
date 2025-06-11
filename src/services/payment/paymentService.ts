@@ -19,7 +19,7 @@ export const makePaymentAndBooking = async (data: {
   const response = await clientAxiosInstance.post(
     "/client/create-payment-intent",
     {
-      amount: data.amount,
+      totalAmount: data.amount,
       purpose: data.purpose,
       bookingData: data.bookingData,
       createrType: data.createrType,

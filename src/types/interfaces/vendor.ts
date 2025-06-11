@@ -32,11 +32,15 @@ export interface BookingState {
   selectedDate: string | null;
   selectedTimeSlot: TimeSlot | null;
   selectedDuration: SessionDuration | null;
-  vendorId ?: string,
-  location : {
+  vendorId?: string;
+  location: {
     lat: number;
     lng: number;
-  }
+  };
+  locationAddress?: string;
+  distance?: number;
+  travelTime?: string;
+  travelFee?: number;
 }
 
 export interface Location {

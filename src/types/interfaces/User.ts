@@ -83,32 +83,10 @@ export interface IVendorsResponse extends IClient {
 }
 
 
-
-// // geolocation types
-// export interface GeolocationPosition {
-//   coords: GeolocationCoordinates;
-//   timestamp: number;
-// }
-
-// export interface GeolocationCoordinates {
-//   latitude: number;
-//   longitude: number;
-//   altitude: number | null;
-//   accuracy: number;
-//   altitudeAccuracy: number | null;
-//   heading: number | null;
-//   speed: number | null;
-// }
-
-
-
-
 // Booking types
 export interface Booking {
   vendorId: string;
-
   serviceId: string;
-
   bookingDate: string;
   timeSlot: {
     startTime: string;
@@ -118,5 +96,9 @@ export interface Booking {
     lat: number
     lng: number
   }
+  distance : number;
+  customLocation : string;
+  travelTime : string;
+  travelFee : number;
   totalPrice: number;
 }
