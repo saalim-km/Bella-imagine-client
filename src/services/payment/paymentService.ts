@@ -4,8 +4,8 @@ import { Booking } from "@/types/interfaces/User";
 export type Purpose = "vendor-booking" | "role-upgrade" | "ticket-purchase";
 
 export interface PaymentResponse {
-  success: true;
-  clientSecret: string;
+  success: boolean;
+  data: string;
   message: string;
 }
 
@@ -19,9 +19,8 @@ export const makePaymentAndBooking = async (data: {
   const response = await clientAxiosInstance.post(
     "/client/create-payment-intent",
     {
-      totalAmount: data.amount,
+      ...data.bookingData,
       purpose: data.purpose,
-      bookingData: data.bookingData,
       createrType: data.createrType,
       receiverType: data.receiverType,
     }

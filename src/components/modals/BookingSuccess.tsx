@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { CalendarCheck, PartyPopper } from "lucide-react";
+import {   Camera, MessageSquare } from "lucide-react";
 
 import {
   Dialog,
@@ -10,12 +10,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface BookingSuccessModalProps {
   isOpen: boolean;
   onClose: () => void;
   eventName: string;
   eventDate: string;
+  vendorName: string;
+  userName: string;
 }
 
 export function BookingSuccessModal({
@@ -23,7 +26,10 @@ export function BookingSuccessModal({
   onClose,
   eventName,
   eventDate,
+  vendorName,
+  userName,
 }: BookingSuccessModalProps) {
+  const navigate = useNavigate()
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -44,12 +50,12 @@ export function BookingSuccessModal({
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                <CalendarCheck className="w-8 h-8 text-green-600" />
+                <Camera className="w-8 h-8 text-green-600" />
               </motion.div>
             </motion.div>
           </div>
           <DialogTitle className="text-center text-2xl font-semibold">
-            Booking Confirmed!
+            Booking Confirmed, {userName}
           </DialogTitle>
           <DialogDescription className="text-center">
             <motion.div
@@ -59,13 +65,16 @@ export function BookingSuccessModal({
               className="space-y-2"
             >
               <p className="text-muted-foreground">
-                Your booking for{" "}
-                <span className="font-medium text-foreground">{eventName}</span>{" "}
-                has been successfully confirmed.
+                You've successfully booked{" "}
+                <span className="font-medium text-foreground">{vendorName}</span>{" "}
+                for <span className="font-medium text-foreground">{eventName}</span>.
               </p>
               <p className="text-muted-foreground">
                 Event Date:{" "}
                 <span className="font-medium text-foreground">{eventDate}</span>
+              </p>
+              <p className="text-muted-foreground">
+                Your photographer is ready to capture your special moments!
               </p>
             </motion.div>
           </DialogDescription>
@@ -77,11 +86,11 @@ export function BookingSuccessModal({
             transition={{ delay: 0.4 }}
             className="flex items-center gap-2 px-4 py-2 bg-muted rounded-full text-sm text-muted-foreground"
           >
-            <PartyPopper className="w-4 h-4" />
-            <span>Get ready for an amazing event!</span>
+            <Camera className="w-4 h-4" />
+            <span>Stunning photos await!</span>
           </motion.div>
         </div>
-        <DialogFooter className="sm:justify-center">
+        <DialogFooter className="sm:justify-center space-y-2 sm:space-y-0 sm:space-x-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -90,6 +99,22 @@ export function BookingSuccessModal({
             <Button
               type="button"
               size="lg"
+              className="w-full sm:w-auto"
+              onClick={()=> navigate('/messages')}
+            >
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Message {vendorName}
+            </Button>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <Button
+              type="button"
+              size="lg"
+              variant="outline"
               className="w-full sm:w-auto"
               onClick={onClose}
             >
@@ -101,4 +126,3 @@ export function BookingSuccessModal({
     </Dialog>
   );
 }
-    
