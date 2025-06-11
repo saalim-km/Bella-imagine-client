@@ -147,7 +147,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
       const lng = e.latLng.lng();
 
       const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+      geocoder.geocode({ location: { lat, lng } }, (results : any, status : any) => {
         if (status === "OK" && results && results[0]) {
           const newLocation: LocationData = {
             address: results[0].formatted_address,
