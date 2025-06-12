@@ -23,7 +23,7 @@ const VendorLogin = () => {
         setIsSending(false);
         console.log(data);
         toast.success(data.message);
-        dispatch(vendorLogin(data.user));
+        dispatch(vendorLogin(data.data));
         if (socket) {
           reconnect();
         }

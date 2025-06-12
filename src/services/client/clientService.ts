@@ -21,6 +21,7 @@ export interface IClient {
   name: string;
   email: string;
   profileImage?: string;
+  avatar ?: string;
   password?: string;
   phoneNumber?: number;
   location?: TLocation;
@@ -47,15 +48,14 @@ export interface GetVendorDetails {
   serviceLimit: number;
 }
 
-export const getClientDetails = async (): Promise<IClientReponse> => {
+export const getClientDetails = async (): Promise<BasePaginatedResponse<IClient>> => {
   const response = await clientAxiosInstance.get(ENDPOINTS.CLIENT_DETAILS);
   return response.data;
 };
 
 export const updateClientDetails = async (
   data: IProfileUpdate
-): Promise<IProfileUpdateResponse> => {
-  console.log("in updateclient profile service : ✅ ", data);
+): Promise<BasePaginatedResponse<IClient>> => {
   const response = await clientAxiosInstance.put(
     ENDPOINTS.CLIENT_DETAILS,
     data,

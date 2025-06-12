@@ -49,11 +49,11 @@ export interface EditProfileFormProps {
   setIsEditing: (isEditing: boolean) => void
   data?: IVendor
   handleUpdateProfile?: (values: any) => void
+  isUpdateSubmitting : boolean
 }
 
 
-export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpdateProfile }: EditProfileFormProps) {
-  const [isUploading, setIsUploading] = useState(false)
+export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpdateProfile , isUpdateSubmitting }: EditProfileFormProps) {
   const [newLanguage, setNewLanguage] = useState("")
   const [open, setOpen] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -110,13 +110,11 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     try {
-      setIsUploading(true)
+      console.log(values);
       handleUpdateProfile?.(values)
-      setIsEditing(false)
     } catch (error) {
       handleError(error)
     } finally {
-      setIsUploading(false)
       setSubmitting(false)
       setUploadProgress(0)
     }
@@ -260,7 +258,6 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                     type="file"
                     accept="image/*"
                     onChange={(e) => handleImageSelect(e, setFieldValue)}
-                    disabled={isUploading}
                     id="profileImage"
                     className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer text-sm"
                   />
@@ -312,10 +309,9 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
           </div>
 
           <div>
-            <Label className="text-base font-medium">Location</Label>
             <Card className="mt-1">
               <CardHeader>
-                <CardTitle className="text-lg">Select Location</CardTitle>
+                <CardTitle className="text-lg">Location</CardTitle>
               </CardHeader>
               <CardContent>
                 <LoadScript
@@ -338,7 +334,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                       <Input
                         ref={inputRef}
                         type="text"
-                        placeholder="Search for a location"
+                        placeholder="Enter your location"
                         className="w-full"
                         aria-label="Search for a location"
                         value={values.location.address}
@@ -501,7 +497,6 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                         <Input
                           type="file"
                           onChange={(e) => handleDocumentSelect(e, setFieldValue)}
-                          disabled={isUploading}
                           id="verificationDocument"
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                         />
@@ -554,7 +549,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
               }
             </>
           )}
-
+{/* 
           {isUploading && (
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
@@ -570,14 +565,14 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                 />
               </div>
             </div>
-          )}
+          )} */}
 
           <div className="flex justify-end space-x-3 pt-2">
             <Button 
               type="button" 
               variant="destructive" 
               onClick={() => setIsEditing(false)} 
-              disabled={isSubmitting}
+              disabled={isUpdateSubmitting}
               className="px-5"
             >
               Cancel
@@ -585,10 +580,10 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
             <Button 
               variant={"outline"}
               type="submit" 
-              disabled={isSubmitting || isUploading}
+              disabled={isUpdateSubmitting}
               className="px-5"
             >
-              {isSubmitting ? "Saving..." : "Save Changes"}
+              {isUpdateSubmitting ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </Form>

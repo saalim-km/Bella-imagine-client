@@ -30,10 +30,7 @@ const vendorSlice = createSlice({
         },
         updateVendorSlice : (state, action) => {
             if (state.vendor) {
-                state.vendor = {
-                    ...state.vendor,
-                    avatar: action.payload,
-                };
+                state.vendor = action.payload;
             }
         }
     }

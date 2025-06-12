@@ -27,17 +27,23 @@ const clientSlice = createSlice({
         clientLogout : (state)=> {
             state.client = null;
             localStorage.removeItem("clientSession");
+        },
+        updateClientslice : (state,action)=> {
+            if(state.client) {
+                state.client = action.payload
+            }
         }
     }
 })
 
-const {clientLogin , clientLogout} = clientSlice.actions
+const {clientLogin , clientLogout , updateClientslice} = clientSlice.actions
 
 
 
 export {
     clientLogin , 
-    clientLogout
+    clientLogout,
+    updateClientslice
 }
 
 export default clientSlice.reducer

@@ -1,5 +1,3 @@
-import Footer from "@/components/common/Footer";
-import Header from "@/components/common/Header";
 import Login from "@/components/auth/Login";
 import { useLoginMutation } from "@/hooks/auth/useLogin";
 import { ILogin } from "@/types/interfaces/User";
@@ -21,7 +19,6 @@ const ClientLogin = () => {
     login(user, {
       onSuccess: (data: any) => {
         setIsSending(false);
-        console.log(data);
         toast.success(data.message);
         dispatch(clientLogin(data.data));
         if (socket) {

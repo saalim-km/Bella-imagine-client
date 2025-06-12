@@ -1,5 +1,5 @@
 import { vendorAxiosInstance } from "@/api/vendor.axios";
-import { IClient } from "../client/clientService";
+import { BasePaginatedResponse, IClient } from "../client/clientService";
 import { ENDPOINTS } from "@/api/endpoints";
 import { IProfileUpdate, IVendorReponse } from "@/types/interfaces/User";
 import {
@@ -25,14 +25,13 @@ export interface IVendor extends IClient {
   isVerified?: "pending" | "accept" | "reject";
 }
 
-export const getVendorDetails = async (): Promise<IVendorReponse> => {
+export const getVendorDetails = async (): Promise<BasePaginatedResponse<IVendor>> => {
   const response = await vendorAxiosInstance.get(ENDPOINTS.VENDOR_DETAILS);
   console.log(response);
   return response.data;
 };
 
-export const updateVendorDetails = async (payload: IProfileUpdate) => {
-    console.log('data in the vendorupdate service : ',payload);
+export const updateVendorDetails = async (payload: IProfileUpdate) : Promise<BasePaginatedResponse<IVendor>> => {
   const response = await vendorAxiosInstance.put(
     ENDPOINTS.VENDOR_DETAILS,
     payload,
