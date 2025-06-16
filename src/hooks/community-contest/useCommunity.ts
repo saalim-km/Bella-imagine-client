@@ -7,7 +7,7 @@ export const useCreateCommunityMutation = ()=> {
     })
 }
 
-export const useGetlAllCommunity = (dto : { page : number , limit : number})=> {
+export const useGetlAllCommunity = (dto : { page : number , limit : number , search : string})=> {
     return useQuery({
         queryKey : ["all-community",dto],
         queryFn : ()=> getAllCommunites(dto)

@@ -7,8 +7,9 @@ import { ApiResponse } from "@/hooks/vendor/useVendor";
 import { IVendor } from "../vendor/vendorService";
 import { data } from "react-router-dom";
 import { PaginatedResponse } from "@/types/interfaces/vendor";
+import { BasePaginatedResponse } from "../client/clientService";
 
-export type Category = {
+export interface Category {
   _id: string;
   categoryId: string;
   status: boolean;
@@ -18,10 +19,6 @@ export type Category = {
   __v: number;
 };
 
-export interface CategoryResponse {
-  success: boolean;
-  categories: Category[];
-}
 
 export interface RequestCategoryResponse {
   success : boolean,
@@ -53,7 +50,7 @@ export interface PaginatedCatRequestResponse {
 }
 
 export const getAllCategories = async () => {
-  const response = await vendorAxiosInstance.get<CategoryResponse>(ENDPOINTS.VENDOR_CATEGORIES);
+  const response = await vendorAxiosInstance.get<BasePaginatedResponse<PaginatedResponse<Category>>>(ENDPOINTS.VENDOR_CATEGORIES);
   return response.data;
 };
 
@@ -75,7 +72,7 @@ export const updateCategoryJoinRequest = async(data : {vendorId : string , categ
 
 
 export const vendorJoinCategory = async (category: string) => {
-  const response = await vendorAxiosInstance.post<ApiResponse>("/vendor/categories/join",
+  const response = await vendorAxiosInstance.post<ApiResponse>("/vendor/categories",
     {
       category,
     }

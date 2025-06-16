@@ -32,10 +32,7 @@ import {
 } from "@/types/interfaces/vendor";
 import VendorWorkSample from "@/components/vendor/VendorWorkSample";
 import WorkSampleUpload, {
-  WorkSampleFormData,
 } from "@/components/vendor/work-sample/WorkSampleUpload";
-import { ClientBookingListing } from "./ClientBookingListing";
-import { VendorBookingListing } from "../vendor/vendorBookingListing";
 import ClientWallet from "./ClientWalletPage";
 import VendorWallet from "../vendor/VendorWallet";
 import { useDispatch } from "react-redux";
@@ -44,6 +41,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { IVendor } from "@/services/vendor/vendorService";
 import { IClient } from "@/services/client/clientService";
 import { updateClientslice } from "@/store/slices/clientSlice";
+import ClientBookingList from "./ClientBookingListing";
+import VendorBookingList from "../vendor/vendorBookingListing";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -99,7 +98,6 @@ export default function UserProfile() {
   const hasCategory =
     userType?.role === "vendor" && vendorData?.data?.categories?.length !== 0;
 
-  const userTypeForChat = userType?.role === "client" ? "Client" : "Vendor";
   function handleIsServiceEditing(data: IServiceResponse) {
     setIsServiceEditData(data);
     setServiceCreating(!isServiceCreating);
@@ -342,11 +340,11 @@ export default function UserProfile() {
 
                 {activeTab === "bookings-history" &&
                   userType?.role === "client" && (
-                    <ClientBookingListing userType={userType?.role} />
+                    <ClientBookingList userType={userType?.role} />
                   )}
 
                 {activeTab === "bookings" && userType?.role === "vendor" && (
-                  <VendorBookingListing userType={userType?.role} />
+                  <VendorBookingList userType={userType?.role} />
                 )}
 
                 {activeTab === "wallet" && userType?.role === "client" && (

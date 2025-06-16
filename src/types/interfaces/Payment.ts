@@ -6,6 +6,11 @@ export type PaymentStatus =
   | "refunded"
   | "partially_refunded";
 
+  export type TBookingStatus =
+  | "pending"
+  | "confirmed"
+  | "cancelled"
+  | "completed";
 export type Purpose = "vendor-booking" | "role-upgrade" | "ticket-purchase";
 
 export interface IPaymentEntity {

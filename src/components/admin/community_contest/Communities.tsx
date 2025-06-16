@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,6 +16,7 @@ import {
 } from "@/hooks/community-contest/useCommunity";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
+import { debounce } from "lodash";
 
 // Define the Community interface
 
@@ -37,10 +38,18 @@ export default function Communities() {
     data,
     isLoading,
     refetch: refetchCommunities,
-  } = useGetlAllCommunity({ page: currentPage, limit: itemsPerPage });
+  } = useGetlAllCommunity({ page: currentPage, limit: itemsPerPage , search : searchQuery});
   const { mutate: deleteCommunity } = useDeleteCommunity();
-  const communities = data?.data || [];
-  const totalPages = Math.max(1, Math.ceil(data?.total! / itemsPerPage));
+  const communities = data?.data.data || [];
+  const totalPages = Math.max(1, Math.ceil(data?.data.total! / itemsPerPage));
+
+  // Debounced search handler
+  const debouncedSearch = useCallback(
+    debounce((value: string) => {
+      setSearchQuery(value);
+    }, 300),
+    []
+  );
 
   const filteredCommunities = communities.filter((community: Community) =>
     community.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -75,6 +84,7 @@ export default function Communities() {
       setCurrentPage(newPage);
     }
   };
+
   // Columns for All Communities Tab
   const allColumns: ColumnDef<Community>[] = [
     {
@@ -182,8 +192,7 @@ export default function Communities() {
             type="search"
             placeholder="Search communities..."
             className="pl-8"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => debouncedSearch(e.target.value)}
           />
         </div>
       </div>
@@ -238,14 +247,14 @@ export default function Communities() {
             <div className="flex flex-col md:flex-row gap-4">
               {selectedCommunity.coverImage && (
                 <img
-                  src={selectedCommunity.coverImage}
+                  src={selectedCommunity.coverImage as string}
                   alt="Cover"
                   className="w-full md:w-2/3 h-48 object-cover rounded-md"
                 />
               )}
               {selectedCommunity.iconImage && (
                 <img
-                  src={selectedCommunity.iconImage}
+                  src={selectedCommunity.iconImage as string}
                   alt="Icon"
                   className="w-24 h-24 rounded-full border p-1 bg-white"
                 />

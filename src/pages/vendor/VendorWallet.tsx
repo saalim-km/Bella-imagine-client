@@ -18,11 +18,11 @@ export default function VendorWallet() {
 
   useEffect(() => {
     if (data) {
-      setWalletData(data.walletData);
+      setWalletData(data.data);
 
       setTransactions({
-        userId: data.walletData.userId,
-        paymentId: data.walletData.paymentId,
+        userId: data.data.userId,
+        paymentId: data.data.paymentId,
       });
     }
   }, [data]);

@@ -16,7 +16,6 @@ import { handleError } from "@/utils/Error/error-handler.utils";
 
 interface CommunityFormProps {
   community?: Community;
-  isSubmitting?: boolean;
   refetch: () => void;
 }
 
@@ -25,7 +24,7 @@ const validationSchema = Yup.object({
   description: Yup.string().required("Description is required"),
 });
 
-export default function EditCommunityForm({ community, isSubmitting, refetch }: CommunityFormProps) {
+export default function EditCommunityForm({ community, refetch }: CommunityFormProps) {
   const navigate = useNavigate();
   const [rules, setRules] = useState<string[]>(community?.rules || []);
   const [newRule, setNewRule] = useState("");
@@ -35,6 +34,7 @@ export default function EditCommunityForm({ community, isSubmitting, refetch }: 
   const [iconPreview, setIconPreview] = useState<string | null>(community?.iconImage as string || null);
   const [isPrivate, setIsPrivate] = useState(community?.isPrivate || false);
   const [isFeatured, setIsFeatured] = useState(community?.isFeatured || false);
+  const [isSubmitting , setIsSubmitting] = useState(false)
   const { mutate: updateCommunity } = useUpdateCommunity();
 
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,6 +91,7 @@ export default function EditCommunityForm({ community, isSubmitting, refetch }: 
       }}
       validationSchema={validationSchema}
       onSubmit={(values) => {
+        setIsSubmitting(true)
         const formData: Partial<Community> = {
           _id : community?._id,
           ...values,
@@ -101,16 +102,17 @@ export default function EditCommunityForm({ community, isSubmitting, refetch }: 
           isFeatured,
           slug: community?.slug,
         };
-        console.log(formData);
         updateCommunity(
           formData,
           {
             onSuccess: (data) => {
+              setIsSubmitting(false)
               toast.success(data.message);
               refetch();
               navigate("/admin/community");
             },
             onError: (error) => {
+              setIsSubmitting(false)
               handleError(error);
             },
           }
@@ -276,7 +278,6 @@ export default function EditCommunityForm({ community, isSubmitting, refetch }: 
               type="submit"
               disabled={
                 isSubmitting ||
-                formikSubmitting ||
                 rules.length < 1 ||
                 !values.name ||
                 !values.description
@@ -284,7 +285,7 @@ export default function EditCommunityForm({ community, isSubmitting, refetch }: 
               size="sm"
               aria-label={community ? "Update community" : "Create community"}
             >
-              {isSubmitting || formikSubmitting ? "Saving..." : community ? "Update" : "Create"}
+              {isSubmitting ? "Saving..." : community ? "Update" : "Create"}
             </Button>
           </div>
         </Form>

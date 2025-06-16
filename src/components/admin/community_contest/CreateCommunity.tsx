@@ -166,7 +166,7 @@ export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps)
             {rules.length > 0 && (
               <ul className="mt-2 space-y-1 max-h-24 overflow-y-auto">
                 {rules.map((rule, index) => (
-                  <li key={index} className="flex items-center justify-between text-sm bg-gray-100 p-2 rounded">
+                  <li key={index} className="flex items-center justify-between text-sm  p-2 rounded">
                     {rule}
                     <Button
                       type="button"

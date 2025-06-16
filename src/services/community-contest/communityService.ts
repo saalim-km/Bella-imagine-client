@@ -3,6 +3,12 @@ import { clientAxiosInstance } from "@/api/client.axios";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
 import { Community } from "@/types/interfaces/Community"
 import { PaginatedResponse } from "@/types/interfaces/vendor";
+import { BasePaginatedResponse } from "../client/clientService";
+
+export interface CommunityBySlugResponse {
+    community : Community;
+    isMember : boolean
+}
 
 export const createCommunityService = async(dto : Partial<Community>) : Promise<ApiResponse>=> {
     const response = await adminAxiosInstance.post('/community',dto,{
@@ -13,7 +19,7 @@ export const createCommunityService = async(dto : Partial<Community>) : Promise<
     return response.data;
 }
 
-export const getAllCommunites = async(dto : { page : number , limit : number}) : Promise<PaginatedResponse<Community>> => {
+export const getAllCommunites = async(dto : { page : number , limit : number , search : string}) : Promise<BasePaginatedResponse<PaginatedResponse<Community>>> => {
     const response = await adminAxiosInstance.get('/community',{params : dto})
     return response.data;
 }
@@ -24,7 +30,7 @@ export const deleteCommunityService = async(communityId : string): Promise<ApiRe
     return response.data;
 }
 
-export const getCommunityBySlugService = async(slug : string) : Promise<{community : Community , isMember : boolean}> =>{
+export const getCommunityBySlugService = async(slug : string) : Promise<BasePaginatedResponse<CommunityBySlugResponse>> =>{
     const response = await adminAxiosInstance.get(`/community/${slug}`);
     return response.data;
 }

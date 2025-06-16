@@ -84,7 +84,7 @@ export interface IVendorsResponse extends IClient {
 
 
 // Booking types
-export interface Booking {
+export interface  Booking {
   vendorId: string;
   serviceId: string;
   bookingDate: string;

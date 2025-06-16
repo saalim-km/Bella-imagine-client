@@ -18,9 +18,9 @@ export default function ClientWallet() {
 
   useEffect(() => {
     if (data) {
-      setWalletData(data.walletData);
+      setWalletData(data.data);
 
-      setTransactions(data.walletData);
+      setTransactions(data.data);
     }
   }, [data]);
 

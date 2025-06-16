@@ -1,13 +1,9 @@
 import { clientAxiosInstance } from "@/api/client.axios";
 import { PopulatedWallet } from "@/types/interfaces/Wallet";
-
-export interface WalletDetailsResponse {
-  walletData: PopulatedWallet;
-  success: boolean;
-}
+import { BasePaginatedResponse } from "../client/clientService";
 
 export const getClientWalletDetails =
-  async (): Promise<WalletDetailsResponse> => {
+  async (): Promise<BasePaginatedResponse<PopulatedWallet>> => {
     const response = await clientAxiosInstance.get("/client/wallet");
     return response.data;
   };
