@@ -10,18 +10,20 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Link, useNavigate } from "react-router-dom";
 import { useUpdateCommunity } from "@/hooks/community-contest/useCommunity";
-import { Community } from "@/types/interfaces/Community";
+import { Community, CommunityResponse } from "@/types/interfaces/Community";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
+import { useAllCategoryQuery } from "@/hooks/admin/useAllCategory";
 
 interface CommunityFormProps {
-  community?: Community;
+  community?: CommunityResponse;
   refetch: () => void;
 }
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Community name is required"),
   description: Yup.string().required("Description is required"),
+  category: Yup.string().required("Please select a category"),
 });
 
 export default function EditCommunityForm({ community, refetch }: CommunityFormProps) {
@@ -34,15 +36,16 @@ export default function EditCommunityForm({ community, refetch }: CommunityFormP
   const [iconPreview, setIconPreview] = useState<string | null>(community?.iconImage as string || null);
   const [isPrivate, setIsPrivate] = useState(community?.isPrivate || false);
   const [isFeatured, setIsFeatured] = useState(community?.isFeatured || false);
-  const [isSubmitting , setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data, isLoading } = useAllCategoryQuery({}, { limit: 100, page: 1 });
   const { mutate: updateCommunity } = useUpdateCommunity();
+
+  const categories = data?.data.data;
 
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setCoverImageFile(file);
-
-      // Create preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
         setCoverPreview(reader.result as string);
@@ -55,8 +58,6 @@ export default function EditCommunityForm({ community, refetch }: CommunityFormP
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setIconImageFile(file);
-
-      // Create preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
         setIconPreview(reader.result as string);
@@ -88,15 +89,16 @@ export default function EditCommunityForm({ community, refetch }: CommunityFormP
       initialValues={{
         name: community?.name || "",
         description: community?.description || "",
+        category: community?.category || "", // Initialize category
       }}
       validationSchema={validationSchema}
       onSubmit={(values) => {
-        setIsSubmitting(true)
+        setIsSubmitting(true);
         const formData: Partial<Community> = {
-          _id : community?._id,
+          _id: community?._id,
           ...values,
           rules,
-          coverImage: coverImageFile! ?? undefined,
+          coverImage: coverImageFile ?? undefined,
           iconImage: iconImageFile ?? undefined,
           isPrivate,
           isFeatured,
@@ -106,13 +108,13 @@ export default function EditCommunityForm({ community, refetch }: CommunityFormP
           formData,
           {
             onSuccess: (data) => {
-              setIsSubmitting(false)
+              setIsSubmitting(false);
               toast.success(data.message);
               refetch();
               navigate("/admin/community");
             },
             onError: (error) => {
-              setIsSubmitting(false)
+              setIsSubmitting(false);
               handleError(error);
             },
           }
@@ -148,6 +150,32 @@ export default function EditCommunityForm({ community, refetch }: CommunityFormP
               aria-required="true"
             />
             <ErrorMessage name="description" component="p" className="text-xs text-red-500" />
+          </div>
+
+          {/* Category */}
+          <div className="space-y-1">
+            <Label htmlFor="category">Category</Label>
+            {isLoading ? (
+              <Skeleton className="w-full h-10 rounded-md" />
+            ) : (
+              <Field
+                as="select"
+                id="category"
+                name="category"
+                className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-required="true"
+              >
+                <option value={community?.category._id}>
+                  {community?.category.title}
+                </option>
+                {categories?.map((cat: any) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.title}
+                  </option>
+                ))}
+              </Field>
+            )}
+            <ErrorMessage name="category" component="p" className="text-xs text-red-500" />
           </div>
 
           {/* Rules */}
@@ -278,14 +306,16 @@ export default function EditCommunityForm({ community, refetch }: CommunityFormP
               type="submit"
               disabled={
                 isSubmitting ||
+                formikSubmitting ||
                 rules.length < 1 ||
                 !values.name ||
-                !values.description
+                !values.description ||
+                !values.category
               }
               size="sm"
               aria-label={community ? "Update community" : "Create community"}
             >
-              {isSubmitting ? "Saving..." : community ? "Update" : "Create"}
+              {isSubmitting || formikSubmitting ? "Saving..." : community ? "Update" : "Create"}
             </Button>
           </div>
         </Form>

@@ -7,13 +7,20 @@ import { useDispatch } from "react-redux";
 import { clientLogin } from "@/store/slices/clientSlice";
 import { useState } from "react";
 import { useSocket } from "@/context/SocketContext";
+import AccountTypeModal from "@/components/modals/AccountTypeModal";
 
 const ClientLogin = () => {
   const { reconnect, socket } = useSocket();
   const dispatch = useDispatch();
   const { mutate: login } = useLoginMutation();
   const [isSending, setIsSending] = useState(false);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  function handleOpenModal() {
+    setIsModalOpen(true);
+  }
+  function handleOnClose() {
+    setIsModalOpen(false);
+  }
   function handleLogin(user: ILogin) {
     setIsSending(true);
     login(user, {
@@ -34,7 +41,17 @@ const ClientLogin = () => {
 
   return (
     <>
-      <Login userType="client" onSubmit={handleLogin} isSending={isSending} />
+      <Login
+        userType="client"
+        onSubmit={handleLogin}
+        isSending={isSending}
+        onClick={handleOpenModal}
+      />
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <AccountTypeModal isOpen={isModalOpen} onClose={handleOnClose} />
+        </div>
+      )}
     </>
   );
 };

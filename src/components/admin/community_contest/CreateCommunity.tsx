@@ -3,17 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { X, Upload, AlertCircle } from "lucide-react";
+import { X, Upload } from "lucide-react";
 import { Formik, Field, ErrorMessage, Form } from "formik";
 import * as Yup from "yup";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Link, useNavigate } from "react-router-dom";
 import { useCreateCommunityMutation } from "@/hooks/community-contest/useCommunity";
 import { Community } from "@/types/interfaces/Community";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
+import { useAllCategoryQuery } from "@/hooks/admin/useAllCategory";
 
 interface CommunityFormProps {
   initialData?: {
@@ -24,6 +24,7 @@ interface CommunityFormProps {
     iconImage: string | null;
     isPrivate: boolean;
     isFeatured: boolean;
+    category?: string; // Added category to initialData
   };
   isSubmitting?: boolean;
 }
@@ -31,27 +32,32 @@ interface CommunityFormProps {
 const validationSchema = Yup.object({
   name: Yup.string().required("Community name is required"),
   description: Yup.string().required("Description is required"),
+  category: Yup.string().required("Please select a category"),
 });
 
 export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [rules, setRules] = useState<string[]>(initialData?.rules || []);
   const [newRule, setNewRule] = useState("");
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [iconImageFile, setIconImageFile] = useState<File | null>(null);
-  const [coverPreview, setCoverPreview] = useState<string | null>(initialData?.coverImage || null);
-  const [iconPreview, setIconPreview] = useState<string | null>(initialData?.iconImage || null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(
+    initialData?.coverImage || null
+  );
+  const [iconPreview, setIconPreview] = useState<string | null>(
+    initialData?.iconImage || null
+  );
   const [isPrivate, setIsPrivate] = useState(initialData?.isPrivate || false);
   const [isFeatured, setIsFeatured] = useState(initialData?.isFeatured || false);
+  const { data, isLoading } = useAllCategoryQuery({}, { limit: 100, page: 1 });
+  const { mutate: createCommunity } = useCreateCommunityMutation();
 
-  const { mutate: createCommunity } = useCreateCommunityMutation()
+  const categories = data?.data.data;
 
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setCoverImageFile(file);
-      
-      // Create preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
         setCoverPreview(reader.result as string);
@@ -64,8 +70,6 @@ export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps)
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setIconImageFile(file);
-      
-      // Create preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
         setIconPreview(reader.result as string);
@@ -97,6 +101,7 @@ export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps)
       initialValues={{
         name: initialData?.name || "",
         description: initialData?.description || "",
+        category: initialData?.category || "", // Initialize category
       }}
       validationSchema={validationSchema}
       onSubmit={async (values) => {
@@ -108,16 +113,16 @@ export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps)
           isPrivate,
           isFeatured,
         };
-        console.log('new community data  : ',formData);
+        console.log("new community data: ", formData);
         createCommunity(formData as unknown as Partial<Community>, {
           onSuccess: (data) => {
-            toast.success(data.message)
-            navigate('/admin/community')
+            toast.success(data.message);
+            navigate("/admin/community");
           },
           onError: (error) => {
             handleError(error);
-          }
-        })
+          },
+        });
       }}
     >
       {({ isSubmitting: formikSubmitting, values }) => (
@@ -146,7 +151,40 @@ export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps)
               rows={3}
               className="w-full"
             />
-            <ErrorMessage name="description" component="p" className="text-xs text-red-500" />
+            <ErrorMessage
+              name="description"
+              component="p"
+              className="text-xs text-red-500"
+            />
+          </div>
+
+          {/* Category */}
+          <div className="space-y-1">
+            <Label htmlFor="category">Category</Label>
+            {isLoading ? (
+              <Skeleton className="w-full h-10 rounded-md" />
+            ) : (
+              <Field
+                as="select"
+                id="category"
+                name="category"
+                className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="" disabled>
+                  Select a category
+                </option>
+                {categories?.map((cat: any) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.title}
+                  </option>
+                ))}
+              </Field>
+            )}
+            <ErrorMessage
+              name="category"
+              component="p"
+              className="text-xs text-red-500"
+            />
           </div>
 
           {/* Rules */}
@@ -166,7 +204,10 @@ export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps)
             {rules.length > 0 && (
               <ul className="mt-2 space-y-1 max-h-24 overflow-y-auto">
                 {rules.map((rule, index) => (
-                  <li key={index} className="flex items-center justify-between text-sm  p-2 rounded">
+                  <li
+                    key={index}
+                    className="flex items-center justify-between text-sm p-2 rounded"
+                  >
                     {rule}
                     <Button
                       type="button"
@@ -266,7 +307,8 @@ export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps)
                 formikSubmitting ||
                 rules.length < 1 ||
                 !values.name ||
-                !values.description
+                !values.description ||
+                !values.category // Disable if category is not selected
               }
               size="sm"
             >

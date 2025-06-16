@@ -1,11 +1,8 @@
 import { adminAxiosInstance } from "@/api/admin.axios";
-import { clientAxiosInstance } from "@/api/client.axios";
 import { ENDPOINTS } from "@/api/endpoints";
 import { vendorAxiosInstance } from "@/api/vendor.axios";
-import { CategoryType } from "@/hooks/admin/useAllCategory";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
 import { IVendor } from "../vendor/vendorService";
-import { data } from "react-router-dom";
 import { PaginatedResponse } from "@/types/interfaces/vendor";
 import { BasePaginatedResponse } from "../client/clientService";
 

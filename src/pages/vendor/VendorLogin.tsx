@@ -1,6 +1,7 @@
 import Login from "@/components/auth/Login";
 import Footer from "@/components/common/Footer";
 import Header from "@/components/common/Header";
+import AccountTypeModal from "@/components/modals/AccountTypeModal";
 import { useSocket } from "@/context/SocketContext";
 import { useLoginMutation } from "@/hooks/auth/useLogin";
 import { vendorLogin } from "@/store/slices/vendorSlice";
@@ -12,9 +13,18 @@ import { toast } from "sonner";
 
 const VendorLogin = () => {
   const dispatch = useDispatch();
+      const [isModalOpen, setIsModalOpen] = useState(false);
+
   const { mutate: login } = useLoginMutation();
   const [isSending, setIsSending] = useState(false);
   const { reconnect, socket } = useSocket();
+
+      function handleOpenModal() {
+    setIsModalOpen(true);
+  }
+  function handleOnClose() {
+    setIsModalOpen(false);
+  }
 
   function handleLogin(user: ILogin) {
     setIsSending(true);
@@ -41,6 +51,7 @@ const VendorLogin = () => {
         <Header />
         <div className="mt-20">
           <Login
+            onClick={handleOpenModal}
             userType="vendor"
             onSubmit={handleLogin}
             isSending={isSending}
@@ -48,6 +59,11 @@ const VendorLogin = () => {
         </div>
       </div>
       <Footer />
+              {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <AccountTypeModal isOpen={isModalOpen} onClose={handleOnClose} />
+        </div>
+      )}
     </>
   );
 };

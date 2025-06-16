@@ -9,7 +9,7 @@ import { DataTable, type ColumnDef } from "@/components/common/Table";
 import { ReusableDropdown } from "@/components/common/ReusableDropdown";
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
 import { Link } from "react-router-dom";
-import { Community } from "@/types/interfaces/Community";
+import { Community, CommunityResponse } from "@/types/interfaces/Community";
 import {
   useDeleteCommunity,
   useGetlAllCommunity,
@@ -27,7 +27,7 @@ export default function Communities() {
     null
   );
   const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
-  const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(
+  const [selectedCommunity, setSelectedCommunity] = useState<CommunityResponse | null>(
     null
   );
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,7 +38,11 @@ export default function Communities() {
     data,
     isLoading,
     refetch: refetchCommunities,
-  } = useGetlAllCommunity({ page: currentPage, limit: itemsPerPage , search : searchQuery});
+  } = useGetlAllCommunity({
+    page: currentPage,
+    limit: itemsPerPage,
+    search: searchQuery,
+  });
   const { mutate: deleteCommunity } = useDeleteCommunity();
   const communities = data?.data.data || [];
   const totalPages = Math.max(1, Math.ceil(data?.data.total! / itemsPerPage));
@@ -51,16 +55,12 @@ export default function Communities() {
     []
   );
 
-  const filteredCommunities = communities.filter((community: Community) =>
-    community.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   const handleDeleteClick = (communityId: string) => {
     setCommunityToDelete(communityId);
     setDeleteDialogOpen(true);
   };
 
-  const handleViewDetails = (community: Community) => {
+  const handleViewDetails = (community: CommunityResponse) => {
     setSelectedCommunity(community);
     setViewDetailsOpen(true);
   };
@@ -86,7 +86,7 @@ export default function Communities() {
   };
 
   // Columns for All Communities Tab
-  const allColumns: ColumnDef<Community>[] = [
+  const allColumns: ColumnDef<CommunityResponse>[] = [
     {
       id: "name",
       header: "Name",
@@ -138,6 +138,8 @@ export default function Communities() {
           <ReusableDropdown
             actions={[
               { type: "label", label: "Actions" },
+              { type: "separator" },
+
               {
                 label: "View Details",
                 onClick: () => handleViewDetails(community),
@@ -150,13 +152,6 @@ export default function Communities() {
               {
                 label: "Manage Members",
                 href: `/communities/${community._id}/members`,
-              },
-              { type: "separator" },
-              {
-                label: "Delete",
-                onClick: () => handleDeleteClick(community._id),
-                danger: true,
-                icon: <Trash2 className="h-4 w-4" />,
               },
             ]}
           />
@@ -206,7 +201,7 @@ export default function Communities() {
         {/* All */}
         <TabsContent value="all" className="mt-4">
           <DataTable
-            data={filteredCommunities}
+            data={communities}
             columns={allColumns}
             onPageChange={handlePageChange}
             isLoading={isLoading}
@@ -234,12 +229,14 @@ export default function Communities() {
       <BigModal
         open={viewDetailsOpen}
         onOpenChange={setViewDetailsOpen}
-        title={<>
-          {selectedCommunity?.slug}
-          <br/>
-          <br/>
-          {selectedCommunity?.name}
-        </>}
+        title={
+          <>
+            {selectedCommunity?.slug}
+            <br />
+            <br />
+            {selectedCommunity?.name}
+          </>
+        }
       >
         {selectedCommunity && (
           <div className="space-y-6">
@@ -300,6 +297,8 @@ export default function Communities() {
                     <li key={index}>{rule}</li>
                   ))}
                 </ul>
+                                <p className="font-semibold mb-2 my-4">Category : {selectedCommunity.category.title}</p>
+
               </div>
             )}
 

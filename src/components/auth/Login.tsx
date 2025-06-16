@@ -15,12 +15,18 @@ import { vendorLogin } from "@/store/slices/vendorSlice";
 import { useSocket } from "@/context/SocketContext";
 
 interface LoginProps {
+  onClick: () => void;
   userType: TRole;
   onSubmit: (data: ILogin) => void;
   isSending: boolean;
 }
 
-export default function Login({ userType, onSubmit, isSending }: LoginProps) {
+export default function Login({
+  userType,
+  onSubmit,
+  isSending,
+  onClick,
+}: LoginProps) {
   const dispatch = useDispatch();
   const { mutate: Login } = useGoogleLoginMutataion();
   const { reconnect, socket } = useSocket();
@@ -72,9 +78,13 @@ export default function Login({ userType, onSubmit, isSending }: LoginProps) {
             className="text-center space-y-2"
           >
             {userType === "admin" ? (
-              <h1 className="font-serif text-3xl sm:text-4xl tracking-tight">Admin Login</h1>
+              <h1 className="font-serif text-3xl sm:text-4xl tracking-tight">
+                Admin Login
+              </h1>
             ) : (
-              <h1 className="font-serif text-3xl sm:text-4xl tracking-tight">Welcome Back</h1>
+              <h1 className="font-serif text-3xl sm:text-4xl tracking-tight">
+                Welcome Back
+              </h1>
             )}
             <p className=" text-sm">Login to your account</p>
           </motion.div>
@@ -189,6 +199,15 @@ export default function Login({ userType, onSubmit, isSending }: LoginProps) {
             >
               Sign up
             </a>
+            <p className="text-gray-600 my-6">
+              Not a {userType === "client" ? "customer" : "photographer"}?{" "}
+              <a
+                onClick={onClick}
+                className="text-blue-600 hover:underline cursor-pointer"
+              >
+                Select a different account type
+              </a>
+            </p>
           </motion.div>
         </div>
       </div>

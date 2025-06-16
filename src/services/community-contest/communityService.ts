@@ -1,12 +1,12 @@
 import { adminAxiosInstance } from "@/api/admin.axios";
 import { clientAxiosInstance } from "@/api/client.axios";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
-import { Community } from "@/types/interfaces/Community"
+import { Community, CommunityResponse } from "@/types/interfaces/Community"
 import { PaginatedResponse } from "@/types/interfaces/vendor";
 import { BasePaginatedResponse } from "../client/clientService";
 
 export interface CommunityBySlugResponse {
-    community : Community;
+    community : CommunityResponse;
     isMember : boolean
 }
 
@@ -19,7 +19,7 @@ export const createCommunityService = async(dto : Partial<Community>) : Promise<
     return response.data;
 }
 
-export const getAllCommunites = async(dto : { page : number , limit : number , search : string}) : Promise<BasePaginatedResponse<PaginatedResponse<Community>>> => {
+export const getAllCommunites = async(dto : { page : number , limit : number , search : string}) : Promise<BasePaginatedResponse<PaginatedResponse<CommunityResponse>>> => {
     const response = await adminAxiosInstance.get('/community',{params : dto})
     return response.data;
 }
