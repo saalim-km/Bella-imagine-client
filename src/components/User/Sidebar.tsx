@@ -7,7 +7,6 @@ import { User, Calendar, CreditCard, Image, Camera, Upload, Ticket, ImageDown, C
 const clientNavItems = [
   { icon: Calendar, label: "Bookings & History", id: "bookings-history" },
   { icon: CreditCard, label: "Wallet & Transactions", id: "wallet" },
-  { icon: Image, label: "Received Work", id: "received-work" },
 ];
 
 const vendorNavItems = [

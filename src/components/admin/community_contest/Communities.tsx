@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import { Community, CommunityResponse } from "@/types/interfaces/Community";
 import {
   useDeleteCommunity,
-  useGetlAllCommunity,
+  useGetlAllCommunityAdmin,
 } from "@/hooks/community-contest/useCommunity";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
@@ -38,7 +38,7 @@ export default function Communities() {
     data,
     isLoading,
     refetch: refetchCommunities,
-  } = useGetlAllCommunity({
+  } = useGetlAllCommunityAdmin({
     page: currentPage,
     limit: itemsPerPage,
     search: searchQuery,
@@ -253,7 +253,7 @@ export default function Communities() {
                 <img
                   src={selectedCommunity.iconImage as string}
                   alt="Icon"
-                  className="w-24 h-24 rounded-full border p-1 bg-white"
+                  className="w-24 h-24 rounded-full object-cover border p-1 bg-white"
                 />
               )}
             </div>

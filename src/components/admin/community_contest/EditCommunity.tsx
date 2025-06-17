@@ -27,6 +27,7 @@ const validationSchema = Yup.object({
 });
 
 export default function EditCommunityForm({ community, refetch }: CommunityFormProps) {
+  console.log(community);
   const navigate = useNavigate();
   const [rules, setRules] = useState<string[]>(community?.rules || []);
   const [newRule, setNewRule] = useState("");
@@ -89,7 +90,7 @@ export default function EditCommunityForm({ community, refetch }: CommunityFormP
       initialValues={{
         name: community?.name || "",
         description: community?.description || "",
-        category: community?.category || "", // Initialize category
+        category: community?.category._id || "", // Initialize category
       }}
       validationSchema={validationSchema}
       onSubmit={(values) => {

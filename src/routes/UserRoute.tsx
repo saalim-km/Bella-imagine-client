@@ -15,6 +15,7 @@ import CommunityHomePage from "@/pages/community-contest/CommunityHomePage";
 import CommunityDetailPage from "@/pages/community-contest/CommunityDetailPage";
 import CreatePostPage from "@/pages/community-contest/CreatePostPage";
 import VendorDetailsPage from "@/pages/User/VendorDetailsPage";
+import Communities from "@/pages/community-contest/Communities";
 
 const ClientRoute = () => {
   return (
@@ -28,7 +29,8 @@ const ClientRoute = () => {
       <Route path="/photographer/:id" element = {<AuthClientRoute element={<VendorDetailsPage/>} allowedRoles={["client","vendor"]}/>}/>
       <Route path="/booking/:id/:vendorId" element = {<AuthClientRoute element={<BookingServicePage/>} allowedRoles={["client","vendor"]}/>}/>
       <Route path="/messages" element = {<AuthClientRoute element={<ChatPage/>} allowedRoles={["client","vendor"]}/>}/>
-      <Route path="/community" element = {<AuthClientRoute element={<CommunityHomePage/>} allowedRoles={["client","vendor"]}/>}/>
+      <Route path="/explore" element = {<AuthClientRoute element={<CommunityHomePage/>} allowedRoles={["client","vendor"]}/>}/>
+      <Route path="/communities" element = {<AuthClientRoute element={<Communities/>} allowedRoles={['client']}/>}/>
       <Route path="/community/r/:slug" element = {<AuthClientRoute element={<CommunityDetailPage/>} allowedRoles={["client","vendor"]}/>}/>
       <Route path="/community/post/r/:slug" element = {<AuthClientRoute element={<CreatePostPage/>} allowedRoles={["client","vendor"]}/>}/>
 

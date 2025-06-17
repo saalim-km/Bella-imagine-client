@@ -1,7 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { motion, AnimatePresence } from "framer-motion";
 import { Bell, Menu, X } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -36,7 +35,7 @@ export default function Header({ onClick }: IHeader) {
     return null;
   });
 
-  const allNotifications: TNotification[] = useSelector((state: RootState) => state.notification)
+  const allNotifications: TNotification[] = useSelector((state: RootState) => state.notification);
   console.log('got notification');
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -113,21 +112,13 @@ export default function Header({ onClick }: IHeader) {
 
   return (
     <>
-      <motion.header
+      <header
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 backdrop-blur-md ${
-          scrolled ? "py-3  backdrop-blur-md" : "py-6 bg-transparent"
+          scrolled ? "py-3 backdrop-blur-md" : "py-6 bg-transparent"
         }`}
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="container mx-auto px-6 flex items-center justify-between">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="flex items-center gap-2"
-          >
+          <div className="flex items-center gap-2">
             <a
               href="/"
               onClick={(e) => {
@@ -137,7 +128,7 @@ export default function Header({ onClick }: IHeader) {
               className="relative group"
             >
               <span
-                className={`font-serif text-2xl tracking-tight  ${
+                className={`font-serif text-2xl tracking-tight ${
                   isDarkMode ? "from-white to-gray-400" : "from-black to-gray-600"
                 }`}
               >
@@ -145,7 +136,7 @@ export default function Header({ onClick }: IHeader) {
               </span>
               <span className="absolute -bottom-1 left-0 w-0 h-px transition-all duration-300 group-hover:w-full"></span>
             </a>
-          </motion.div>
+          </div>
 
           {location.pathname !== "/admin/login" && (
             <nav className="hidden lg:flex items-center gap-12">
@@ -155,14 +146,14 @@ export default function Header({ onClick }: IHeader) {
               <NavLink to="/vendors" active={location.pathname === "/vendors"}>
                 Photographers
               </NavLink>
-              <NavLink to="/community" active={isCommunityActive}>
+              <NavLink to="/explore" active={isCommunityActive}>
                 Community
               </NavLink>
             </nav>
           )}
 
           <button
-            className="lg:hidden  hover:/80 transition-colors"
+            className="lg:hidden hover:/80 transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           >
@@ -183,7 +174,7 @@ export default function Header({ onClick }: IHeader) {
                   >
                     <Bell className="h-5 w-5" />
                     {allNotifications.length > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-red-600  text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 bg-red-600 text-xs rounded-full h-5 w-5 flex items-center justify-center">
                         {allNotifications.length}
                       </span>
                     )}
@@ -209,7 +200,7 @@ export default function Header({ onClick }: IHeader) {
                     </div>
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 backdrop-blur-md ">
+                <DropdownMenuContent align="end" className="w-48 backdrop-blur-md">
                   <DropdownMenuItem
                     onClick={() => navigate("/profile")}
                     className="text-base py-2 hover/10"
@@ -223,8 +214,8 @@ export default function Header({ onClick }: IHeader) {
                     Settings
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    className="text-base py-2 hover/10"
                     onClick={() => navigate("/messages")}
+                    className="text-base py-2 hover/10"
                   >
                     Messages
                   </DropdownMenuItem>
@@ -242,7 +233,7 @@ export default function Header({ onClick }: IHeader) {
               location.pathname !== "/admin/login" && (
                 <button
                   onClick={() => onClick?.()}
-                  className="px-6 py-2 border border-white/20  text-sm uppercase tracking-widest hover hover:text-black transition-all duration-300"
+                  className="px-6 py-2 border border-white/20 text-sm uppercase tracking-widest hover hover:text-black transition-all duration-300"
                 >
                   Sign Up
                 </button>
@@ -252,98 +243,77 @@ export default function Header({ onClick }: IHeader) {
             <ThemeToggle />
           </div>
         </div>
-      </motion.header>
+      </header>
 
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-50 bg-white lg:hidden text-black"
-          >
-            <div className="container h-full mx-auto px-6 py-8 flex flex-col">
-              <div className="flex justify-between items-center">
-                <span className="font-serif text-2xl tracking-tight ">BellaImagine</span>
-                <button
-                  onClick={() => setMobileMenuOpen(false)}
-                  className=" hover:/80 transition-colors"
-                  aria-label="Close menu"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-              </div>
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 bg-white lg:hidden text-black">
+          <div className="container h-full mx-auto px-6 py-8 flex flex-col">
+            <div className="flex justify-between items-center">
+              <span className="font-serif text-2xl tracking-tight">BellaImagine</span>
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="hover:/80 transition-colors"
+                aria-label="Close menu"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
 
-              <nav className="flex flex-col gap-8 mt-16">
-                {[
-                  { to: "/", label: "Home" },
-                  { to: "/vendors", label: "Photographers" },
-                  { to: "/community", label: "Community" },
-                  ...(isLoggedIn && !isAdminPage
-                    ? [
-                        { to: "/profile", label: "Profile" },
-                        { to: "/settings", label: "Settings" },
-                        { to: "/messages", label: "Messages" },
-                      ]
-                    : []),
-                ].map((item, i) => (
-                  <motion.div
-                    key={item.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 * i, duration: 0.5 }}
+            <nav className="flex flex-col gap-8 mt-16">
+              {[
+                { to: "/", label: "Home" },
+                { to: "/vendors", label: "Photographers" },
+                { to: "/community", label: "Community" },
+                ...(isLoggedIn && !isAdminPage
+                  ? [
+                      { to: "/profile", label: "Profile" },
+                      { to: "/settings", label: "Settings" },
+                      { to: "/messages", label: "Messages" },
+                    ]
+                  : []),
+              ].map((item) => (
+                <div key={item.label}>
+                  <NavLink to={item.to} active={location.pathname === item.to}>
+                    {item.label}
+                  </NavLink>
+                </div>
+              ))}
+              {isLoggedIn && !isAdminPage && (
+                <div>
+                  <button
+                    onClick={() => {
+                      logoutUser();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="text-3xl font-light text-red-400 hover:text-red-300 transition-colors"
                   >
-                    <NavLink to={item.to} active={location.pathname === item.to}>
-                      {item.label}
-                    </NavLink>
-                  </motion.div>
-                ))}
-                {isLoggedIn && !isAdminPage && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5, duration: 0.5 }}
-                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </nav>
+
+            <div className="mt-auto">
+              {!isLoggedIn &&
+                location.pathname !== "/register" &&
+                location.pathname !== "/login" &&
+                location.pathname !== "/admin/login" && (
+                  <div>
                     <button
                       onClick={() => {
-                        logoutUser();
+                        onClick?.();
                         setMobileMenuOpen(false);
                       }}
-                      className="text-3xl font-light text-red-400 hover:text-red-300 transition-colors"
+                      className="inline-block px-8 py-3 border border-white/20 text-sm uppercase tracking-widest hover hover:text-black transition-all duration-300"
                     >
-                      Logout
+                      Sign Up
                     </button>
-                  </motion.div>
+                  </div>
                 )}
-              </nav>
-
-              <div className="mt-auto">
-                {!isLoggedIn &&
-                  location.pathname !== "/register" &&
-                  location.pathname !== "/login" &&
-                  location.pathname !== "/admin/login" && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.6, duration: 0.5 }}
-                    >
-                      <button
-                        onClick={() => {
-                          onClick?.();
-                          setMobileMenuOpen(false);
-                        }}
-                        className="inline-block px-8 py-3 border border-white/20  text-sm uppercase tracking-widest hover hover:text-black transition-all duration-300"
-                      >
-                        Sign Up
-                      </button>
-                    </motion.div>
-                  )}
-              </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      )}
     </>
   );
 }

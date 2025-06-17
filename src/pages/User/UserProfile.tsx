@@ -48,7 +48,6 @@ const tabTitles: Record<string, string> = {
   profile: "Profile",
   "bookings-history": "Bookings & History",
   wallet: "Wallet & Transactions",
-  "received-work": "Received Work",
   bookings: "Bookings",
   "allocate-slot": "Allocate Slot",
   "upload-work": "Upload Work",

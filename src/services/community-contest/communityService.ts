@@ -19,10 +19,25 @@ export const createCommunityService = async(dto : Partial<Community>) : Promise<
     return response.data;
 }
 
-export const getAllCommunites = async(dto : { page : number , limit : number , search : string}) : Promise<BasePaginatedResponse<PaginatedResponse<CommunityResponse>>> => {
+export const getAllCommunitesAdmin = async(dto : { page : number , limit : number , search : string}) : Promise<BasePaginatedResponse<PaginatedResponse<CommunityResponse>>> => {
     const response = await adminAxiosInstance.get('/community',{params : dto})
     return response.data;
 }
+
+export const getAllCommunities = async (
+  dto: { 
+    page: number; 
+    limit: number; 
+    search?: string; 
+    category?: string; 
+    membership?: string; 
+    sort?: string 
+  }
+): Promise<BasePaginatedResponse<PaginatedResponse<CommunityResponse>>> => {
+  const response = await clientAxiosInstance.get('/client/community', { params: dto });
+  return response.data;
+};
+
 
 export const deleteCommunityService = async(communityId : string): Promise<ApiResponse> => {
     console.log('community delte service trigger : ',communityId);
@@ -44,17 +59,17 @@ export const updateCommunityService = async(dto : Partial<Community>) : Promise<
     return response.data;
 }
 
-export const getCommunityBySlugForClient = async(slug : string):Promise<{community : Community , isMember : boolean}>=> {
+export const getCommunityBySlugForClient = async(slug : string):Promise<BasePaginatedResponse<CommunityBySlugResponse>>=> {
     const response = await clientAxiosInstance.get(`/client/community/${slug}`)
     return response.data;
 }
 
-export const joinCommunityService = async(dto : {communityId : string , userId : string}) : Promise<ApiResponse> => {
-    const response = await clientAxiosInstance.post(`/client/community/join`, dto);
+export const joinCommunityService = async(communtyId : string) : Promise<ApiResponse> => {
+    const response = await clientAxiosInstance.post(`/client/community-join`, {communityId : communtyId});
     return response.data;
 }
 
-export const leaveCommunityService = async(dto : {communityId : string}) : Promise<ApiResponse> => {
-    const response = await clientAxiosInstance.delete(`/client/community/join`, {data : dto});
+export const leaveCommunityService = async(communityId : string) : Promise<ApiResponse> => {
+    const response = await clientAxiosInstance.delete(`/client/community-leave/${communityId}`);
     return response.data;
 }

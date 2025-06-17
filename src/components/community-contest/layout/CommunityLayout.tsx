@@ -1,4 +1,4 @@
-
+import { cn } from "@/lib/utils";import Header from "@/components/common/Header";
 import React from "react";
 
 type PageLayoutProps = {
@@ -15,11 +15,6 @@ export function PageLayout({ children, containerClassName = "py-8 md:py-10" }: P
           {children}
         </div>
       </main>
-      <Footer/>
     </div>
   );
 }
-
-import { cn } from "@/lib/utils";import Header from "@/components/common/Header";
-import Footer from "@/components/common/Footer";
-

@@ -25,11 +25,9 @@ export interface CommunityResponse {
   name: string;
   category : Partial<Category>
   members: number;
-  featured: boolean;
-  created: string;
   description?: string;
-  coverImage?: string | File
-  iconImage?: string | File
+  coverImage?: string 
+  iconImage?: string 
   memberCount?: number;
   postCount?: number;
   isPrivate?: boolean;

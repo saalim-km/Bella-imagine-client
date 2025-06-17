@@ -62,13 +62,13 @@ export default function Footer() {
           <div className="space-y-6">
             <h4 className="text-sm uppercase tracking-widest">Contact</h4>
             <p className="text-white/60">
-              hello@bellaimagine.com
+              saalimkm@gmail.com
               <br />
-              +91 98765 43210
+              +91 9895012661
             </p>
             <a
               href="/contact"
-              className="inline-block px-6 py-3 border border-white/20 text-white text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300"
+              className="font-serif inline-block px-6 py-3 border border-white/20 text-white text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300"
             >
               Get in Touch
             </a>
