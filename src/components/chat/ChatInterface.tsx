@@ -86,6 +86,7 @@ export function ChatInterface() {
       userType: userFromRedux?.role as TRole,
     };
     if (!socket) return;
+    
     socket.emit("send_message", {
       message: newMessage,
       recipentId: recipientUser?._id,

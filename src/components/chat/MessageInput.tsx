@@ -57,10 +57,11 @@ export function MessageInput({ conversationId, onSendMessage }: MessageInputProp
           { media: mediaPreview.file as File, conversationId },
           {
             onSuccess: (data) => {
+              console.log('media uploat chat : ',data);
               messageToSend = {
                 text: message,
                 type: messageType,
-                mediaKey: data.key,
+                mediaKey: data.data.key,
               };
               onSendMessage(messageToSend);
               setMediaPreview(null);
