@@ -12,6 +12,7 @@ import {
   setShowConversations,
   updateConversation,
   updateMessage,
+  addMessage,
 } from "@/store/slices/chatSlice";
 import { ConversationList } from "./ConversationList";
 import { MessageList } from "./MessageList";
@@ -65,7 +66,7 @@ export function ChatInterface() {
     if (socket) {
       socket.on("new_message", (newMessage: Message) => {
         console.log("new message event trigger ❌❌❌❌❌❌❌",newMessage);
-        dispatch((newMessage));
+        dispatch(addMessage(newMessage));
       });
 
       return () => {
