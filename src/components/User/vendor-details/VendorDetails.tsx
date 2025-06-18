@@ -104,7 +104,7 @@ const VendorDetails = () => {
             {vendorDetails.services?.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {vendorDetails.services.map((service: any) => (
-                  <ServiceCard key={service._id} service={service} onViewDetails={handleViewServiceDetails} />
+                  <ServiceCard key={service._id} service={service} onViewDetails={handleViewServiceDetails} workSample={vendorDetails.workSamples[0]}/>
                 ))}
               </div>
             ) : (

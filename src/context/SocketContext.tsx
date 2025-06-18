@@ -3,8 +3,6 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { initSocket } from "@/config/socket";
 import { Socket } from "socket.io-client";
-import { toast } from "sonner";
-import { Message } from "yup";
 import { showNotificationToast } from "@/components/common/NotificationToast";
 import { TNotification } from "@/components/common/Notification";
 
@@ -41,6 +39,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
+    console.log(user);
     if (!user || !user._id || !userType) {
       // Disconnect if no user
       if (socket) {
@@ -64,6 +63,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Join immediately after connection
     socketInstance.on("connect", () => {
+      console.log('user to connect the socket : ',user);
       console.log("Socket connected ✅", socketInstance.id);
       socketInstance.emit("join", { userId: user._id, userType });
       setIsConnected(true);

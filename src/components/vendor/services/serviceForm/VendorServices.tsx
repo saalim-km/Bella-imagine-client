@@ -5,14 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Search, Filter } from "lucide-react";
-import Pagination from "../common/Pagination";
+import Pagination from "../../../common/Pagination";
 import { useAllVendorCategoryQuery, useVendorServices } from "@/hooks/vendor/useVendor";
 import { IService, IServiceResponse } from "@/types/interfaces/vendor";
-import { Spinner } from "../ui/spinner";
-import { Badge } from "../ui/badge";
+import { Spinner } from "../../../ui/spinner";
+import { Badge } from "../../../ui/badge";
 
 interface IVendorServicesPageProps {
-  handleIsCreateService(): void;
+  handleIsCreateService(state : boolean): void;
   handleIsEditingService(data : IServiceResponse) : void;
 }
 
@@ -53,13 +53,14 @@ const VendorServicesPage = ({ handleIsCreateService , handleIsEditingService}: I
     setCurrentPage(page);
   };
 
-  const services: IServiceResponse[] = data?.data || [];
-  const totalPages = Math.max(1, Math.ceil((data?.total || 0) / 3));
+  const services: IServiceResponse[] = data?.data.data || [];
+  const totalPages = Math.max(1, Math.ceil((data?.data.total || 0) / 3));
+  console.log('service data : ',data);
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">My Services</h1>
-        <Button variant={"outline"} onClick={handleIsCreateService}>Create new service</Button>
+        <Button variant={"outline"} onClick={()=> handleIsCreateService(true)}>Create new service</Button>
       </div>
 
       <div className="mb-6 flex space-x-4">
@@ -92,16 +93,12 @@ const VendorServicesPage = ({ handleIsCreateService , handleIsEditingService}: I
                   </SelectTrigger>
                   <SelectContent>
                     {
-                      categories && categories.categories.map((category)=> (
+                      categories && categories.data.data.map((category)=> (
                         <SelectItem value={category._id}>{category.title}</SelectItem>
                       ))
                     }
                   </SelectContent>
                 </Select>
-              </div>
-              <div>
-                <label className="block mb-2">Location</label>
-                <Input placeholder="City or State" value={filters.location} onChange={(e) => setFilters((prev) => ({ ...prev, location: e.target.value }))} />
               </div>
             </div>
             <div className="flex justify-end">

@@ -32,7 +32,7 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
     >
       {/* Hero Section */}
       <div className="relative h-64 md:h-80 lg:h-96 w-full rounded-xl overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent z-10" />
+        <img src={vendor.workSamples[0].media[0]}/>
         <div className="absolute bottom-0 left-0 p-8 z-20">
           <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl text-white mb-2">
             {vendor.name}

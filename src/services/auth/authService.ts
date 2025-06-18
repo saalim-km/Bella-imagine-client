@@ -11,12 +11,12 @@ import { AxiosResponse } from "axios";
 export interface AuthResponse {
   success: boolean;
   message: string;
-  data: {
-    id: string;
+  user: {
+    _id: string;
     name: string;
     email: string;
     role: "client" | "admin" | "vendor";
-    avatar : string;
+    avatar: string
   };
 }
 
@@ -46,7 +46,7 @@ export const verifyOtp = async (data: { email: string; otp: string }) => {
 };
 
 
-export const forgotPassword = async (data : {email : string, userRole : TRole})=> {
+export const forgotPassword = async (data : {email : string, role : TRole})=> {
   const response = await authAxiosInstance.post('/forgot-password', data)
   console.log(response);
   return response.data;

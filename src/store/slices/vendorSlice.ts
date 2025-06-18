@@ -30,15 +30,21 @@ const vendorSlice = createSlice({
         },
         updateVendorSlice : (state, action) => {
             if (state.vendor) {
-                state.vendor = action.payload;
+                // Only update name and avatar fields
+                if (action.payload.name !== undefined) {
+                    state.vendor.name = action.payload.name;
+                }
+                if (action.payload.avatar !== undefined) {
+                    state.vendor.avatar = action.payload.avatar;
+                }
+                // Update localStorage with the modified vendor data
+                localStorage.setItem("vendorSession", JSON.stringify(state.vendor));
             }
         }
     }
 })
 
 const {vendorLogin , vendorLogout , updateVendorSlice} = vendorSlice.actions
-
-
 
 export {
     vendorLogin , 

@@ -88,23 +88,26 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
       },
       {
         onSuccess: (data) => {
+          console.log('after google register of user : ',data);
           toast.success(data.message);
           if (userType === "vendor") {
             dispatch(
               vendorLogin({
-                _id: data.user.id,
+                _id: data.user._id,
                 name: data.user.name,
                 email: data.user.email,
                 role: data.user.role,
+                avatar : data.user.avatar
               })
             );
           } else {
             dispatch(
               clientLogin({
-                _id: data.user.id,
+                _id: data.user._id,
                 name: data.user.name,
                 email: data.user.email,
                 role: data.user.role,
+                avatar : data.user.avatar
               })
             );
           }

@@ -45,7 +45,6 @@ export interface BookingState {
 
 export interface Location {
   address : string;
-  travelFee : number;
   lat : number;
   lng : number;
 }
@@ -141,7 +140,7 @@ export interface IWorkSampleRequest {
   service: string;
   title: string;
   description: string;
-  media: TMedia[];
+  media: File[];
   tags?: string[];
   likes?: string[];
   comments?: TComment;
@@ -154,7 +153,7 @@ export interface IWorkSampleResponse {
   vendor: string;
   title: string;
   description?: string;
-  media: TMedia[];
+  media: string[];
   tags?: string[];
   likes?: string[];
   comments?: TComment[]

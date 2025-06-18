@@ -40,19 +40,31 @@ export default function Login({
       },
       {
         onSuccess: (data) => {
+          console.log(data);
           toast.success(data.message);
           if (userType === "vendor") {
-            dispatch(vendorLogin(data.data));
+            dispatch(vendorLogin({
+              _id : data.user._id,
+              name : data.user.name,
+              email : data.user.email,
+              avatar : data.user.avatar,
+              role : data.user.role
+            }));
             if (socket) {
               reconnect();
             }
           } else {
-            dispatch(clientLogin(data.data));
+            dispatch(clientLogin({
+              _id : data.user._id,
+              name : data.user.name,
+              email : data.user.email,
+              avatar : data.user.avatar,
+              role : data.user.role
+            }));
             if (socket) {
               reconnect();
             }
           }
-          window.location.href = "/home";
         },
         onError: (error) => {
           handleError(error);

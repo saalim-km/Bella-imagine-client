@@ -25,7 +25,7 @@ import { VendorCategoryModal } from "@/components/modals/VendorCategoryModal";
 import { useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { ServiceForm } from "@/components/vendor/services/serviceForm/Service";
-import VendorServices from "@/components/vendor/VendorServices";
+import VendorServices from "@/components/vendor/services/serviceForm/VendorServices";
 import {
   IServiceResponse,
   IWorkSampleResponse,
@@ -185,8 +185,8 @@ export default function UserProfile() {
     });
   }
 
-  function handleIsServiceCreating() {
-    setServiceCreating(!isServiceCreating);
+  function handleIsServiceCreating(state : boolean) {
+    setServiceCreating(state);
     localStorage.removeItem("serviceDraft");
     setIsServiceEditData(undefined);
     handleIsServiceEditing;

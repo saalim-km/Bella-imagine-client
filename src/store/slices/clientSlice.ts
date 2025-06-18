@@ -30,7 +30,15 @@ const clientSlice = createSlice({
         },
         updateClientslice : (state,action)=> {
             if(state.client) {
-                state.client = action.payload
+                // Only update name and avatar fields
+                if (action.payload.name !== undefined) {
+                    state.client.name = action.payload.name;
+                }
+                if (action.payload.avatar !== undefined) {
+                    state.client.avatar = action.payload.avatar;
+                }
+                // Update localStorage with the modified vendor data
+                localStorage.setItem("clientSession", JSON.stringify(state.client));
             }
         }
     }

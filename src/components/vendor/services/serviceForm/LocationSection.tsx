@@ -40,7 +40,6 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
           const userLoc = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
-            travelFee: location.travelFee ?? -1,
             address: address || ''
           };
           setMarker(userLoc);
@@ -63,8 +62,8 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
       if (place?.geometry?.location) {
         const lat = place.geometry.location.lat();
         const lng = place.geometry.location.lng();
-        const newLoc = { lat, lng, travelFee: location.travelFee ?? -1, address: newAddress };
-        setMarker({ lat, lng, travelFee: location.travelFee ?? -1 });
+        const newLoc = { lat, lng, address: newAddress };
+        setMarker({ lat, lng });
         updateLocation(newLoc);
         map?.panTo({ lat, lng });
       }
@@ -75,8 +74,8 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
     if (e.latLng) {
       const lat = e.latLng.lat();
       const lng = e.latLng.lng();
-      const newLoc = { lat, lng, travelFee: location.travelFee ?? -1, address };
-      setMarker({ lat, lng, travelFee: location.travelFee ?? -1 });
+      const newLoc = { lat, lng, address };
+      setMarker({ lat, lng });
       updateLocation(newLoc);
     }
   };
@@ -102,30 +101,6 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <Label className="text-sm font-medium">On-Location Service</Label>
-          <Switch
-            checked={location.travelFee >= 0}
-            onCheckedChange={(checked) =>
-              handleFieldChange("travelFee", checked ? 0 : -1)
-            }
-          />
-        </div>
-
-        {location.travelFee !== -1 && (
-          <div>
-            <Label className="text-sm font-medium">Travel Fee ($)</Label>
-            <Input
-              type="number"
-              min="500"
-              value={location.travelFee}
-              onChange={(e) =>
-                handleFieldChange("travelFee", parseFloat(e.target.value))
-              }
-              className="mt-1"
-            />
-          </div>
-        )}
       </div>
 
       <div className="space-y-4">

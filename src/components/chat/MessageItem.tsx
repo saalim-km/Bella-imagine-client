@@ -44,7 +44,7 @@ export function MessageItem({ message, sender, isCurrentUser, onDelete, onReact 
 
   // Styles based on user
   const messageStyles = isCurrentUser
-    ? "bg-chat-primary text-white rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-lg ml-auto"
+    ? "bg-chat-primary rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-lg ml-auto"
     : "bg-muted rounded-tl-sm rounded-tr-lg rounded-br-lg rounded-bl-lg";
 
   const renderMessageContent = () => {

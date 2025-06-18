@@ -48,7 +48,7 @@ export function ForgotPassword({ userType }: ForgotPasswordProps) {
     setIsSending(true)
     setEmail(data.email)
 
-    sendOtp({email : data.email , userRole: userType},{
+    sendOtp({email : data.email , role: userType},{
         onSuccess : (data)=> {
             setIsSending(false)
             toast.success(data.message)

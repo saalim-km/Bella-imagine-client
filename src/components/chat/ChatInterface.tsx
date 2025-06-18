@@ -11,7 +11,6 @@ import {
   setLoading,
   setShowConversations,
   updateConversation,
-  addMessage,
   updateMessage,
 } from "@/store/slices/chatSlice";
 import { ConversationList } from "./ConversationList";
@@ -23,6 +22,7 @@ import { RootState } from "@/store/store";
 import { useSocket } from "@/context/SocketContext";
 import { TRole } from "@/types/interfaces/User";
 import { useSocketEvents } from "@/hooks/chat/useSocketEvents";
+import { handleError } from "@/utils/Error/error-handler.utils";
 
 export function ChatInterface() {
   const dispatch = useDispatch();
@@ -56,7 +56,6 @@ export function ChatInterface() {
     : undefined;
 
 
-  console.log("recipent user : ", recipientUser);
 
   useEffect(() => {
     fetchMessages(selectedConversationId as string);
@@ -66,7 +65,7 @@ export function ChatInterface() {
     if (socket) {
       socket.on("new_message", (newMessage: Message) => {
         console.log("new message event trigger ❌❌❌❌❌❌❌",newMessage);
-        dispatch(addMessage(newMessage));
+        dispatch((newMessage));
       });
 
       return () => {
@@ -76,7 +75,6 @@ export function ChatInterface() {
   }, [socket, dispatch, messages]);
 
   const handleSendMessage = (message: Message) => {
-    console.log('got the message in handlemessage : ',message);
     const newMessage: Message = {
       senderId: userFromRedux?._id as string,
       text: message.text,
@@ -87,7 +85,6 @@ export function ChatInterface() {
       userType: userFromRedux?.role as TRole,
     };
     if (!socket) return;
-    console.log('new message before snding : ',newMessage);
     socket.emit("send_message", {
       message: newMessage,
       recipentId: recipientUser?._id,
@@ -105,7 +102,6 @@ export function ChatInterface() {
 
   const handleDeleteMessage = async (messageId: string) => {
     try {
-      console.log(messageId);
       // const success = await chatService.deleteMessage(messageId);
 
       // if (success) {
@@ -132,8 +128,8 @@ export function ChatInterface() {
       //   dispatch(setConversations(updatedConversations));
       // }
     } catch (error) {
-      console.error("Error deleting message:", error);
       toast.error("Failed to delete message");
+      handleError(error)
     }
   };
 
@@ -190,7 +186,6 @@ export function ChatInterface() {
   };
 
   const handleSelectConversation = (conversationId: string) => {
-    console.log("selected conversation id : ", conversationId);
     dispatch(setSelectedConversationId(conversationId));
   };
 

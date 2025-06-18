@@ -1,4 +1,5 @@
 import { getAllCategories, vendorJoinCategory } from "@/services/categories/categoryService";
+import { BasePaginatedResponse } from "@/services/client/clientService";
 import { getAllVendorNotification } from "@/services/notification/notificationService";
 import { cerateWorkSampleService, createService, deleteWorkSampleService, getAllVendorServices, getAllWorkSampleService, getVendorDetails, updateVendorDetails,updateWorkSampleService, updateVendorService } from "@/services/vendor/vendorService";
 import { IServiceFilter, IServiceResponse, IWorkSampleFilter, PaginatedResponse } from "@/types/interfaces/vendor";
@@ -55,7 +56,7 @@ export const useCreateServiceMutation = ()=> {
   })
 }
 export const useVendorServices = (filters: IServiceFilter) => {
-  return useQuery<PaginatedResponse<IServiceResponse>>({
+  return useQuery<BasePaginatedResponse<PaginatedResponse<IServiceResponse>>>({
     queryKey: ["services", filters],
     queryFn: () => getAllVendorServices(filters),
   });

@@ -19,6 +19,7 @@ import { vendorLogout } from "@/store/slices/vendorSlice";
 import type { RootState } from "@/store/store";
 import { useSocket } from "@/context/SocketContext";
 import { handleError } from "@/utils/Error/error-handler.utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
 interface IHeader {
   onClick?: () => void;
@@ -35,8 +36,12 @@ export default function Header({ onClick }: IHeader) {
     return null;
   });
 
-  const allNotifications: TNotification[] = useSelector((state: RootState) => state.notification);
-  console.log('got notification');
+  console.log("user in the header : ", user);
+
+  const allNotifications: TNotification[] = useSelector(
+    (state: RootState) => state.notification
+  );
+  console.log("got notification");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -129,7 +134,9 @@ export default function Header({ onClick }: IHeader) {
             >
               <span
                 className={`font-serif text-2xl tracking-tight ${
-                  isDarkMode ? "from-white to-gray-400" : "from-black to-gray-600"
+                  isDarkMode
+                    ? "from-white to-gray-400"
+                    : "from-black to-gray-600"
                 }`}
               >
                 BellaImagine
@@ -192,15 +199,23 @@ export default function Header({ onClick }: IHeader) {
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 rounded-full overflow-hidden border border-white/20 hover/10 transition-all duration-300">
                     <div className="w-8 h-8 rounded-full overflow-hidden">
-                      <img
-                        src={user.avatar}
-                        alt="User avatar"
-                        className="w-full h-full object-cover"
-                      />
+                      <Avatar className="w-auto h-auto">
+                        <AvatarImage
+                          src={user.avatar}
+                          alt={`${user.name}`}
+                          className="object-fill"
+                        />
+                        <AvatarFallback>
+                          {user.name?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
                     </div>
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 backdrop-blur-md">
+                <DropdownMenuContent
+                  align="end"
+                  className="w-48 backdrop-blur-md"
+                >
                   <DropdownMenuItem
                     onClick={() => navigate("/profile")}
                     className="text-base py-2 hover/10"
@@ -249,7 +264,9 @@ export default function Header({ onClick }: IHeader) {
         <div className="fixed inset-0 z-50 bg-white lg:hidden text-black">
           <div className="container h-full mx-auto px-6 py-8 flex flex-col">
             <div className="flex justify-between items-center">
-              <span className="font-serif text-2xl tracking-tight">BellaImagine</span>
+              <span className="font-serif text-2xl tracking-tight">
+                BellaImagine
+              </span>
               <button
                 onClick={() => setMobileMenuOpen(false)}
                 className="hover:/80 transition-colors"
