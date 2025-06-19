@@ -139,7 +139,7 @@ const VendorDetails = () => {
               </p>
             </motion.div>
 
-            {vendorDetails && vendorDetails.workSamples.length > 0 ? (
+            {vendorDetails.workSamples && vendorDetails.workSamples.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {vendorDetails.workSamples.map((work: IWorkSampleResponse, idx: number) => (
                   <WorkSample workSample={work} key={idx} />

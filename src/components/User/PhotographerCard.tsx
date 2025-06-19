@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Bookmark, MapPin, Clock, ArrowUpRight } from 'lucide-react';
+import { Bookmark, MapPin, Clock, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import type { IVendorsResponse } from "@/types/interfaces/User";
+import { ImageWithFallback } from "./vendor-details/VendorProfile";
 
 interface PhotographerCardProps {
   vendorData: IVendorsResponse;
@@ -20,7 +21,8 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
 
   const hourlyRate = vendorData?.services[0]?.sessionDurations[0]?.price || 0;
   const currency = "INR";
-  const minimumHours = vendorData?.services[0]?.sessionDurations[0]?.durationInHours || 0;
+  const minimumHours =
+    vendorData?.services[0]?.sessionDurations[0]?.durationInHours || 0;
 
   const handleNavigate = () => navigate(`/photographer/${vendorData._id}`);
   const handleSave = () => setIsSaved(!isSaved);
@@ -36,21 +38,21 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
     >
       {/* Header Section */}
       <div className="p-8 pb-4 flex justify-between items-center">
-        <div 
+        <div
           className="flex items-center gap-3 cursor-pointer group"
           onClick={handleNavigate}
         >
           <h2 className="font-serif text-2xl text-foreground group-hover:text-primary/90 transition-colors">
             {vendorData.name}
           </h2>
-          
+
           {vendorData.isVerified === "accept" && (
             <Badge className="bg-black text-white dark:bg-white dark:text-black font-sans text-xs px-2.5 py-0.5 rounded-full uppercase tracking-wider">
               Pro
             </Badge>
           )}
         </div>
-        
+
         <Button
           variant="ghost"
           size="sm"
@@ -60,12 +62,14 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
           onClick={handleSave}
         >
           <Bookmark className={`h-4 w-4 ${isSaved ? "fill-current" : ""}`} />
-          <span className="text-xs uppercase tracking-wider">{isSaved ? "Saved" : "Save"}</span>
+          <span className="text-xs uppercase tracking-wider">
+            {isSaved ? "Saved" : "Save"}
+          </span>
         </Button>
       </div>
 
       {/* Location */}
-      <div 
+      <div
         className="px-8 flex items-center gap-1.5 text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
         onClick={handleNavigate}
       >
@@ -85,10 +89,11 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
             onClick={handleNavigate}
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 z-10" />
-            <img
-              src={vendorData.profileImage || "/placeholder.svg"}
-              alt={vendorData.name}
-              className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+            <ImageWithFallback
+              src={vendorData.profileImage}
+              alt={`${vendorData?.name || "Vendor"} work sample`}
+              className="w-full h-full object-cover"
+              fallbackType="profile"
             />
           </motion.div>
 
@@ -97,7 +102,9 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
             <div className="space-y-1">
               <div className="text-2xl font-serif text-foreground">
                 {hourlyRate} {currency}
-                <span className="text-sm font-sans text-muted-foreground ml-1">/ hour</span>
+                <span className="text-sm font-sans text-muted-foreground ml-1">
+                  / hour
+                </span>
               </div>
               <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                 <Clock className="h-3.5 w-3.5" />
@@ -107,7 +114,7 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
           )}
 
           {/* Action Button */}
-          <Button 
+          <Button
             className="w-full bg-foreground text-background hover:bg-foreground/90 font-sans text-sm uppercase tracking-wider"
             onClick={handleNavigate}
           >
@@ -126,9 +133,9 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
                     (work, workIndex) =>
                       work.media &&
                       work.media.map((src, mediaIndex) => (
-                        <motion.div 
-                          key={`${workIndex}-${mediaIndex}`} 
-                          className="relative flex-shrink-0 aspect-[3/4] w-48 overflow-hidden rounded-md group cursor-pointer"
+                        <motion.div
+                          key={`${workIndex}-${mediaIndex}`}
+                          className="relative flex-shrink-0 aspect-[4/5] w-64 overflow-hidden rounded-md group cursor-pointer"
                           whileHover={{ y: -5 }}
                           transition={{ duration: 0.3 }}
                           onClick={handleNavigate}
@@ -144,7 +151,7 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
                             <ArrowUpRight className="h-5 w-5 text-white" />
                           </div>
                         </motion.div>
-                      )),
+                      ))
                   )
                 ) : (
                   <div className="h-64 w-full bg-muted/30 rounded-md flex items-center justify-center">
@@ -168,10 +175,12 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
           {/* Specialties/Tags (if available) */}
           {vendorData.services && vendorData.services.length > 0 && (
             <div className="">
-              <h3 className="font-serif text-lg text-foreground">Specialties</h3>
+              <h3 className="font-serif text-lg text-foreground">
+                Specialties
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {vendorData.services.map((service, index) => (
-                  <span 
+                  <span
                     key={index}
                     className="px-3 py-1 bg-muted/30 text-muted-foreground text-xs rounded-full"
                   >
