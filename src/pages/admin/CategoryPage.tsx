@@ -1,16 +1,14 @@
-import { CategoryManagement } from '@/components/admin/category/Category'
-import CategoryRequest from '@/components/admin/category/CategoryRequest'
-import { AdminLayout } from '@/components/admin/layout/AdminLayout'
+import { CategoryManagement } from "@/components/admin/category/Category";
+import CategoryRequest from "@/components/admin/category/CategoryRequest";
+import { AdminLayout } from "@/components/layout/AdminLayout";
 
 const CategoryPage = () => {
   return (
     <AdminLayout>
-        <div>
-            <CategoryManagement/>
-            <CategoryRequest/>
-        </div>
+      <CategoryManagement />
+      <CategoryRequest />
     </AdminLayout>
-  )
-}
+  );
+};
 
-export default CategoryPage
+export default CategoryPage;

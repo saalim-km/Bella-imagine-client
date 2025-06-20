@@ -39,9 +39,9 @@ import {
   PopulatedWallet,
   Purpose,
   WalletTransactions,
-} from "@/types/Wallet";
+} from "@/types/interfaces/Wallet";
 import moment from "moment";
-import { formatPrice } from "@/utils/format/format-price.utils";
+import { formatPrice } from "@/utils/formatters/format-price.utils";
 
 const StatusBadge = ({ status }: { status: PaymentStatus }) => {
   const statusVariants = {
@@ -58,38 +58,12 @@ const StatusBadge = ({ status }: { status: PaymentStatus }) => {
   );
 };
 
-const PurposeBadge = ({ purpose }: { purpose: Purpose }) => {
-  const purposeVariants = {
-    [Purpose.ROLE_UPGRADE]: "bg-success/20 text-success",
-    [Purpose.TICKET_PURCHASE]: "bg-warning/20 text-warning",
-    [Purpose.VENDOR_BOOKING]: "bg-primary/20 text-primary",
-  };
 
-  return (
-    <Badge variant="outline" className={purposeVariants[purpose]}>
-      {purpose}
-    </Badge>
-  );
-};
-
-const TransactionIcon = ({ purpose }: { purpose: Purpose }) => {
-  if (
-    purpose === Purpose.ROLE_UPGRADE ||
-    purpose === Purpose.TICKET_PURCHASE ||
-    purpose === Purpose.VENDOR_BOOKING
-  ) {
-    return <ArrowDownIcon className="h-4 w-4 text-success" />;
-  }
-  return <ArrowUpIcon className="h-4 w-4 text-destructive" />;
-};
 
 interface WalletComponentProps {
   walletData: Omit<PopulatedWallet, "paymentId">;
-  transactions: WalletTransactions;
+  transactions: PopulatedWallet;
   userRole: "client" | "vendor" | "admin";
-  onRefresh?: () => void;
-  onDeposit?: () => void;
-  onWithdraw?: () => void;
 }
 
 export default function WalletComponent({
@@ -247,15 +221,21 @@ export default function WalletComponent({
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              <TransactionIcon purpose={transaction.purpose} />
-                              <PurposeBadge purpose={transaction.purpose} />
+                              {transaction.purpose === "vendor-booking" ? (
+                                <ArrowDownIcon className="h-4 w-4 text-destructive" />
+                              ) : (
+                                <ArrowUpIcon className="h-4 w-4 text-success" />
+                              )}
+                              <span className="text-sm">
+                                {transaction.purpose}
+                              </span>
                             </div>
                           </TableCell>
                           <TableCell
                             className={`${
-                              transaction.status === PaymentStatus.COMPLETED
-                                ? "text-success"
-                                : "text-destructive"
+                              transaction.purpose === 'refund-amount'
+                                ? "text-green-500"
+                                : transaction.purpose === 'wallet-credit' ? "text-green-500" : "text-destructive"
                             }`}
                           >
                             {formatPrice(transaction.amount)}

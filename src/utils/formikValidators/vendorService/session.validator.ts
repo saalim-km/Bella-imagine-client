@@ -3,11 +3,11 @@ import { Yup } from './yup-extension.validator';
 export const sessionDurationSchema = Yup.object({
   durationInHours: Yup.number()
     .required('Duration is required')
-    .min(2, 'Duration must be at least 2 hours')
+    .min(1, 'Duration must be at least 2 hours')
     .typeError('Duration must be a valid number'),
   price: Yup.number()
     .required('Price is required')
-    .min(5000, 'Price must be positive')
+    .min(2000, 'Price must be positive')
     .typeError('Price must be a valid number'),
 });
 

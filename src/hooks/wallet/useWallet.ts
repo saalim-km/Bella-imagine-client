@@ -1,6 +1,4 @@
-import { getAdminWalletDetails } from "@/services/wallet/adminWalletService";
-import { getClientWalletDetails } from "@/services/wallet/clientWalletService";
-import { getVendorWalletDetails } from "@/services/wallet/vendorWalletService";
+import { getAdminWalletDetails, getClientWalletDetails, getVendorWalletDetails } from "@/services/wallet/WalletService";
 import { useQuery } from "@tanstack/react-query";
 
 // for client wallet

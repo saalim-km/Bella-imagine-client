@@ -2,12 +2,12 @@ import type React from "react"
 import { format } from "date-fns"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import type { BookingState, IServiceResponse } from "@/types/vendor"
-import { toast } from "sonner"
-import { PaymentWrapper } from "@/components/stripe/PaymentForm"
-import type { Booking } from "@/types/User"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircle } from "lucide-react"
+import { AlertCircle, MapPin } from "lucide-react"
+import type { BookingState, IServiceResponse } from "@/types/interfaces/vendor"
+import type { Booking } from "@/types/interfaces/User"
+import { PaymentWrapper } from "@/components/stripe/PaymentForm"
+import { FREE_RADIUS_KM } from "@/utils/helper/distance-calculator"
 
 interface BookingConfirmationProps {
   service: IServiceResponse
@@ -24,11 +24,20 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
   setIsBookingSuccess,
   setIsLoading,
 }) => {
-  const { selectedDate, selectedTimeSlot, selectedDuration, vendorId, location } = bookingState
+  const {
+    selectedDate,
+    selectedTimeSlot,
+    selectedDuration,
+    vendorId,
+    location,
+    locationAddress,
+    distance = 0,
+    travelTime,
+    travelFee = 0,
+  } = bookingState
 
   const formatTime = (timeString: string | undefined) => {
     if (!timeString) return ""
-
     try {
       const [hours, minutes] = timeString.split(":")
       let hour = Number.parseInt(hours, 10)
@@ -40,23 +49,35 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
     }
   }
 
+  const isFormComplete = Boolean(selectedDate && selectedTimeSlot && selectedDuration)
+
+  const basePrice = selectedDuration?.price || 0
+  const totalPrice = basePrice + travelFee
+
+  const bookingData: Booking = {
+    bookingDate: selectedDate || "",
+    serviceId: service._id || "",
+    timeSlot: {
+      startTime: selectedTimeSlot?.startTime || "",
+      endTime: selectedTimeSlot?.endTime || "",
+    },
+    totalPrice,
+    vendorId: vendorId || "",
+    location: location.lat !== 0 && location.lng !== 0 ? location : { lat: 0, lng: 0 },
+    distance,
+    customLocation: locationAddress || '',
+    travelTime: travelTime || "",
+    travelFee : travelFee
+  }
+
   const handlePaymentError = (error: string) => {
     setIsLoading(false)
-    toast.error(error)
   }
 
   const handlePaymentStart = () => {
-    // Validate all required fields before proceeding
-    if (!selectedDate || !selectedTimeSlot || !selectedDuration) {
-      toast.error("Please complete all booking details before proceeding")
+    if (!isFormComplete) {
       return false
     }
-
-    if (location.lat === 0 && location.lng === 0) {
-      toast.error("Please select a location for your booking")
-      return false
-    }
-
     setIsLoading(true)
     return true
   }
@@ -67,29 +88,14 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
     onConfirmBooking()
   }
 
-  const bookingData: Booking = {
-    bookingDate: selectedDate || "",
-    serviceId: service._id || "",
-    timeSlot: {
-      startTime: selectedTimeSlot?.startTime || "",
-      endTime: selectedTimeSlot?.endTime || "",
-    },
-    totalPrice: selectedDuration?.price || 0,
-    vendorId: vendorId || "",
-    location: location,
-  }
-
-  const isFormComplete =
-    selectedDate && selectedTimeSlot && selectedDuration && location.lat !== 0 && location.lng !== 0
-
   return (
-    <>
+    <div className="space-y-4">
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Booking Summary</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Service:</span>
               <span className="font-medium">{service.serviceTitle}</span>
@@ -121,12 +127,43 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
               </div>
             )}
 
-            <div className="flex justify-between">
+            <div className="flex justify-between items-start">
               <span className="text-muted-foreground">Location:</span>
-              <span className="font-medium">
-                {location.lat !== 0 && location.lng !== 0 ? "Selected on map" : "Not selected"}
-              </span>
+              <div className="text-right max-w-[200px]">
+                {locationAddress ? (
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1 justify-end">
+                      <MapPin className="h-3 w-3 text-green-600" />
+                      <span className="font-medium text-sm">Custom location</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground break-words">{locationAddress}</span>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1 justify-end">
+                      <MapPin className="h-3 w-3 text-blue-600" />
+                      <span className="font-medium text-sm">Service location</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground break-words">{service.location.address}</span>
+                  </div>
+                )}
+              </div>
             </div>
+
+            {distance > 0 && locationAddress && (
+              <>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Distance:</span>
+                  <span className="font-medium">{distance.toFixed(2)} km</span>
+                </div>
+                {travelTime && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Travel Time:</span>
+                    <span className="font-medium">{travelTime}</span>
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           <Separator />
@@ -134,33 +171,54 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
           {selectedDuration && (
             <div className="space-y-2">
               <div className="flex justify-between font-medium">
+                <span>Service Price:</span>
+                <span>₹{basePrice.toFixed(2)}</span>
+              </div>
+
+              {travelFee > 0 && (
+                <div className="flex justify-between text-amber-700">
+                  <span>Travel Fee:</span>
+                  <span>₹{travelFee.toFixed(2)}</span>
+                </div>
+              )}
+
+              {distance > FREE_RADIUS_KM && travelFee > 0 && (
+                <div className="text-xs text-muted-foreground">
+                  Extra distance: {(distance - FREE_RADIUS_KM).toFixed(2)} km beyond free radius
+                </div>
+              )}
+
+              <Separator />
+
+              <div className="flex justify-between font-bold text-lg">
                 <span>Total Price:</span>
-                <span>₹{selectedDuration.price.toFixed(2)}</span>
+                <span>₹{totalPrice.toFixed(2)}</span>
               </div>
             </div>
           )}
         </CardContent>
+
         {!isFormComplete && (
           <CardFooter>
             <Alert variant="destructive" className="w-full">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Incomplete booking</AlertTitle>
-              <AlertDescription>Please complete all required fields to proceed with booking.</AlertDescription>
+              <AlertDescription>Please select date, time, and duration to proceed with booking.</AlertDescription>
             </Alert>
           </CardFooter>
         )}
       </Card>
-      <div className="mt-5">
+
+      {isFormComplete && (
         <PaymentWrapper
-          bookingData={bookingData}
-          amount={selectedDuration?.price || 0}
+          toatlAmount={totalPrice}
           setIsSuccess={handlePaymentSuccess}
+          bookingData={bookingData}
           onError={handlePaymentError}
           onPaymentStart={handlePaymentStart}
-          disabled={!isFormComplete}
         />
-      </div>
-    </>
+      )}
+    </div>
   )
 }
 

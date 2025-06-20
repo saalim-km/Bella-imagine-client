@@ -1,7 +1,7 @@
 import WalletComponent from "@/components/common/WalletComponent";
 import { Spinner } from "@/components/ui/spinner";
 import { useClientWallet } from "@/hooks/wallet/useWallet";
-import { PopulatedWallet } from "@/types/Wallet";
+import { PopulatedWallet } from "@/types/interfaces/Wallet";
 import { useEffect, useState } from "react";
 
 
@@ -18,27 +18,11 @@ export default function ClientWallet() {
 
   useEffect(() => {
     if (data) {
-      setWalletData(data.walletData);
+      setWalletData(data.data);
 
-      setTransactions(data.walletData);
+      setTransactions(data.data);
     }
   }, [data]);
-
-  // Handler functions
-  const handleRefresh = () => {
-    console.log("Refreshing wallet data...");
-    // Implement your refresh logic here
-  };
-
-  const handleDeposit = () => {
-    console.log("Opening deposit modal...");
-    // Implement your deposit logic here
-  };
-
-  const handleWithdraw = () => {
-    console.log("Opening withdraw modal...");
-    // Implement your withdraw logic here
-  };
 
   if (isLoading) {
     return <Spinner />;
@@ -54,9 +38,6 @@ export default function ClientWallet() {
         walletData={walletData}
         transactions={transactions}
         userRole="client"
-        onRefresh={handleRefresh}
-        onDeposit={handleDeposit}
-        onWithdraw={handleWithdraw}
       />
     </div>
   );

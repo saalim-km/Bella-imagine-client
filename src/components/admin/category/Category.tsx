@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { DataTable, type ColumnDef } from "@/components/common/Table";
 import { toast } from "sonner";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
 import { Input } from "@/components/ui/input";
 
 export function CategoryManagement() {
@@ -36,10 +36,10 @@ export function CategoryManagement() {
   let filterOption;
   switch (filter) {
     case "active":
-      filterOption = { status: "active" };
+      filterOption = { status: true };
       break;
     case "inactive":
-      filterOption = { status: "inActive" };
+      filterOption = { status: false };
       break;
     default:
       filterOption = {};
@@ -52,6 +52,9 @@ export function CategoryManagement() {
     },
     { page: currentPage, limit: 4 },
   );
+  const totalPages = Math.max(1, Math.ceil(data?.data.total! / 4));
+  
+  console.log(data?.data);
   function handleEdit(category: CategoryType) {
     setSelectedCategory(category);
     setIsEditing(true);
@@ -75,7 +78,7 @@ export function CategoryManagement() {
   function handleToggleStatus(categoryId: string, status: boolean) {
     console.log(categoryId);
     updateCategory(
-      { id: categoryId, data: { status: !status } },
+      { id: categoryId },
       {
         onSuccess: (data: any) => {
           refetch();
@@ -152,7 +155,7 @@ export function CategoryManagement() {
     },
   ];
 
-  if (isLoading) return <Spinner />;
+  if (isLoading) return <Spinner/>;
 
   return (
     <div className="p-4">
@@ -198,10 +201,10 @@ export function CategoryManagement() {
       )}
 
       <DataTable
-        data={data?.categories || []}
+        data={data?.data.data || []}
         columns={columns}
         currentPage={currentPage}
-        totalPages={data?.totalPages || 1}
+        totalPages={totalPages || 1}
         onPageChange={handlePageChange}
         emptyMessage="No categories found"
         isLoading={isLoading}

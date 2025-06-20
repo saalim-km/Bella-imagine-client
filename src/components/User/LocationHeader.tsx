@@ -1,21 +1,13 @@
-import { Button } from "@/components/ui/button";
-import { useTheme } from "@/context/ThemeContext";
-import { useThemeConstants } from "@/utils/theme/themeUtills";
-
-interface HeaderProps {
-  onOpenModal: () => void;
-  selectedLocation?: string | null; // New prop to receive the selected location
-}
-
-export default function LocationHeader({ onOpenModal, selectedLocation }: HeaderProps) {
-  const {bgColor , buttonPrimary} = useThemeConstants()
+export default function LocationHeader() {
 
   return (
-    <header className={`flex flex-col items-center py-20`}>
-      <h1 className="text-3xl font-bold mb-4">India's Best Wedding Photographers</h1>
-      <Button onClick={onOpenModal} className={`${buttonPrimary} text-white px-4 py-2 rounded-md`}>
-        {selectedLocation || "Choose Location"}
-      </Button>
+    <header className={`flex flex-col items-center pt-20`}>
+      <h1 className="font-serif tracking-tighter text-4xl sm:text-5xl mb-2 text-center">
+        India&apos;s Best Wedding Photographers
+      </h1>
+      <p className="text-muted-foreground text-base sm:text-lg mb-4 text-center max-w-xl">
+        Discover and book top-rated photographers in your city for your special day.
+      </p>
     </header>
   );
 }

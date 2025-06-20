@@ -7,7 +7,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { IWorkSampleResponse } from "@/types/vendor";
+import { IWorkSampleResponse } from "@/types/interfaces/vendor";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 

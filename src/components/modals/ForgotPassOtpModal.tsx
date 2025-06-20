@@ -15,12 +15,12 @@ import {
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
 import { NewPasswordForm } from "../auth/NewPasswordForm"
-import { useThemeConstants } from "@/utils/theme/themeUtills"
-import { TRole } from "@/types/User"
+import { useThemeConstants } from "@/utils/theme/theme.utils"
+import { TRole } from "@/types/interfaces/User"
 import { useOtpVerifyMutataion } from "@/hooks/auth/useOtpVerify"
 import { toast } from "sonner"
 import { useSendOtp } from "@/hooks/auth/useSendOtp"
-import { handleError } from "@/utils/Error/errorHandler"
+import { handleError } from "@/utils/Error/error-handler.utils"
 
 const formSchema = z.object({
   otp: z.string().min(6, { message: "OTP must be 6 digits" }),

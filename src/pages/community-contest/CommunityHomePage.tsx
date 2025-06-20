@@ -11,14 +11,14 @@ import { CommunityCard } from "../../components/community-contest/community/Comm
 const CommunityHomePage = () => {
   const [activeTab, setActiveTab] = useState("featured");
   
-  const {data  , isLoading} = useGetlAllCommunity({page : 1 , limit : 5});
-  const commnities = data?.data || []
+  // const {data  , isLoading} = useGetlAllCommunity({page : 1 , limit : 5});
+  // const commnities = data?.data || []
   return (
     <PageLayout containerClassName="py-6 md:py-8 mt-36">
       <section className="mb-10 md:mb-16">
         <div className="flex flex-col gap-6">
           <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-3xl md:text-5xl font-bold mb-4">
+            <h1 className="font-serif tracking-tighter text-9xl sm:text-5xl mb-2 text-center">
               Welcome to <span className="text-">BellaCommunity</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-6">
@@ -38,24 +38,24 @@ const CommunityHomePage = () => {
 
       {/* Main Content */}
       <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="mb-10">
-        <div className="flex justify-center mb-6">
+        {/* <div className="flex justify-center mb-6">
           <TabsList>
             <TabsTrigger value="featured">Featured</TabsTrigger>
             <TabsTrigger value="communities">Communities</TabsTrigger>
             <TabsTrigger value="contests">Contests</TabsTrigger>
           </TabsList>
-        </div>
+        </div> */}
 
         <TabsContent value="featured" className="animate-fade-in space-y-10">
           {/* Featured Post */}
           <section>
-            <div className="flex items-center justify-between mb-4">
+            {/* <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold">Featured Posts</h2>
               <Button variant="outline" size="sm" asChild>
                 <Link to="/posts">View All</Link>
               </Button>
             </div>
-            
+             */}
             {/* {featuredPosts.length > 0 && (
               <PostCard post={featuredPosts[0]} featured />
             )} */}
@@ -63,7 +63,7 @@ const CommunityHomePage = () => {
 
           {/* Featured Communities */}
           <section>
-            <div className="flex items-center justify-between mb-4">
+            {/* <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold flex items-center">
                 <Users className="mr-2 h-5 w-5" />
                 <span>Popular Communities</span>
@@ -76,7 +76,7 @@ const CommunityHomePage = () => {
               {commnities.map(community => (
                 <CommunityCard key={community._id} community={community} />
               ))}
-            </div>
+            </div> */}
           </section>
 
           {/* Active Contests */}
@@ -99,7 +99,7 @@ const CommunityHomePage = () => {
         </TabsContent>
 
         <TabsContent value="communities" className="animate-fade-in">
-          <div className="flex items-center justify-between mb-4">
+          {/* <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold">Discover Communities</h2>
             <Button variant="outline" size="sm" asChild>
               <Link to="/communities">View All</Link>
@@ -109,7 +109,7 @@ const CommunityHomePage = () => {
             {commnities.concat(commnities).slice(0, 6).map(community => (
               <CommunityCard key={`explore-${community._id}`} community={community} />
             ))}
-          </div>
+          </div> */}
         </TabsContent>
 
         <TabsContent value="contests" className="animate-fade-in">

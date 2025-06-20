@@ -1,7 +1,7 @@
 import { adminAxiosInstance } from "@/api/admin.axios";
 import { clientAxiosInstance } from "@/api/client.axios";
 import { vendorAxiosInstance } from "@/api/vendor.axios";
-import { PopulatedPaymentsResponse } from "@/types/Payment";
+import { PopulatedPaymentsResponse } from "@/types/interfaces/Payment";
 
 export const getAllTransactionsByClientId =
   async (): Promise<PopulatedPaymentsResponse> => {

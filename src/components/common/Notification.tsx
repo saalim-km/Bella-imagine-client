@@ -4,8 +4,9 @@ import { DropdownMenuContent } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 
 export interface TNotification {
-  id: string
+  _id: string
   message : string
+  isRead : boolean
   receiverId ?: string
   createdAt : string
   updatedAt : string
@@ -38,7 +39,7 @@ export default function NotificationCard({ notifications = [] }: NotificationCar
   
               <div className="space-y-3">
                 {notifications.map((notification) => (
-                  <div key={notification.id} className="flex items-start gap-3 py-2 relative">
+                  <div key={notification._id} className="flex items-start gap-3 py-2 relative">
                     <div className="flex-shrink-0 mt-1">
                       <div className="h-2 w-2 rounded-full bg-primary"></div>
                     </div>

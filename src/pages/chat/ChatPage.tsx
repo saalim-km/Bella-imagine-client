@@ -1,7 +1,7 @@
 import { ChatInterface } from '@/components/chat/ChatInterface'
 import { useSocketEvents } from '@/hooks/chat/useSocketEvents'
 import { RootState } from '@/store/store'
-import { TRole } from '@/types/User'
+import { TRole } from '@/types/interfaces/User'
 import { use, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 

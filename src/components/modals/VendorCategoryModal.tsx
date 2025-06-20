@@ -14,10 +14,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { CategoryType } from "@/hooks/admin/useAllCategory";
 import { Spinner } from "../ui/spinner";
-import { Input } from "@/components/ui/input";
 import { useAllVendorCategoryQuery } from "@/hooks/vendor/useVendor";
+import { Category } from "@/services/categories/categoryService";
 
 interface VendorCategoryModalProps {
   isOpen: boolean;
@@ -30,34 +29,23 @@ export function VendorCategoryModal({
   onClose,
   onSave,
 }: VendorCategoryModalProps) {
-  const [categories, setCategories] = useState<CategoryType[] | null>(null);
+  const [categories, setCategories] = useState<Category[] | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [newCategory, setNewCategory] = useState<string>("");
-  const [isCreatingNew, setIsCreatingNew] = useState<boolean>(false);
 
   const { data, isLoading } = useAllVendorCategoryQuery();
 
   useEffect(() => {
     if (data) {
-      setCategories(data.categories);
+      setCategories(data.data.data);
     }
   }, [data]);
 
-  // Handles category selection or creation
   const handleCategoryChange = (value: string) => {
-    if (isCreatingNew) {
-      setNewCategory(value);
-    } else {
-      setSelectedCategory(value);
-    }
+    setSelectedCategory(value);
   };
 
   const handleSave = () => {
-    if (isCreatingNew && newCategory) {
-      console.log("Creating new category:", newCategory);
-      onSave?.(newCategory);
-    } else if (!isCreatingNew && selectedCategory) {
-      console.log("Selected category:", selectedCategory);
+    if (selectedCategory) {
       onSave?.(selectedCategory);
     }
     onClose?.();
@@ -78,36 +66,27 @@ export function VendorCategoryModal({
           <DialogTitle>Choose a Category</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          {isCreatingNew ? (
-            <Input
-              onChange={(e) => handleCategoryChange(e.target.value)}
-              value={newCategory}
-              placeholder="Enter new category name"
-              className="w-full"
-            />
-          ) : (
-            <Select onValueChange={handleCategoryChange} value={selectedCategory}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category._id} value={category._id}>
-                    {category.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+          <Select onValueChange={handleCategoryChange} value={selectedCategory}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem key={category._id} value={category._id}>
+                  {category.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
           <Button
-          variant={"outline"}
+            variant="outline"
             onClick={handleSave}
-            disabled={isCreatingNew ? !newCategory : !selectedCategory}
+            disabled={!selectedCategory}
           >
             Save
           </Button>

@@ -27,17 +27,31 @@ const clientSlice = createSlice({
         clientLogout : (state)=> {
             state.client = null;
             localStorage.removeItem("clientSession");
+        },
+        updateClientslice : (state,action)=> {
+            if(state.client) {
+                // Only update name and avatar fields
+                if (action.payload.name !== undefined) {
+                    state.client.name = action.payload.name;
+                }
+                if (action.payload.avatar !== undefined) {
+                    state.client.avatar = action.payload.avatar;
+                }
+                // Update localStorage with the modified vendor data
+                localStorage.setItem("clientSession", JSON.stringify(state.client));
+            }
         }
     }
 })
 
-const {clientLogin , clientLogout} = clientSlice.actions
+const {clientLogin , clientLogout , updateClientslice} = clientSlice.actions
 
 
 
 export {
     clientLogin , 
-    clientLogout
+    clientLogout,
+    updateClientslice
 }
 
 export default clientSlice.reducer

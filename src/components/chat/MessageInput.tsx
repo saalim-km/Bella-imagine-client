@@ -11,9 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { MessageType } from "@/types/Chat";
+import { MessageType } from "@/types/interfaces/Chat";
 import { useUploadChatMedia } from "@/hooks/chat/useChat";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
 
 interface MessageInputProps {
   conversationId: string;
@@ -57,10 +57,11 @@ export function MessageInput({ conversationId, onSendMessage }: MessageInputProp
           { media: mediaPreview.file as File, conversationId },
           {
             onSuccess: (data) => {
+              console.log('media uploat chat : ',data);
               messageToSend = {
                 text: message,
                 type: messageType,
-                mediaKey: data.key,
+                mediaKey: data.data.key,
               };
               onSendMessage(messageToSend);
               setMediaPreview(null);

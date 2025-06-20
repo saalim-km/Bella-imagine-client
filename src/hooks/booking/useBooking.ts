@@ -1,7 +1,9 @@
-import { BookingList } from "@/components/User/ClinetBookingList";
 import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { AxiosResponse } from "../auth/useOtpVerify";
-
+import { BookingQueryParams } from "@/services/booking/bookingService";
+import { BasePaginatedResponse } from "@/services/client/clientService";
+import { PaginatedResponse } from "@/types/interfaces/vendor";
+import { BookingList } from "@/pages/User/ClientBookingListing";
 interface FetchBookingsParams {
   page: number;
   limit: number;
@@ -17,19 +19,15 @@ type BookingResponse = {
 };
 
 export const useBookingQuery = (
-  queryFunc: (params: FetchBookingsParams) => Promise<BookingResponse>,
-  page: number,
-  limit: number,
-  sort: string,
-  search: string,
-  statusFilter: string,
-  enabled : boolean
+  queryFunc: (params: BookingQueryParams) => Promise<BasePaginatedResponse<PaginatedResponse<BookingList>>>,
+  params: BookingQueryParams,
+  enabled: boolean
 ) => {
   return useQuery({
-    queryKey: ["paginated-booking", page, limit, sort, search, statusFilter],
-    queryFn: () => queryFunc({ page, limit, sort, search, statusFilter }),
+    queryKey: ["paginated-booking", params],
+    queryFn: () => queryFunc(params),
     placeholderData: keepPreviousData,
-    enabled : enabled
+    enabled,
   });
 };
 

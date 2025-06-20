@@ -8,7 +8,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
-import { IService } from "@/types/vendor";
+import { IService } from "@/types/interfaces/vendor";
 
 interface ServicePreviewProps {
   serviceData: IService;
@@ -74,6 +74,7 @@ export const ServicePreview: React.FC<ServicePreviewProps> = ({
             <MapPin className="h-5 w-5" />
           </div>
           <h3 className="text-lg font-semibold">Service Location</h3>
+          <p>{serviceData.location.address}</p>
         </div>
         <div className="bg-muted/20 rounded-xl overflow-hidden border">
           <div className="h-[350px] w-full">

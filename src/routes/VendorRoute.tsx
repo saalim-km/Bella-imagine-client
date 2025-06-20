@@ -1,17 +1,33 @@
-import ForgotPassPage from '@/pages/User/ForgotPassPage'
-import VendorLogin from '@/pages/vendor/VendorLogin'
-import VendorSignup from '@/pages/vendor/VendorSignup'
-import { NoClientAuthRoute } from '@/protected/PublicRoute'
-import { Route, Routes } from 'react-router-dom'
+import { Spinner } from "@/components/ui/spinner";
+import { NoClientAuthRoute } from "@/protected/PublicRoute";
+import { lazy, Suspense } from "react";
+import { Route, Routes } from "react-router-dom";
+
+const VendorLoginPage = lazy(() => import("@/pages/vendor/VendorLogin"));
+const VendorSignupPage = lazy(() => import("@/pages/vendor/VendorSignup"));
+const ForgotPassPage = lazy(() => import("@/pages/User/ForgotPassPage"));
 
 const VendorRoute = () => {
   return (
-    <Routes>
-      <Route path='/login' element = {<NoClientAuthRoute element={<VendorLogin/>}/>} />
-      <Route path='/signup' element = {<NoClientAuthRoute element={<VendorSignup/>}/>} />
-      <Route path="/forgot-password" element = {<NoClientAuthRoute element={<ForgotPassPage userType = 'vendor'/>}/>}/>
-    </Routes>
-  )
-}
+    <Suspense fallback = {<Spinner/>}>
+      <Routes>
+        <Route
+          path="/login"
+          element={<NoClientAuthRoute element={<VendorLoginPage />} />}
+        />
+        <Route
+          path="/signup"
+          element={<NoClientAuthRoute element={<VendorSignupPage />} />}
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <NoClientAuthRoute element={<ForgotPassPage userType="vendor" />} />
+          }
+        />
+      </Routes>
+    </Suspense>
+  );
+};
 
-export default VendorRoute
+export default VendorRoute;

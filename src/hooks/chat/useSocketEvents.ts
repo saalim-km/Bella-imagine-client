@@ -1,7 +1,9 @@
+import { TNotification } from "@/components/common/Notification";
 import { useSocket } from "@/context/SocketContext";
 import { setConversations, setMessages, setUsers, updateContactStatus, updateLastSeen } from "@/store/slices/chatSlice";
-import { Conversation, Message, User } from "@/types/Chat";
-import { TRole } from "@/types/User";
+import { addNotification } from "@/store/slices/notificationSlice";
+import { Conversation, Message, User } from "@/types/interfaces/Chat";
+import { TRole } from "@/types/interfaces/User";
 import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
@@ -35,6 +37,12 @@ export function useSocketEvents({userId , userType} : {userId : string , userTyp
         socket.on('messages',(messages : Message[])=> {
             console.log('go the messages',messages);
             dispatch(setMessages(messages))
+        })
+
+
+        socket.on('notifications' , (notification : TNotification)=> {
+            console.log('got the notification',notification);
+            dispatch(addNotification(notification))
         })
         
         return ()=> {

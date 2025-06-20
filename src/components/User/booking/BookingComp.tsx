@@ -1,87 +1,122 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import type { TimeSlot, BookingState, SessionDuration, IServiceResponse } from "@/types/vendor"
-import { toast } from "sonner"
-import ServiceDetails from "./ServiceDetails"
-import DateSelector from "./DateSelector"
-import TimeSlotSelector from "./TimeSlotSelector"
-import BookingConfirmation from "./BookingConfirmation"
-import { BookingSuccessModal } from "@/components/modals/BookingSuccess"
-import { useNavigate } from "react-router-dom"
-import LocationPicker from "./LocationPicker"
-import { LoadingOverlay } from "@/components/modals/LoadingProcessBooking"
+import type React from "react";
+import { useState } from "react";
+import type {
+  TimeSlot,
+  BookingState,
+  SessionDuration,
+  IServiceResponse,
+} from "@/types/interfaces/vendor";
+import { toast } from "sonner";
+import ServiceDetails from "./ServiceDetails";
+import DateSelector from "./DateSelector";
+import TimeSlotSelector from "./TimeSlotSelector";
+import BookingConfirmation from "./BookingConfirmation";
+import LocationSelector from "./LocationPicker";
+import { BookingSuccessModal } from "@/components/modals/BookingSuccess";
+import { useNavigate } from "react-router-dom";
+import { LoadingOverlay } from "@/components/modals/LoadingProcessBooking";
+import { RootState } from "@/store/store";
+import { useSelector } from "react-redux";
 
 interface BookingPageProps {
-  service: IServiceResponse
-  vendorId: string
+  service: IServiceResponse;
+  vendorId: string;
 }
 
 const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
-  const navigate = useNavigate()
-  const [isBookingSuccess, setIsBookingSuccess] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const client = useSelector((state: RootState) => state.client.client);
+  const navigate = useNavigate();
+  const [isBookingSuccess, setIsBookingSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [bookingState, setBookingState] = useState<BookingState>({
     selectedDate: null,
     selectedTimeSlot: null,
-    selectedDuration: service.sessionDurations.length > 0 ? service.sessionDurations[0] : null,
+    selectedDuration:
+      service.sessionDurations.length > 0 ? service.sessionDurations[0] : null,
     vendorId,
     location: { lat: 0, lng: 0 },
-  })
+    distance: 0,
+    travelTime: "",
+  });
+
+  // Check if all required booking fields are complete (excluding location)
+  const isBookingComplete = Boolean(
+    bookingState.selectedDate &&
+      bookingState.selectedTimeSlot &&
+      bookingState.selectedDuration
+  );
 
   const handleDateSelect = (date: string) => {
     setBookingState((prev) => ({
       ...prev,
       selectedDate: date,
       selectedTimeSlot: null,
-    }))
-  }
+    }));
+  };
 
   const handleTimeSlotSelect = (timeSlot: TimeSlot) => {
     setBookingState((prev) => ({
       ...prev,
       selectedTimeSlot: timeSlot,
-    }))
-  }
+    }));
+  };
 
   const handleDurationSelect = (duration: SessionDuration) => {
     setBookingState((prev) => ({
       ...prev,
       selectedDuration: duration,
-    }))
-  }
+    }));
+  };
 
-  const handleLocationSelect = (location: { lat: number; lng: number }) => {
+  const handleLocationChange = (
+    location: { address: string; lat: number; lng: number } | null,
+    distance: number,
+    travelTime: string,
+    travelFee: number
+  ) => {
     setBookingState((prev) => ({
       ...prev,
-      location,
-    }))
-  }
+      location: location
+        ? { lat: location.lat, lng: location.lng }
+        : { lat: 0, lng: 0 },
+      locationAddress: location?.address || "",
+      distance,
+      travelTime,
+      travelFee,
+    }));
+  };
 
   const handleConfirmBooking = () => {
     toast.success("Booking confirmed!", {
       description: "Your booking has been confirmed successfully.",
-    })
+    });
 
+    // Reset booking state
     setBookingState({
       selectedDate: null,
       selectedTimeSlot: null,
-      selectedDuration: service.sessionDurations.length > 0 ? service.sessionDurations[0] : null,
+      selectedDuration:
+        service.sessionDurations.length > 0
+          ? service.sessionDurations[0]
+          : null,
       vendorId,
       location: { lat: 0, lng: 0 },
-    })
-  }
+      distance: 0,
+      travelTime: "",
+      travelFee: 0,
+    });
+  };
 
   return (
     <div className="container mx-auto px-4 py-10 mt-16 relative">
       {isLoading && <LoadingOverlay message="Processing your booking..." />}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Booking Steps */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Step 1: Service and Duration */}
+          {/* Service Details */}
           <section>
             <ServiceDetails
               service={service}
@@ -90,16 +125,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
             />
           </section>
 
-          {/* Step 2: Location Selection */}
-          <section>
-            <h2 className="text-lg font-semibold mb-2">Where is the service needed?</h2>
-            <LocationPicker
-              onLocationSelect={handleLocationSelect}
-              initialLocation={bookingState.location}
-            />
-          </section>
-
-          {/* Step 3: Date and Time */}
+          {/* Date and Time Selection */}
           <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <DateSelector
               availableDates={service.availableDates}
@@ -113,9 +139,23 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
               onTimeSlotSelect={handleTimeSlotSelect}
             />
           </section>
+
+          {/* Location Selection */}
+          <section>
+            <LocationSelector
+              serviceLocation={{
+                address: service.location.address,
+                lat: service.location.lat,
+                lng: service.location.lng,
+              }}
+              onLocationChange={handleLocationChange}
+              isBookingComplete={isBookingComplete}
+              disabled={isLoading}
+            />
+          </section>
         </div>
 
-        {/* Sidebar: Booking Summary and Confirm */}
+        {/* Booking Confirmation Sidebar */}
         <aside className="sticky top-24 h-fit">
           <BookingConfirmation
             service={service}
@@ -127,17 +167,18 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
         </aside>
       </div>
 
+      {/* Success Modal */}
       <BookingSuccessModal
+        userName={client?.name!}
         isOpen={isBookingSuccess}
         onClose={() => {
-          setIsBookingSuccess(false)
-          navigate("/")
+          setIsBookingSuccess(false);
+          navigate("/");
         }}
-        eventDate={bookingState.selectedDate || ""}
         eventName={service.serviceTitle}
       />
     </div>
-  )
-}
+  );
+};
 
-export default BookingPage
+export default BookingPage;

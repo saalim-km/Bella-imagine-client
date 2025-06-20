@@ -1,4 +1,4 @@
-import { AdminLayout } from '@/components/admin/layout/AdminLayout'
+import { AdminLayout } from '@/components/layout/AdminLayout'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { ProfileInfo } from '@/components/User/ProfileInfo'
@@ -9,11 +9,11 @@ import { useNavigate, useParams } from 'react-router-dom'
 const UserDetailsPage = () => {
     const {id , role} = useParams()
     const {data , isLoading} = useVendorDetailsQuery(id!,role as 'vendor' | 'client')
+    console.log(data?.data);
     const navigate = useNavigate()
     if(isLoading){
-        return <Spinner/>
+      return <Spinner/>
     }
-    console.log(location);
   return (
     <AdminLayout>
         <div>
@@ -21,7 +21,7 @@ const UserDetailsPage = () => {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
-            {data?.user && <ProfileInfo data={data.user}/>}
+            {data?.data && <ProfileInfo data={data.data}/>}
         </div>
     </AdminLayout>
   )

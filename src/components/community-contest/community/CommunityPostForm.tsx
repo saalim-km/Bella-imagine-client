@@ -4,7 +4,7 @@ import {
   X, Upload, Tag as TagIcon, Loader2, Check, Image as ImageIcon,
 } from "lucide-react";
 import { toast } from "sonner";
-import { IPostRequest } from "@/types/Community";
+import { IPostRequest } from "@/types/interfaces/Community";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

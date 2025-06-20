@@ -33,9 +33,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useThemeConstants } from "@/utils/theme/themeUtills";
-import { buildQueryParams } from "@/utils/queryGenerator";
-import { handleError } from "@/utils/Error/errorHandler";
+import { buildQueryParams } from "@/utils/helper/query-generator";
+import { handleError } from "@/utils/Error/error-handler.utils";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -59,14 +58,10 @@ export function VendorRequestsTable() {
   const [isApproving, setIsApproving] = useState(false);
   const { mutate: approveVendor } = useUpdateVendorRequest();
   const { mutate: rejectVendor } = useUpdateVendorRequest();
-  const itemsPerPage = 2;
+  const itemsPerPage = 8;
 
   const FILTER_OPTIONS = [
-    { label: "Latest Requests", value: "latest" },
-    { label: "Oldest Requests", value: "oldest" },
-    { label: "Category: Wedding", value: "wedding" },
-    { label: "Category: Couple", value: "couple" },
-    { label: "Category: Potrait", value: "potrait" },
+    { label: "Old Requests", value: "oldest" },
   ];
 
   const predefinedReasons = [
@@ -81,7 +76,6 @@ export function VendorRequestsTable() {
   const {
     data: vendorRequestsData,
     isLoading,
-    isError,
   } = useVendorRequest(
     {
       search: appliedSearchTerm,
@@ -93,8 +87,8 @@ export function VendorRequestsTable() {
     }
   );
 
-  const vendorRequests = vendorRequestsData?.vendors?.data || [];
-  const totalVendors = vendorRequestsData?.vendors?.total ?? 1;
+  const vendorRequests = vendorRequestsData?.data?.data || [];
+  const totalVendors = vendorRequestsData?.data?.total ?? 1;
   const totalPages = Math.max(1, Math.ceil(totalVendors / itemsPerPage));
 
   console.log(vendorRequests, totalPages);
@@ -146,7 +140,7 @@ export function VendorRequestsTable() {
     console.log("vendor id", id);
     setIsApproving(true);
     approveVendor(
-      { vendorId: id, status: "accept" },
+      { id: id, status: true },
       {
         onSuccess: (data: any) => {
           setIsApproving(false);
@@ -178,9 +172,9 @@ export function VendorRequestsTable() {
       console.log(reasonToSend, selectedVendor);
       rejectVendor(
         {
-          vendorId: selectedVendor,
-          rejectReason: reasonToSend,
-          status: "reject",
+          id: selectedVendor,
+          reason: reasonToSend,
+          status: false,
         },
         {
           onSuccess: (data: any) => {
@@ -343,7 +337,7 @@ export function VendorRequestsTable() {
                                       onClick={() =>
                                         handleOpenRejectModal(request._id ?? "")
                                       }
-                                      disabled={isApproving}
+                                      disabled={isApproving || request.isVerified == 'reject'}
                                     >
                                       Reject
                                     </Button>

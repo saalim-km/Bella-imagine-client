@@ -3,23 +3,26 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { useAllClientQuery, useBlockClient, useUnBlockClient, clientKeys } from "@/hooks/admin/useClients";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { buildQueryParams } from "@/utils/queryGenerator";
-import { handleError } from "@/utils/Error/errorHandler";
+import { buildQueryParams } from "@/utils/helper/query-generator";
+import { handleError } from "@/utils/Error/error-handler.utils";
 import { DataTable, type ColumnDef } from "@/components/common/Table";
+import { ReusableDropdown } from "@/components/common/ReusableDropdown";
+import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
+import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
 
 const FILTER_OPTIONS = [
-  { label: "Active", value: "isActive" },
-  { label: "Inactive", value: "notActive" },
   { label: "Blocked", value: "blocked" },
-  { label: "Not Blocked", value: "notBlocked" },
-  { label: "Latest Joined", value: "latest" },
   { label: "Older Member", value: "oldest" },
 ];
 
@@ -28,7 +31,6 @@ export function ClientTable() {
   const queryClient = useQueryClient();
   const { mutate: block } = useBlockClient();
   const { mutate: unBlock } = useUnBlockClient();
-  
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [appliedFilters, setAppliedFilters] = useState<string[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -36,12 +38,11 @@ export function ClientTable() {
   const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedClient, setSelectedClient] = useState<{ id: string; action: "block" | "unblock" } | null>(null);
-  
   const itemsPerPage = 4;
 
   const toggleFilter = (key: string) => {
     setSelectedFilters((prev) => {
-      let updatedFilters = prev.includes(key) 
+      let updatedFilters = prev.includes(key)
         ? prev.filter((item) => item !== key)
         : [...prev, key];
       if (key === "latest") {
@@ -65,7 +66,7 @@ export function ClientTable() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearchSubmit();
     }
   };
@@ -101,8 +102,8 @@ export function ClientTable() {
     { page: currentPage, limit: itemsPerPage }
   );
 
-  const clients = clientsData?.clients.data || [];
-  const totalClients = clientsData?.clients.total || 0;
+  const clients = clientsData?.data.data || [];
+  const totalClients = clientsData?.data.total || 0;
   const totalPages = Math.max(1, Math.ceil(totalClients / itemsPerPage));
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,23 +146,20 @@ export function ClientTable() {
       id: "actions",
       header: "Actions",
       cell: (client) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">Actions</Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem asChild>
-              <a onClick={() => navigate(`/admin/user/${client._id}/client`)}>View Details</a>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-red-600"
-              onClick={() => client._id && confirmAction(client._id, client.isblocked ? "unblock" : "block")}
-            >
-              {client.isblocked ? "Unblock" : "Block"}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <ReusableDropdown
+          actions={[
+            {
+              label: "View Details",
+              href: `/admin/user/${client._id}/client`,
+            },
+            { type: "separator" },
+            {
+              label: client.isblocked ? "Unblock" : "Block",
+              onClick: () => client._id && confirmAction(client._id, client.isblocked ? "unblock" : "block"),
+              danger: true,
+            },
+          ]}
+        />
       ),
     },
   ];
@@ -222,24 +220,17 @@ export function ClientTable() {
       />
 
       {selectedClient && (
-        <AlertDialog open={true} onOpenChange={(open) => !open && setSelectedClient(null)}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                {selectedClient.action === "block" ? "Block Client" : "Unblock Client"}?
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to {selectedClient.action} this client?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setSelectedClient(null)}>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleConfirm}>
-                {selectedClient.action === "block" ? "Block" : "Unblock"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <ReusableAlertDialog
+          open={true}
+          onOpenChange={(open) => !open && setSelectedClient(null)}
+          title={selectedClient.action === "block" ? "Block Client" : "Unblock Client"}
+          description={`Are you sure you want to ${selectedClient.action} this client?`}
+          confirmLabel={selectedClient.action === "block" ? "Block" : "Unblock"}
+          cancelLabel="Cancel"
+          onConfirm={handleConfirm}
+          onCancel={() => setSelectedClient(null)}
+          confirmVariant={selectedClient.action === "block" ? "destructive" : "default"}
+        />
       )}
     </>
   );

@@ -7,8 +7,7 @@ import { Sidebar } from "@/components/User/Sidebar";
 import { ProfileInfo } from "@/components/User/ProfileInfo";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import Header from "@/components/headers/Header";
-import Spinner from "@/components/common/LogoSpinner";
+import Header from "@/components/common/Header";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import {
@@ -19,32 +18,36 @@ import {
   useUpdateVendorMutation,
   useVendorDetailsQuery,
 } from "@/hooks/vendor/useVendor";
-import { IProfileUpdate } from "@/types/User";
+import { IProfileUpdate } from "@/types/interfaces/User";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { VendorCategoryModal } from "@/components/modals/VendorCategoryModal";
 import { useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
 import { ServiceForm } from "@/components/vendor/services/serviceForm/Service";
-import VendorServices from "@/components/vendor/VendorServices";
-import { IServiceResponse, IWorkSampleResponse } from "@/types/vendor";
+import VendorServices from "@/components/vendor/services/serviceForm/VendorServices";
+import {
+  IServiceResponse,
+  IWorkSampleResponse,
+} from "@/types/interfaces/vendor";
 import VendorWorkSample from "@/components/vendor/VendorWorkSample";
 import WorkSampleUpload, {
-  WorkSampleFormData,
 } from "@/components/vendor/work-sample/WorkSampleUpload";
-import { ClientBookingListing } from "./ClientBookingListing";
-import VendorBookingList from "@/components/User/VendorBookingList";
-import { VendorBookingListing } from "../vendor/vendorBookingListing";
 import ClientWallet from "./ClientWalletPage";
 import VendorWallet from "../vendor/VendorWallet";
 import { useDispatch } from "react-redux";
 import { updateVendorSlice } from "@/store/slices/vendorSlice";
+import { Spinner } from "@/components/ui/spinner";
+import { IVendor } from "@/services/vendor/vendorService";
+import { IClient } from "@/services/client/clientService";
+import { updateClientslice } from "@/store/slices/clientSlice";
+import ClientBookingList from "./ClientBookingListing";
+import VendorBookingList from "../vendor/vendorBookingListing";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
   "bookings-history": "Bookings & History",
   wallet: "Wallet & Transactions",
-  "received-work": "Received Work",
   bookings: "Bookings",
   "allocate-slot": "Allocate Slot",
   "upload-work": "Upload Work",
@@ -60,11 +63,12 @@ export default function UserProfile() {
   const [isModal, setIsModal] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isServiceCreating, setServiceCreating] = useState(false);
   const [serviceEditData, setIsServiceEditData] = useState<IServiceResponse>();
   const [isWorkSampleCreating, setIsWorkSampleCreating] = useState(false);
   const [workSample, setWorkSample] = useState<IWorkSampleResponse>();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const userType = useSelector((state: RootState) => {
     if (state.vendor.vendor) return state.vendor.vendor;
     if (state.client.client) return state.client.client;
@@ -88,12 +92,11 @@ export default function UserProfile() {
   const isLoading = isClientLoading || isVendorLoading;
   const isError = isClientError || isVendorError;
   const userData =
-    userType?.role === "client" ? clientData?.client : vendorData?.vendor;
+    userType?.role === "client" ? clientData?.data : vendorData?.data;
 
   const hasCategory =
-    userType?.role === "vendor" && vendorData?.vendor?.categories?.length !== 0;
+    userType?.role === "vendor" && vendorData?.data?.categories?.length !== 0;
 
-  const userTypeForChat = userType?.role === "client" ? "Client" : "Vendor";
   function handleIsServiceEditing(data: IServiceResponse) {
     setIsServiceEditData(data);
     setServiceCreating(!isServiceCreating);
@@ -105,38 +108,58 @@ export default function UserProfile() {
   }
 
   function handleUpdateProfile(data: IProfileUpdate) {
-    if(data.imageFile){
+    setIsSubmitting(true)
+    if (data.imageFile) {
       data = {
         ...data,
-        profileImage : data.imageFile
-      }
+        profileImage: data.imageFile,
+      };
     }
     delete data.imageFile;
-    console.log('data for update : ',data);
     if (userType?.role === "vendor") {
-      console.log('usertype is vendor ✅❌');
       updateVendor(data, {
         onSuccess: (data) => {
-          console.log('user profile in callback',data.vendor.profileImage);
-          dispatch(updateVendorSlice(data.vendor.profileImage))
+          setIsSubmitting(false)
+          setIsEditing(false);
+          const vendor = data.data;
+          const dataToUpdateRedux: Partial<IVendor> = {
+            _id: vendor._id,
+            role: vendor.role,
+            email: vendor.email,
+            name: vendor.name,
+            avatar: vendor.profileImage,
+          };
+          dispatch(updateVendorSlice(dataToUpdateRedux));
           queryClient.invalidateQueries({ queryKey: ["vendor-profile"] });
           toast.success(data.message);
         },
         onError: (error) => {
-          console.log(error);
-          toast.error(error.message);
+          setIsSubmitting(false)
+          setIsEditing(false);
+          handleError(error);
         },
       });
     } else {
-      console.log('usertype is not vendor 💀❌❌');
       updateClient(data, {
         onSuccess: (data) => {
+          setIsSubmitting(false)
+          setIsEditing(false);
+          const client = data.data;
+          const dataToUpdateRedux: Partial<IClient> = {
+            _id: client.email,
+            name: client.name,
+            role: client.role,
+            email: client.email,
+            avatar: client.profileImage,
+          };
+          dispatch(updateClientslice(dataToUpdateRedux));
           queryClient.invalidateQueries({ queryKey: ["client-profile"] });
           toast.success(data.message);
         },
         onError: (error) => {
-          console.log(error);
-          console.log(error.message);
+          setIsSubmitting(false)
+          setIsEditing(false);
+          handleError(error);
         },
       });
     }
@@ -162,20 +185,17 @@ export default function UserProfile() {
     });
   }
 
-  function handleIsServiceCreating() {
-    setServiceCreating(!isServiceCreating);
+  function handleIsServiceCreating(state : boolean) {
+    setServiceCreating(state);
     localStorage.removeItem("serviceDraft");
     setIsServiceEditData(undefined);
     handleIsServiceEditing;
   }
 
   function handleisWorkSampleEditing(workSample: IWorkSampleResponse) {
-    console.log("in handleisWorkSampleEditing =>>>>>");
     setIsWorkSampleCreating(true);
-    console.log("got the data for eidt : ", workSample);
     setWorkSample(workSample);
   }
-
 
   if (isLoading) {
     return (
@@ -194,7 +214,7 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="mt-14">
+    <div className="mt-16">
       <Header />
       <div className="container mx-auto p-4 lg:p-6">
         {userType?.role === "vendor" &&
@@ -268,9 +288,10 @@ export default function UserProfile() {
                 {activeTab === "profile" ? (
                   isEditing ? (
                     <EditProfileForm
+                      isUpdateSubmitting={isSubmitting}
                       setIsEditing={setIsEditing}
                       role={userData.role}
-                      data={userData}
+                      data={userData as IVendor}
                       handleUpdateProfile={handleUpdateProfile}
                     />
                   ) : (
@@ -285,7 +306,7 @@ export default function UserProfile() {
                     <ServiceForm
                       handleIsCreatingService={handleIsServiceCreating}
                       editData={serviceEditData}
-                      vendorData={vendorData ? vendorData.vendor : undefined}
+                      vendorData={vendorData ? vendorData.data : undefined}
                     />
                   ) : (
                     <VendorServices
@@ -318,19 +339,19 @@ export default function UserProfile() {
 
                 {activeTab === "bookings-history" &&
                   userType?.role === "client" && (
-                    <ClientBookingListing userType={userType?.role} />
-                )}
+                    <ClientBookingList userType={userType?.role} />
+                  )}
 
                 {activeTab === "bookings" && userType?.role === "vendor" && (
-                  <VendorBookingListing userType={userType?.role} />
+                  <VendorBookingList userType={userType?.role} />
                 )}
 
                 {activeTab === "wallet" && userType?.role === "client" && (
-                  <ClientWallet/>
+                  <ClientWallet />
                 )}
 
                 {activeTab === "wallet" && userType?.role === "vendor" && (
-                  <VendorWallet/>
+                  <VendorWallet />
                 )}
               </div>
             </Card>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { IPostRequest } from "@/types/Community";
+import { IPostRequest } from "@/types/interfaces/Community";
 // import { PostGrid } from "@/components/post/PostGrid";
 // import { Post } from "@/types";
 

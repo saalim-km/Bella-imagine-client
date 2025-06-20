@@ -1,9 +1,9 @@
 
-import { Community } from "@/types/Community";
+import { CommunityResponse } from "@/types/interfaces/Community";
 import { CommunityCard } from "./CommunityCard";
 
 interface CommunityGridProps {
-  communities: Community[];
+  communities: CommunityResponse[];
 }
 
 export function CommunityGrid({ communities }: CommunityGridProps) {

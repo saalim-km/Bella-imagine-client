@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { IServiceResponse } from "@/types/vendor";
+import { IServiceResponse } from "@/types/interfaces/vendor";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import { ScrollArea } from "@/components/ui/scroll-area";
 

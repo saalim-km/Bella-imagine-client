@@ -14,28 +14,19 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useThemeConstants } from "@/utils/theme/themeUtills";
 import { Button } from "../ui/button";
 import { IVendor } from "@/services/vendor/vendorService";
 import { IClient } from "@/services/client/clientService";
 
-interface Category {
-  id?: string;
-  title?: string;
-}
-
-type VerificationStatus = "accept" | "reject" | "pending";
 
 type IProfileInfo = Partial<IVendor | IClient>
 
 interface ProfileInfoProps {
   data: IProfileInfo;
-  className?: string;
 }
 
-export function ProfileInfo({ data, className }: ProfileInfoProps) {
+export function ProfileInfo({ data }: ProfileInfoProps) {
   const [showDocs,setisShowDocs] = useState(false)
-  const {textColor} = useThemeConstants()
   const isVendor = "vendorId" in data && data.vendorId;
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
   
@@ -60,7 +51,7 @@ export function ProfileInfo({ data, className }: ProfileInfoProps) {
             valueClassName={data?.isActive ? "text-status-active font-medium" : "text-status-inactive font-medium"}
           />
           <InfoItem icon={CalendarDays} label="Joined" value={formattedDate} />
-          <InfoItem icon={MapPin} label="Location" value={data?.location} />
+          <InfoItem icon={MapPin} label="Location" value={data?.location?.address} />
         </div>
       </section>
 

@@ -1,42 +1,22 @@
 
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Community } from "@/types/Community";
+import {  CommunityResponse } from "@/types/interfaces/Community";
 
 
 interface CommunityCardProps {
-  community: Community;
+  community: CommunityResponse;
   className?: string;
 }
 
 export function CommunityCard({ community, className }: CommunityCardProps) {
-  const [memberCount, setMemberCount] = useState(community.memberCount);
-  const [isJoining, setIsJoining] = useState(false);
-
-  const handleJoinToggle = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    setIsJoining(true);
-
-  };
 
   return (
     <Card className={cn("hover-lift overflow-hidden h-full flex flex-col", className)}>
@@ -66,16 +46,8 @@ export function CommunityCard({ community, className }: CommunityCardProps) {
       <CardFooter className="flex justify-between pt-2">
         <div className="flex items-center text-sm text-muted-foreground">
           <Users className="h-4 w-4 mr-1" />
-          <span>{memberCount?.toLocaleString()} members</span>
+          <span>{community?.memberCount} members</span>
         </div>
-        <Button 
-          size="sm" 
-          variant={"outline"}
-          onClick={handleJoinToggle}
-          disabled={isJoining}
-        >
-          {"Join"}
-        </Button>
       </CardFooter>
     </Card>
   );

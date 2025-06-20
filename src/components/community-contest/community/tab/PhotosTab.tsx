@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Post } from "@/types/Community";
+import { Post } from "@/types/interfaces/Community";
 
 interface PhotosTabProps {
   posts: Post[];

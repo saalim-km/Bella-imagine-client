@@ -1,10 +1,10 @@
 import Login from '@/components/auth/Login'
 import Footer from '@/components/common/Footer'
-import Header from '@/components/headers/Header'
+import Header from '@/components/common/Header'
 import { useLoginMutation } from '@/hooks/auth/useLogin'
 import { adminLogin } from '@/store/slices/adminSlice'
-import { ILogin } from '@/types/User'
-import { handleError } from '@/utils/Error/errorHandler'
+import { ILogin } from '@/types/interfaces/User'
+import { handleError } from '@/utils/Error/error-handler.utils'
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -23,7 +23,7 @@ const AdminLogin = () => {
             setIsSending(false)
             console.log(data);
             toast.success(data.message)
-            dispatch(adminLogin(data.user))
+            dispatch(adminLogin(data.data))
             navigate('/admin/dashboard')
           },
           onError : (error)=> {

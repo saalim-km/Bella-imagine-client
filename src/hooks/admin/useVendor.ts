@@ -1,7 +1,7 @@
-import AdminService from "@/services/admin/adminService";
+import AdminService, { updateVendorRequestService } from "@/services/admin/adminService";
 import { IClient } from "@/services/client/clientService";
 import { IVendor } from "@/services/vendor/vendorService";
-import { PaginationParams } from "@/types/Admin";
+import { PaginationParams } from "@/types/interfaces/Admin";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export interface VendorRequest {
@@ -11,7 +11,7 @@ export interface VendorRequest {
 }
 
 export type TPaginatedVendorRequest =  {
-  vendors : VendorRequest
+  data : VendorRequest
 }
 
 interface ApiResponse {
@@ -21,7 +21,7 @@ interface ApiResponse {
 
 export interface IUserDetailsResponse {
   success : boolean,
-  user : IVendor | IClient
+  data : IVendor | IClient
 }
 
 export const vendorKeys = {
@@ -37,26 +37,26 @@ export const useAllVendorQuery = (filter: any = {}, pagination: PaginationParams
     console.log(pagination);
   return useQuery({
     queryKey: vendorKeys.list(filter, pagination),
-    queryFn: () => AdminService.get<TPaginatedVendorRequest>('/vendor', { ...filter, ...pagination }),
+    queryFn: () => AdminService.get<TPaginatedVendorRequest>('/users', { ...filter, ...pagination,role : "vendor"}),
   });
 };
 
 export const useVendorDetailsQuery = (userId : string , role : 'vendor' | 'client')=> {
   return useQuery({
     queryKey : vendorKeys.detail(userId),
-    queryFn : ()=> AdminService.get<IUserDetailsResponse>('/user/details',{id : userId , role : role})
+    queryFn : ()=> AdminService.get<IUserDetailsResponse>('/user',{id : userId , role : role})
   })
 }
 
 export const useBlockVendor = () => {
     return useMutation({
-      mutationFn: (id: string) => AdminService.patch<ApiResponse>('/user-status',{userId : id , userType : 'vendor'}),
+      mutationFn: (id: string) => AdminService.patch<ApiResponse>('/user-status',{id : id , role : 'vendor' , isblock : true}),
     })
 }
 
 export const useUnBlockVendor = () => {
     return useMutation({
-      mutationFn: (id: string) => AdminService.patch<ApiResponse>('/user-status',{userId : id , userType : 'vendor'}),
+      mutationFn: (id: string) => AdminService.patch<ApiResponse>('/user-status',{id : id , role : 'vendor' , isblock : false}),
     })
 }
 
@@ -69,6 +69,6 @@ export const useVendorRequest = (filter : any = {} , pagination : PaginationPara
 
 export const useUpdateVendorRequest = ()=> {
   return useMutation({
-    mutationFn : (data : {rejectReason ?: string , vendorId : string,status : any})=> AdminService.post('/vendor-request',data)
+    mutationFn : (data : {reason ?: string , id : string,status : any})=> updateVendorRequestService(data)
   })
 }

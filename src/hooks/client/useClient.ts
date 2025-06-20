@@ -1,13 +1,16 @@
 import {
+  BasePaginatedResponse,
   getAllClientCategories,
   getAllVendors,
   getClientDetails,
   getPhotographerDetails,
   getService,
+  GetVendorDetails,
   updateClientDetails,
 } from "@/services/client/clientService";
 import { getAllClientNotification } from "@/services/notification/notificationService";
-import { IVendorsFilter } from "@/types/User";
+import { IVendorsFilter, IVendorsResponse } from "@/types/interfaces/User";
+import { PaginatedResponse } from "@/types/interfaces/vendor";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 
@@ -35,13 +38,13 @@ export const useAllClientNotification = (enabled = true)=> {
   })
 }
 
-export const useAllVendorsListQuery = (filter : IVendorsFilter) => {
-  console.log(`in vendors listing service `,filter);
-  return useQuery({
-    queryKey : ["client",filter],
-    queryFn : ()=> getAllVendors(filter)
-  })
-}
+export const useAllVendorsListQuery = (filter: IVendorsFilter) => {
+  return useQuery<BasePaginatedResponse<PaginatedResponse<IVendorsResponse>>, Error>({
+    queryKey: ["client", filter],
+    queryFn: () => getAllVendors(filter),
+    staleTime: 5 * 60 * 1000
+  });
+};
 
 export const useAllClientCategories = ()=> {
   return useQuery({
@@ -50,10 +53,10 @@ export const useAllClientCategories = ()=> {
   })
 }
 
-export const useGetPhotographerDetails = (id : string,servicepage : number,samplePage : number)=> {
+export const useGetPhotographerDetails = (input : GetVendorDetails , vendorId: string)=> {
   return useQuery({
-    queryKey : ["photographer",id,servicepage,samplePage],
-    queryFn : ()=> getPhotographerDetails(id,servicepage,samplePage)
+    queryKey : ["photographer",vendorId,input],
+    queryFn : ()=> getPhotographerDetails(input,vendorId)
   })
 }
 

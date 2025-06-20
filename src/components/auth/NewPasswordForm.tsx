@@ -5,14 +5,14 @@ import { Eye, EyeOff, Loader2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { TRole } from "@/types/User";
+import { TRole } from "@/types/interfaces/User";
 import {
   passwordRequirements,
   passwordSchema,
 } from "@/utils/formikValidators/auth/reset-password.vlidator";
 import { useResetPasswordMUtation } from "@/hooks/auth/useResetPassword";
 import { toast } from "sonner";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
 import { useNavigate } from "react-router-dom";
 
 // Password strength requirements
@@ -60,7 +60,7 @@ export function NewPasswordForm({
     setIsSubmitting(true);
     console.log(email, userType, values.password);
     resetPassword(
-      { email: email, userType: userType, newPassword: values.password },
+      { email: email, role: userType, password: values.password },
       {
         onSuccess: (data) => {
           console.log(data.message);

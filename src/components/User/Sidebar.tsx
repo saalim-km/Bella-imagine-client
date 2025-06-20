@@ -1,13 +1,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useThemeConstants } from "@/utils/theme/themeUtills";
+import { useThemeConstants } from "@/utils/theme/theme.utils";
 import { User, Calendar, CreditCard, Image, Camera, Upload, Ticket, ImageDown, CameraOffIcon, CameraIcon, LucideCamera, MessageCircle } from "lucide-react";
 
 const clientNavItems = [
   { icon: Calendar, label: "Bookings & History", id: "bookings-history" },
   { icon: CreditCard, label: "Wallet & Transactions", id: "wallet" },
-  { icon: Image, label: "Received Work", id: "received-work" },
 ];
 
 const vendorNavItems = [

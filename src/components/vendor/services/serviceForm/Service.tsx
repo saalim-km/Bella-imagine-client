@@ -41,14 +41,13 @@ import {
   useCreateServiceMutation,
   useUpdateVendorServiceMutation,
 } from "@/hooks/vendor/useVendor";
-import { IService, IServiceResponse } from "@/types/vendor";
-import { handleError } from "@/utils/Error/errorHandler";
-import ToolTip from "@/components/common/ToolTip";
+import { IService, IServiceResponse } from "@/types/interfaces/vendor";
+import { handleError } from "@/utils/Error/error-handler.utils";
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
 import { IVendor } from "@/services/vendor/vendorService";
 
 interface IServiceFormProps {
-  handleIsCreatingService(): void;
+  handleIsCreatingService(state : boolean): void;
   editData ?: IServiceResponse
   vendorData ?: IVendor
 }
@@ -66,7 +65,6 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
     session: false,
     location: false,
     availability: false,
-    portfolio: false,
     policies: false,
     preview: false,
   });
@@ -114,7 +112,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
       },
     ],
     location: {
-      travelFee: 0,
+      address :'',
       lat : 0,
       lng : 0,
     },
@@ -135,7 +133,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
         updateService(values,{
           onSuccess : (data)=> {
             console.log(data);
-            handleIsCreatingService()
+            handleIsCreatingService(false)
             toast.success(data.message)
           },
           onError : (err)=> {
@@ -146,12 +144,11 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
         values.isPublished = true;
         addNewService(values, {
           onSuccess: (data) => {
-            handleIsCreatingService();
+            handleIsCreatingService(false);
             localStorage.removeItem("serviceDraft");
             toast.success("Service published successfully!");
           },
           onError: (err) => {
-            handleIsCreatingService()
             handleError(err);
           },
         });
@@ -159,31 +156,6 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
     },
   });
 
-  const saveDraft = () => {
-    if (
-      formik.values.serviceTitle &&
-      formik.values.category &&
-      formik.values.yearsOfExperience
-    ) {
-      addNewService(formik.values, {
-        onSuccess: (data) => {
-          localStorage.removeItem("serviceDraft");
-          handleIsCreatingService();
-          toast.success(data.message);
-        },
-        onError: (err) => {
-          handleIsCreatingService()
-          handleError(err);
-        },
-      });
-    } else {
-      toast.error("Basic details are needed to save a draft");
-    }
-  };
-
-  const handleUpdateService = ()=> {
-    console.log(formik.values);
-  }
 
   const markFieldAsTouched = (fieldName: string) => {
     setTouchedFields((prev) => ({ ...prev, [fieldName]: true }));
@@ -511,7 +483,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
               </TabsTrigger>
               <TabsTrigger
                 value="policies"
-                disabled={!completedSections.portfolio}
+                disabled={!completedSections.policies}
               >
                 Policies
               </TabsTrigger>
@@ -691,7 +663,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
 
               <div className="flex justify-between mt-6">
                 <Button
-                  onClick={handleIsCreatingService}
+                  onClick={()=> handleIsCreatingService(false)}
                   variant={"destructive"}
                 >
                   Cancel
@@ -1054,41 +1026,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
         </form>
       </div>
 
-
-
-      {
-        !editData &&
-        <div className="fixed bottom-6 right-6 z-10">
-        <ToolTip
-          element={
-            <Button
-              variant="outline"
-              type="button"
-              onClick={saveDraft}
-              className="rounded-full shadow-lg p-4 h-auto w-auto"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-5 w-5"
-              >
-                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                <polyline points="17 21 17 13 7 13 7 21" />
-                <polyline points="7 3 7 8 15 8" />
-              </svg>
-            </Button>
-          }
-          content="Save as draft"
-        />
-        </div>
-      }            
+         
       <ReusableAlertDialog
         onCancel={() => setShowExitDialog(false)}
         open={showExitDialog}

@@ -2,26 +2,32 @@ import { adminAxiosInstance } from "@/api/admin.axios";
 import { clientAxiosInstance } from "@/api/client.axios";
 import { vendorAxiosInstance } from "@/api/vendor.axios";
 import { AxiosResponse } from "@/hooks/auth/useOtpVerify";
+import { BasePaginatedResponse } from "../client/clientService";
+import { PaginatedResponse } from "@/types/interfaces/vendor";
+import { BookingList } from "@/pages/User/ClientBookingListing";
 
-export const getClientBookings = async (data: {
+
+
+export interface BookingQueryParams {
   page: number;
   limit: number;
-  sort: string;
-  search: string;
-  statusFilter: string;
-}) => {
-  const response = await clientAxiosInstance.get(
-    "/client/client-bookings",
-    {
-      params: {
-        page: data.page,
-        limit: data.limit,
-        sort: data.sort,
-        search: data.search,
-        statusFilter: data.statusFilter,
-      },
-    }
-  );
+  sort?: string;
+  search?: string;
+  statusFilter?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  priceMin?: number;
+  priceMax?: number;
+  [key: string]: string | number | undefined;
+}
+
+
+export const getClientBookings = async (params: BookingQueryParams): Promise<BasePaginatedResponse<PaginatedResponse<BookingList>>> => {
+  const response = await clientAxiosInstance.get("/client/client-bookings", {
+    params: {
+      ...params,
+    },
+  });
   return response.data;
 };
 
@@ -47,27 +53,18 @@ export const getClientBookingsInAdmin = async (data: {
   return response.data;
 };
 
-export const getVendorBookings = async (data: {
-  page: number;
-  limit: number;
-  sort: string;
-  search: string;
-  statusFilter: string;
-}) => {
-  const response = await vendorAxiosInstance.get(
-    "/vendor/vendor-bookings",
-    {
-      params: {
-        page: data.page,
-        limit: data.limit,
-        sort: data.sort,
-        search: data.search,
-        statusFilter: data.statusFilter,
-      },
-    }
-  );
+
+export const getVendorBookings = async (
+  params: BookingQueryParams
+): Promise<BasePaginatedResponse<PaginatedResponse<BookingList>>> => {
+  const response = await vendorAxiosInstance.get("/vendor/vendor-bookings", {
+    params: {
+      ...params,
+    },
+  });
   return response.data;
 };
+
 
 export const clientUpdateBookingStatus = async ({
   bookingId,
@@ -77,7 +74,7 @@ export const clientUpdateBookingStatus = async ({
   status: string;
 }) : Promise<AxiosResponse> => {
   const response = await clientAxiosInstance.patch(
-    "/client/booking/status",
+    "/client/client-bookings",
     {},
     {
       params: {
@@ -97,7 +94,7 @@ export const vendorUpdateBookingStatus = async ({
   status: string;
 }) => {
   const response = await vendorAxiosInstance.patch(
-    "/vendor/booking/status",
+    "/vendor/vendor-bookings",
     {},
     {
       params: {

@@ -1,6 +1,7 @@
 import AdminService from "@/services/admin/adminService";
-import { getAllCategoryJoinRequests, updateCategoryJoinRequest, updateCategoryService, updateCategoryStatus } from "@/services/categories/categoryService";
-import { PaginationParams } from "@/types/Admin";
+import { Category, getAllCategoryJoinRequests, PaginatedDataRequest, updateCategoryJoinRequest, updateCategoryService, updateCategoryStatus } from "@/services/categories/categoryService";
+import { PaginationParams } from "@/types/interfaces/Admin";
+import { PaginatedResponse } from "@/types/interfaces/vendor";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const categoryKeys = {
@@ -19,13 +20,10 @@ export interface CategoryType {
   status: boolean;
 }
 
-export type CategoryResponse = {
-  categories: CategoryType[];
-  totalCategory: number;
-  currentPage: number;
-  totalPages: number;
-};
 
+export interface TPaginatedCategoryResponse {
+  data : PaginatedResponse<Category>
+}
 
 
 
@@ -35,7 +33,7 @@ export const useAllCategoryQuery = (
 ) =>  {
   return useQuery({
     queryKey: categoryKeys.list(filter,pagination),
-    queryFn: (): Promise<CategoryResponse> =>
+    queryFn: (): Promise<TPaginatedCategoryResponse> =>
       AdminService.get("/categories", { ...filter, ...pagination}),
   });
 };
@@ -49,15 +47,14 @@ export const useAllCategoryMutation = () => {
 
 export const useUpdateCategoryMutation = () => {
   return useMutation({
-    mutationFn: ({id , data } : {id : string , data : Partial<CategoryType>}) =>
-      updateCategoryStatus(id,{...data})
-  });
+    mutationFn : updateCategoryStatus
+  })
 };
 
-export const useGetAllCategoryRequest = ()=> {
+export const useGetAllCategoryRequest = (input : PaginatedDataRequest)=> {
   return useQuery({
-    queryKey : ["category-request"],
-    queryFn : getAllCategoryJoinRequests
+    queryKey : ["category-request",input],
+    queryFn : ()=> getAllCategoryJoinRequests(input)
   })
 }
 

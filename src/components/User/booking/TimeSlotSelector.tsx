@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TimeSlot , DateSlot } from "@/types/vendor";
+import { TimeSlot , DateSlot } from "@/types/interfaces/vendor";
 
 interface TimeSlotSelectorProps {
   availableDates: DateSlot[];

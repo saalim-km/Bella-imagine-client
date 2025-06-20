@@ -6,19 +6,25 @@ import {
   IProfileUpdateResponse,
   IVendorsFilter,
   IVendorsResponse,
-} from "@/types/User";
-import { IServiceResponse, PaginatedResponse } from "@/types/vendor";
+} from "@/types/interfaces/User";
+import { IServiceResponse, IVendorDetails, PaginatedResponse } from "@/types/interfaces/vendor";
 import { Category } from "../categories/categoryService";
-import { ApiResponse } from "@/hooks/vendor/useVendor";
+
+export type TLocation = {
+  lat: number;
+  lng: number;
+  address?: string;
+};
 
 export interface IClient {
   _id?: string;
   name: string;
   email: string;
   profileImage?: string;
+  avatar ?: string;
   password?: string;
   phoneNumber?: number;
-  location?: string;
+  location?: TLocation;
   googleId?: string;
   role: "client" | "vendor";
   savedPhotographers?: string[];
@@ -29,15 +35,27 @@ export interface IClient {
   updatedAt: Date;
 }
 
-export const getClientDetails = async (): Promise<IClientReponse> => {
+export interface BasePaginatedResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+export interface GetVendorDetails {
+  servicePage: number;
+  samplePage: number;
+  sampleLimit: number;
+  serviceLimit: number;
+}
+
+export const getClientDetails = async (): Promise<BasePaginatedResponse<IClient>> => {
   const response = await clientAxiosInstance.get(ENDPOINTS.CLIENT_DETAILS);
   return response.data;
 };
 
 export const updateClientDetails = async (
   data: IProfileUpdate
-): Promise<IProfileUpdateResponse> => {
-  console.log('in updateclient profile service : ✅ ',data);
+): Promise<BasePaginatedResponse<IClient>> => {
   const response = await clientAxiosInstance.put(
     ENDPOINTS.CLIENT_DETAILS,
     data,
@@ -50,7 +68,7 @@ export const updateClientDetails = async (
 
 export const getAllVendors = async (
   data: IVendorsFilter
-): Promise<PaginatedResponse<IVendorsResponse>> => {
+): Promise<BasePaginatedResponse<PaginatedResponse<IVendorsResponse>>> => {
   console.log(`in vendors listing hook : `, data);
   const response = await clientAxiosInstance.get("/client/vendors", {
     params: data,
@@ -58,24 +76,21 @@ export const getAllVendors = async (
   return response.data;
 };
 
-export const getAllClientCategories = async (): Promise<{
-  success: boolean;
-  data: Category[];
-}> => {
+export const getAllClientCategories = async (): Promise<
+  BasePaginatedResponse<PaginatedResponse<Category>>
+> => {
   const response = await clientAxiosInstance.get("/client/categories");
   return response.data;
 };
 
-export const getPhotographerDetails = async (
-  id: string,
-  servicePage : number,
-  samplePage : number
-): Promise<IVendorsResponse> => {
-  const response = await clientAxiosInstance.get(`/client/photographer/${id}`,{params :{servicePage,samplePage}});
+export const getPhotographerDetails = async (input : GetVendorDetails , vendorId: string): Promise<BasePaginatedResponse<IVendorDetails>> => {
+  const response = await clientAxiosInstance.get(`/client/photographer/${vendorId}`, {
+    params: input,
+  });
   return response.data;
 };
 
-export const getService = async (id: string): Promise<IServiceResponse> => {
+export const getService = async (id: string): Promise<BasePaginatedResponse<IServiceResponse>> => {
   const response = await clientAxiosInstance.get(`/client/service/${id}`);
   return response.data;
 };

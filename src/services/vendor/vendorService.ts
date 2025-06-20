@@ -1,7 +1,7 @@
 import { vendorAxiosInstance } from "@/api/vendor.axios";
-import { IClient } from "../client/clientService";
+import { BasePaginatedResponse, IClient } from "../client/clientService";
 import { ENDPOINTS } from "@/api/endpoints";
-import { IProfileUpdate, IVendorReponse } from "@/types/User";
+import { IProfileUpdate } from "@/types/interfaces/User";
 import {
   IService,
   IServiceFilter,
@@ -10,9 +10,8 @@ import {
   IWorkSampleFilter,
   PaginatedResponse,
   IWorkSampleResponse,
-} from "@/types/vendor";
+} from "@/types/interfaces/vendor";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
-import { data } from "react-router-dom";
 import { Category } from "../categories/categoryService";
 
 export interface IVendor extends IClient {
@@ -25,14 +24,12 @@ export interface IVendor extends IClient {
   isVerified?: "pending" | "accept" | "reject";
 }
 
-export const getVendorDetails = async (): Promise<IVendorReponse> => {
+export const getVendorDetails = async (): Promise<BasePaginatedResponse<IVendor>> => {
   const response = await vendorAxiosInstance.get(ENDPOINTS.VENDOR_DETAILS);
-  console.log(response);
   return response.data;
 };
 
-export const updateVendorDetails = async (payload: IProfileUpdate) => {
-    console.log('data in the vendorupdate service : ',payload);
+export const updateVendorDetails = async (payload: IProfileUpdate) : Promise<BasePaginatedResponse<IVendor>> => {
   const response = await vendorAxiosInstance.put(
     ENDPOINTS.VENDOR_DETAILS,
     payload,
@@ -51,18 +48,16 @@ export const createService = async (
     ENDPOINTS.CREATE_SERVICE,
     payload
   );
-  console.log(reponse);
   return reponse.data;
 };
 
 export const getAllVendorServices = async (
   payload: IServiceFilter
-): Promise<PaginatedResponse<IServiceResponse>> => {
+): Promise<BasePaginatedResponse<PaginatedResponse<IServiceResponse>>> => {
   const response = await vendorAxiosInstance.get(`/vendor/service`, {
     params: payload,
   });
-  console.log(response);
-  return response.data.data;
+  return response.data
 };
 
 export const updateVendorService = async (
@@ -85,7 +80,7 @@ export const cerateWorkSampleService = async (
 
 export const getAllWorkSampleService = async (
   payload: IWorkSampleFilter
-): Promise<PaginatedResponse<IWorkSampleResponse>> => {
+): Promise<BasePaginatedResponse<PaginatedResponse<IWorkSampleResponse>>> => {
   const response = await vendorAxiosInstance.get("/vendor/work-sample", {
     params: payload,
   });
@@ -93,19 +88,17 @@ export const getAllWorkSampleService = async (
 };
 
 export const deleteWorkSampleService = async (
-  payload: string
+  workSampleId: string
 ): Promise<ApiResponse> => {
-  const response = await vendorAxiosInstance.delete("/vendor/work-sample", {
-    params: { id: payload },
-  });
+  const response = await vendorAxiosInstance.delete(`/vendor/work-sample/${workSampleId}`)
   return response.data;
 };
 
 export const updateWorkSampleService = async (
   payload: Partial<IWorkSampleRequest>
 ): Promise<ApiResponse> => {
-  const response = await vendorAxiosInstance.put("/vendor/work-sample", {
-    data: payload,
+  const response = await vendorAxiosInstance.put("/vendor/work-sample", payload, {
+    headers: { "Content-Type": "multipart/form-data" },
   });
   return response.data;
 };

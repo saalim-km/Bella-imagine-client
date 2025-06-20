@@ -37,15 +37,12 @@ export const clientProfileSchema = Yup.object().shape({
     /^(\+\d{1,3}[- ]?)?\d{10}$/,
     "Phone number must be 10 digits"
   ),
-  location: Yup.string()
-  .test(
-    "isValidLocation",
-    "Location must be a valid location in India",
-    (value) => {
-      return !value || validLocations.has(value);
-    }
-  ),
-  profileImage: Yup.string(),
+  location: Yup.object().shape({
+    address: Yup.string().optional().required("Location address is required"),
+    lat: Yup.number().optional().required("Latitude is required").min(-90).max(90),
+    lng: Yup.number().optional().required("Longitude is required").min(-180).max(180),
+  }),
+  profileImage: Yup.string().optional(),
   imageFile: Yup.mixed()
     .nullable()
     .test(
@@ -56,8 +53,8 @@ export const clientProfileSchema = Yup.object().shape({
     .test(
       "fileFormat",
       "Unsupported file format",
-      (value) => !value || SUPPORTED_IMAGE_FORMATS.includes(value.type)
-    ),
+      (value : any) => !value || SUPPORTED_IMAGE_FORMATS.includes(value.type)
+    ).optional()
 });
 
 export const vendorProfileSchema = Yup.object().shape({
@@ -66,14 +63,11 @@ export const vendorProfileSchema = Yup.object().shape({
     /^(\+\d{1,3}[- ]?)?\d{10}$/,
     "Phone number must be 10 digits"
   ),
-  location: Yup.string()
-    .test(
-      "isValidLocation",
-      "Location must be a valid location in India",
-      (value) => {
-        return !value || validLocations.has(value);
-      }
-    ),
+location: Yup.object().shape({
+    address: Yup.string().optional().required("Location address is required"),
+    lat: Yup.number().optional().required("Latitude is required").min(-90).max(90),
+    lng: Yup.number().optional().required("Longitude is required").min(-180).max(180),
+  }),
   profileDescription: Yup.string(),
   profileImage: Yup.string(),
   portfolioWebsite: Yup.string().url("Invalid URL"),
@@ -83,23 +77,23 @@ export const vendorProfileSchema = Yup.object().shape({
     .test(
       "fileSize",
       "File size is too large (max 5MB)",
-      (value) => !value || value.size <= MAX_FILE_SIZE
+      (value : any) => !value || value.size <= MAX_FILE_SIZE
     )
     .test(
       "fileFormat",
       "Unsupported file format",
-      (value) => !value || SUPPORTED_IMAGE_FORMATS.includes(value.type)
+      (value : any) => !value || SUPPORTED_IMAGE_FORMATS.includes(value.type)
     ),
   verificationDocument: Yup.mixed()
     .nullable()
     .test(
       "fileSize",
       "File size is too large (max 5MB)",
-      (value) => !value || value.size <= MAX_FILE_SIZE
+      (value : any) => !value || value.size <= MAX_FILE_SIZE
     )
     .test(
       "fileFormat",
       "Unsupported file format. Only PDF, PNG, JPG, and JPEG are allowed",
-      (value) => !value || SUPPORTED_DOCUMENT_FORMATS.includes(value.type)
+      (value : any) => !value || SUPPORTED_DOCUMENT_FORMATS.includes(value.type)
     ),
 });

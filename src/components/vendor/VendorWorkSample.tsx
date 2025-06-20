@@ -7,12 +7,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Search, Filter } from "lucide-react";
 import Pagination from "../common/Pagination";
 import { useAllVendorWorkSample, useDeleteWorkSample, useVendorServices } from "@/hooks/vendor/useVendor";
-import { IWorkSampleResponse } from "@/types/vendor";
+import { IWorkSampleResponse } from "@/types/interfaces/vendor";
 import { Spinner } from "../ui/spinner";
 import { Badge } from "../ui/badge";
 import { ReusableAlertDialog } from "../common/AlertDialogue";
 import { toast } from "sonner";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
 
 interface IVendorWorkSamplePageProps {
   handleIsCreateWorkSample(): void;
@@ -81,10 +81,9 @@ const VendorWorkSample = ({ handleIsCreateWorkSample , handleIsWorkSampleEditing
     setWorkSampleId('');
   }
 
-  const workSamples: IWorkSampleResponse[] = data?.data || [];
-  const totalPages = Math.max(1, Math.ceil((data?.total || 0) / 3));
+  const workSamples: IWorkSampleResponse[] = data?.data.data || [];
+  const totalPages = Math.max(1, Math.ceil((data?.data.total || 0) / 3));
 
-  console.log(data?.total);
 
   return (
     <div className="container mx-auto p-4">
@@ -132,21 +131,13 @@ const VendorWorkSample = ({ handleIsCreateWorkSample , handleIsWorkSampleEditing
                     <SelectValue placeholder="Select Service" />
                   </SelectTrigger>
                   <SelectContent>
-                    {services?.data?.map((service) => (
+                    {services?.data?.data.map((service) => (
                       <SelectItem key={service._id} value={service._id || ""}>
                         {service.serviceTitle || "Untitled Service"}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-              <div>
-                <label className="block mb-2">Tags</label>
-                <Input
-                  placeholder="Comma-separated tags"
-                  value={filters.tags}
-                  onChange={(e) => setFilters((prev) => ({ ...prev, tags: e.target.value }))}
-                />
               </div>
               <div>
                 <label className="block mb-2">Status</label>
@@ -200,7 +191,7 @@ const VendorWorkSample = ({ handleIsCreateWorkSample , handleIsWorkSampleEditing
                 <CardContent>
                   {sample.media.length > 0 ? (
                     <img
-                      src={sample.media[0].url}
+                      src={sample.media[0]}
                       alt={sample.title}
                       className="w-full h-48 object-cover rounded-md mb-4"
                     />

@@ -29,7 +29,7 @@ function App () {
   }, []);
   return (
     <>
-        <Toaster position="bottom-right" closeButton={false} expand={false}/>
+        <Toaster position="bottom-right" closeButton={false} expand={false} richColors/>
         <Routes>
           <Route path="/*" element={<ClientRoute />} />
           <Route path="/vendor/*" element={<VendorRoute />} />

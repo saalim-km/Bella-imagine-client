@@ -9,11 +9,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { OTPVerificationModal } from "../modals/ForgotPassOtpModal"
-import { useThemeConstants } from "@/utils/theme/themeUtills"
-import { TRole } from "@/types/User"
-import { useSendOtp } from "@/hooks/auth/useSendOtp"
+import { useThemeConstants } from "@/utils/theme/theme.utils"
+import { TRole } from "@/types/interfaces/User"
+import { useForgotPassSendOtp, useSendOtp } from "@/hooks/auth/useSendOtp"
 import { toast } from "sonner"
-import { handleError } from "@/utils/Error/errorHandler"
+import { handleError } from "@/utils/Error/error-handler.utils"
 import { useNavigate } from "react-router-dom"
 
 
@@ -29,7 +29,7 @@ interface ForgotPasswordProps {
 
 export function ForgotPassword({ userType }: ForgotPasswordProps) {
   const navigate = useNavigate()
-  const {mutate : sendOtp} =  useSendOtp()
+  const {mutate : sendOtp} =  useForgotPassSendOtp()
   const {bgColor} = useThemeConstants()
   const [isOTPModalOpen, setIsOTPModalOpen] = useState(false)
   const [email, setEmail] = useState("")
@@ -48,7 +48,7 @@ export function ForgotPassword({ userType }: ForgotPasswordProps) {
     setIsSending(true)
     setEmail(data.email)
 
-    sendOtp({url:'/forgot-password/send-otp',email : data.email,userType : userType},{
+    sendOtp({email : data.email , role: userType},{
         onSuccess : (data)=> {
             setIsSending(false)
             toast.success(data.message)

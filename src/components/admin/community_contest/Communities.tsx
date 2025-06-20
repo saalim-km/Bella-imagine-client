@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,13 +9,14 @@ import { DataTable, type ColumnDef } from "@/components/common/Table";
 import { ReusableDropdown } from "@/components/common/ReusableDropdown";
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
 import { Link } from "react-router-dom";
-import { Community } from "@/types/Community";
+import { Community, CommunityResponse } from "@/types/interfaces/Community";
 import {
   useDeleteCommunity,
-  useGetlAllCommunity,
+  useGetlAllCommunityAdmin,
 } from "@/hooks/community-contest/useCommunity";
 import { toast } from "sonner";
-import { handleError } from "@/utils/Error/errorHandler";
+import { handleError } from "@/utils/Error/error-handler.utils";
+import { debounce } from "lodash";
 
 // Define the Community interface
 
@@ -26,7 +27,7 @@ export default function Communities() {
     null
   );
   const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
-  const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(
+  const [selectedCommunity, setSelectedCommunity] = useState<CommunityResponse | null>(
     null
   );
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,13 +38,21 @@ export default function Communities() {
     data,
     isLoading,
     refetch: refetchCommunities,
-  } = useGetlAllCommunity({ page: currentPage, limit: itemsPerPage });
+  } = useGetlAllCommunityAdmin({
+    page: currentPage,
+    limit: itemsPerPage,
+    search: searchQuery,
+  });
   const { mutate: deleteCommunity } = useDeleteCommunity();
-  const communities = data?.data || [];
-  const totalPages = Math.max(1, Math.ceil(data?.total! / itemsPerPage));
+  const communities = data?.data.data || [];
+  const totalPages = Math.max(1, Math.ceil(data?.data.total! / itemsPerPage));
 
-  const filteredCommunities = communities.filter((community: Community) =>
-    community.name.toLowerCase().includes(searchQuery.toLowerCase())
+  // Debounced search handler
+  const debouncedSearch = useCallback(
+    debounce((value: string) => {
+      setSearchQuery(value);
+    }, 300),
+    []
   );
 
   const handleDeleteClick = (communityId: string) => {
@@ -51,7 +60,7 @@ export default function Communities() {
     setDeleteDialogOpen(true);
   };
 
-  const handleViewDetails = (community: Community) => {
+  const handleViewDetails = (community: CommunityResponse) => {
     setSelectedCommunity(community);
     setViewDetailsOpen(true);
   };
@@ -75,8 +84,9 @@ export default function Communities() {
       setCurrentPage(newPage);
     }
   };
+
   // Columns for All Communities Tab
-  const allColumns: ColumnDef<Community>[] = [
+  const allColumns: ColumnDef<CommunityResponse>[] = [
     {
       id: "name",
       header: "Name",
@@ -128,6 +138,8 @@ export default function Communities() {
           <ReusableDropdown
             actions={[
               { type: "label", label: "Actions" },
+              { type: "separator" },
+
               {
                 label: "View Details",
                 onClick: () => handleViewDetails(community),
@@ -139,14 +151,7 @@ export default function Communities() {
               },
               {
                 label: "Manage Members",
-                href: `/communities/${community._id}/members`,
-              },
-              { type: "separator" },
-              {
-                label: "Delete",
-                onClick: () => handleDeleteClick(community._id),
-                danger: true,
-                icon: <Trash2 className="h-4 w-4" />,
+                href: `/admin/community/${community._id}/members`,
               },
             ]}
           />
@@ -182,8 +187,7 @@ export default function Communities() {
             type="search"
             placeholder="Search communities..."
             className="pl-8"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => debouncedSearch(e.target.value)}
           />
         </div>
       </div>
@@ -197,7 +201,7 @@ export default function Communities() {
         {/* All */}
         <TabsContent value="all" className="mt-4">
           <DataTable
-            data={filteredCommunities}
+            data={communities}
             columns={allColumns}
             onPageChange={handlePageChange}
             isLoading={isLoading}
@@ -225,12 +229,14 @@ export default function Communities() {
       <BigModal
         open={viewDetailsOpen}
         onOpenChange={setViewDetailsOpen}
-        title={<>
-          {selectedCommunity?.slug}
-          <br/>
-          <br/>
-          {selectedCommunity?.name}
-        </>}
+        title={
+          <>
+            {selectedCommunity?.slug}
+            <br />
+            <br />
+            {selectedCommunity?.name}
+          </>
+        }
       >
         {selectedCommunity && (
           <div className="space-y-6">
@@ -238,16 +244,16 @@ export default function Communities() {
             <div className="flex flex-col md:flex-row gap-4">
               {selectedCommunity.coverImage && (
                 <img
-                  src={selectedCommunity.coverImage}
+                  src={selectedCommunity.coverImage as string}
                   alt="Cover"
                   className="w-full md:w-2/3 h-48 object-cover rounded-md"
                 />
               )}
               {selectedCommunity.iconImage && (
                 <img
-                  src={selectedCommunity.iconImage}
+                  src={selectedCommunity.iconImage as string}
                   alt="Icon"
-                  className="w-24 h-24 rounded-full border p-1 bg-white"
+                  className="w-24 h-24 rounded-full object-cover border p-1 bg-white"
                 />
               )}
             </div>
@@ -291,6 +297,8 @@ export default function Communities() {
                     <li key={index}>{rule}</li>
                   ))}
                 </ul>
+                                <p className="font-semibold mb-2 my-4">Category : {selectedCommunity.category.title}</p>
+
               </div>
             )}
 
