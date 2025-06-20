@@ -41,7 +41,6 @@ import { RootState } from "@/store/store";
 import ReviewRatingSystem from "./ReviewRatingModal";
 import { BookingList } from "@/pages/User/ClientBookingListing";
 import { PaymentStatus } from "@/types/interfaces/Payment";
-import { TRole } from "@/types/interfaces/User";
 
 interface BookingDetailsModalProps {
   booking: BookingList;
