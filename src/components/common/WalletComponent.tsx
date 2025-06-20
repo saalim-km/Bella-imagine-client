@@ -64,9 +64,6 @@ interface WalletComponentProps {
   walletData: Omit<PopulatedWallet, "paymentId">;
   transactions: PopulatedWallet;
   userRole: "client" | "vendor" | "admin";
-  onRefresh?: () => void;
-  onDeposit?: () => void;
-  onWithdraw?: () => void;
 }
 
 export default function WalletComponent({

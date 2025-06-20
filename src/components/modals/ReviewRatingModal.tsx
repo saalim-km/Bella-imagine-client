@@ -13,7 +13,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useReviewMutation } from "@/hooks/review/useReview";
-import { createNewReview } from "@/services/review/reviewService";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 
@@ -55,24 +54,10 @@ export default function ReviewRatingSystem({ vendorId, bookingId }: { vendorId: 
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
 
-  const { mutate: createReview } = useReviewMutation(createNewReview);
 
   const handleSubmit = () => {
+    console.log('rating for= ',vendorId,bookingId);
     console.log({ rating, review });
-
-    createReview(
-      {
-        comment: review,
-        rating: rating,
-        vendorId,
-        bookingId
-      },
-      {
-        onSuccess: (data) => toast.success(data.message),
-        onError: (error: any) => handleError(error),
-      }
-    );
-
     setRating(0);
     setReview("");
     setOpen(false);

@@ -1,7 +1,7 @@
 import { vendorAxiosInstance } from "@/api/vendor.axios";
 import { BasePaginatedResponse, IClient } from "../client/clientService";
 import { ENDPOINTS } from "@/api/endpoints";
-import { IProfileUpdate, IVendorReponse } from "@/types/interfaces/User";
+import { IProfileUpdate } from "@/types/interfaces/User";
 import {
   IService,
   IServiceFilter,

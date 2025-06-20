@@ -24,21 +24,6 @@ export default function ClientWallet() {
     }
   }, [data]);
 
-
-  const handleRefresh = () => {
-    console.log("Refreshing wallet data...");
-  };
-
-  const handleDeposit = () => {
-    console.log("Opening deposit modal...");
-    // Implement your deposit logic here
-  };
-
-  const handleWithdraw = () => {
-    console.log("Opening withdraw modal...");
-    // Implement your withdraw logic here
-  };
-
   if (isLoading) {
     return <Spinner />;
   }
@@ -53,9 +38,6 @@ export default function ClientWallet() {
         walletData={walletData}
         transactions={transactions}
         userRole="client"
-        onRefresh={handleRefresh}
-        onDeposit={handleDeposit}
-        onWithdraw={handleWithdraw}
       />
     </div>
   );

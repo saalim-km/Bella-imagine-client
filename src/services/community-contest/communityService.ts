@@ -10,6 +10,12 @@ export interface CommunityBySlugResponse {
     isMember : boolean
 }
 
+export interface GetCommMemberInput {
+    communityId : string;
+    limit : number;
+    page : number
+}
+
 export const createCommunityService = async(dto : Partial<Community>) : Promise<ApiResponse>=> {
     const response = await adminAxiosInstance.post('/community',dto,{
         headers : {
@@ -58,6 +64,25 @@ export const updateCommunityService = async(dto : Partial<Community>) : Promise<
     });
     return response.data;
 }
+
+export const getCommunityMembersService = async(input : GetCommMemberInput) => {
+    const respone = await adminAxiosInstance.get(`/community/members/${input.communityId}`,{params : {
+        limit : input.limit,
+        page : input.page
+    }})
+
+    console.log(respone);
+}
+
+
+
+
+
+
+
+
+
+
 
 export const getCommunityBySlugForClient = async(slug : string):Promise<BasePaginatedResponse<CommunityBySlugResponse>>=> {
     const response = await clientAxiosInstance.get(`/client/community/${slug}`)

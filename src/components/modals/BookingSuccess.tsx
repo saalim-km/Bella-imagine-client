@@ -16,8 +16,6 @@ interface BookingSuccessModalProps {
   isOpen: boolean;
   onClose: () => void;
   eventName: string;
-  eventDate: string;
-  vendorName: string;
   userName: string;
 }
 
@@ -25,8 +23,6 @@ export function BookingSuccessModal({
   isOpen,
   onClose,
   eventName,
-  eventDate,
-  vendorName,
   userName,
 }: BookingSuccessModalProps) {
   const navigate = useNavigate()
@@ -65,13 +61,8 @@ export function BookingSuccessModal({
               className="space-y-2"
             >
               <p className="text-muted-foreground">
-                You've successfully booked{" "}
-                <span className="font-medium text-foreground">{vendorName}</span>{" "}
+                You've successfully booked
                 for <span className="font-medium text-foreground">{eventName}</span>.
-              </p>
-              <p className="text-muted-foreground">
-                Event Date:{" "}
-                <span className="font-medium text-foreground">{eventDate}</span>
               </p>
               <p className="text-muted-foreground">
                 Your photographer is ready to capture your special moments!
@@ -103,7 +94,7 @@ export function BookingSuccessModal({
               onClick={()=> navigate('/messages')}
             >
               <MessageSquare className="w-4 h-4 mr-2" />
-              Message {vendorName}
+              Message
             </Button>
           </motion.div>
           <motion.div

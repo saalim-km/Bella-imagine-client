@@ -8,11 +8,11 @@ import { NoAdminAuthRoute } from '@/protected/PublicRoute'
 import CategoryPage from '@/pages/admin/CategoryPage'
 import { Route, Routes } from 'react-router-dom'
 import { Admin404 } from '@/components/404/Admin404'
-import AdminWalletPage from '@/pages/admin/AdminTransactionsPage'
 import CommunityManagement from '@/pages/admin/CommunityManagement'
 import CreateCommunityPage from '@/pages/admin/CreateCommunityPage'
 import EditCommunityPage from '@/pages/admin/EditCommunity'
 import CommunityMembers from '@/components/admin/community_contest/CommunityMember'
+import AdminWalletPage from '@/pages/admin/AdminWalletPage'
 
 const AdminRoute = () => {
   return (

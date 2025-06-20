@@ -15,7 +15,7 @@ import { vendorLogin } from "@/store/slices/vendorSlice";
 import { useSocket } from "@/context/SocketContext";
 
 interface LoginProps {
-  onClick: () => void;
+  onClick ?: () => void;
   userType: TRole;
   onSubmit: (data: ILogin) => void;
   isSending: boolean;

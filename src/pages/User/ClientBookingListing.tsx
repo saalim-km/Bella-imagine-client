@@ -60,6 +60,7 @@ export interface BookingList {
     _id: string;
     name: string;
   };
+  adminCommision : number;
   paymentId: string | null;
   isClientApproved: boolean;
   isVendorApproved: boolean;

@@ -58,7 +58,6 @@ export function ProfileInfo({ data }: ProfileInfoProps) {
       {/* Vendor-Specific Information */}
       {isVendor && (
         <section className=" rounded-xl shadow-sm p-6 transition-all duration-300 hover:shadow-md">
-          <h1>nigga</h1>
           <h2 className="text-base font-medium mb-4 ">Vendor Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <InfoItem icon={UserCheck} label="Vendor ID" value={data.vendorId} />

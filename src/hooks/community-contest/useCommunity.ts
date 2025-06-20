@@ -1,4 +1,4 @@
-import { createCommunityService, deleteCommunityService, getAllCommunitesAdmin, getAllCommunities, getCommunityBySlugForClient, getCommunityBySlugService, joinCommunityService, leaveCommunityService, updateCommunityService } from "@/services/community-contest/communityService"
+import { createCommunityService, deleteCommunityService, getAllCommunitesAdmin, getAllCommunities, GetCommMemberInput, getCommunityBySlugForClient, getCommunityBySlugService, getCommunityMembersService, joinCommunityService, leaveCommunityService, updateCommunityService } from "@/services/community-contest/communityService"
 
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 
@@ -52,6 +52,17 @@ export const useUpdateCommunity = ()=> {
     })
 }
 
+
+
+export const useGetCommunityMembers = (input : GetCommMemberInput)=> {
+    return useQuery({
+        queryKey : ['community-members'],
+        queryFn : ()=> getCommunityMembersService(input)
+    })
+}
+
+
+// ------------------------Client hooks for community --------------------------------------------------
 export const useGetCommunityBySlugQueryClient = (slug : string)=> {
     return useQuery({
         queryKey : ['community',slug],

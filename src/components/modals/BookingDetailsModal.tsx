@@ -41,12 +41,21 @@ import { RootState } from "@/store/store";
 import ReviewRatingSystem from "./ReviewRatingModal";
 import { BookingList } from "@/pages/User/ClientBookingListing";
 import { PaymentStatus } from "@/types/interfaces/Payment";
-
-
+import { TRole } from "@/types/interfaces/User";
 
 interface BookingDetailsModalProps {
   booking: BookingList;
   trigger?: React.ReactNode;
+}
+
+interface PaymentInfoProps {
+  paymentId: string | null;
+  paymentStatus: PaymentStatus;
+  totalPrice: number;
+  travelFee?: number;
+  distance?: number;
+  isVendor: boolean;
+  adminCommission: number;
 }
 
 // Animation variants
@@ -101,16 +110,23 @@ const ServiceInfo: React.FC<{
   createdAt?: string;
 }> = ({ serviceDetails, totalPrice, createdAt }) => (
   <motion.div variants={itemVariants} className="space-y-4">
-    <SectionHeader icon={<Info className="h-5 w-5" />} title="Service Information" />
+    <SectionHeader
+      icon={<Info className="h-5 w-5" />}
+      title="Service Information"
+    />
     <div className="bg-muted/20 rounded-xl p-6 space-y-4 border">
       <div>
         <h4 className="text-xl font-medium">{serviceDetails.serviceTitle}</h4>
-        <p className="text-muted-foreground mt-2">{serviceDetails.serviceDescription}</p>
+        <p className="text-muted-foreground mt-2">
+          {serviceDetails.serviceDescription}
+        </p>
       </div>
       <div className="grid grid-cols-2 gap-4 pt-2">
         <div className="bg-background p-4 rounded-lg">
           <p className="text-sm text-muted-foreground">Total Price</p>
-          <p className="font-medium text-xl text-primary mt-1">₹{totalPrice.toFixed(2)}</p>
+          <p className="font-medium text-xl text-primary mt-1">
+            ₹{totalPrice.toFixed(2)}
+          </p>
         </div>
         <div className="bg-background p-4 rounded-lg">
           <p className="text-sm text-muted-foreground">Booking Date</p>
@@ -129,11 +145,16 @@ const DateTimeInfo: React.FC<{
   timeSlot: BookingList["timeSlot"];
 }> = ({ bookingDate, timeSlot }) => (
   <motion.div variants={itemVariants} className="space-y-4">
-    <SectionHeader icon={<Calendar className="h-5 w-5" />} title="Date & Time" />
+    <SectionHeader
+      icon={<Calendar className="h-5 w-5" />}
+      title="Date & Time"
+    />
     <div className="bg-muted/20 rounded-xl p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 border">
       <div>
         <p className="text-sm text-muted-foreground">Service Date</p>
-        <p className="font-medium">{moment(bookingDate).format("dddd, MMMM Do YYYY")}</p>
+        <p className="font-medium">
+          {moment(bookingDate).format("dddd, MMMM Do YYYY")}
+        </p>
       </div>
       <div>
         <p className="text-sm text-muted-foreground">Time Slot</p>
@@ -160,12 +181,16 @@ const PeopleInfo: React.FC<{
       <div>
         <p className="text-sm text-muted-foreground">Client</p>
         <p className="font-medium mt-1">{userId.name}</p>
-        <p className="text-xs text-muted-foreground mt-2">User ID: {userId._id}</p>
+        <p className="text-xs text-muted-foreground mt-2">
+          User ID: {userId._id}
+        </p>
       </div>
       <div>
         <p className="text-sm text-muted-foreground">Vendor</p>
         <p className="font-medium mt-1">{vendorId.name}</p>
-        <p className="text-xs text-muted-foreground mt-2">Vendor ID: {vendorId._id}</p>
+        <p className="text-xs text-muted-foreground mt-2">
+          Vendor ID: {vendorId._id}
+        </p>
       </div>
     </div>
   </motion.div>
@@ -177,7 +202,10 @@ const LocationInfo: React.FC<{
   customLocation?: string;
 }> = ({ location, customLocation }) => (
   <motion.div variants={itemVariants} className="space-y-4">
-    <SectionHeader icon={<MapPin className="h-5 w-5" />} title="Service Location" />
+    <SectionHeader
+      icon={<MapPin className="h-5 w-5" />}
+      title="Service Location"
+    />
     <div className="bg-muted/20 rounded-xl overflow-hidden border">
       <div className="h-[300px] w-full">
         <LoadScript
@@ -219,15 +247,20 @@ const LocationInfo: React.FC<{
 );
 
 // Sub-component: Payment Details
-const PaymentInfo: React.FC<{
-  paymentId: string | null;
-  paymentStatus: PaymentStatus;
-  totalPrice: number;
-  travelFee?: number;
-  distance?: number;
-}> = ({ paymentId, paymentStatus, totalPrice, travelFee, distance }) => (
+const PaymentInfo: React.FC<PaymentInfoProps> = ({
+  paymentId,
+  paymentStatus,
+  totalPrice,
+  travelFee,
+  distance,
+  isVendor,
+  adminCommission,
+}) => (
   <motion.div variants={itemVariants} className="space-y-4">
-    <SectionHeader icon={<IndianRupee className="h-5 w-5" />} title="Payment Details" />
+    <SectionHeader
+      icon={<IndianRupee className="h-5 w-5" />}
+      title="Payment Details"
+    />
     <div className="bg-muted/20 rounded-xl p-6 space-y-4 border">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
@@ -236,7 +269,11 @@ const PaymentInfo: React.FC<{
         </div>
         <div>
           <p className="text-sm text-muted-foreground">Status</p>
-          <Badge className={`${getStatusColor(paymentStatus)} px-3 py-1 text-sm font-medium`}>
+          <Badge
+            className={`${getStatusColor(
+              paymentStatus
+            )} px-3 py-1 text-sm font-medium`}
+          >
             {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1)}
           </Badge>
         </div>
@@ -244,28 +281,62 @@ const PaymentInfo: React.FC<{
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <p className="text-sm text-muted-foreground">Distance</p>
-          <p className="font-medium mt-1">{distance ? `${distance.toFixed(2)} km` : "N/A"}</p>
+          <p className="font-medium mt-1">
+            {distance ? `${distance.toFixed(2)} km` : "N/A"}
+          </p>
         </div>
         <div>
           <p className="text-sm text-muted-foreground">Travel Fee</p>
-          <p className="font-medium mt-1">{travelFee ? `₹${travelFee.toFixed(2)}` : "N/A"}</p>
+          <p className="font-medium mt-1">
+            {travelFee ? `₹${travelFee.toFixed(2)}` : "N/A"}
+          </p>
         </div>
       </div>
-      <Separator className="my-2" />
-      <div className="flex justify-between items-center bg-background p-4 rounded-lg">
-        <p className="font-medium">Total Amount</p>
-        <p className="font-bold text-2xl text-primary">₹{totalPrice.toFixed(2)}</p>
+      <Separator className="my-4" />
+      <div className="space-y-3 bg-background p-4 rounded-lg">
+        {isVendor ? (
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <p className="text-sm text-muted-foreground">Subtotal</p>
+              <p className="font-medium">₹{totalPrice.toFixed(2)}</p>
+            </div>
+            <div className="flex justify-between items-center">
+              <p className="text-sm text-muted-foreground">
+                Admin Commission (2%)
+              </p>
+              <p className="font-medium text-red-600">
+                -₹{adminCommission.toFixed(2)}
+              </p>
+            </div>
+            <Separator className="my-2" />
+            <div className="flex justify-between items-center">
+              <p className="font-medium text-lg">Total Amount</p>
+              <p className="font-bold text-2xl text-primary">
+                ₹{(totalPrice - adminCommission).toFixed(2)}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="flex justify-between items-center">
+            <p className="font-medium text-lg">Total Amount</p>
+            <p className="font-bold text-2xl text-primary">
+              ₹{totalPrice.toFixed(2)}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   </motion.div>
 );
-
 // Sub-component: Policies & Terms
 const PoliciesTerms: React.FC<{
   serviceDetails: BookingList["serviceDetails"];
 }> = ({ serviceDetails }) => (
   <motion.div variants={itemVariants} className="space-y-4">
-    <SectionHeader icon={<FileText className="h-5 w-5" />} title="Policies & Terms" />
+    <SectionHeader
+      icon={<FileText className="h-5 w-5" />}
+      title="Policies & Terms"
+    />
     <div className="bg-muted/20 rounded-xl overflow-hidden border">
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="cancellation">
@@ -276,10 +347,14 @@ const PoliciesTerms: React.FC<{
             <ul className="list-disc pl-5 space-y-2">
               {serviceDetails.cancellationPolicies.length > 0 ? (
                 serviceDetails.cancellationPolicies.map((policy, index) => (
-                  <li key={index} className="text-muted-foreground">{policy}</li>
+                  <li key={index} className="text-muted-foreground">
+                    {policy}
+                  </li>
                 ))
               ) : (
-                <li className="text-muted-foreground">No cancellation policies provided.</li>
+                <li className="text-muted-foreground">
+                  No cancellation policies provided.
+                </li>
               )}
             </ul>
           </AccordionContent>
@@ -292,10 +367,14 @@ const PoliciesTerms: React.FC<{
             <ul className="list-disc pl-5 space-y-2">
               {serviceDetails.termsAndConditions.length > 0 ? (
                 serviceDetails.termsAndConditions.map((term, index) => (
-                  <li key={index} className="text-muted-foreground">{term}</li>
+                  <li key={index} className="text-muted-foreground">
+                    {term}
+                  </li>
                 ))
               ) : (
-                <li className="text-muted-foreground">No terms and conditions provided.</li>
+                <li className="text-muted-foreground">
+                  No terms and conditions provided.
+                </li>
               )}
             </ul>
           </AccordionContent>
@@ -306,7 +385,10 @@ const PoliciesTerms: React.FC<{
 );
 
 // Main Component
-export function BookingDetailsModal({ booking, trigger }: BookingDetailsModalProps) {
+export function BookingDetailsModal({
+  booking,
+  trigger,
+}: BookingDetailsModalProps) {
   const [open, setOpen] = useState(false);
   const userType = useSelector((state: RootState) => {
     if (state.vendor.vendor) return state.vendor.vendor;
@@ -330,11 +412,15 @@ export function BookingDetailsModal({ booking, trigger }: BookingDetailsModalPro
               <DialogTitle className="text-2xl font-bold tracking-tight">
                 Booking Details
               </DialogTitle>
-              <DialogDescription className="mt-1">Booking ID: {booking._id}</DialogDescription>
+              <DialogDescription className="mt-1">
+                Booking ID: {booking._id}
+              </DialogDescription>
             </div>
             <div className="flex items-center gap-3">
               <Badge
-                className={`${getStatusColor(booking.status)} px-3 py-1 text-sm font-medium`}
+                className={`${getStatusColor(
+                  booking.status
+                )} px-3 py-1 text-sm font-medium`}
               >
                 {booking.status === "completed" ? (
                   <CheckCircle className="mr-1.5 h-4 w-4" />
@@ -343,19 +429,28 @@ export function BookingDetailsModal({ booking, trigger }: BookingDetailsModalPro
                 ) : (
                   <AlertCircle className="mr-1.5 h-4 w-4" />
                 )}
-                {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                {booking.status.charAt(0).toUpperCase() +
+                  booking.status.slice(1)}
               </Badge>
               <Badge
-                className={`${getStatusColor(booking.paymentStatus)} px-3 py-1 text-sm font-medium`}
+                className={`${getStatusColor(
+                  booking.paymentStatus
+                )} px-3 py-1 text-sm font-medium`}
               >
                 <IndianRupee className="mr-1.5 h-4 w-4" />
-                {booking.paymentStatus.charAt(0).toUpperCase() + booking.paymentStatus.slice(1)}
+                {booking.paymentStatus.charAt(0).toUpperCase() +
+                  booking.paymentStatus.slice(1)}
               </Badge>
             </div>
           </div>
         </DialogHeader>
         <ScrollArea className="max-h-[80vh] px-8 pb-8">
-          <motion.div className="space-y-8" variants={containerVariants} initial="hidden" animate="visible">
+          <motion.div
+            className="space-y-8"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="space-y-8">
                 <ServiceInfo
@@ -363,8 +458,14 @@ export function BookingDetailsModal({ booking, trigger }: BookingDetailsModalPro
                   totalPrice={booking.totalPrice}
                   createdAt={booking.createdAt}
                 />
-                <DateTimeInfo bookingDate={booking.bookingDate} timeSlot={booking.timeSlot} />
-                <PeopleInfo userId={booking.userId} vendorId={booking.vendorId} />
+                <DateTimeInfo
+                  bookingDate={booking.bookingDate}
+                  timeSlot={booking.timeSlot}
+                />
+                <PeopleInfo
+                  userId={booking.userId}
+                  vendorId={booking.vendorId}
+                />
               </div>
               <div className="space-y-8">
                 <LocationInfo
@@ -372,6 +473,8 @@ export function BookingDetailsModal({ booking, trigger }: BookingDetailsModalPro
                   customLocation={booking.customLocation}
                 />
                 <PaymentInfo
+                  adminCommission={booking.adminCommision}
+                  isVendor={userType?.role === "vendor"}
                   paymentId={booking.paymentId}
                   paymentStatus={booking.paymentStatus}
                   totalPrice={booking.totalPrice}
@@ -381,11 +484,19 @@ export function BookingDetailsModal({ booking, trigger }: BookingDetailsModalPro
               </div>
             </div>
             <PoliciesTerms serviceDetails={booking.serviceDetails} />
-            {booking.isClientApproved && booking.isVendorApproved && userType?.role === "client" && (
-              <motion.div variants={itemVariants} className="flex justify-end pt-4">
-                <ReviewRatingSystem vendorId={booking.vendorId._id} bookingId={booking._id} />
-              </motion.div>
-            )}
+            {booking.isClientApproved &&
+              booking.isVendorApproved &&
+              userType?.role === "client" && (
+                <motion.div
+                  variants={itemVariants}
+                  className="flex justify-end pt-4"
+                >
+                  <ReviewRatingSystem
+                    vendorId={booking.vendorId._id}
+                    bookingId={booking._id}
+                  />
+                </motion.div>
+              )}
           </motion.div>
         </ScrollArea>
       </DialogContent>
