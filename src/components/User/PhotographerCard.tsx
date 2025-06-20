@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -15,6 +13,7 @@ interface PhotographerCardProps {
 }
 
 const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
+  console.log('photographer card',vendorData);
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -32,7 +31,7 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-card border border-border/10 rounded-lg overflow-hidden mb-12"
+      className="bg-card border border-border/10 rounded-lg overflow-hidden mb-12 flex flex-col"
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
     >
@@ -47,7 +46,7 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
           </h2>
 
           {vendorData.isVerified === "accept" && (
-            <Badge className="bg-black text-white dark:bg-white dark:text-black font-sans text-xs px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+            <Badge className="bg-black dark:bg-white dark:text-black font-sans text-xs px-2.5 py-0.5 rounded-full uppercase tracking-wider">
               Pro
             </Badge>
           )}
@@ -127,7 +126,7 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
           {/* Portfolio Gallery */}
           <div className="relative w-full">
             <ScrollArea className="w-full rounded-md border border-border/10">
-              <div className="flex space-x-4 p-4">
+              <div className="flex space-x-4">
                 {vendorData.workSamples && vendorData.workSamples.length > 0 ? (
                   vendorData.workSamples.flatMap(
                     (work, workIndex) =>
@@ -148,7 +147,7 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
                             draggable="false"
                           />
                           <div className="absolute bottom-3 left-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <ArrowUpRight className="h-5 w-5 text-white" />
+                            <ArrowUpRight className="h-5 w-5" />
                           </div>
                         </motion.div>
                       ))

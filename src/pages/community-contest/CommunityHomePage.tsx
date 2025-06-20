@@ -18,7 +18,7 @@ const CommunityHomePage = () => {
       <section className="mb-10 md:mb-16">
         <div className="flex flex-col gap-6">
           <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-3xl md:text-5xl font-bold mb-4">
+            <h1 className="font-serif tracking-tighter text-9xl sm:text-5xl mb-2 text-center">
               Welcome to <span className="text-">BellaCommunity</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-6">

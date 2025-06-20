@@ -14,28 +14,19 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useThemeConstants } from "@/utils/theme/theme.utils";
 import { Button } from "../ui/button";
 import { IVendor } from "@/services/vendor/vendorService";
 import { IClient } from "@/services/client/clientService";
 
-interface Category {
-  id?: string;
-  title?: string;
-}
-
-type VerificationStatus = "accept" | "reject" | "pending";
 
 type IProfileInfo = Partial<IVendor | IClient>
 
 interface ProfileInfoProps {
   data: IProfileInfo;
-  className?: string;
 }
 
-export function ProfileInfo({ data, className }: ProfileInfoProps) {
+export function ProfileInfo({ data }: ProfileInfoProps) {
   const [showDocs,setisShowDocs] = useState(false)
-  const {textColor} = useThemeConstants()
   const isVendor = "vendorId" in data && data.vendorId;
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
   
@@ -67,6 +58,7 @@ export function ProfileInfo({ data, className }: ProfileInfoProps) {
       {/* Vendor-Specific Information */}
       {isVendor && (
         <section className=" rounded-xl shadow-sm p-6 transition-all duration-300 hover:shadow-md">
+          <h1>nigga</h1>
           <h2 className="text-base font-medium mb-4 ">Vendor Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <InfoItem icon={UserCheck} label="Vendor ID" value={data.vendorId} />

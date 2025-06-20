@@ -1,32 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { debounce } from "lodash";
 import Filters from "@/components/User/Filters";
 import LocationHeader from "@/components/User/LocationHeader";
 import PhotographerCard from "@/components/User/PhotographerCard";
 import Footer from "@/components/common/Footer";
 import Pagination from "@/components/common/Pagination";
 import Header from "@/components/common/Header";
-import LocationModal from "@/components/modals/LocationModal";
+import { FilterPanel } from "@/components/User/FilterPanel";
 import { Spinner } from "@/components/ui/spinner";
 import {
   useAllClientCategories,
   useAllVendorsListQuery,
 } from "@/hooks/client/useClient";
+import { handleError } from "@/utils/Error/error-handler.utils";
+import { IVendorsResponse } from "@/types/interfaces/User";
+
+interface FilterParams {
+  location?: { lat: number; lng: number };
+  categories?: string[];
+  priceRange?: [number, number];
+  tags?: string[];
+  services?: string[];
+  languages?: string[];
+  sortBy?: string;
+}
 
 const Vendors = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
-    undefined
-  );
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState({
-    location: undefined as string | undefined,
-    specialty: undefined as string | undefined,
-    language: undefined as string | undefined,
-    category: undefined as string | undefined,
+  const [filters, setFilters] = useState<FilterParams>({
+    location: { lat: 0, lng: 0 },
+    categories: [],
+    priceRange: [0, 100000],
+    tags: [],
+    services: [],
+    languages: [],
+    sortBy: "newest",
   });
+  const [debouncedFilters, setDebouncedFilters] = useState<FilterParams>(filters);
+
+  // Memoize debounced filter handler
+  const debouncedSetFilters = useMemo(
+    () =>
+      debounce((newFilters: FilterParams) => {
+        setDebouncedFilters(newFilters);
+      }, 1000),
+    []
+  );
+
+  // Update debounced filters when filters change
+  useEffect(() => {
+    debouncedSetFilters(filters);
+    return () => debouncedSetFilters.cancel();
+  }, [filters, debouncedSetFilters]);
 
   const { data: categories } = useAllClientCategories();
-  console.log(categories);
   const {
     data: vendors,
     isLoading,
@@ -35,11 +64,16 @@ const Vendors = () => {
     page: currentPage,
     limit: 6,
     category: selectedCategory,
-    languages: filters.language,
-    location: filters.location,
+    location: debouncedFilters.location,
+    categories: debouncedFilters.categories,
+    minCharge: debouncedFilters.priceRange?.[0],
+    maxCharge: debouncedFilters.priceRange?.[1],
+    tags: debouncedFilters.tags,
+    services: debouncedFilters.services,
+    languages: debouncedFilters.languages,
+    sortBy: debouncedFilters.sortBy,
   });
 
-  console.log("vendors : ", vendors);
   const totalVendors = vendors?.data.total || 0;
   const totalPages = Math.max(1, Math.ceil(totalVendors / 6));
 
@@ -50,28 +84,49 @@ const Vendors = () => {
   };
 
   const resetFilters = () => {
-    setFilters({ location: "", specialty: "", language: "", category: "" });
-    setSelectedCategory("");
+    const newFilters: FilterParams = {
+      location: { lat: 0, lng: 0 },
+      categories: [],
+      priceRange: [0, 100000],
+      tags: [],
+      services: [],
+      languages: [],
+      sortBy: "newest",
+    };
+    setFilters(newFilters);
+    setSelectedCategory(undefined);
   };
 
-  const handleFilterChange = (
-    key: keyof typeof filters,
-    value: string | undefined
-  ) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+  const handleApplyFilters = (newFilters: FilterParams) => {
+    setFilters(newFilters);
+    setSelectedCategory(newFilters.categories?.length ? newFilters.categories[0] : undefined);
   };
 
   const handleSelectCategory = (category: string, categoryId: string) => {
     setSelectedCategory(categoryId);
-    handleFilterChange("category", category);
+    setFilters((prev) => ({
+      ...prev,
+      categories: prev.categories?.includes(categoryId)
+        ? prev.categories.filter((c) => c !== categoryId)
+        : [...(prev.categories || []), categoryId],
+    }));
   };
 
-  const handleLocationChange = (location: string) => {
-    console.log(location);
-    handleFilterChange("location", location);
-    setIsModalOpen(!isModalOpen);
+  const handleNearbySearch = () => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setFilters((prev) => ({ ...prev, location: { lat: latitude, lng: longitude } }));
+      },
+      (err) => handleError(err),
+      { enableHighAccuracy: true }
+    );
   };
-  
+
+  const handleSortChange = (sortBy: string) => {
+    setFilters((prev) => ({ ...prev, sortBy }));
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -79,46 +134,42 @@ const Vendors = () => {
       </div>
     );
   }
+
   return (
-    <div className="mt-20">
+    <div className="mt-20 relative">
       <Header />
-      <LocationHeader
-        onOpenModal={() => setIsModalOpen(true)}
-        selectedLocation={filters.location}
-      />
-      <LocationModal
+      <LocationHeader />
+      <div className="container mx-auto px-4 py-4">
+        <Filters
+          vendors={vendors?.data.data || []}
+          handleCategorySelect={handleSelectCategory}
+          selectedCategory={filters.categories?.[0]}
+          categories={categories?.data.data || []}
+          resetFilter={resetFilters}
+          setIsFilter={setIsFiltersOpen}
+          handleNearbySearch={handleNearbySearch}
+          handleSortChange={handleSortChange}
+          sortBy={filters.sortBy}
+        />
+        <div>
+          {vendors &&
+            vendors.data.data.map((vendor: IVendorsResponse) => (
+              <PhotographerCard key={vendor._id} vendorData={vendor} />
+            ))}
+        </div>
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
+        />
+      </div>
+      <FilterPanel
+        allCategories={categories?.data.data || []}
+        isOpen={isFiltersOpen}
+        onClose={() => setIsFiltersOpen(false)}
+        onApplyFilters={handleApplyFilters}
+        currentFilters={filters}
         vendors={vendors?.data.data || []}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSelectLocation={handleLocationChange}
-      />
-      <Filters
-        vendors={vendors?.data.data || []}
-        handleSpecialitySelect={(specialty) =>
-          handleFilterChange("specialty", specialty)
-        }
-        handleCategorySelect={(category, categoryId) =>
-          handleSelectCategory(category, categoryId)
-        }
-        handleLanguageSelect={(language) =>
-          handleFilterChange("language", language)
-        }
-        selectedCategory={filters.category}
-        selectedLanguage={filters.language}
-        selectedSpeciality={filters.specialty}
-        categories={categories?.data.data || []}
-        resetFilter={resetFilters}
-      />
-
-      {vendors &&
-        vendors.data.data.map((vendor) => (
-          <PhotographerCard key={vendor._id} vendorData={vendor} />
-        ))}
-
-      <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
       />
       <Footer />
     </div>

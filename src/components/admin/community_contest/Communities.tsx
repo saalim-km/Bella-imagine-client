@@ -151,7 +151,7 @@ export default function Communities() {
               },
               {
                 label: "Manage Members",
-                href: `/communities/${community._id}/members`,
+                href: `/admin/community/${community._id}/members`,
               },
             ]}
           />

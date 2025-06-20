@@ -74,7 +74,7 @@ const Communities = () => {
     <div className="flex flex-col space-y-6">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Photography Communities</h1>
+            <h1 className="font-serif tracking-tighter text-9xl sm:text-4xl mb-2">Photography Communities</h1>
             <p className="text-muted-foreground">
               Join communities, share your work, and connect with other photographers.
             </p>

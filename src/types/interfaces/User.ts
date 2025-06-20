@@ -60,11 +60,15 @@ export type IProfileInfo =   IVendor | IClient
 
 
 export interface IVendorsFilter {
-  location ?: string;
-  languages?: string;
-  category ?: string;
+  location?: {lat : number , lng : number};
+  languages?: string[];
+  category?: string;
+  categories?: string[];
   minCharge?: number;
   maxCharge?: number;
+  tags?: string[];
+  services?: string[];
+  sortBy?: string;
   page?: number;
   limit?: number;
 }

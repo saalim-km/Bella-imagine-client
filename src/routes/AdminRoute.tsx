@@ -12,6 +12,7 @@ import AdminWalletPage from '@/pages/admin/AdminTransactionsPage'
 import CommunityManagement from '@/pages/admin/CommunityManagement'
 import CreateCommunityPage from '@/pages/admin/CreateCommunityPage'
 import EditCommunityPage from '@/pages/admin/EditCommunity'
+import CommunityMembers from '@/components/admin/community_contest/CommunityMember'
 
 const AdminRoute = () => {
   return (
@@ -26,6 +27,7 @@ const AdminRoute = () => {
       <Route path='/community' element = {<AuthAdminRoute element={<CommunityManagement/>} allowedRoles={["admin"]}/>}/>
       <Route path='/community/new' element = {<AuthAdminRoute element={<CreateCommunityPage/>} allowedRoles={["admin"]}/>}/>
       <Route path='community/edit/r/:slug' element = {<AuthAdminRoute element={<EditCommunityPage/>} allowedRoles={["admin"]}/>}/>
+      <Route path='community/:id/members' element = {<AuthAdminRoute element={<CommunityMembers/>} allowedRoles={["admin"]}/>}/>
       <Route path='*' element={<Admin404/>}/>
     </Routes>
   )

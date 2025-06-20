@@ -153,6 +153,8 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
 
       {/* Success Modal */}
       <BookingSuccessModal
+      userName={'username'}
+      vendorName={service.vendorId!}
         isOpen={isBookingSuccess}
         onClose={() => {
           setIsBookingSuccess(false)

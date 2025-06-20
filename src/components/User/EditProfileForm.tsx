@@ -54,6 +54,7 @@ export interface EditProfileFormProps {
 
 
 export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpdateProfile , isUpdateSubmitting }: EditProfileFormProps) {
+  console.log('data to edit',data);
   const [newLanguage, setNewLanguage] = useState("")
   const [open, setOpen] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -237,7 +238,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
       validateOnBlur
       validateOnChange
     >
-      {({ values, isSubmitting, isValid, setFieldValue, getFieldProps }) => (
+      {({ values, isSubmitting, isValid, setFieldValue, getFieldProps  }) => (
         <Form className="space-y-6">
           <div className="space-y-4">
             <Label htmlFor="profileImage" className="text-base font-medium">Profile Picture</Label>

@@ -1,11 +1,12 @@
-import { UserLayout } from "@/components/layout/UserLayout"
+import Header from "@/components/common/Header"
 import VendorDetails from "@/components/User/vendor-details/VendorDetails"
 
 const VendorDetailsPage = ()=> {
   return(
-    <UserLayout>
+    <>
+      <Header/>
       <VendorDetails/>
-    </UserLayout>
+    </>
   )
 }
 
