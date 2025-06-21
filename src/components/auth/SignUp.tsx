@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Formik, Form, Field, ErrorMessage } from "formik";
@@ -97,7 +96,7 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
                 name: data.user.name,
                 email: data.user.email,
                 role: data.user.role,
-                avatar : data.user.avatar
+                avatar: data.user.avatar
               })
             );
           } else {
@@ -107,7 +106,7 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
                 name: data.user.name,
                 email: data.user.email,
                 role: data.user.role,
-                avatar : data.user.avatar
+                avatar: data.user.avatar
               })
             );
           }
@@ -120,40 +119,25 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="h-screen flex"
-    >
+    <div className="h-screen flex">
       {/* Left Side - Image */}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-        className="hidden lg:block w-1/2 h-full"
-      >
+      <div className="hidden lg:block w-1/2 h-full">
         <img
           src="https://res.cloudinary.com/deh2nuqeb/image/upload/v1740628126/samrat-khadka-93wlS7VA_jg-unsplash_nynmsw.jpg"
           alt="Wedding photography"
           className="w-full h-full object-cover"
         />
-      </motion.div>
+      </div>
 
       {/* Right Side - Signup Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 overflow-y-auto">
         <div className="w-full max-w-md">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="text-center mb-8"
-          >
+          <div className="text-center mb-8">
             <h1 className="font-serif text-3xl sm:text-4xl tracking-tight">
               I'm a {userType === "client" ? "Customer" : "Photographer"}
             </h1>
             <p className="text-sm text-gray-600">Create your account</p>
-          </motion.div>
+          </div>
 
           <Formik
             initialValues={{
@@ -175,11 +159,7 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
           >
             {({ isSubmitting }) => (
               <Form className="space-y-4">
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3, duration: 0.5 }}
-                >
+                <div>
                   <div className="relative">
                     <Field
                       as={Input}
@@ -194,12 +174,8 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
                       className="text-red-400 text-sm mt-1"
                     />
                   </div>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4, duration: 0.5 }}
-                >
+                </div>
+                <div>
                   <div className="relative">
                     <Field
                       as={Input}
@@ -214,12 +190,8 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
                       className="text-red-400 text-sm mt-1"
                     />
                   </div>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5, duration: 0.5 }}
-                >
+                </div>
+                <div>
                   <div className="relative">
                     <Field
                       as={Input}
@@ -240,12 +212,8 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
                       className="text-red-400 text-sm mt-1"
                     />
                   </div>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6, duration: 0.5 }}
-                >
+                </div>
+                <div>
                   <div className="relative">
                     <Field
                       as={Input}
@@ -272,12 +240,8 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
                       className="text-red-400 text-sm mt-1"
                     />
                   </div>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7, duration: 0.5 }}
-                >
+                </div>
+                <div>
                   <Button
                     type="submit"
                     className="w-full h-12 rounded-lg text-sm uppercase tracking-widest"
@@ -285,40 +249,25 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
                   >
                     {isSending ? "Sending OTP..." : "Sign up"}
                   </Button>
-                </motion.div>
+                </div>
               </Form>
             )}
           </Formik>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 0.5 }}
-            className="relative flex items-center justify-center my-4"
-          >
+          <div className="relative flex items-center justify-center my-4">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300"></div>
             </div>
             <span className="relative px-3 text-sm text-gray-500 bg-white">
               or
             </span>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9, duration: 0.5 }}
-            className="flex justify-center mb-4"
-          >
+          <div className="flex justify-center mb-4">
             <GoogleAuth handleGoogleSuccess={handleGoogle} />
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.0, duration: 0.5 }}
-            className="text-center text-sm"
-          >
+          <div className="text-center text-sm">
             <p className="text-gray-600">
               Not a {userType === "client" ? "customer" : "photographer"}?{" "}
               <a
@@ -339,7 +288,7 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
                 Sign in
               </a>
             </p>
-          </motion.div>
+          </div>
         </div>
       </div>
 
@@ -350,6 +299,6 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
         isSending={isSending}
         onVerify={handleOtpVerify}
       />
-    </motion.div>
+    </div>
   );
 }
