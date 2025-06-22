@@ -14,8 +14,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { IVendor } from "@/services/vendor/vendorService";
 import { IVendorDetails } from "@/types/interfaces/vendor";
+import { ImageWithFallback } from "../ImageFallBack";
 
 // Define the Vendor type
 interface VendorProfileProps {
@@ -23,71 +23,9 @@ interface VendorProfileProps {
 }
 
 // Fallback image component
-export const ImageWithFallback = ({ 
-  src, 
-  alt, 
-  className, 
-  fallbackType = "work" 
-}: { 
-  src?: string; 
-  alt: string; 
-  className: string; 
-  fallbackType?: "profile" | "work";
-}) => {
-  const [imageError, setImageError] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
 
-  const handleImageError = () => {
-    setImageError(true);
-    setImageLoading(false);
-  };
-
-  const handleImageLoad = () => {
-    setImageLoading(false);
-  };
-
-  // Fallback gradient backgrounds
-  const fallbackGradients = {
-    profile: "bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20",
-    work: "bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20"
-  };
-
-  if (!src || imageError) {
-    return (
-      <div className={`${className} ${fallbackGradients[fallbackType]} flex items-center justify-center`}>
-        {fallbackType === "profile" ? (
-          <User className="h-12 w-12 text-muted-foreground/60" />
-        ) : (
-          <ImageIcon className="h-16 w-16 text-muted-foreground/60" />
-        )}
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative">
-      {imageLoading && (
-        <div className={`absolute inset-0 ${fallbackGradients[fallbackType]} flex items-center justify-center animate-pulse`}>
-          {fallbackType === "profile" ? (
-            <User className="h-12 w-12 text-muted-foreground/60" />
-          ) : (
-            <ImageIcon className="h-16 w-16 text-muted-foreground/60" />
-          )}
-        </div>
-      )}
-      <img
-        src={src}
-        alt={alt}
-        className={`${className} ${imageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
-        onError={handleImageError}
-        onLoad={handleImageLoad}
-      />
-    </div>
-  );
-};
 
 export default function VendorProfile({ vendor }: VendorProfileProps) {
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   // Safe access to work sample image
   const heroImage = vendor?.workSamples?.[0]?.media?.[0];
@@ -104,23 +42,23 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
       <div className="relative h-64 md:h-80 lg:h-96 w-full rounded-xl overflow-hidden">
         <ImageWithFallback
           src={heroImage}
-          alt={`${vendor?.name || 'Vendor'} work sample`}
+          alt={`${vendor?.name || "Vendor"} work sample`}
           className="w-full h-full object-cover"
           fallbackType="work"
         />
-        
+
         {/* Gradient overlay for better text readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-        
+
         <div className="absolute bottom-0 left-0 p-8 z-20">
           <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl text-white mb-2">
-            {vendor?.name || 'Vendor Name'}
+            {vendor?.name || "Vendor Name"}
           </h1>
           <div className="flex items-center gap-4 text-white/80">
             <div className="flex items-center gap-1.5">
               <MapPin className="h-4 w-4" />
               <span className="text-sm">
-                {vendor?.location?.address || 'Location not specified'}
+                {vendor?.location?.address || "Location not specified"}
               </span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -139,7 +77,7 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
             <div className="aspect-square w-full overflow-hidden rounded-xl border border-border/10">
               <ImageWithFallback
                 src={profileImage}
-                alt={`${vendor?.name || 'Vendor'} profile`}
+                alt={`${vendor?.name || "Vendor"} profile`}
                 className="object-cover w-full h-full"
                 fallbackType="profile"
               />
@@ -159,8 +97,7 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
           <div className="flex flex-col gap-3">
             <Button
               className="w-full bg-foreground text-background hover:bg-foreground/90 flex items-center gap-2"
-              onClick={() => setIsBookingOpen(true)}
-            >
+>
               <Calendar className="h-4 w-4" />
               <span className="text-sm uppercase tracking-wider">Book Now</span>
             </Button>
@@ -179,38 +116,39 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
           <div className="space-y-4">
             <h2 className="font-serif text-2xl text-foreground">About</h2>
             <p className="text-muted-foreground leading-relaxed">
-              {vendor?.description || 'No description available yet.'}
+              {vendor?.description || "No description available yet."}
             </p>
           </div>
 
           {/* Only show specialties if they exist */}
-          {vendor?.services?.[0]?.styleSpecialty && vendor.services[0].styleSpecialty.length > 0 && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="font-serif text-2xl text-foreground">
-                  Specialties
-                </h2>
-                <a
-                  href="#services"
-                  className="text-sm uppercase tracking-wider flex items-center gap-1 group text-foreground/80 hover:text-foreground"
-                >
-                  <span>View All Services</span>
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </a>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {vendor.services[0].styleSpecialty.map((specialty, index) => (
-                  <Badge
-                    key={`${specialty}-${index}`}
-                    variant="outline"
-                    className="px-3 py-1 border-border/20 text-foreground/80 hover:text-foreground"
+          {vendor?.services?.[0]?.styleSpecialty &&
+            vendor.services[0].styleSpecialty.length > 0 && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-serif text-2xl text-foreground">
+                    Specialties
+                  </h2>
+                  <a
+                    href="#services"
+                    className="text-sm uppercase tracking-wider flex items-center gap-1 group text-foreground/80 hover:text-foreground"
                   >
-                    {specialty}
-                  </Badge>
-                ))}
+                    <span>View All Services</span>
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </a>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {vendor.services[0].styleSpecialty.map((specialty, index) => (
+                    <Badge
+                      key={`${specialty}-${index}`}
+                      variant="outline"
+                      className="px-3 py-1 border-border/20 text-foreground/80 hover:text-foreground"
+                    >
+                      {specialty}
+                    </Badge>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {/* Only show languages if they exist */}
           {vendor?.languages && vendor.languages.length > 0 && (
@@ -237,7 +175,9 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
           {/* Only show experience if it exists */}
           {vendor?.services?.[0]?.yearsOfExperience && (
             <div className="space-y-4">
-              <h2 className="font-serif text-2xl text-foreground">Experience</h2>
+              <h2 className="font-serif text-2xl text-foreground">
+                Experience
+              </h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-4 border border-border/10 rounded-lg bg-muted/5">
                   <div className="text-3xl font-serif text-foreground mb-1">

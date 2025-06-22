@@ -5,14 +5,14 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import type { IVendorsResponse } from "@/types/interfaces/User";
-import { ImageWithFallback } from "./vendor-details/VendorProfile";
+import { ImageWithFallback } from "./ImageFallBack";
 
 interface PhotographerCardProps {
   vendorData: IVendorsResponse;
 }
 
 const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
-  console.log('photographer card', vendorData);
+  console.log("photographer card", vendorData);
   const navigate = useNavigate();
   const [isSaved, setIsSaved] = useState(false);
 
@@ -150,30 +150,34 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
           </div>
 
           {/* Description */}
-          <div>
-            <h3 className="font-serif text-lg text-foreground">About</h3>
-            <p className="text-muted-foreground leading-relaxed">
-              {vendorData.description ||
-                "Documenting exclusive weddings around the world through cinematic, elegant and timeless photographs."}
-            </p>
-          </div>
-
-          {/* Specialties/Tags (if available) */}
-          {vendorData.services && vendorData.services.length > 0 && (
-            <div>
-              <h3 className="font-serif text-lg text-foreground">Specialties</h3>
-              <div className="flex flex-wrap gap-2">
-                {vendorData.services.map((service, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 bg-muted/30 text-muted-foreground text-xs rounded-full"
-                  >
-                    {service.serviceTitle}
-                  </span>
-                ))}
-              </div>
+          <div className="grid grid-cols-2">
+            <div className="w-4/8">
+              <h3 className="font-serif text-lg text-foreground">About</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                {vendorData.description ||
+                  "Documenting exclusive weddings around the world through cinematic, elegant and timeless photographs."}
+              </p>
             </div>
-          )}
+
+            {/* Specialties/Tags (if available) */}
+            {vendorData.services && vendorData.services.length > 0 && (
+              <div className="flex-1">
+                <h3 className="font-serif text-lg text-foreground">
+                  Specialties
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {vendorData.services.map((service, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-muted/30 text-muted-foreground text-xs rounded-full"
+                    >
+                      {service.serviceTitle}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

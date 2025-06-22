@@ -2,17 +2,13 @@ import { TNotification } from "@/components/common/Notification";
 import { useSocket } from "@/context/SocketContext";
 import { setConversations, setMessages, setUsers, updateContactStatus, updateLastSeen } from "@/store/slices/chatSlice";
 import { addNotification } from "@/store/slices/notificationSlice";
-import { RootState } from "@/store/store";
 import { Conversation, Message, User } from "@/types/interfaces/Chat";
 import { TRole } from "@/types/interfaces/User";
 import { useCallback, useEffect } from "react";
-import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 
 export function useSocketEvents({userId , userType} : {userId : string , userType : TRole}) {
-    const {conversations} = useSelector((state : RootState)=> state.chat)
-    console.log('use socket triggered',userId);
     const {socket} = useSocket();
     const dispatch = useDispatch();
 
