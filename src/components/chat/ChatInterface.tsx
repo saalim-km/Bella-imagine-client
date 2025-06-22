@@ -39,10 +39,12 @@ export function ChatInterface() {
   const vendor = useSelector((state: RootState) => state.vendor.vendor);
   const { socket } = useSocket();
   const userFromRedux = client ? client : vendor;
+
   const { fetchMessages } = useSocketEvents({
     userId: userFromRedux?._id as string,
     userType: userFromRedux?.role as TRole,
   });
+  
   const selectedConversation = conversations.find(
     (conv) => conv._id === selectedConversationId
   );
@@ -52,11 +54,9 @@ export function ChatInterface() {
         (user) =>
           user._id !== userFromRedux?._id &&
           (user._id === selectedConversation.client._id ||
-           user._id === selectedConversation.vendor._id)
+            user._id === selectedConversation.vendor._id)
       )
     : undefined;
-
-
 
   useEffect(() => {
     fetchMessages(selectedConversationId as string);
@@ -65,7 +65,24 @@ export function ChatInterface() {
   useEffect(() => {
     if (socket) {
       socket.on("new_message", (newMessage: Message) => {
-        console.log("new message event trigger ❌❌❌❌❌❌❌",newMessage);
+
+        const updatedConversationList = conversations.reduce((acc, conv) => {
+          if (conv._id === selectedConversationId) {
+            return [{ ...conv, lastMessage: newMessage }, ...acc];
+          }
+          return [...acc, conv];
+        }, [] as typeof conversations);
+
+        if (selectedConversation && selectedConversation._id) {
+          dispatch(
+            updateConversation({
+              ...selectedConversation,
+              _id: selectedConversation._id,
+              lastMessage: newMessage,
+            })
+          );
+        }
+        dispatch(setConversations(updatedConversationList));
         dispatch(addMessage(newMessage));
       });
 
@@ -80,32 +97,32 @@ export function ChatInterface() {
       senderId: userFromRedux?._id as string,
       text: message.text,
       type: message.type,
-      timestamp : new Date().toISOString(),
+      timestamp: new Date().toISOString(),
       conversationId: selectedConversationId as string,
       mediaKey: message.mediaKey || "",
       userType: userFromRedux?.role as TRole,
     };
     if (!socket) return;
-    
+
     socket.emit("send_message", {
       message: newMessage,
       recipentId: recipientUser?._id,
-      recipentName : userFromRedux?.name
+      recipentName: userFromRedux?.name,
     });
 
-    const updatedConversations = conversations.map((conv) =>
-      conv._id === selectedConversationId
-        ? { ...conv, lastMessage: newMessage }
-        : conv
-    );
+    const updatedConversationList = conversations.reduce((acc, conv) => {
+      if (conv._id === selectedConversationId) {
+        return [{ ...conv, lastMessage: newMessage }, ...acc];
+      }
+      return [...acc, conv];
+    }, [] as typeof conversations);
 
-    dispatch(setConversations(updatedConversations));
+    dispatch(setConversations(updatedConversationList));
   };
 
   const handleDeleteMessage = async (messageId: string) => {
     try {
       // const success = await chatService.deleteMessage(messageId);
-
       // if (success) {
       //   dispatch(
       //     updateMessage({
@@ -113,7 +130,6 @@ export function ChatInterface() {
       //       isDeleted: true,
       //     })
       //   );
-
       //   const updatedConversations = conversations.map((conv) => {
       //     if (
       //       conv._id === selectedConversationId &&
@@ -126,12 +142,11 @@ export function ChatInterface() {
       //     }
       //     return conv;
       //   });
-
       //   dispatch(setConversations(updatedConversations));
       // }
     } catch (error) {
       toast.error("Failed to delete message");
-      handleError(error)
+      handleError(error);
     }
   };
 

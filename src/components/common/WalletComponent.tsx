@@ -173,7 +173,6 @@ export default function WalletComponent({
                       <TableHead>Type</TableHead>
                       <TableHead>Amount</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -218,38 +217,6 @@ export default function WalletComponent({
                           </TableCell>
                           <TableCell>
                             <StatusBadge status={transaction.status} />
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                  View Details
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  Download Receipt
-                                </DropdownMenuItem>
-                                {userRole === "admin" &&
-                                  transaction.status ===
-                                    PaymentStatus.PENDING && (
-                                    <>
-                                      <DropdownMenuSeparator />
-                                      <DropdownMenuItem className="text-success">
-                                        Approve
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem className="text-destructive">
-                                        Reject
-                                      </DropdownMenuItem>
-                                    </>
-                                  )}
-                              </DropdownMenuContent>
-                            </DropdownMenu>
                           </TableCell>
                         </TableRow>
                       ))
