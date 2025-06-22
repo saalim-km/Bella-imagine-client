@@ -50,6 +50,24 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
   );
 
   const handleDateSelect = (date: string) => {
+    const now = new Date(); // Current date and time: June 21, 2025, 12:03 PM IST
+    const selectedDate = new Date(date);
+
+    // Format current date to YYYY-MM-DD for comparison
+    const currentDateStr = now.toISOString().split("T")[0]; // e.g., "2025-06-21"
+
+    // Check if selected date is today
+    if (date === currentDateStr) {
+      toast.error(
+        "Warning: You are booking for today. Bookings made for the current date cannot be canceled due to our 24-hour cancellation policy.",
+        {
+          duration: 5000, // Display for 5 seconds
+          position: "top-center",
+        }
+      );
+    }
+
+    console.log("user selected date : ", selectedDate);
     setBookingState((prev) => ({
       ...prev,
       selectedDate: date,

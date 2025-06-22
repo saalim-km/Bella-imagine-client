@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { Bell, Menu, X } from "lucide-react";
@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import ThemeToggle from "./ThemeToggle";
-import NotificationCard, { TNotification } from "./Notification";
+import NotificationCard from "./Notification";
 import { useThemeConstants } from "@/utils/theme/theme.utils";
 import { useLogoutMutation } from "@/hooks/auth/useLogout";
 import { logoutClient, logoutVendor } from "@/services/auth/authService";
@@ -20,13 +20,16 @@ import type { RootState } from "@/store/store";
 import { useSocket } from "@/context/SocketContext";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { getAllClientNotification, getAllVendorNotification } from "@/services/notification/notificationService";
+import { TRole } from "@/types/interfaces/User";
+import { setPage } from "@/store/slices/notificationSlice";
 
 interface IHeader {
   onClick?: () => void;
 }
 
 export default function Header({ onClick }: IHeader) {
-  const { reconnect, socket } = useSocket();
+  const { socket } = useSocket();
   const { isDarkMode } = useThemeConstants();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -35,29 +38,20 @@ export default function Header({ onClick }: IHeader) {
     if (state.client.client) return state.client.client;
     return null;
   });
-
-  console.log("user in the header : ", user);
-
-  const allNotifications: TNotification[] = useSelector(
-    (state: RootState) => state.notification
-  );
-  console.log("got notification");
+  const { notifications, page, total } = useSelector((state: RootState) => state.notification);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const isLoggedIn = !!user;
   const isAdminPage = location.pathname.startsWith("/admin");
 
-  const isCommunityActive =
-    location.pathname === "/community" || location.pathname === "/contests";
-
-  useState(() => {
+  useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  });
+  }, []);
 
   const logoutFunction = user?.role === "vendor" ? logoutVendor : logoutClient;
   const { mutate: logout } = useLogoutMutation(logoutFunction);
@@ -68,14 +62,10 @@ export default function Header({ onClick }: IHeader) {
         toast.success(data.message);
         if (user?.role === "vendor") {
           dispatch(vendorLogout());
-          if (socket) {
-            socket.disconnect();
-          }
+          if (socket) socket.disconnect();
         } else {
           dispatch(clientLogout());
-          if (socket) {
-            socket.disconnect();
-          }
+          if (socket) socket.disconnect();
         }
       },
       onError: (error) => {
@@ -115,6 +105,9 @@ export default function Header({ onClick }: IHeader) {
     );
   };
 
+  const queryFn = user?.role === "vendor" ? getAllVendorNotification : getAllClientNotification;
+  const limit = 6;
+
   return (
     <>
       <header
@@ -147,15 +140,9 @@ export default function Header({ onClick }: IHeader) {
 
           {location.pathname !== "/admin/login" && (
             <nav className="hidden lg:flex items-center gap-12">
-              <NavLink to="/home" active={location.pathname === "/home"}>
-                Home
-              </NavLink>
-              <NavLink to="/vendors" active={location.pathname === "/vendors"}>
-                Photographers
-              </NavLink>
-              <NavLink to="/explore" active={isCommunityActive}>
-                Community
-              </NavLink>
+              <NavLink to="/home">Home</NavLink>
+              <NavLink to="/vendors">Photographers</NavLink>
+              <NavLink to="/explore">Community</NavLink>
             </nav>
           )}
 
@@ -164,32 +151,31 @@ export default function Header({ onClick }: IHeader) {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
 
           <div className="hidden lg:flex items-center gap-6">
-            {isLoggedIn && !isAdminPage && (
+            {isLoggedIn && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
                     className="relative /80 hover: transition-colors duration-300"
-                    aria-label={`Notifications (${allNotifications.length} new)`}
+                    aria-label={`Notifications (${total} new)`}
                   >
                     <Bell className="h-5 w-5" />
-                    {allNotifications.length > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-red-600 text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                        {allNotifications.length}
+                    {total > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-600 text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                        {total}
                       </span>
                     )}
                   </button>
                 </DropdownMenuTrigger>
                 <NotificationCard
-                  notificationCount={allNotifications.length}
-                  notifications={allNotifications}
+                  page={page}
+                  setPage={(newPage) => dispatch(setPage(newPage))}
+                  queryFn={queryFn}
+                  role={user?.role as TRole}
+                  limit={page * limit}
                 />
               </DropdownMenu>
             )}
@@ -199,23 +185,20 @@ export default function Header({ onClick }: IHeader) {
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 rounded-full overflow-hidden border border-white/20 hover/10 transition-all duration-300">
                     <div className="w-8 h-8 rounded-full overflow-hidden">
-                      <Avatar className="w-auto h-auto">
+                      <Avatar className="w-8 h-8">
                         <AvatarImage
                           src={user.avatar}
-                          alt={`${user.name}`}
-                          className="object-fill"
+                          alt={`${user.name} avatar`}
+                          className="w-full h-full object-cover"
                         />
-                        <AvatarFallback>
+                        <AvatarFallback className="flex items-center justify-center w-full h-full bg-muted text-foreground">
                           {user.name?.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                     </div>
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="w-48 backdrop-blur-md"
-                >
+                <DropdownMenuContent align="end" className="w-48 backdrop-blur-md">
                   <DropdownMenuItem
                     onClick={() => navigate("/profile")}
                     className="text-base py-2 hover/10"
@@ -264,9 +247,7 @@ export default function Header({ onClick }: IHeader) {
         <div className="fixed inset-0 z-50 bg-white lg:hidden text-black">
           <div className="container h-full mx-auto px-6 py-8 flex flex-col">
             <div className="flex justify-between items-center">
-              <span className="font-serif text-2xl tracking-tight">
-                BellaImagine
-              </span>
+              <span className="font-serif text-2xl tracking-tight">BellaImagine</span>
               <button
                 onClick={() => setMobileMenuOpen(false)}
                 className="hover:/80 transition-colors"

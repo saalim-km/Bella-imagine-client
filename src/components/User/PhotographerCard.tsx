@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { Bookmark, MapPin, Clock, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -13,9 +12,8 @@ interface PhotographerCardProps {
 }
 
 const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
-  console.log('photographer card',vendorData);
+  console.log('photographer card', vendorData);
   const navigate = useNavigate();
-  const [isHovered, setIsHovered] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
   const hourlyRate = vendorData?.services[0]?.sessionDurations[0]?.price || 0;
@@ -27,14 +25,7 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
   const handleSave = () => setIsSaved(!isSaved);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="bg-card border border-border/10 rounded-lg overflow-hidden mb-12 flex flex-col"
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-    >
+    <div className="bg-card border border-border/10 rounded-lg overflow-hidden mb-12 flex flex-col">
       {/* Header Section */}
       <div className="p-8 pb-4 flex justify-between items-center">
         <div
@@ -81,20 +72,18 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
         {/* Profile Section */}
         <div className="space-y-6">
           {/* Profile Image */}
-          <motion.div
-            whileHover={{ scale: 1.03 }}
-            transition={{ duration: 0.3 }}
+          <div
             className="relative aspect-square overflow-hidden cursor-pointer"
             onClick={handleNavigate}
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 z-10" />
             <ImageWithFallback
               src={vendorData.profileImage}
-              alt={`${vendorData?.name || "Vendor"} work sample`}
+              alt={`${vendorData?.name || "Vendor"} profile`}
               className="w-full h-full object-cover"
               fallbackType="profile"
             />
-          </motion.div>
+          </div>
 
           {/* Pricing */}
           {hourlyRate > 0 && (
@@ -126,30 +115,28 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
           {/* Portfolio Gallery */}
           <div className="relative w-full">
             <ScrollArea className="w-full rounded-md border border-border/10">
-              <div className="flex space-x-4">
+              <div className="flex space-x-4  overflow-x-auto">
                 {vendorData.workSamples && vendorData.workSamples.length > 0 ? (
                   vendorData.workSamples.flatMap(
                     (work, workIndex) =>
                       work.media &&
                       work.media.map((src, mediaIndex) => (
-                        <motion.div
+                        <div
                           key={`${workIndex}-${mediaIndex}`}
                           className="relative flex-shrink-0 aspect-[4/5] w-64 overflow-hidden rounded-md group cursor-pointer"
-                          whileHover={{ y: -5 }}
-                          transition={{ duration: 0.3 }}
                           onClick={handleNavigate}
                         >
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
                           <img
                             src={src || "/placeholder.svg"}
                             alt={`Portfolio ${workIndex + 1}-${mediaIndex + 1}`}
-                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            className="h-full w-full object-cover"
                             draggable="false"
                           />
                           <div className="absolute bottom-3 left-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <ArrowUpRight className="h-5 w-5" />
                           </div>
-                        </motion.div>
+                        </div>
                       ))
                   )
                 ) : (
@@ -163,7 +150,7 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
           </div>
 
           {/* Description */}
-          <div className="">
+          <div>
             <h3 className="font-serif text-lg text-foreground">About</h3>
             <p className="text-muted-foreground leading-relaxed">
               {vendorData.description ||
@@ -173,10 +160,8 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
 
           {/* Specialties/Tags (if available) */}
           {vendorData.services && vendorData.services.length > 0 && (
-            <div className="">
-              <h3 className="font-serif text-lg text-foreground">
-                Specialties
-              </h3>
+            <div>
+              <h3 className="font-serif text-lg text-foreground">Specialties</h3>
               <div className="flex flex-wrap gap-2">
                 {vendorData.services.map((service, index) => (
                   <span
@@ -191,7 +176,7 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

@@ -13,13 +13,13 @@ import { toast } from "sonner";
 
 const VendorLogin = () => {
   const dispatch = useDispatch();
-      const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { mutate: login } = useLoginMutation();
   const [isSending, setIsSending] = useState(false);
   const { reconnect, socket } = useSocket();
 
-      function handleOpenModal() {
+  function handleOpenModal() {
     setIsModalOpen(true);
   }
   function handleOnClose() {
@@ -47,19 +47,13 @@ const VendorLogin = () => {
 
   return (
     <>
-      <div>
-        <Header />
-        <div className="mt-20">
-          <Login
-            onClick={handleOpenModal}
-            userType="vendor"
-            onSubmit={handleLogin}
-            isSending={isSending}
-          />
-        </div>
-      </div>
-      <Footer />
-              {isModalOpen && (
+      <Login
+        onClick={handleOpenModal}
+        userType="vendor"
+        onSubmit={handleLogin}
+        isSending={isSending}
+      />
+      {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <AccountTypeModal isOpen={isModalOpen} onClose={handleOnClose} />
         </div>

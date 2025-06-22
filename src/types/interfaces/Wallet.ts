@@ -5,7 +5,7 @@ export enum PaymentStatus {
   REFUNDED = "refunded",
 }
 
-export type Purpose =  'vendor-booking' | 'refund-amount' | 'wallet-credit';
+export type Purpose =  'vendor-booking' | 'refund-amount' | 'wallet-credit' | 'commission-credit';
 
 export interface IWalletEntity {
   _id?: string;

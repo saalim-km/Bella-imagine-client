@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { ArrowUpRight, X } from "lucide-react";
 import { IWorkSampleResponse } from "@/types/interfaces/vendor";
 
@@ -10,28 +9,33 @@ interface Media {
   url: string;
 }
 
-
 interface WorkSampleProps {
   workSample: IWorkSampleResponse;
 }
 
 export default function WorkSample({ workSample }: WorkSampleProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const imagesPerPage = 2;
+
+  const handleShowMore = () => {
+    setCurrentPage((prev) => prev + 1);
+  };
+
+  const startIndex = currentPage * imagesPerPage;
+  const displayedImages = workSample.media.slice(0, startIndex + imagesPerPage);
+  const hasMoreImages = workSample.media.length > startIndex + imagesPerPage;
 
   return (
     <>
-      <motion.div
-        whileHover={{ y: -5 }}
-        transition={{ duration: 0.3 }}
-        className="border border-border/10 rounded-lg overflow-hidden bg-card"
-      >
+      <div className="border border-border/10 rounded-lg overflow-hidden bg-card">
         <div className="p-6">
           <h3 className="font-serif text-xl text-foreground mb-2">{workSample.title}</h3>
           <p className="text-muted-foreground text-sm mb-4">{workSample.description}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-1">
-          {workSample.media.map((item, idx) => (
+          {displayedImages.map((item, idx) => (
             <div
               key={idx}
               className="relative aspect-square overflow-hidden cursor-pointer group"
@@ -48,7 +52,18 @@ export default function WorkSample({ workSample }: WorkSampleProps) {
             </div>
           ))}
         </div>
-      </motion.div>
+
+        {hasMoreImages && (
+          <div className="p-4 text-center">
+            <button
+              onClick={handleShowMore}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
+            >
+              Show More
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Fullscreen Image Modal */}
       {selectedImage && (
@@ -65,7 +80,7 @@ export default function WorkSample({ workSample }: WorkSampleProps) {
           <div className="relative max-w-6xl max-h-[90vh] w-full h-full">
             <img
               src={selectedImage || "/placeholder.svg"}
-              alt="Enlarged work sample"
+              alt=" preservatives work sample"
               className="object-contain w-full h-full"
               onClick={(e) => e.stopPropagation()}
             />

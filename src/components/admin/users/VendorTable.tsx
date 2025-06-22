@@ -62,8 +62,8 @@ export function UserTable() {
       id: "status",
       header: "Status",
       cell: (item) => (
-        <Badge variant={item.isActive ? "outline" : "secondary"}>
-          {item.isActive ? "Active" : "Inactive"}
+        <Badge variant={item.isblocked ? "outline" : "secondary"}>
+          {item.isblocked ? "blocked" : "not-blocked"}
         </Badge>
       ),
     },

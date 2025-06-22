@@ -1,7 +1,6 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TimeSlot , DateSlot } from "@/types/interfaces/vendor";
+import { TimeSlot, DateSlot } from "@/types/interfaces/vendor";
 
 interface TimeSlotSelectorProps {
   availableDates: DateSlot[];
@@ -16,15 +15,33 @@ const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
   selectedTimeSlot,
   onTimeSlotSelect,
 }) => {
+  // Get current date and time in IST (June 21, 2025, 11:58 AM IST)
+  const currentDateTime = new Date();
+  currentDateTime.setHours(
+    currentDateTime.getHours() + 5,
+    currentDateTime.getMinutes() + 30
+  ); // Adjust for IST (+5:30 from UTC)
+
   // Get time slots for the selected date
   const getTimeSlotsForSelectedDate = () => {
     if (!selectedDate) return [];
-    
+
     const selectedDateObj = availableDates.find(
       (date) => date.date === selectedDate
     );
-    
-    return selectedDateObj ? selectedDateObj.timeSlots : [];
+
+    if (!selectedDateObj) return [];
+
+    // Filter time slots to only include those in the future
+    return selectedDateObj.timeSlots.filter((slot) => {
+      try {
+        const slotDateTime = new Date(`${selectedDate}T${slot.startTime}:00+05:30`);
+        return slotDateTime >= currentDateTime;
+      } catch (error) {
+        console.error("Error parsing slot time:", error);
+        return false; // Exclude invalid time slots
+      }
+    });
   };
 
   const timeSlots = getTimeSlotsForSelectedDate();
@@ -39,6 +56,17 @@ const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
       return `${hour}:${minutes} ${ampm}`;
     } catch (error) {
       return timeString; // Return original if parsing fails
+    }
+  };
+
+  // Check if a time slot is in the past
+  const isPastTimeSlot = (slot: TimeSlot) => {
+    try {
+      const slotDateTime = new Date(`${selectedDate}T${slot.startTime}:00+05:30`);
+      return slotDateTime < currentDateTime;
+    } catch (error) {
+      console.error("Error checking past time slot:", error);
+      return true; // Disable invalid time slots
     }
   };
 
@@ -62,11 +90,11 @@ const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
               <button
                 key={index}
                 onClick={() => onTimeSlotSelect(slot)}
-                disabled={slot.isBooked || slot.capacity <= 0}
+                disabled={slot.isBooked || slot.capacity <= 0 || isPastTimeSlot(slot)}
                 className={`p-3 text-sm rounded-md transition-colors ${
                   selectedTimeSlot?.startTime === slot.startTime
                     ? "bg-primary text-primary-foreground"
-                    : slot.isBooked || slot.capacity <= 0
+                    : slot.isBooked || slot.capacity <= 0 || isPastTimeSlot(slot)
                     ? "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
                     : "bg-secondary hover:bg-secondary/80"
                 }`}

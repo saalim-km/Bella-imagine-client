@@ -189,30 +189,6 @@ export default function WalletComponent({
                     ) : (
                       transactions.paymentId?.map((transaction) => (
                         <TableRow key={`${transaction._id}-${transaction._id}`}>
-                          {userRole === "admin" && (
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                <Avatar className="h-8 w-8">
-                                  <AvatarImage
-                                    src={`https://ui-avatars.com/api/?name=${transactions.userId.firstName}+${transactions.userId.lastName}`}
-                                  />
-                                  <AvatarFallback>
-                                    {transactions.userId.firstName[0] || ""}
-                                    {transactions.userId.lastName[0] || ""}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div className="flex flex-col">
-                                  <span className="font-medium text-sm">
-                                    {transactions.userId.firstName[0] || ""}{" "}
-                                    {transactions.userId.lastName[0] || ""}
-                                  </span>
-                                  <span className="text-xs text-muted-foreground">
-                                    {transactions.userId.email}
-                                  </span>
-                                </div>
-                              </div>
-                            </TableCell>
-                          )}
                           <TableCell className="font-medium">
                             {transaction.transactionId}
                           </TableCell>
@@ -235,7 +211,7 @@ export default function WalletComponent({
                             className={`${
                               transaction.purpose === 'refund-amount'
                                 ? "text-green-500"
-                                : transaction.purpose === 'wallet-credit' ? "text-green-500" : "text-destructive"
+                                : transaction.purpose === 'wallet-credit' ? "text-green-500" : transaction.purpose === 'commission-credit' ? "text-green-500" : "text-destructive"
                             }`}
                           >
                             {formatPrice(transaction.amount)}

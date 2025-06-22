@@ -11,11 +11,6 @@ export const showNotificationToast = (notification: TNotification) => {
     return (
       <div className="bg-white dark:bg-neutral-900 shadow-md rounded-lg p-4 w-[300px] border border-muted">
         <div className="flex items-start gap-3">
-          {/* Icon */}
-          <div className="text-xl">
-            {isBooking ? "📅" : isChat ? "💬" : "🔔"}
-          </div>
-
           {/* Content */}
           <div className="flex-1">
             <p className="text-sm font-medium text-foreground">

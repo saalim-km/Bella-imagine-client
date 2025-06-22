@@ -1,4 +1,3 @@
-import { motion } from "framer-motion"
 import { Clock, ArrowRight } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { IServiceResponse, IWorkSampleResponse } from "@/types/interfaces/vendor"
@@ -6,29 +5,20 @@ import { IServiceResponse, IWorkSampleResponse } from "@/types/interfaces/vendor
 interface ServiceCardProps {
   service: IServiceResponse
   onViewDetails: (service: any) => void
-  workSample : IWorkSampleResponse
+  workSample: IWorkSampleResponse
 }
 
-export default function ServiceCard({ service , onViewDetails  , workSample } : ServiceCardProps) {
+export default function ServiceCard({ service, onViewDetails, workSample }: ServiceCardProps) {
   return (
-    <motion.div
-      whileHover={{ y: -5 }}
-      transition={{ duration: 0.3 }}
+    <div
       className="group cursor-pointer border border-border/10 rounded-lg overflow-hidden bg-card"
       onClick={() => onViewDetails(service)}
     >
       <div className="relative h-48 overflow-hidden">
-        {/* This would be a service image - using a placeholder for now */}
-        <img src={workSample.media[0]}/>
-        <div
-          className="h-full w-full bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${
-              service.styleSpecialty.includes("Wedding")
-                // ? "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741531304/unnamed_5_i7qnb7.webp"
-                // : "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741531305/unnamed_2_yjfx4l.webp"
-            })`,
-          }}  
+        <img
+          src={workSample.media[0] || "/placeholder.svg"}
+          alt={service.serviceTitle}
+          className="object-cover w-full h-full"
         />
         <div className="absolute bottom-0 left-0 p-6 z-20">
           <h3 className="font-serif text-xl text-white mb-1">{service.serviceTitle}</h3>
@@ -84,10 +74,10 @@ export default function ServiceCard({ service , onViewDetails  , workSample } : 
         <div className="pt-2 flex items-center justify-end">
           <div className="text-sm flex items-center gap-1 text-foreground group-hover:underline">
             <span>View Details</span>
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            <ArrowRight className="h-4 w-4" />
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }

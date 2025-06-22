@@ -132,8 +132,8 @@ export function ClientTable() {
       id: "status",
       header: "Status",
       cell: (client) => (
-        <Badge variant={client.isActive ? "default" : "secondary"}>
-          {client.isActive ? "Active" : "Inactive"}
+        <Badge variant={client.isblocked ? "default" : "secondary"}>
+          {client.isblocked ? "blocked" : "not-blocked"}
         </Badge>
       ),
     },

@@ -301,7 +301,7 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({
             </div>
             <div className="flex justify-between items-center">
               <p className="text-sm text-muted-foreground">
-                Admin Commission (2%)
+                Platform Commission (2%)
               </p>
               <p className="font-medium text-red-600">
                 -₹{adminCommission.toFixed(2)}

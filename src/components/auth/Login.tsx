@@ -12,6 +12,8 @@ import { clientLogin } from "@/store/slices/clientSlice";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { vendorLogin } from "@/store/slices/vendorSlice";
 import { useSocket } from "@/context/SocketContext";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 interface LoginProps {
   onClick?: () => void;
@@ -29,6 +31,7 @@ export default function Login({
   const dispatch = useDispatch();
   const { mutate: Login } = useGoogleLoginMutataion();
   const { reconnect, socket } = useSocket();
+  const [showPassword, setShowPassword] = useState(false);
 
   function handleGoogleLogin(credentialResponse: CredentialResponse) {
     Login(
@@ -42,24 +45,28 @@ export default function Login({
           console.log(data);
           toast.success(data.message);
           if (userType === "vendor") {
-            dispatch(vendorLogin({
-              _id: data.user._id,
-              name: data.user.name,
-              email: data.user.email,
-              avatar: data.user.avatar,
-              role: data.user.role
-            }));
+            dispatch(
+              vendorLogin({
+                _id: data.user._id,
+                name: data.user.name,
+                email: data.user.email,
+                avatar: data.user.avatar,
+                role: data.user.role,
+              })
+            );
             if (socket) {
               reconnect();
             }
           } else {
-            dispatch(clientLogin({
-              _id: data.user._id,
-              name: data.user.name,
-              email: data.user.email,
-              avatar: data.user.avatar,
-              role: data.user.role
-            }));
+            dispatch(
+              clientLogin({
+                _id: data.user._id,
+                name: data.user.name,
+                email: data.user.email,
+                avatar: data.user.avatar,
+                role: data.user.role,
+              })
+            );
             if (socket) {
               reconnect();
             }
@@ -119,14 +126,27 @@ export default function Login({
                     className="text-red-400 text-sm mt-1"
                   />
                 </div>
-                <div>
-                  <Field
-                    name="password"
-                    type="password"
-                    placeholder="Password"
-                    as={Input}
-                    className="rounded-lg h-12 w-full focus:ring-2 focus:ring-white/20 transition-all duration-300"
-                  />
+                <div className="relative">
+                  <div className="flex justify-center align-middle">
+                    <Field
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Password"
+                      as={Input}
+                      className="rounded-lg h-12 w-full focus:ring-2 focus:ring-white/20 transition-all duration-300 pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm bottom-12"
+                    >
+                      {showPassword ? (
+                        <Eye className="h-5 w-5 text-gray-400" />
+                      ) : (
+                        <EyeOff className="h-5 w-5 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
                   <a
                     href={`/${userType}/forgot-password`}
                     className="text-sm transition-colors inline-block mt-2"
