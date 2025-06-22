@@ -1,6 +1,5 @@
 import { getAllCategories, vendorJoinCategory } from "@/services/categories/categoryService";
 import { BasePaginatedResponse } from "@/services/client/clientService";
-import { getAllVendorNotification } from "@/services/notification/notificationService";
 import { cerateWorkSampleService, createService, deleteWorkSampleService, getAllVendorServices, getAllWorkSampleService, getVendorDetails, updateVendorDetails,updateWorkSampleService, updateVendorService } from "@/services/vendor/vendorService";
 import { IServiceFilter, IServiceResponse, IWorkSampleFilter, PaginatedResponse } from "@/types/interfaces/vendor";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -10,6 +9,7 @@ export interface ApiResponse {
   success : boolean,
   message : string
 }
+
 export const useVendorDetailsQuery = (enabled = true) => {
   return useQuery({
     queryKey: ["vendor-profile"],
@@ -38,16 +38,6 @@ export const useJoinCategoryRequestMutation = ()=> {
     mutationFn : vendorJoinCategory
   })
 }
-
-
-export const useAllVendortNotification = (enabled = true)=> {
-  return useQuery({
-    queryKey : ["vendor-notifications"],
-    queryFn : getAllVendorNotification,
-    enabled
-  })
-}
-
 
 //vendor-service
 export const useCreateServiceMutation = ()=> {

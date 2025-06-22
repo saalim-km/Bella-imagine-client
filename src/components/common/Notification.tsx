@@ -1,12 +1,15 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { format, formatDistanceToNow } from "date-fns";
 import { Check } from "lucide-react";
 import { DropdownMenuContent } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import clsx from "clsx";
-import { useDispatch } from "react-redux";
-import { useGetAllNotifications } from "@/hooks/notifications/useNotifications";
-import { markAllAsRead, setNotifications } from "@/store/slices/notificationSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { markAllAsRead } from "@/store/slices/notificationSlice";
+import type { RootState } from "@/store/store";
+import { useUpdateNotification } from "@/hooks/notifications/useNotifications";
+import { updateClientNotificationService, updateVendorNotificationService } from "@/services/notification/notificationService";
+import { handleError } from "@/utils/Error/error-handler.utils";
 import { TRole } from "@/types/interfaces/User";
 
 export type TNotificationType = "booking" | "chat" | "contest" | "review" | "system" | "custom";
@@ -30,36 +33,40 @@ export interface TNotification {
 interface NotificationCardProps {
   page: number;
   setPage: (page: number) => void;
-  queryFn: any;
-  role: TRole;
+  totalNotifications: number;
   limit: number;
+  isLoading: boolean;
+  userType : TRole
 }
 
-export default function NotificationCard({ page, setPage, queryFn, role, limit }: NotificationCardProps) {
+export default function NotificationCard({ page, setPage, totalNotifications, limit, isLoading , userType}: NotificationCardProps) {
+  const mutateFn = userType === 'client'?  updateClientNotificationService : updateVendorNotificationService
+  const {mutate : markAdRead} = useUpdateNotification(mutateFn)
   const dispatch = useDispatch();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { data: notificationsData, isLoading } = useGetAllNotifications(queryFn, role, true, { limit, page });
-  const totalNotificaiton = notificationsData?.data.total || 0
-
-  useEffect(() => {
-    if (notificationsData?.data?.data) {
-      dispatch(setNotifications({
-        notifications: notificationsData.data.data,
-        total: notificationsData.data.total,
-        page,
-      }));
-    }
-  }, [notificationsData, dispatch, page]);
+  const { notifications } = useSelector((state: RootState) => state.notification);
 
   const handleShowMore = () => {
-    if (totalNotificaiton > page * limit) {
+    if (totalNotifications > page * limit) {
       setPage(page + 1);
     }
   };
 
-  const notifications = notificationsData?.data?.data || [];
   const hasNotifications = notifications.length > 0;
-  const hasMore = totalNotificaiton > page * limit;
+  const hasMore = totalNotifications > page * limit;
+
+  function handleMarkAsRead(){
+    markAdRead(undefined,{
+      onSuccess: (data)=> {
+        if(data.success){
+          dispatch(markAllAsRead())
+        }
+      },
+      onError : (err)=> {
+        handleError(err)
+      }
+    })
+  }
 
   return (
     <DropdownMenuContent className="w-80 p-0 bg-background border border-border">
@@ -130,7 +137,7 @@ export default function NotificationCard({ page, setPage, queryFn, role, limit }
             <Button
               variant="outline"
               className="w-full flex items-center justify-center gap-2"
-              onClick={() => dispatch(markAllAsRead())}
+              onClick={handleMarkAsRead}
             >
               <Check className="h-4 w-4" />
               Mark all as read

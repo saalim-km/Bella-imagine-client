@@ -5,12 +5,14 @@ interface NotificationState {
   notifications: TNotification[];
   total: number;
   page: number;
+  unReadCount: number;
 }
 
 const initialState: NotificationState = {
   notifications: [],
   total: 0,
   page: 1,
+  unReadCount : 0
 };
 
 const notificationSlice = createSlice({
@@ -20,6 +22,7 @@ const notificationSlice = createSlice({
     addNotification: (state, action: PayloadAction<TNotification>) => {
       state.notifications.unshift(action.payload);
       state.total += 1;
+      state.unReadCount += 1;
     },
     removeNotification: (state, action: PayloadAction<{ _id: string }>) => {
       state.notifications = state.notifications.filter(
@@ -27,19 +30,12 @@ const notificationSlice = createSlice({
       );
       state.total -= 1;
     },
-    markAsRead: (state, action: PayloadAction<{ _id: string }>) => {
-      const notification = state.notifications.find(
-        (notification) => notification._id === action.payload._id
-      );
-      if (notification) {
-        notification.isRead = true;
-      }
-    },
     markAllAsRead: (state) => {
       state.notifications = state.notifications.map((notification) => ({
         ...notification,
         isRead: true,
       }));
+      state.unReadCount = 0
     },
     setNotifications: (
       state,
@@ -47,14 +43,13 @@ const notificationSlice = createSlice({
         notifications: TNotification[];
         total: number;
         page: number;
+        unReadCount: number
       }>
     ) => {
-      state.notifications =
-        action.payload.page === 1
-          ? action.payload.notifications
-          : [...state.notifications, ...action.payload.notifications];
+      state.notifications = action.payload.notifications
       state.total = action.payload.total;
       state.page = action.payload.page;
+      state.unReadCount = action.payload.unReadCount
     },
     setPage: (state, action: PayloadAction<number>) => {
       state.page = action.payload;
@@ -65,7 +60,6 @@ const notificationSlice = createSlice({
 export const {
   addNotification,
   removeNotification,
-  markAsRead,
   markAllAsRead,
   setNotifications,
   setPage,

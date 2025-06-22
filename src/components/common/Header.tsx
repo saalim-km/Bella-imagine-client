@@ -20,9 +20,10 @@ import type { RootState } from "@/store/store";
 import { useSocket } from "@/context/SocketContext";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { useGetAllNotifications } from "@/hooks/notifications/useNotifications";
 import { getAllClientNotification, getAllVendorNotification } from "@/services/notification/notificationService";
 import { TRole } from "@/types/interfaces/User";
-import { setPage } from "@/store/slices/notificationSlice";
+import { setNotifications, setPage } from "@/store/slices/notificationSlice";
 
 interface IHeader {
   onClick?: () => void;
@@ -38,12 +39,22 @@ export default function Header({ onClick }: IHeader) {
     if (state.client.client) return state.client.client;
     return null;
   });
-  const { notifications, page, total } = useSelector((state: RootState) => state.notification);
+  const { page, total , unReadCount} = useSelector((state: RootState) => state.notification);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const isLoggedIn = !!user;
   const isAdminPage = location.pathname.startsWith("/admin");
+
+  const queryFn = user?.role === "vendor" ? getAllVendorNotification : getAllClientNotification;
+  const limit = 6;
+  const { data: notificationsData, isLoading } = useGetAllNotifications(
+    queryFn,
+    user?.role as TRole,
+    isLoggedIn,
+    { limit : page * limit, page : page }
+  );
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,6 +63,17 @@ export default function Header({ onClick }: IHeader) {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (notificationsData?.data?.data) {
+      dispatch(setNotifications({
+        notifications: notificationsData.data.data,
+        total: notificationsData.data.total || 0,
+        page : page,
+        unReadCount : notificationsData.data.unReadTotal
+      }));
+    }
+  }, [notificationsData, dispatch, page]);
 
   const logoutFunction = user?.role === "vendor" ? logoutVendor : logoutClient;
   const { mutate: logout } = useLogoutMutation(logoutFunction);
@@ -104,9 +126,6 @@ export default function Header({ onClick }: IHeader) {
       </a>
     );
   };
-
-  const queryFn = user?.role === "vendor" ? getAllVendorNotification : getAllClientNotification;
-  const limit = 6;
 
   return (
     <>
@@ -163,19 +182,20 @@ export default function Header({ onClick }: IHeader) {
                     aria-label={`Notifications (${total} new)`}
                   >
                     <Bell className="h-5 w-5" />
-                    {total > 0 && (
+                    {unReadCount > 0 && (
                       <span className="absolute -top-1 -right-1 bg-red-600 text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                        {total}
+                        {unReadCount}
                       </span>
                     )}
                   </button>
                 </DropdownMenuTrigger>
                 <NotificationCard
+                  userType={user.role as TRole}
                   page={page}
                   setPage={(newPage) => dispatch(setPage(newPage))}
-                  queryFn={queryFn}
-                  role={user?.role as TRole}
-                  limit={page * limit}
+                  totalNotifications={total}
+                  limit={limit}
+                  isLoading={isLoading}
                 />
               </DropdownMenu>
             )}

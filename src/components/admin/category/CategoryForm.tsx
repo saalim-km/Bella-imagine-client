@@ -8,7 +8,7 @@ import * as Yup from "yup";
 import { AxiosResponse } from "@/hooks/auth/useOtpVerify";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { useQueryClient } from "@tanstack/react-query";
-import { CategoryFormProps } from "@/types/component-types/admin/admin-component.types";
+import { CategoryFormProps } from "@/types/component-types/admin-component.types";
 
 
 

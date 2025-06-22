@@ -5,6 +5,8 @@ import { initSocket } from "@/config/socket";
 import { Socket } from "socket.io-client";
 import { showNotificationToast } from "@/components/common/NotificationToast";
 import { TNotification } from "@/components/common/Notification";
+import { useDispatch } from "react-redux";
+import { addNotification } from "@/store/slices/notificationSlice";
 
 interface SocketContextType {
   socket: Socket | null;
@@ -19,6 +21,7 @@ const SocketContext = createContext<SocketContextType>({
 });
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
+  const dispatch = useDispatch()
   const client = useSelector((state: RootState) => state.client.client);
   const vendor = useSelector((state: RootState) => state.vendor.vendor);
   const user = client || vendor;
@@ -73,6 +76,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     socketInstance.on("new_message_notification", (notification: TNotification) => {
       console.log(notification);
       showNotificationToast(notification)
+      dispatch(addNotification(notification))
     });
 
     socketInstance.on("disconnect", () => {
