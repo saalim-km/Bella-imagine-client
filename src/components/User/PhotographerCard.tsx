@@ -23,7 +23,7 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
   return (
     <div className="bg-card border border-border/10 rounded-lg overflow-hidden mb-12 flex flex-col p-8">
       {/* Header Section */}
-      <div className="mb-4 flex justify-start items-center">
+      <div className="mb-4 flex flex-col justify-start items-start">
         <div className="group cursor-pointer" onClick={handleNavigate}>
           <h2 className=" text-2xl text-foreground group-hover:text-primary/90 transition-colors">
             {vendorData.name}
@@ -38,7 +38,7 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
 
         {/* Location */}
         <div
-          className="px-8 flex items-center gap-1.5 text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+          className=" flex items-center gap-1.5 text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
           onClick={handleNavigate}
         >
           <MapPin className="h-3.5 w-3.5" />

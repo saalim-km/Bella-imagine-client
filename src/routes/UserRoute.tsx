@@ -5,6 +5,7 @@ import { NoClientAuthRoute } from "@/protected/PublicRoute";
 import { Client404 } from "@/components/404/Client404";
 import { Spinner } from "@/components/ui/spinner";
 import ExplorePage from "@/components/community-contest/community/ExplorePage";
+import PostDetailPage from "@/pages/community-contest/PostDetailPage";
 
 // Lazy load all components
 const ClientHomePage = lazy(() => import("@/pages/User/UserHomePage"));
@@ -38,7 +39,7 @@ const ClientRoute = () => {
         <Route path="/explore" element = {<AuthClientRoute element={<ExplorePage/>} allowedRoles={["client","vendor"]}/>}/>
         <Route path="/communities" element = {<AuthClientRoute element={<Communities/>} allowedRoles={['client']}/>}/>
         <Route path="/community/r/:slug" element = {<AuthClientRoute element={<CommunityDetailPage/>} allowedRoles={["client","vendor"]}/>}/>
-        <Route path="/community/post/r/:slug" element = {<AuthClientRoute element={<CreatePostPage/>} allowedRoles={["client","vendor"]}/>}/>
+        <Route path="/community/submit" element = {<AuthClientRoute element={<CreatePostPage/>} allowedRoles={["client","vendor"]}/>}/>
         <Route path="/client/forgot-password" element = {<NoClientAuthRoute element={<ForgotPassPage userType="client"/>}/>}/>
         <Route path="*" element = {<Client404/>}/>
       </Routes> 

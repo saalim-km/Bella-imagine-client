@@ -1,233 +1,416 @@
-import { useState } from "react";
+"use client";
+
+import type React from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  X, Upload, Tag as TagIcon, Loader2, Check, Image as ImageIcon,
-} from "lucide-react";
+import { X, Upload, ImageIcon, Type } from "lucide-react";
 import { toast } from "sonner";
-import { IPostRequest } from "@/types/interfaces/Community";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription,
-} from "@/components/ui/card";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { useCloudinary } from "@/hooks/cloudinary/useCloudinary";
-import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from "@/utils/upload-cloudinary/cloudinary";
+import { useCreatePost, useGetAllCommunities } from "@/hooks/community-contest/useCommunity";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { CreatePostInput } from "@/services/community-contest/communityService";
 
 interface CreatePostFormProps {
-  communityId: string;
-  communityName: string;
-  onSuccess?: (post: IPostRequest) => void;
+  communityId?: string;
+  onSuccess?: () => void;
 }
 
-export function CreatePostForm({ communityId, communityName, onSuccess }: CreatePostFormProps) {
+export function CreatePostForm({
+  communityId,
+  onSuccess,
+}: CreatePostFormProps) {
+  const { data: communitiesData } = useGetAllCommunities({
+    limit: 1000,
+    page: 1,
+  });
+  const { mutate: createPost } = useCreatePost();
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [media, setMedia] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentTag, setCurrentTag] = useState("");
+  const [titleError, setTitleError] = useState("");
+  const [selectedCommunity, setSelectedCommunity] = useState(communityId || "");
+  const [postType, setPostType] = useState<"text" | "image">("text");
   const [tags, setTags] = useState<string[]>([]);
+  const [currentTag, setCurrentTag] = useState("");
 
-  const { openWidget, isReady } = useCloudinary(
-    {
-      cloudName: CLOUDINARY_CLOUD_NAME,
-      uploadPreset: CLOUDINARY_UPLOAD_PRESET,
-    },
-    (results) => {
-      const urls = results.map(res => res.info.secure_url);
-      setImageUrls(prev => [...prev, ...urls]);
+  const communities = communitiesData?.data.data || [];
+
+  const MAX_MEDIA = 4;
+  const MAX_TITLE_LENGTH = 300;
+  const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+
+  const handleMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+
+    const files = Array.from(e.target.files);
+
+    // Validate number of files
+    if (media.length + files.length > MAX_MEDIA) {
+      toast.error(`You can upload a maximum of ${MAX_MEDIA} files`);
+      return;
     }
-  );
 
-  const removeImage = (index: number) => {
-    setImageUrls(prev => prev.filter((_, i) => i !== index));
+    // Validate file types and sizes
+    for (const file of files) {
+      if (!file.type.match(/(image\/.*|video\/.*)/)) {
+        toast.error(`File ${file.name} is not an image or video`);
+        return;
+      }
+
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`File ${file.name} exceeds maximum size of 100MB`);
+        return;
+      }
+    }
+
+    setMedia((prev) => [...prev, ...files]);
+  };
+
+  const removeMedia = (index: number) => {
+    setMedia((prev) => prev.filter((_, i) => i !== index));
   };
 
   const addTag = () => {
-    const trimmed = currentTag.trim().toLowerCase();
-    if (trimmed && !tags.includes(trimmed) && tags.length < 5) {
-      setTags(prev => [...prev, trimmed]);
+    if (currentTag.trim() && !tags.includes(currentTag.trim())) {
+      setTags([...tags, currentTag.trim()]);
       setCurrentTag("");
     }
   };
 
-  const removeTag = (tag: string) => {
-    setTags(prev => prev.filter(t => t !== tag));
+  const removeTag = (tagToRemove: string) => {
+    setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
-  const handleTagKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addTag();
+  const validateForm = () => {
+    let isValid = true;
+
+    if (!title.trim()) {
+      setTitleError("Title is required");
+      isValid = false;
+    } else if (title.length > MAX_TITLE_LENGTH) {
+      setTitleError(`Title must be ${MAX_TITLE_LENGTH} characters or less`);
+      isValid = false;
+    } else {
+      setTitleError("");
     }
-  };
 
-  const isFormValid = () => title.trim() !== "";
+    if (!selectedCommunity) {
+      toast.error("Please select a community");
+      isValid = false;
+    }
 
-  const passesModeration = (text: string): boolean => {
-    // Placeholder for future AI moderation
-    return true;
+    if (postType === "image" && media.length === 0) {
+      toast.error("Please upload at least one image or video");
+      isValid = false;
+    }
+
+    return isValid;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isFormValid()) return toast.error("Title is required.");
 
-    if (!passesModeration(content)) {
-      toast.error("Your content failed moderation.");
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
-    try {
-      const newPost: IPostRequest = {
-        _id: `post-${Date.now()}`,
-        title,
-        content,
-        media: imageUrls.length > 0 ? imageUrls : undefined,
-        userId: "user",
-        communityId,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        voteUpCount: 0,
-        voteDownCount: 0,
-        commentCount: 0,
-        tags: tags.length > 0 ? tags : undefined,
-      };
 
-      console.log(newPost);
-      onSuccess?.(newPost);
-      toast.success("Post created!");
+    try {
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("content", content);
+      formData.append("communityId", selectedCommunity);
+      formData.append("tags", JSON.stringify(tags));
+      // Determine mediaType based on uploaded files
+      let mediaType: "image" | "video" | "mixed" | "none" = "none";
+      if (media.length > 0) {
+        const hasImages = media.some(file => file.type.startsWith("image/"));
+        const hasVideos = media.some(file => file.type.startsWith("video/"));
+        
+        if (hasImages && hasVideos) {
+          mediaType = "mixed";
+        } else if (hasImages) {
+          mediaType = "image";
+        } else if (hasVideos) {
+          mediaType = "video";
+        }
+      }
+      formData.append("mediaType", mediaType);
+
+      media.forEach((file) => formData.append("media", file));
+
+      createPost(formData as unknown as CreatePostInput);
+      toast.success("Post created successfully!");
       navigate(-1);
-    } catch {
-      toast.error("Something went wrong.");
+    } catch (error) {
+      toast.error("Failed to create post");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Card className="w-full max-w-8xl mx-auto border shadow-sm  animate-fade-in mt-14">
-      <CardHeader>
-        <CardTitle className="text-3xl font-semibold">Create a Post</CardTitle>
-        <CardDescription className="text-sm text-muted-foreground">
-          Posting in <span className="font-medium">{communityName}</span>
-        </CardDescription>
-      </CardHeader>
+    <div className="max-w-4xl mx-auto">
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          Create a post
+        </h1>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          Share your thoughts with the community
+        </p>
+      </div>
 
-      <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-6">
-          <div>
-            <Label htmlFor="title">Title <span className="text-red-500">*</span></Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Your post title"
-              disabled={isSubmitting}
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="content">Content</Label>
-            <Textarea
-              id="content"
-              rows={6}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Share your thoughts with the community"
-              disabled={isSubmitting}
-            />
-          </div>
-
-          {/* Cloudinary Upload */}
-          <div className="space-y-2">
-            <Label>Images</Label>
-            <div className="flex flex-wrap gap-4">
-              {imageUrls.map((url, idx) => (
-                <div key={idx} className="relative group">
-                  <img
-                    src={url}
-                    alt={`Uploaded ${idx}`}
-                    className="w-32 h-32 object-cover rounded border"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(idx)}
-                    className="absolute top-1 right-1  p-1 rounded-full shadow text-red-600"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              ))}
+      <Card>
+        <CardHeader className="border-b">
+          <div className="space-y-4">
+            {/* Community Selection */}
+            <div>
+              <Label className="text-sm font-medium">Choose a community</Label>
+              <Select
+                value={selectedCommunity}
+                onValueChange={setSelectedCommunity}
+              >
+                <SelectTrigger className="w-full mt-1 py-6">
+                  <SelectValue placeholder="Search for a community" />
+                </SelectTrigger>
+                <SelectContent>
+                  {communities.map((community) => (
+                    <SelectItem key={community._id} value={community._id}>
+                      <div className="flex items-center space-x-2">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage
+                            src={community.iconImage}
+                            alt={`${community.name}`}
+                            className="object-cover w-full h-full rounded-full"
+                          />
+                          <AvatarFallback className="flex items-center justify-center w-full h-full bg-gray-200 dark:bg-gray-700 rounded-full">
+                            {community.name?.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{community.name}</p>
+                          <p className="text-xs text-gray-500">
+                            {community.memberCount} members
+                          </p>
+                        </div>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <Button type="button" onClick={openWidget} disabled={!isReady || isSubmitting}>
-              <Upload className="h-4 w-4 mr-2" />
-              Upload media
-            </Button>
-          </div>
 
-          {/* Tags */}
-          <div>
-            <Label>Tags</Label>
-            <div className="flex gap-2 items-center">
+            {/* Post Type Tabs */}
+            <Tabs
+              value={postType}
+              onValueChange={(value) => setPostType(value as typeof postType)}
+            >
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger
+                  value="text"
+                  className="flex items-center space-x-2"
+                >
+                  <Type className="h-4 w-4" />
+                  <span>Post</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="image"
+                  className="flex items-center space-x-2"
+                >
+                  <ImageIcon className="h-4 w-4" />
+                  <span>Images & Video</span>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        </CardHeader>
+
+        <form onSubmit={handleSubmit}>
+          <CardContent className="p-6 space-y-6">
+            {/* Title */}
+            <div>
+              <Label htmlFor="title" className="text-sm font-medium">
+                Title <span className="text-red-500">*</span>
+              </Label>
               <Input
-                placeholder="Add a tag"
-                value={currentTag}
-                onChange={(e) => setCurrentTag(e.target.value)}
-                onKeyDown={handleTagKey}
-                disabled={isSubmitting}
+                id="title"
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  if (titleError) setTitleError("");
+                }}
+                placeholder="An interesting title"
+                className="mt-1"
+                maxLength={MAX_TITLE_LENGTH}
               />
-              <Button type="button" onClick={addTag} size="sm" disabled={isSubmitting}>
-                <TagIcon className="h-4 w-4 mr-1" />
-                Add
+              <div className="flex justify-between items-center mt-1">
+                {titleError && (
+                  <p className="text-red-500 text-sm">{titleError}</p>
+                )}
+                <p className="text-xs text-gray-500 ml-auto">
+                  {title.length}/{MAX_TITLE_LENGTH}
+                </p>
+              </div>
+            </div>
+
+            {/* Content based on post type */}
+            {postType === "text" && (
+              <div>
+                <Label className="text-sm font-medium">Text (optional)</Label>
+                <Textarea
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder="What are your thoughts?"
+                  className="min-h-[200px] mt-1"
+                />
+              </div>
+            )}
+
+            {postType === "image" && (
+              <div>
+                <Label className="text-sm font-medium">Images & Video</Label>
+                {media.length > 0 ? (
+                  <div className="mt-2 space-y-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {media.map((file, index) => (
+                        <div key={index} className="relative group">
+                          {file.type.startsWith("image/") ? (
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt={`Preview ${index}`}
+                              className="w-full h-32 object-cover rounded-md border"
+                            />
+                          ) : (
+                            <div className="w-full h-32 flex items-center justify-center bg-gray-100 rounded-md border">
+                              <span className="text-sm text-gray-500">
+                                Video file
+                              </span>
+                            </div>
+                          )}
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => removeMedia(index)}
+                            className="absolute top-2 right-2 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                    {media.length < MAX_MEDIA && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="w-full"
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Add more ({MAX_MEDIA - media.length} remaining)
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <div
+                    className="mt-2 border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      Drag and drop images or videos to upload
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      or click to browse • Up to {MAX_MEDIA} files • Max 100MB
+                      each
+                    </p>
+                  </div>
+                )}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleMediaChange}
+                  accept="image/*,video/*"
+                  multiple
+                  className="hidden"
+                />
+              </div>
+            )}
+
+            {/* Tags */}
+            <div>
+              <Label className="text-sm font-medium">Tags (optional)</Label>
+              <div className="mt-1 space-y-2">
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="px-2 py-1">
+                      {tag}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeTag(tag)}
+                        className="ml-1 h-4 w-4 p-0 hover:bg-transparent"
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex space-x-2">
+                  <Input
+                    value={currentTag}
+                    onChange={(e) => setCurrentTag(e.target.value)}
+                    onKeyPress={(e) =>
+                      e.key === "Enter" && (e.preventDefault(), addTag())
+                    }
+                    placeholder="Add a tag"
+                    className="flex-1"
+                  />
+                  <Button type="button" onClick={addTag} variant="outline">
+                    Add
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+
+          <div className="flex justify-between items-center border-t p-6">
+            <div className="flex space-x-2">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => navigate(-1)}
+                disabled={isSubmitting}
+              >
+                Cancel
               </Button>
             </div>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {tags.map((tag) => (
-                <Badge key={tag} className="flex items-center gap-1 px-2 py-1">
-                  {tag}
-                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeTag(tag)} />
-                </Badge>
-              ))}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Press Enter or click Add to insert tag (max 5).
-            </p>
+            <Button
+              type="submit"
+              disabled={isSubmitting || !title.trim() || !selectedCommunity}
+              className="min-w-[100px]"
+            >
+              {isSubmitting ? "Posting..." : "Post"}
+            </Button>
           </div>
-        </CardContent>
-
-        <CardFooter className="border-t bg-muted/30 px-6 py-4 flex gap-4">
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={() => navigate(-1)}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            className="ml-auto"
-            disabled={!isFormValid() || isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                Posting...
-              </>
-            ) : (
-              <>
-                <Check className="h-4 w-4 mr-2" />
-                Post
-              </>
-            )}
-          </Button>
-        </CardFooter>
-      </form>
-    </Card>
+        </form>
+      </Card>
+    </div>
   );
 }

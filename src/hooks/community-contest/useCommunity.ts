@@ -1,4 +1,4 @@
-import { createCommunityService, deleteCommunityService, getAllCommunitesAdmin, getAllCommunities, GetCommMemberInput, getCommunityBySlugForClient, getCommunityBySlugService, getCommunityMembersService, joinCommunityService, leaveCommunityService, updateCommunityService } from "@/services/community-contest/communityService"
+import { createCommunityService, createPostService, deleteCommunityService, getAllCommunitesAdmin, getAllCommunities, GetCommMemberInput, getCommunityBySlugForClient, getCommunityBySlugService, getCommunityMembersService, joinCommunityService, leaveCommunityService, updateCommunityService } from "@/services/community-contest/communityService"
 
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 
@@ -15,23 +15,6 @@ export const useGetlAllCommunityAdmin = (dto : { page : number , limit : number 
     })
 }
 
-export const useGetAllCommunities = (
-  dto: { 
-    page: number; 
-    limit: number; 
-    search?: string; 
-    category?: string; 
-    membership?: string; 
-    sort?: string 
-  }
-) => {
-  return useQuery({
-    queryKey: ["all-communities", dto],
-    queryFn: () => getAllCommunities(dto),
-    placeholderData: keepPreviousData, 
-    staleTime: 1000 * 60, 
-  });
-};
 
 export const useDeleteCommunity = ()=> {
     return useMutation({
@@ -63,6 +46,25 @@ export const useGetCommunityMembers = (input : GetCommMemberInput)=> {
 
 
 // ------------------------Client hooks for community --------------------------------------------------
+
+export const useGetAllCommunities = (
+  dto: { 
+    page: number; 
+    limit: number; 
+    search?: string; 
+    category?: string; 
+    membership?: string; 
+    sort?: string 
+  }
+) => {
+  return useQuery({
+    queryKey: ["all-communities", dto],
+    queryFn: () => getAllCommunities(dto),
+    placeholderData: keepPreviousData, 
+    staleTime: 1000 * 60, 
+  });
+};
+
 export const useGetCommunityBySlugQueryClient = (slug : string)=> {
     return useQuery({
         queryKey : ['community',slug],
@@ -79,5 +81,11 @@ export const useJoinCommunity = ()=> {
 export const useLeaveCommunity = ()=> {
     return useMutation({
         mutationFn : leaveCommunityService,
+    })
+}
+
+export const useCreatePost = ()=> {
+    return useMutation({
+        mutationFn : createPostService
     })
 }

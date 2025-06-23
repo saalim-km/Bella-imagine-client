@@ -169,7 +169,7 @@ export default function Header({ onClick }: IHeader) {
                 <>
                   <button 
                     className="p-1 rounded-md"
-                    onClick={() => navigate("/create-post")}
+                    onClick={() => navigate("/community/submit")}
                   >
                     <Plus className="h-5 w-5" />
                   </button>

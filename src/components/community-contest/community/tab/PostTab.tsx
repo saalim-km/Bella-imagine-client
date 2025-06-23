@@ -21,7 +21,7 @@ export function PostsTab({ posts, isMember, communityId , slug }: PostsTabProps)
     <div className="space-y-4">
       <div className="flex gap-2 w-full sm:w-auto justify-end">
         {isMember ? (
-          <Link to={`/community/post/${slug}`}>
+          <Link to={`/community/submit`}>
             <Button>
               <Plus className="mr-2 h-4 w-4" /> New Post
             </Button>

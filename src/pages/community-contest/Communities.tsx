@@ -71,13 +71,13 @@ const Communities = () => {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-xs px-2 py-0 h-5 bg-gray-100">
+            <Badge variant="outline" className="text-xs px-2 py-0 h-5">
               {data?.data?.total || 0} communities
             </Badge>
             <Button 
               variant="outline"
               onClick={() => setIsCreateDialogOpen(true)}
-              className="border-gray-300"
+              className=""
             >
               <Plus className="mr-2 h-4 w-4" /> Create Community
             </Button>
@@ -87,10 +87,10 @@ const Communities = () => {
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-3 h-4 w-4 " />
               <Input
                 placeholder="Search communities..."
-                className="pl-10 border-gray-300"
+                className="pl-10 "
                 onChange={handleSearchChange}
               />
             </div>
@@ -98,10 +98,10 @@ const Communities = () => {
 
           <div className="flex gap-2">
             <Select value={sortOption} onValueChange={setSortOption}>
-              <SelectTrigger className="md:w-[150px] border-gray-300">
+              <SelectTrigger className="md:w-[150px] ">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
-              <SelectContent className="border-gray-300">
+              <SelectContent className="">
                 <SelectItem value="newest">Newest</SelectItem>
                 <SelectItem value="oldest">Oldest</SelectItem>
                 <SelectItem value="members">Most Members</SelectItem>
@@ -110,10 +110,10 @@ const Communities = () => {
             </Select>
 
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="md:w-[180px] border-gray-300">
+              <SelectTrigger className="md:w-[180px] ">
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
-              <SelectContent className="border-gray-300">
+              <SelectContent className="">
                 <SelectItem value="all">All Categories</SelectItem>
                 {categories?.map((category) => (
                   <SelectItem key={category._id} value={category._id || ""}>
@@ -125,11 +125,11 @@ const Communities = () => {
 
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="border-gray-300">
+                <Button variant="outline" size="icon" className="">
                   <SlidersHorizontal className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="border-gray-300">
+              <SheetContent side="right" className="">
                 <SheetHeader>
                   <SheetTitle>Filter Communities</SheetTitle>
                   <SheetDescription>
@@ -145,7 +145,7 @@ const Communities = () => {
                           id="all"
                           checked={membershipFilter === "all"}
                           onCheckedChange={() => setMembershipFilter("all")}
-                          className="border-gray-300"
+                          className=""
                         />
                         <label htmlFor="all" className="text-sm">
                           All Communities
@@ -156,7 +156,7 @@ const Communities = () => {
                           id="member"
                           checked={membershipFilter === "member"}
                           onCheckedChange={() => setMembershipFilter("member")}
-                          className="border-gray-300"
+                          className=""
                         />
                         <label htmlFor="member" className="text-sm">
                           My Communities
@@ -167,7 +167,7 @@ const Communities = () => {
                           id="non-member"
                           checked={membershipFilter === "non-member"}
                           onCheckedChange={() => setMembershipFilter("non-member")}
-                          className="border-gray-300"
+                          className=""
                         />
                         <label htmlFor="non-member" className="text-sm">
                           Not Joined
@@ -184,7 +184,7 @@ const Communities = () => {
                           id="all-categories"
                           checked={categoryFilter === "all"}
                           onCheckedChange={() => setCategoryFilter("all")}
-                          className="border-gray-300"
+                          className=""
                         />
                         <label htmlFor="all-categories" className="text-sm">
                           All Categories
@@ -199,7 +199,7 @@ const Communities = () => {
                             id={category._id}
                             checked={categoryFilter === category._id}
                             onCheckedChange={() => setCategoryFilter(category._id!)}
-                            className="border-gray-300"
+                            className=""
                           />
                           <label htmlFor={category._id} className="text-sm">
                             {category.title}
@@ -210,7 +210,7 @@ const Communities = () => {
                   </div>
 
                   <Button
-                    className="w-full border-gray-300"
+                    className="w-full "
                     variant="outline"
                     onClick={() => {
                       setSearchTerm("");
@@ -228,7 +228,7 @@ const Communities = () => {
         </div>
 
         {isError ? (
-          <div className="flex flex-col items-center justify-center p-10 text-center bg-gray-50 rounded-lg">
+          <div className="flex flex-col items-center justify-center p-10 text-center  rounded-lg">
             <h3 className="text-xl font-medium mb-2">
               Error loading communities
             </h3>
@@ -239,14 +239,14 @@ const Communities = () => {
         ) : !isLoading && data?.data?.data?.length! > 0 ? (
           <CommunityGrid communities={data?.data.data!} />
         ) : (
-          <div className="flex flex-col items-center justify-center p-10 text-center bg-gray-50 rounded-lg">
+          <div className="flex flex-col items-center justify-center p-10 text-center  rounded-lg">
             <h3 className="text-xl font-medium mb-2">No communities found</h3>
             <p className="text-gray-500 mb-4">
               Try adjusting your search or filter criteria
             </p>
             <Button
               variant="outline"
-              className="border-gray-300"
+              className=""
               onClick={() => {
                 setSearchTerm("");
                 setCategoryFilter("all");

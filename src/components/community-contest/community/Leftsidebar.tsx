@@ -6,7 +6,7 @@ const LeftSidebar: React.FC = () => {
   const navigate  = useNavigate()
   return (
     <div className="w-60   border-r border-gray-200 dark:border-gray-700 sticky top-0 h-screen py-4 px-2 hidden md:block">
-      <div className="space-y-2">
+      <div className="space-y-2 flex flex-col">
         <div className="px-2 pt-4 pb-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
           Communities
         </div>
