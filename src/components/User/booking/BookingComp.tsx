@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { LoadingOverlay } from "@/components/modals/LoadingProcessBooking";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
+import { useSocket } from "@/context/SocketContext";
 
 interface BookingPageProps {
   service: IServiceResponse;
@@ -26,6 +27,7 @@ interface BookingPageProps {
 }
 
 const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
+  const { socket } = useSocket();
   const client = useSelector((state: RootState) => state.client.client);
   const navigate = useNavigate();
   const [isBookingSuccess, setIsBookingSuccess] = useState(false);
@@ -126,6 +128,14 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
       travelTime: "",
       travelFee: 0,
     });
+
+    if (!socket) {
+      return;
+    }
+
+    socket.emit('new_booking',{
+      receiverId : vendorId
+    })
   };
 
   return (

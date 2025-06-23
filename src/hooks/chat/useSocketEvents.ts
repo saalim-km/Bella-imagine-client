@@ -19,7 +19,7 @@ export function useSocketEvents({userId , userType} : {userId : string , userTyp
 
         socket.on("connect_error", () => {
             toast.error("Failed to connect to chat server");
-          });
+        });
 
         socket.emit('join',{userId,userType})
 
