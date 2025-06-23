@@ -28,29 +28,27 @@ import { useGetAllCommunities } from "@/hooks/community-contest/useCommunity";
 import { useAllClientCategories } from "@/hooks/client/useClient";
 
 const Communities = () => {
-  const [page,setPage] = useState(1);
-  const [limit] = useState(8); // Fixed limit for pagination
+  const [page, setPage] = useState(1);
+  const [limit] = useState(8);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [membershipFilter, setMembershipFilter] = useState("all");
   const [sortOption, setSortOption] = useState("newest");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const {data : categoriesData} = useAllClientCategories()
-  // Debounced search handler
+  const { data: categoriesData } = useAllClientCategories();
+
   const debouncedSetSearch = useMemo(
     () => debounce((value) => setSearchTerm(value), 500),
     []
   );
 
-  // Handle search input change
   const handleSearchChange = useCallback(
-    (e : any) => {
+    (e: any) => {
       debouncedSetSearch(e.target.value);
     },
     [debouncedSetSearch]
   );
 
-  // Fetch communities using external hook
   const { data, isLoading, isError } = useGetAllCommunities({
     page,
     limit,
@@ -60,9 +58,9 @@ const Communities = () => {
     sort: sortOption,
   });
 
-  // Extract unique categories from data
-  const categories = categoriesData?.data?.data
-  const handleCreateCommunity = (communityData : any) => {
+  const categories = categoriesData?.data?.data;
+
+  const handleCreateCommunity = (communityData: any) => {
     console.log("Creating community:", communityData);
     toast.success("Community created successfully! Awaiting approval.");
     setIsCreateDialogOpen(false);
@@ -70,20 +68,17 @@ const Communities = () => {
 
   return (
     <PageLayout>
-        <div className="my-20">
-    <div className="flex flex-col space-y-6">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-          <div>
-            <h1 className="font-serif tracking-tighter text-9xl sm:text-4xl mb-2">Photography Communities</h1>
-            <p className="text-muted-foreground">
-              Join communities, share your work, and connect with other photographers.
-            </p>
-          </div>
+      <div className="space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-xs px-2 py-0 h-5">
+            <Badge variant="outline" className="text-xs px-2 py-0 h-5 bg-gray-100">
               {data?.data?.total || 0} communities
             </Badge>
-            <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Button 
+              variant="outline"
+              onClick={() => setIsCreateDialogOpen(true)}
+              className="border-gray-300"
+            >
               <Plus className="mr-2 h-4 w-4" /> Create Community
             </Button>
           </div>
@@ -92,10 +87,10 @@ const Communities = () => {
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               <Input
                 placeholder="Search communities..."
-                className="pl-10"
+                className="pl-10 border-gray-300"
                 onChange={handleSearchChange}
               />
             </div>
@@ -103,10 +98,10 @@ const Communities = () => {
 
           <div className="flex gap-2">
             <Select value={sortOption} onValueChange={setSortOption}>
-              <SelectTrigger className="md:w-[150px]">
+              <SelectTrigger className="md:w-[150px] border-gray-300">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="border-gray-300">
                 <SelectItem value="newest">Newest</SelectItem>
                 <SelectItem value="oldest">Oldest</SelectItem>
                 <SelectItem value="members">Most Members</SelectItem>
@@ -115,13 +110,13 @@ const Communities = () => {
             </Select>
 
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="md:w-[180px]">
+              <SelectTrigger className="md:w-[180px] border-gray-300">
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="border-gray-300">
                 <SelectItem value="all">All Categories</SelectItem>
                 {categories?.map((category) => (
-                  <SelectItem key={category._id} value={category._id || ''}>
+                  <SelectItem key={category._id} value={category._id || ""}>
                     {category.title}
                   </SelectItem>
                 ))}
@@ -130,15 +125,15 @@ const Communities = () => {
 
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="icon" className="border-gray-300">
                   <SlidersHorizontal className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right">
+              <SheetContent side="right" className="border-gray-300">
                 <SheetHeader>
                   <SheetTitle>Filter Communities</SheetTitle>
                   <SheetDescription>
-                    Refine the community results based on your preferences.
+                    Refine the community results
                   </SheetDescription>
                 </SheetHeader>
                 <div className="mt-6 space-y-6">
@@ -150,24 +145,33 @@ const Communities = () => {
                           id="all"
                           checked={membershipFilter === "all"}
                           onCheckedChange={() => setMembershipFilter("all")}
+                          className="border-gray-300"
                         />
-                        <label htmlFor="all" className="text-sm">All Communities</label>
+                        <label htmlFor="all" className="text-sm">
+                          All Communities
+                        </label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           id="member"
                           checked={membershipFilter === "member"}
                           onCheckedChange={() => setMembershipFilter("member")}
+                          className="border-gray-300"
                         />
-                        <label htmlFor="member" className="text-sm">My Communities</label>
+                        <label htmlFor="member" className="text-sm">
+                          My Communities
+                        </label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           id="non-member"
                           checked={membershipFilter === "non-member"}
                           onCheckedChange={() => setMembershipFilter("non-member")}
+                          className="border-gray-300"
                         />
-                        <label htmlFor="non-member" className="text-sm">Not Joined</label>
+                        <label htmlFor="non-member" className="text-sm">
+                          Not Joined
+                        </label>
                       </div>
                     </div>
                   </div>
@@ -180,24 +184,33 @@ const Communities = () => {
                           id="all-categories"
                           checked={categoryFilter === "all"}
                           onCheckedChange={() => setCategoryFilter("all")}
+                          className="border-gray-300"
                         />
-                        <label htmlFor="all-categories" className="text-sm">All Categories</label>
+                        <label htmlFor="all-categories" className="text-sm">
+                          All Categories
+                        </label>
                       </div>
                       {categories?.map((category) => (
-                        <div key={category._id} className="flex items-center space-x-2">
+                        <div
+                          key={category._id}
+                          className="flex items-center space-x-2"
+                        >
                           <Checkbox
                             id={category._id}
                             checked={categoryFilter === category._id}
                             onCheckedChange={() => setCategoryFilter(category._id!)}
+                            className="border-gray-300"
                           />
-                          <label htmlFor={category._id} className="text-sm">{category.title}</label>
+                          <label htmlFor={category._id} className="text-sm">
+                            {category.title}
+                          </label>
                         </div>
                       ))}
                     </div>
                   </div>
 
                   <Button
-                    className="w-full"
+                    className="w-full border-gray-300"
                     variant="outline"
                     onClick={() => {
                       setSearchTerm("");
@@ -215,20 +228,25 @@ const Communities = () => {
         </div>
 
         {isError ? (
-          <div className="flex flex-col items-center justify-center p-10 text-center bg-secondary/30 rounded-lg">
-            <h3 className="text-xl font-medium mb-2">Error loading communities</h3>
-            <p className="text-muted-foreground mb-4">Please try again later.</p>
+          <div className="flex flex-col items-center justify-center p-10 text-center bg-gray-50 rounded-lg">
+            <h3 className="text-xl font-medium mb-2">
+              Error loading communities
+            </h3>
+            <p className="text-gray-500 mb-4">
+              Please try again later.
+            </p>
           </div>
         ) : !isLoading && data?.data?.data?.length! > 0 ? (
           <CommunityGrid communities={data?.data.data!} />
         ) : (
-          <div className="flex flex-col items-center justify-center p-10 text-center bg-secondary/30 rounded-lg">
+          <div className="flex flex-col items-center justify-center p-10 text-center bg-gray-50 rounded-lg">
             <h3 className="text-xl font-medium mb-2">No communities found</h3>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-gray-500 mb-4">
               Try adjusting your search or filter criteria
             </p>
             <Button
               variant="outline"
+              className="border-gray-300"
               onClick={() => {
                 setSearchTerm("");
                 setCategoryFilter("all");
@@ -240,7 +258,6 @@ const Communities = () => {
           </div>
         )}
       </div>
-        </div>
 
       <CreateCommunityDialog
         isOpen={isCreateDialogOpen}

@@ -136,10 +136,10 @@ const Vendors = () => {
   }
 
   return (
-    <div className="mt-20 relative">
+    <div className=" relative">
       <Header />
       <LocationHeader />
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4">
         <Filters
           vendors={vendors?.data.data || []}
           handleCategorySelect={handleSelectCategory}

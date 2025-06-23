@@ -1,6 +1,3 @@
-"use client";
-
-import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   MapPin,
@@ -15,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { IVendorDetails } from "@/types/interfaces/vendor";
-import { ImageWithFallback } from "../ImageFallBack";
+import { ImageWithFallback, ImageWithFallbackForWork } from "../ImageFallBack";
 
 // Define the Vendor type
 interface VendorProfileProps {
@@ -40,7 +37,7 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
     >
       {/* Hero Section */}
       <div className="relative h-64 md:h-80 lg:h-96 w-full rounded-xl overflow-hidden">
-        <ImageWithFallback
+        <ImageWithFallbackForWork
           src={heroImage}
           alt={`${vendor?.name || "Vendor"} work sample`}
           className="w-full h-full object-cover"
@@ -51,7 +48,7 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
         <div className="absolute bottom-0 left-0 p-8 z-20">
-          <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl text-white mb-2">
+          <h1 className=" text-3xl md:text-4xl lg:text-5xl text-white mb-2">
             {vendor?.name || "Vendor Name"}
           </h1>
           <div className="flex items-center gap-4 text-white/80">
@@ -114,7 +111,7 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
         {/* Right Column - Bio and Details */}
         <div className="space-y-8">
           <div className="space-y-4">
-            <h2 className="font-serif text-2xl text-foreground">About</h2>
+            <h2 className=" text-2xl text-foreground">About</h2>
             <p className="text-muted-foreground leading-relaxed">
               {vendor?.description || "No description available yet."}
             </p>
@@ -125,7 +122,7 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
             vendor.services[0].styleSpecialty.length > 0 && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="font-serif text-2xl text-foreground">
+                  <h2 className=" text-2xl text-foreground">
                     Specialties
                   </h2>
                   <a
@@ -154,7 +151,7 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
           {vendor?.languages && vendor.languages.length > 0 && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="font-serif text-2xl text-foreground">
+                <h2 className=" text-2xl text-foreground">
                   Languages speak
                 </h2>
               </div>
@@ -175,12 +172,12 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
           {/* Only show experience if it exists */}
           {vendor?.services?.[0]?.yearsOfExperience && (
             <div className="space-y-4">
-              <h2 className="font-serif text-2xl text-foreground">
+              <h2 className=" text-2xl text-foreground">
                 Experience
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-4 border border-border/10 rounded-lg bg-muted/5">
-                  <div className="text-3xl font-serif text-foreground mb-1">
+                  <div className="text-3xl  text-foreground mb-1">
                     {vendor.services[0].yearsOfExperience}
                   </div>
                   <div className="text-sm text-muted-foreground">

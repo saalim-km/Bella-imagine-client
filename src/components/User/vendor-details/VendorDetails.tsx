@@ -59,7 +59,7 @@ const VendorDetails = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-6 py-16 pt-32">
+      <div className="max-w-7xl mx-auto px-6 ">
         {/* Photographer Profile Section */}
         <section className="mb-16">
           <VendorProfile vendor={vendorDetails} />
@@ -94,7 +94,7 @@ const VendorDetails = () => {
               transition={{ duration: 0.5 }}
               className="space-y-2"
             >
-              <h2 className="font-serif text-3xl text-foreground">Services</h2>
+              <h2 className=" text-3xl text-foreground">Services</h2>
               <p className="text-muted-foreground max-w-2xl">
                 Explore the range of photography services offered, each tailored to capture your special moments with
                 artistic precision.
@@ -133,7 +133,7 @@ const VendorDetails = () => {
               transition={{ duration: 0.5 }}
               className="space-y-2"
             >
-              <h2 className="font-serif text-3xl text-foreground">Portfolio</h2>
+              <h2 className=" text-3xl text-foreground">Portfolio</h2>
               <p className="text-muted-foreground max-w-2xl">
                 A curated collection of work showcasing the photographer's style, expertise, and artistic vision.
               </p>

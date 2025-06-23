@@ -214,7 +214,7 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="mt-16">
+    <>
       <Header />
       <div className="container mx-auto p-4 lg:p-6">
         {userType?.role === "vendor" &&
@@ -366,6 +366,6 @@ export default function UserProfile() {
           onSave={handleJoinCategory}
         />
       )}
-    </div>
+    </>
   );
 }

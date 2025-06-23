@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import Logo from "../common/Logo";
 import { useNavigate } from "react-router";
-import { useTheme } from "@/context/ThemeContext";
 import { useThemeConstants } from "@/utils/theme/theme.utils";
 
 interface ModalProps {
@@ -13,7 +12,7 @@ interface ModalProps {
 
 const AccountTypeModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
-  const {bgColor , borderColor , textColor , buttonPrimary , buttonSecondary } = useThemeConstants()
+  const {bgColor , textColor , buttonPrimary , buttonSecondary } = useThemeConstants()
 
   // Prevent background scrolling when modal is open
   useEffect(() => {
@@ -53,11 +52,6 @@ const AccountTypeModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
             >
               <X size={20} onClick={onClose}/>
             </button>
-
-            {/* Logo */}
-            <div className="mb-4">
-              <Logo />
-            </div>
 
             {/* Title */}
             <h2 className="text-2xl font-semibold mb-2">Bella Imagine</h2>

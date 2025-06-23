@@ -26,18 +26,12 @@ interface FilterProps {
 }
 
 export default function Filters({
-  handleCategorySelect,
-  selectedCategory,
-  categories = [],
-  vendors,
   resetFilter,
   setIsFilter,
   handleNearbySearch,
   handleSortChange,
   sortBy,
 }: FilterProps) {
-  const { bgColor, textColor, borderColor } = useThemeConstants();
-
   const getSortLabel = (value: string | undefined) => {
     switch (value) {
       case "newest":
@@ -54,49 +48,42 @@ export default function Filters({
   };
 
   return (
-    <div className="flex flex-wrap justify-center gap-4 py-4 mb-8">
+    <div className="flex flex-wrap justify-center gap-3 py-4">
       <Button
         variant="outline"
         onClick={handleNearbySearch}
-        className={`${borderColor} min-w-[150px]`}
-        aria-label="Find nearby photographers"
+        className="gap-2"
       >
-        <LocateIcon className="w-4 h-4 mr-2" />
-        Nearby Photographers
+        <LocateIcon className="w-4 h-4" />
+        Nearby
       </Button>
 
       <Button
         variant="outline"
         onClick={resetFilter}
-        className={`${borderColor} min-w-[100px]`}
-        aria-label="Reset filters"
+        className="gap-2"
       >
-        <FilterX className="w-4 h-4 mr-2" />
+        <FilterX className="w-4 h-4" />
         Reset
       </Button>
 
       <Button
         variant="outline"
         onClick={() => setIsFilter(true)}
-        className={`${borderColor} min-w-[100px]`}
-        aria-label="Open advanced filters"
+        className="gap-2"
       >
-        <Filter className="w-4 h-4 mr-2" />
+        <Filter className="w-4 h-4" />
         Filters
       </Button>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            className={`${borderColor} min-w-[150px]`}
-            aria-label="Select sort option"
-          >
+          <Button variant="outline" className="gap-2">
             {getSortLabel(sortBy)}
-            <ChevronDown className="w-4 h-4 ml-2" />
+            <ChevronDown className="w-4 h-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
+        <DropdownMenuContent className="w-48">
           <DropdownMenuLabel>Sort By</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => handleSortChange("newest")}>

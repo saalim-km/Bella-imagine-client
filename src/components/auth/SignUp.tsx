@@ -133,7 +133,7 @@ export default function Signup({ onSubmit, userType, onClick }: SignUpProps) {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 overflow-y-auto">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <h1 className="font-serif text-3xl sm:text-4xl tracking-tight">
+            <h1 className="text-3xl sm:text-4xl tracking-tight">
               I'm a {userType === "client" ? "Customer" : "Photographer"}
             </h1>
             <p className="text-sm text-gray-600">Create your account</p>

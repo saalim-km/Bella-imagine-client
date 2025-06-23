@@ -90,7 +90,7 @@ export default function Login({
                 Admin Login
               </h1>
             ) : (
-              <h1 className="font-serif text-3xl sm:text-4xl tracking-tight">
+              <h1 className="text-3xl sm:text-4xl">
                 Welcome Back
               </h1>
             )}

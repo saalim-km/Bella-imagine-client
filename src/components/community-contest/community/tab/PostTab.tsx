@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IPostRequest } from "@/types/interfaces/Community";
-// import { PostGrid } from "@/components/post/PostGrid";
-// import { Post } from "@/types";
 
 interface PostsTabProps {
   posts: IPostRequest[];

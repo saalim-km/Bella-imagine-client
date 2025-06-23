@@ -21,7 +21,7 @@ export default function ServiceCard({ service, onViewDetails, workSample }: Serv
           className="object-cover w-full h-full"
         />
         <div className="absolute bottom-0 left-0 p-6 z-20">
-          <h3 className="font-serif text-xl text-white mb-1">{service.serviceTitle}</h3>
+          <h3 className=" text-xl text-white mb-1">{service.serviceTitle}</h3>
           <div className="flex items-center gap-2">
             <Badge className="bg-white/20 text-white hover:bg-white/30 border-none">
               {service.yearsOfExperience} Years Experience
@@ -36,7 +36,7 @@ export default function ServiceCard({ service, onViewDetails, workSample }: Serv
         <div className="flex justify-between items-center">
           <div className="space-y-1">
             <div className="text-xs text-muted-foreground uppercase tracking-wider">Starting at</div>
-            <div className="text-xl font-serif text-foreground">
+            <div className="text-xl  text-foreground">
               ₹
               {service.sessionDurations.length > 0
                 ? Math.min(...service.sessionDurations.map((s: any) => s.price)).toLocaleString()

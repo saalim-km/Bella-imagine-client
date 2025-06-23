@@ -1,6 +1,5 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bookmark, MapPin, Clock, ArrowUpRight } from "lucide-react";
+import { MapPin, Clock, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
@@ -14,61 +13,41 @@ interface PhotographerCardProps {
 const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
   console.log("photographer card", vendorData);
   const navigate = useNavigate();
-  const [isSaved, setIsSaved] = useState(false);
 
-  const hourlyRate = vendorData?.services[0]?.sessionDurations[0]?.price || 0;
+  const hourlyRate = vendorData?.services[0]?.sessionDurations.price || 0;
   const currency = "INR";
-  const minimumHours =
-    vendorData?.services[0]?.sessionDurations[0]?.durationInHours || 0;
+  const minimumHours = vendorData?.services[0]?.sessionDurations?.durationInHours || 0;
 
   const handleNavigate = () => navigate(`/photographer/${vendorData._id}`);
-  const handleSave = () => setIsSaved(!isSaved);
 
   return (
-    <div className="bg-card border border-border/10 rounded-lg overflow-hidden mb-12 flex flex-col">
+    <div className="bg-card border border-border/10 rounded-lg overflow-hidden mb-12 flex flex-col p-8">
       {/* Header Section */}
-      <div className="p-8 pb-4 flex justify-between items-center">
-        <div
-          className="flex items-center gap-3 cursor-pointer group"
-          onClick={handleNavigate}
-        >
-          <h2 className="font-serif text-2xl text-foreground group-hover:text-primary/90 transition-colors">
+      <div className="mb-4 flex justify-start items-center">
+        <div className="group cursor-pointer" onClick={handleNavigate}>
+          <h2 className=" text-2xl text-foreground group-hover:text-primary/90 transition-colors">
             {vendorData.name}
           </h2>
 
-          {vendorData.isVerified === "accept" && (
+          {vendorData.isVerified == "accept" && (
             <Badge className="bg-black dark:bg-white dark:text-black font-sans text-xs px-2.5 py-0.5 rounded-full uppercase tracking-wider">
               Pro
             </Badge>
           )}
         </div>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          className={`flex items-center gap-2 hover:bg-background/5 transition-all ${
-            isSaved ? "text-primary" : "text-muted-foreground"
-          }`}
-          onClick={handleSave}
+        {/* Location */}
+        <div
+          className="px-8 flex items-center gap-1.5 text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+          onClick={handleNavigate}
         >
-          <Bookmark className={`h-4 w-4 ${isSaved ? "fill-current" : ""}`} />
-          <span className="text-xs uppercase tracking-wider">
-            {isSaved ? "Saved" : "Save"}
-          </span>
-        </Button>
-      </div>
-
-      {/* Location */}
-      <div
-        className="px-8 flex items-center gap-1.5 text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
-        onClick={handleNavigate}
-      >
-        <MapPin className="h-3.5 w-3.5" />
-        <span>{vendorData.location?.address}</span>
+          <MapPin className="h-3.5 w-3.5" />
+          <span>{vendorData.location?.address}</span>
+        </div>
       </div>
 
       {/* Main Content Section */}
-      <div className="p-8 pt-6 grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-8">
+      <div className=" grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-8">
         {/* Profile Section */}
         <div className="space-y-6">
           {/* Profile Image */}
@@ -76,7 +55,7 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
             className="relative aspect-square overflow-hidden cursor-pointer"
             onClick={handleNavigate}
           >
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 z-10" />
+            <div className="absolute inset-0 to-transparent opacity-0 transition-opacity z-10" />
             <ImageWithFallback
               src={vendorData.profileImage}
               alt={`${vendorData?.name || "Vendor"} profile`}
@@ -88,11 +67,9 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
           {/* Pricing */}
           {hourlyRate > 0 && (
             <div className="space-y-1">
-              <div className="text-2xl font-serif text-foreground">
+              <div className="text-2xl  text-foreground">
                 {hourlyRate} {currency}
-                <span className="text-sm font-sans text-muted-foreground ml-1">
-                  / hour
-                </span>
+
               </div>
               <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                 <Clock className="h-3.5 w-3.5" />
@@ -152,7 +129,7 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
           {/* Description */}
           <div className="grid grid-cols-2">
             <div className="w-4/8">
-              <h3 className="font-serif text-lg text-foreground">About</h3>
+              <h3 className=" text-lg text-foreground">About</h3>
               <p className="text-muted-foreground leading-relaxed">
                 {vendorData.description ||
                   "Documenting exclusive weddings around the world through cinematic, elegant and timeless photographs."}
@@ -162,9 +139,7 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
             {/* Specialties/Tags (if available) */}
             {vendorData.services && vendorData.services.length > 0 && (
               <div className="flex-1">
-                <h3 className="font-serif text-lg text-foreground">
-                  Specialties
-                </h3>
+                <h3 className=" text-lg text-foreground">Specialties</h3>
                 <div className="flex flex-wrap gap-2">
                   {vendorData.services.map((service, index) => (
                     <span

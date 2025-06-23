@@ -29,6 +29,7 @@ export interface IClient {
   role: "client" | "vendor";
   savedPhotographers?: string[];
   savedPhotos?: string[];
+  isOnline ?: boolean;
   isActive?: boolean;
   isblocked: boolean;
   createdAt: Date;
