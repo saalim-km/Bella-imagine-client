@@ -32,7 +32,6 @@ export const ReusableAlertDialog: React.FC<ReusableAlertDialogProps> = ({
   cancelLabel = "Cancel",
   onConfirm,
   onCancel,
-  confirmVariant = "destructive",
 }) => {
   
   const handleConfirm = () => {

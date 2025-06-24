@@ -1,6 +1,6 @@
 import { getAllCategories, vendorJoinCategory } from "@/services/categories/categoryService";
 import { BasePaginatedResponse } from "@/services/client/clientService";
-import { cerateWorkSampleService, createService, deleteWorkSampleService, getAllVendorServices, getAllWorkSampleService, getVendorDetails, updateVendorDetails,updateWorkSampleService, updateVendorService } from "@/services/vendor/vendorService";
+import { cerateWorkSampleService, createService, deleteWorkSampleService, getAllVendorServices, getAllWorkSampleService, getVendorDetails, updateVendorDetails,updateWorkSampleService, updateVendorService, deleteVendorService } from "@/services/vendor/vendorService";
 import { IServiceFilter, IServiceResponse, IWorkSampleFilter, PaginatedResponse } from "@/types/interfaces/vendor";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -57,6 +57,12 @@ export const useUpdateVendorServiceMutation = ()=> {
   })
 }
 
+export const useDeleteService = ()=> {
+  return useMutation({
+    mutationFn : deleteVendorService
+  })
+}
+
 
 //vendor-workSample
 export const useVendorWorkSampleUploadMutataion = ()=> {
@@ -67,7 +73,7 @@ export const useVendorWorkSampleUploadMutataion = ()=> {
 
 export const useAllVendorWorkSample = (filters : IWorkSampleFilter)=> {
   return useQuery({
-    queryKey : ["vendor",filters],
+    queryKey : ["worksamples",filters],
     queryFn : ()=> getAllWorkSampleService(filters)
   })
 }

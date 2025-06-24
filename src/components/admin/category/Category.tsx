@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import {
   type CategoryType,
@@ -20,6 +19,7 @@ import { DataTable, type ColumnDef } from "@/components/common/Table";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { Input } from "@/components/ui/input";
+import { LoadingBar } from "@/components/ui/LoadBar";
 
 export function CategoryManagement() {
   const [searchTerm, setSerachTerm] = useState("");
@@ -155,7 +155,7 @@ export function CategoryManagement() {
     },
   ];
 
-  if (isLoading) return <Spinner/>;
+  if (isLoading) return <LoadingBar/>;
 
   return (
     <div className="p-4">

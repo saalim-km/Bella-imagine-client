@@ -43,7 +43,7 @@ export default function Header({ onClick }: IHeader) {
     if (state.client.client) return state.client.client;
     return null;
   });
-  const { page, total, unReadCount , notifications } = useSelector(
+  const { page, total, unReadCount, notifications } = useSelector(
     (state: RootState) => state.notification
   );
   const dispatch = useDispatch();
@@ -76,7 +76,7 @@ export default function Header({ onClick }: IHeader) {
     if (notificationsData?.data?.data) {
       dispatch(
         setNotifications({
-          notifications: [...notifications,...notificationsData.data.data],
+          notifications: [...notifications, ...notificationsData.data.data],
           total: notificationsData.data.total || 0,
           page: page,
           unReadCount: notificationsData.data.unReadTotal,
@@ -142,7 +142,13 @@ export default function Header({ onClick }: IHeader) {
 
   return (
     <>
-      <header className={`sticky top-0 z-50 ${scrolled ? "shadow-sm" : ""}`}>
+      <header
+        className={`sticky top-0 z-50 bg-background ${
+          scrolled
+            ? "shadow-sm border-b border-border"
+            : "border-b border-border"
+        }`}
+      >
         <div className="container mx-auto px-4 py-2">
           <div className="flex items-center h-12 justify-between">
             {/* Left section - Logo and navigation */}
@@ -174,10 +180,11 @@ export default function Header({ onClick }: IHeader) {
               {isLoggedIn && (
                 <>
                   <button
-                    className="p-1 rounded-md"
+                    className="p-1 rounded-md flex flex-row items-center gap-1"
                     onClick={() => navigate("/community/submit")}
                   >
-                    <Plus className="h-5 w-5" />
+                    <Plus className="h-7 w-7" />
+                    Create
                   </button>
 
                   <DropdownMenu>
@@ -211,16 +218,22 @@ export default function Header({ onClick }: IHeader) {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button className="flex items-center">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage
-                          src={user.avatar}
-                          alt={`${user.name}`}
-                          className="object-cover w-full h-full rounded-full" // Fixed: Added object-cover and full dimensions
-                        />
-                        <AvatarFallback className="flex items-center justify-center w-full h-full bg-gray-200 dark:bg-gray-700 rounded-full">
-                          {user.name?.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+                      <div className="relative h-8 w-8">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage
+                            src={user.avatar}
+                            alt={`${user.name}`}
+                            className="object-cover w-full h-full rounded-full"
+                          />
+                          <AvatarFallback className="flex items-center justify-center w-full h-full bg-gray-200 dark:bg-gray-700 rounded-full">
+                            {user.name?.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+
+                        {/* Indicator Dot */}
+
+                        <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
+                      </div>
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">

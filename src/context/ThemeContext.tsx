@@ -43,10 +43,6 @@ export function ThemeProvider({
     }
 
     root.classList.add(appliedTheme);
-
-    // ✅ Set body background color
-    document.body.style.backgroundColor =
-      appliedTheme === "dark" ? "hsl(240, 10%, 3.9%)" : "#ffffff";
   }, [theme]);
 
   const value = {

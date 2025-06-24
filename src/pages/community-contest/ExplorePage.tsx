@@ -1,12 +1,12 @@
 import { RootState } from "@/store/store";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import useInfiniteScroll from "./useInfiniteScroll";
+import useInfiniteScroll from "../../components/community-contest/useInfiniteScroll";
 import { fetchPosts } from "@/store/slices/feedThunk";
 import { setFilter } from "@/store/slices/feedslice";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import PostCard from "./PostCard";
-import PostSkeleton from "./PostSkeleton";
+import PostCard from "../../components/community-contest/PostCard";
+import PostSkeleton from "../../components/community-contest/PostSkeleton";
 import type { AppDispatch } from "@/store/store";
 import CommunityLayout from "@/components/layout/CommunityLayout";
 

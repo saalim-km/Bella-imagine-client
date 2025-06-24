@@ -21,11 +21,11 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
   const handleNavigate = () => navigate(`/photographer/${vendorData._id}`);
 
   return (
-    <div className="bg-card border border-border/10 rounded-lg overflow-hidden mb-12 flex flex-col p-8">
+    <div className="border border-border/50 rounded-lg overflow-hidden mb-12 flex flex-col p-8">
       {/* Header Section */}
       <div className="mb-4 flex flex-col justify-start items-start">
         <div className="group cursor-pointer" onClick={handleNavigate}>
-          <h2 className=" text-2xl text-foreground group-hover:text-primary/90 transition-colors">
+          <h2 className=" text-2xl">
             {vendorData.name}
           </h2>
 
@@ -80,7 +80,7 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
 
           {/* Action Button */}
           <Button
-            className="w-full bg-foreground text-background hover:bg-foreground/90 font-sans text-sm uppercase tracking-wider"
+            className="w-full text-background font-sans text-sm uppercase tracking-wider"
             onClick={handleNavigate}
           >
             View Profile

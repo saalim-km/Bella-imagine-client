@@ -81,7 +81,7 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
             </div>
             {vendor?.isVerified === "accept" && (
               <div className="absolute -bottom-3 left-1/2 -translate-x-1/2">
-                <Badge className="bg-foreground text-background px-4 py-1 flex items-center gap-1.5">
+                <Badge className=" px-4 py-1 flex items-center gap-1.5">
                   <Award className="h-3.5 w-3.5" />
                   <span className="text-xs uppercase tracking-wider">
                     Verified Pro
@@ -89,22 +89,6 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
                 </Badge>
               </div>
             )}
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <Button
-              className="w-full bg-foreground text-background hover:bg-foreground/90 flex items-center gap-2"
->
-              <Calendar className="h-4 w-4" />
-              <span className="text-sm uppercase tracking-wider">Book Now</span>
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full border-border/20 hover:bg-muted/10 flex items-center gap-2"
-            >
-              <MessageCircle className="h-4 w-4" />
-              <span className="text-sm uppercase tracking-wider">Message</span>
-            </Button>
           </div>
         </div>
 

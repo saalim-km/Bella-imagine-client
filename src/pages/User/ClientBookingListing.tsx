@@ -347,7 +347,7 @@ export default function ClientBookingList({
               setPage(1);
             }}
           >
-            <SelectTrigger className="w-full sm:w-40">
+            <SelectTrigger className="w-full sm:w-40 border-gray-400">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -381,7 +381,7 @@ export default function ClientBookingList({
               aria-label="Price range slider"
             />
             <div className="flex items-center gap-4">
-              <div className="flex-1">
+              <div className="flex-1 ">
                 <label className="text-xs font-medium text-muted-foreground">
                   Min
                 </label>
@@ -392,7 +392,7 @@ export default function ClientBookingList({
                   min={0}
                   max={maxPrice}
                   step={100}
-                  className="h-8 text-sm"
+                  className="h-8 text-sm border-gray-400"
                   aria-label="Minimum price"
                 />
               </div>
@@ -408,7 +408,7 @@ export default function ClientBookingList({
                   min={0}
                   max={maxPrice}
                   step={100}
-                  className="h-8 text-sm"
+                  className="h-8 text-sm border-gray-400"
                   aria-label="Maximum price"
                 />
               </div>

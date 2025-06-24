@@ -8,7 +8,6 @@ import {
   GetVendorDetails,
   updateClientDetails,
 } from "@/services/client/clientService";
-import { getAllClientNotification } from "@/services/notification/notificationService";
 import { IVendorsFilter, IVendorsResponse } from "@/types/interfaces/User";
 import { PaginatedResponse } from "@/types/interfaces/vendor";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -28,15 +27,6 @@ export const useUpdateClientMutation = () => {
     mutationFn: updateClientDetails,
   });
 };
-
-
-export const useAllClientNotification = (enabled = true)=> {
-  return useQuery({
-    queryKey : ["client-notification"],
-    queryFn : getAllClientNotification,
-    enabled
-  })
-}
 
 export const useAllVendorsListQuery = (filter: IVendorsFilter) => {
   return useQuery<BasePaginatedResponse<PaginatedResponse<IVendorsResponse>>, Error>({
@@ -66,4 +56,3 @@ export const useGetServiceQuery = (id : string)=> {
     queryFn : ()=> getService(id)
   })
 }
-

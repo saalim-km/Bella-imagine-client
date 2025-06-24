@@ -57,7 +57,6 @@ const VendorWorkSample = ({ handleIsCreateWorkSample , handleIsWorkSampleEditing
   };
 
   const handleWorkSampleDelete = (id : string)=> {
-    console.log('delete id :',id);
     setIsWorkSampleDelete(true);
     setWorkSampleId(id);
   }

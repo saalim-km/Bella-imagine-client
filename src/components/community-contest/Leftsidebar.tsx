@@ -58,7 +58,7 @@ const CommunityItem: React.FC<{
 }> = ({ name, members, iconImage, slug }) => {
   return (
     <Link
-      to={`/community/${slug}}`}
+      to={`/community/${slug}`}
       className="flex items-center justify-between p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
     >
       <div className="flex items-center space-x-2">

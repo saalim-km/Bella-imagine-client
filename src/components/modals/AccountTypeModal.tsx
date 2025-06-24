@@ -28,7 +28,7 @@ const AccountTypeModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
@@ -52,12 +52,12 @@ const AccountTypeModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
         {/* Buttons */}
         <button
           onClick={() => navigate("/register")}
-          className={`w-full py-3 rounded-lg mb-2 text-lg font-medium transition ${buttonPrimary} text-white`}
+          className={`w-full py-3 rounded-lg mb-2 text-lg font-medium transition bg-secondary text-foreground`}
         >
-          Customer
+          User
         </button>
         <button
-          className={`w-full py-3 rounded-lg text-lg font-medium transition ${buttonSecondary} text-white`}
+          className={`w-full py-3 rounded-lg text-lg font-medium transition bg-primary`}
           onClick={() => navigate('/vendor/signup')}
         >
           Photographer

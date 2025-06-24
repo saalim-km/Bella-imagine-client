@@ -7,13 +7,13 @@ import Footer from "@/components/common/Footer";
 import Pagination from "@/components/common/Pagination";
 import Header from "@/components/common/Header";
 import { FilterPanel } from "@/components/User/FilterPanel";
-import { Spinner } from "@/components/ui/spinner";
 import {
   useAllClientCategories,
   useAllVendorsListQuery,
 } from "@/hooks/client/useClient";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { IVendorsResponse } from "@/types/interfaces/User";
+import { LoadingBar } from "@/components/ui/LoadBar";
 
 interface FilterParams {
   location?: { lat: number; lng: number };
@@ -130,7 +130,7 @@ const Vendors = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <Spinner />
+        <LoadingBar />
       </div>
     );
   }

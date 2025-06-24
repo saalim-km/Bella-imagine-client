@@ -3,9 +3,8 @@ import { lazy, Suspense } from "react";
 import { AuthClientRoute } from "@/protected/ProtectedRoute";
 import { NoClientAuthRoute } from "@/protected/PublicRoute";
 import { Client404 } from "@/components/404/Client404";
-import { Spinner } from "@/components/ui/spinner";
-import ExplorePage from "@/components/community-contest/ExplorePage";
-import PostDetailPage from "@/pages/community-contest/PostDetailPage";
+import ExplorePage from "@/pages/community-contest/ExplorePage";
+import { LoadingBar } from "@/components/ui/LoadBar";
 
 // Lazy load all components
 const ClientHomePage = lazy(() => import("@/pages/User/UserHomePage"));
@@ -25,11 +24,11 @@ const Communities = lazy(() => import("@/pages/community-contest/Communities"));
 
 const ClientRoute = () => {
   return (
-    <Suspense fallback={<Spinner/>}>
+    <Suspense fallback={<LoadingBar/>}>
       <Routes>
         <Route path="/" element={<NoClientAuthRoute element={<ClientLandingPage/>} />} /> 
         <Route path="/home" element={<AuthClientRoute element={<ClientHomePage />} allowedRoles={["client","vendor"]} />} />
-        <Route path="/register" element={<NoClientAuthRoute element={<ClientSignup />} />} />
+        <Route path="/signup" element={<NoClientAuthRoute element={<ClientSignup />} />} />
         <Route path="/login" element={<NoClientAuthRoute element={<ClientLogin />} />} />
         <Route path="/photographers" element={<AuthClientRoute element={<Vendors />} allowedRoles={["client","vendor"]} />} />
         <Route path="/profile" element = {<AuthClientRoute element={<UserProfile/>} allowedRoles={["client","vendor"]}/>}/>

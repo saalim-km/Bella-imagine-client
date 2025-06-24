@@ -67,6 +67,11 @@ export const updateVendorService = async (
   return response.data;
 };
 
+export const deleteVendorService = async (serviceId : string) : Promise<ApiResponse> => {
+  const response = await vendorAxiosInstance.delete(`/vendor/service/${serviceId}`)
+  return response.data
+}
+
 // vendor-work-sample-management
 export const cerateWorkSampleService = async (
   payload: IWorkSampleRequest

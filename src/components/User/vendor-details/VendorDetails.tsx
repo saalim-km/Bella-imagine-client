@@ -1,17 +1,17 @@
 import { useState } from "react";
-import { IService, IServiceResponse, IVendorDetails, IWorkSampleResponse } from "@/types/interfaces/vendor";
+import { IServiceResponse, IWorkSampleResponse } from "@/types/interfaces/vendor";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button";
 import { Camera, CheckSquare } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useGetPhotographerDetails } from "@/hooks/client/useClient";
-import { Spinner } from "@/components/ui/spinner";
 import ServiceCard from "@/components/User/vendor-details/ServiceCard";
 import Pagination from "@/components/common/Pagination";
 import { ServiceDetailsModal } from "@/components/modals/ServiceDetailsModal";
 import WorkSample from "@/components/User/vendor-details/WorkSample";
 import VendorProfile from "./VendorProfile";
+import { LoadingBar } from "@/components/ui/LoadBar";
 
 const VendorDetails = () => {
  const { id } = useParams() as { id: string }
@@ -25,7 +25,7 @@ const VendorDetails = () => {
 
   if(!vendor){
     return (
-      <p>Vendor not found please try again later</p>
+      <LoadingBar loading = {isLoading}/>
     )
   }
 
@@ -44,7 +44,7 @@ const VendorDetails = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <Spinner />
+        <LoadingBar />
       </div>
     )
   }
@@ -58,7 +58,7 @@ const VendorDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background mt-2">
       <div className="max-w-7xl mx-auto px-6 ">
         {/* Photographer Profile Section */}
         <section className="mb-16">
@@ -71,14 +71,14 @@ const VendorDetails = () => {
             <TabsList className="h-14 bg-muted/30 border border-border/10 rounded-full p-1">
               <TabsTrigger
                 value="services"
-                className="flex items-center gap-2 px-6 py-2.5 rounded-full data-[state=active]:bg-foreground data-[state=active]:text-background"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-full"
               >
                 <CheckSquare size={18} />
                 <span className="text-sm uppercase tracking-wider">Services</span>
               </TabsTrigger>
               <TabsTrigger
                 value="portfolio"
-                className="flex items-center gap-2 px-6 py-2.5 rounded-full data-[state=active]:bg-foreground data-[state=active]:text-background"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-full"
               >
                 <Camera size={18} />
                 <span className="text-sm uppercase tracking-wider">Portfolio</span>

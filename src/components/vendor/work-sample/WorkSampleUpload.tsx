@@ -16,6 +16,7 @@ import { IServiceResponse, IWorkSampleRequest, IWorkSampleResponse } from '@/typ
 import { Spinner } from '@/components/ui/spinner';
 import { handleError } from '@/utils/Error/error-handler.utils';
 import TagInput from './TagInput';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Helper function to extract S3 key from presigned URL
 const extractS3KeyFromUrl = (url: string): string => {
@@ -113,7 +114,7 @@ const WorkSampleUpload = ({ vendorId, handleCancelCreatingWorkSample, workSample
   const { mutate: createWorkSample } = useVendorWorkSampleUploadMutataion();
   const { mutate: updateWorkSample } = useUpdateWorkSample();
   const services: IServiceResponse[] = data?.data.data ?? [];
-
+  const queryClient = useQueryClient()
   const validateFiles = (files: File[]): string | null => {
     const allowedTypes = ['image/jpeg', 'image/png'];
     const maxSize = 10 * 1024 * 1024; // 10MB
@@ -258,9 +259,10 @@ const WorkSampleUpload = ({ vendorId, handleCancelCreatingWorkSample, workSample
         );
         deletedImageKeys.forEach((key) => formDataToSubmit.append('deletedImageKeys', key));
 
-        updateWorkSample(formDataToSubmit, {
+        updateWorkSample(formDataToSubmit as unknown as IWorkSampleRequest, {
           onSuccess: (data) => {
             toast.success(data.message);
+            queryClient.invalidateQueries({queryKey : ['vendor-worksamples']})
             handleCancelCreatingWorkSample();
           },
           onError: (err) => {
@@ -276,7 +278,7 @@ const WorkSampleUpload = ({ vendorId, handleCancelCreatingWorkSample, workSample
           .map((item) => item.file!);
         newImages.forEach((file) => formDataToSubmit.append('media', file));
 
-        createWorkSample(formDataToSubmit, {
+        createWorkSample(formDataToSubmit as unknown as IWorkSampleRequest, {
           onSuccess: (data) => {
             toast.success(data.message);
             setFormData({
@@ -288,6 +290,7 @@ const WorkSampleUpload = ({ vendorId, handleCancelCreatingWorkSample, workSample
               tags: [],
               isPublished: false,
             });
+            queryClient.invalidateQueries({queryKey : ['worksamples']})
             handleCancelCreatingWorkSample();
           },
           onError: (err) => {

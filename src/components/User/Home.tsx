@@ -73,7 +73,7 @@ export default function Home() {
           style={{ backgroundImage: `url(${photos[currentImageIndex].src})` }}
         />
 
-        <div className="relative z-10 h-full flex items-center bg-black/70">
+        <div className="relative z-10 h-full flex items-center ">
           <div className="container mx-auto px-6 text-center">
             <h1 className="text-4xl font-bold mb-4 text-white">
               Find Local Photographers in Your Community

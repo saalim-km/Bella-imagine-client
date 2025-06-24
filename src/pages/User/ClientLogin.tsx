@@ -8,7 +8,6 @@ import { clientLogin } from "@/store/slices/clientSlice";
 import { useState } from "react";
 import { useSocket } from "@/context/SocketContext";
 import AccountTypeModal from "@/components/modals/AccountTypeModal";
-import Header from "@/components/common/Header";
 
 const ClientLogin = () => {
   const { reconnect, socket } = useSocket();

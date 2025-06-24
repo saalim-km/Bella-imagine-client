@@ -1,6 +1,6 @@
 import { AdminLayout } from '@/components/layout/AdminLayout'
 import { Button } from '@/components/ui/button'
-import { Spinner } from '@/components/ui/spinner'
+import { LoadingBar } from '@/components/ui/LoadBar'
 import { ProfileInfo } from '@/components/User/ProfileInfo'
 import { useVendorDetailsQuery } from '@/hooks/admin/useVendor'
 import { ArrowLeft } from 'lucide-react'
@@ -12,7 +12,7 @@ const UserDetailsPage = () => {
     console.log(data?.data);
     const navigate = useNavigate()
     if(isLoading){
-      return <Spinner/>
+      return <LoadingBar/>
     }
   return (
     <AdminLayout>

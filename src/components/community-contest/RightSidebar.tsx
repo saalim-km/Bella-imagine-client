@@ -1,10 +1,11 @@
 // src/components/Feed/Sidebar.tsx
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { mockSuggestedUsers } from '@/utils/mockdata';
 import { Button } from '@/components/ui/button';
+import { IVendorsResponse } from '@/types/interfaces/User';
+import { Link } from 'react-router-dom';
 
-const RightSidebar: React.FC = () => {
+const RightSidebar: React.FC<{vendors : IVendorsResponse[]}> = ({vendors}) => {
   return (
     <div className="space-y-6">      
       {/* Suggested Photographers */}
@@ -13,20 +14,22 @@ const RightSidebar: React.FC = () => {
           <CardTitle>Suggested Photographers</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {mockSuggestedUsers.map((user) => (
-            <div key={user.id} className="flex items-center justify-between">
+          {vendors.map((user) => (
+            <div key={user._id} className="flex items-center justify-between">
               <div className="flex items-center">
                 <img 
-                  src={user.avatar} 
+                  src={user.profileImage} 
                   alt={user.name} 
                   className="w-8 h-8 rounded-full mr-2"
                 />
                 <div>
                   <p className="text-sm font-medium">{user.name}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{user.followers.toLocaleString()} followers</p>
                 </div>
               </div>
+              <Link to={`/photographer/${user._id}`}>
               <Button variant="outline" size="sm">View Profile</Button>
+
+              </Link>
             </div>
           ))}
         </CardContent>

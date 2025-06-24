@@ -37,7 +37,7 @@ const Landing = () => {
               <Button
                 size="lg"
                 variant="outline"
-                onClick={() => navigate("/vendors")}
+                onClick={() => navigate("/photographers")}
               >
                 Find Photographers
               </Button>

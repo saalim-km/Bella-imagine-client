@@ -135,7 +135,6 @@ export function CreatePostForm({
       formData.append("title", title);
       formData.append("content", content);
       formData.append("communityId", selectedCommunity);
-      formData.append("tags", JSON.stringify(tags));
       // Determine mediaType based on uploaded files
       let mediaType: "image" | "video" | "mixed" | "none" = "none";
       if (media.length > 0) {
@@ -154,9 +153,11 @@ export function CreatePostForm({
 
       media.forEach((file) => formData.append("media", file));
 
+      tags.map((tag)=> formData.append('tags',tag))
+
       createPost(formData as unknown as CreatePostInput);
       toast.success("Post created successfully!");
-      navigate(-1);
+      // navigate(-1);
     } catch (error) {
       toast.error("Failed to create post");
     } finally {
@@ -176,7 +177,7 @@ export function CreatePostForm({
       </div>
 
       <Card>
-        <CardHeader className="border-b">
+        <CardHeader className="border-b bg-background">
           <div className="space-y-4">
             {/* Community Selection */}
             <div>
@@ -241,7 +242,7 @@ export function CreatePostForm({
         </CardHeader>
 
         <form onSubmit={handleSubmit}>
-          <CardContent className="p-6 space-y-6">
+          <CardContent className="p-6 space-y-6 bg-background">
             {/* Title */}
             <div>
               <Label htmlFor="title" className="text-sm font-medium">
@@ -390,7 +391,7 @@ export function CreatePostForm({
             </div>
           </CardContent>
 
-          <div className="flex justify-between items-center border-t p-6">
+          <div className="flex justify-between items-center border-t p-6  bg-background">
             <div className="flex space-x-2">
               <Button
                 type="button"
