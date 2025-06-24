@@ -22,7 +22,10 @@ import { useSocket } from "@/context/SocketContext";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { useGetAllNotifications } from "@/hooks/notifications/useNotifications";
-import { getAllClientNotification, getAllVendorNotification } from "@/services/notification/notificationService";
+import {
+  getAllClientNotification,
+  getAllVendorNotification,
+} from "@/services/notification/notificationService";
 import { TRole } from "@/types/interfaces/User";
 import { setNotifications, setPage } from "@/store/slices/notificationSlice";
 
@@ -40,20 +43,25 @@ export default function Header({ onClick }: IHeader) {
     if (state.client.client) return state.client.client;
     return null;
   });
-  const { page, total, unReadCount } = useSelector((state: RootState) => state.notification);
+  const { page, total, unReadCount , notifications } = useSelector(
+    (state: RootState) => state.notification
+  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const isLoggedIn = !!user;
   const isAdminPage = location.pathname.startsWith("/admin");
 
-  const queryFn = user?.role === "vendor" ? getAllVendorNotification : getAllClientNotification;
+  const queryFn =
+    user?.role === "vendor"
+      ? getAllVendorNotification
+      : getAllClientNotification;
   const limit = 6;
   const { data: notificationsData, isLoading } = useGetAllNotifications(
     queryFn,
     user?.role as TRole,
     isLoggedIn,
-    { limit: page * limit, page: page }
+    { limit: limit, page: page }
   );
 
   useEffect(() => {
@@ -66,12 +74,14 @@ export default function Header({ onClick }: IHeader) {
 
   useEffect(() => {
     if (notificationsData?.data?.data) {
-      dispatch(setNotifications({
-        notifications: notificationsData.data.data,
-        total: notificationsData.data.total || 0,
-        page: page,
-        unReadCount: notificationsData.data.unReadTotal
-      }));
+      dispatch(
+        setNotifications({
+          notifications: [...notifications,...notificationsData.data.data],
+          total: notificationsData.data.total || 0,
+          page: page,
+          unReadCount: notificationsData.data.unReadTotal,
+        })
+      );
     }
   }, [notificationsData, dispatch, page]);
 
@@ -132,11 +142,7 @@ export default function Header({ onClick }: IHeader) {
 
   return (
     <>
-      <header
-        className={`sticky top-0 z-50 ${
-          scrolled ? "shadow-sm" : ""
-        }`}
-      >
+      <header className={`sticky top-0 z-50 ${scrolled ? "shadow-sm" : ""}`}>
         <div className="container mx-auto px-4 py-2">
           <div className="flex items-center h-12 justify-between">
             {/* Left section - Logo and navigation */}
@@ -167,7 +173,7 @@ export default function Header({ onClick }: IHeader) {
             <div className="flex items-center space-x-2">
               {isLoggedIn && (
                 <>
-                  <button 
+                  <button
                     className="p-1 rounded-md"
                     onClick={() => navigate("/community/submit")}
                   >
@@ -189,6 +195,7 @@ export default function Header({ onClick }: IHeader) {
                       </button>
                     </DropdownMenuTrigger>
                     <NotificationCard
+                      unReadCount={unReadCount}
                       userType={user.role as TRole}
                       page={page}
                       setPage={(newPage) => dispatch(setPage(newPage))}
@@ -263,7 +270,11 @@ export default function Header({ onClick }: IHeader) {
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               >
-                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                {mobileMenuOpen ? (
+                  <X className="h-5 w-5" />
+                ) : (
+                  <Menu className="h-5 w-5" />
+                )}
               </button>
             </div>
           </div>
@@ -295,16 +306,18 @@ export default function Header({ onClick }: IHeader) {
                 { to: "/", label: "Home" },
                 { to: "/photographers", label: "Photographers" },
                 { to: "/explore", label: "Community" },
-                ...(isLoggedIn ? [
-                  { to: "/create-post", label: "Create Post" },
-                  { to: "/profile", label: "Profile" },
-                  { to: "/settings", label: "Settings" },
-                  { to: "/messages", label: "Messages" },
-                ] : []),
+                ...(isLoggedIn
+                  ? [
+                      { to: "/create-post", label: "Create Post" },
+                      { to: "/profile", label: "Profile" },
+                      { to: "/settings", label: "Settings" },
+                      { to: "/messages", label: "Messages" },
+                    ]
+                  : []),
               ].map((item) => (
-                <NavLink 
-                  key={item.label} 
-                  to={item.to} 
+                <NavLink
+                  key={item.label}
+                  to={item.to}
                   active={location.pathname === item.to}
                 >
                   {item.label}

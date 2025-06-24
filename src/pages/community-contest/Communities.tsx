@@ -22,8 +22,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { PageLayout } from "@/components/community-contest/layout/CommunityLayout";
-import { CommunityGrid } from "@/components/community-contest/community/CommunityGrid";
-import { CreateCommunityDialog } from "@/components/community-contest/community/CreateCommunityDialogue";
+import { CommunityGrid } from "@/components/community-contest/CommunityGrid";
+import { CreateCommunityDialog } from "@/components/community-contest/CreateCommunityDialogue";
 import { useGetAllCommunities } from "@/hooks/community-contest/useCommunity";
 import { useAllClientCategories } from "@/hooks/client/useClient";
 

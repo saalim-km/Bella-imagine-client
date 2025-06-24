@@ -3,18 +3,18 @@ import { useParams, Link, data } from "react-router-dom";
 import { Image, MessageSquare, Users, Info, MessageCircle } from "lucide-react";
 import { PageLayout } from "@/components/community-contest/layout/CommunityLayout";
 import { Button } from "@/components/ui/button";
-import { CreatePostDialog } from "@/components/community-contest/community/CreatePostDialog";
+import { CreatePostDialog } from "@/components/community-contest/CreatePostDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PostsTab } from "@/components/community-contest/community/tab/PostTab";
-import { AboutTab } from "@/components/community-contest/community/tab/AboutTab";
-import { CommunityInfo } from "@/components/community-contest/community/CommunityInto";
+import { PostsTab } from "@/components/community-contest/tab/PostTab";
+import { AboutTab } from "@/components/community-contest/tab/AboutTab";
+import { CommunityInfo } from "@/components/community-contest/CommunityInto";
 import {
   useGetCommunityBySlugQueryClient,
   useJoinCommunity,
   useLeaveCommunity,
 } from "@/hooks/community-contest/useCommunity";
 import { Spinner } from "@/components/ui/spinner";
-import { CommunityHeader } from "@/components/community-contest/community/CommunityHeader";
+import { CommunityHeader } from "@/components/community-contest/CommunityHeader";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";

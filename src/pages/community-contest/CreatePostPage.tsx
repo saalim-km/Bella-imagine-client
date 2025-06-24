@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { CreatePostForm } from "@/components/community-contest/community/CommunityPostForm";
+import { CreatePostForm } from "@/components/community-contest/CommunityPostForm";
 import CommunityLayout from "@/components/layout/CommunityLayout";
 
 const CreatePostPage = () => {

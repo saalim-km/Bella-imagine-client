@@ -4,7 +4,7 @@ import { AuthClientRoute } from "@/protected/ProtectedRoute";
 import { NoClientAuthRoute } from "@/protected/PublicRoute";
 import { Client404 } from "@/components/404/Client404";
 import { Spinner } from "@/components/ui/spinner";
-import ExplorePage from "@/components/community-contest/community/ExplorePage";
+import ExplorePage from "@/components/community-contest/ExplorePage";
 import PostDetailPage from "@/pages/community-contest/PostDetailPage";
 
 // Lazy load all components

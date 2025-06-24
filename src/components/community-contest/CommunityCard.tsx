@@ -17,7 +17,7 @@ interface CommunityCardProps {
 }
 
 export function CommunityCard({ community, className }: CommunityCardProps) {
-
+  
   return (
     <Card className={cn("hover-lift overflow-hidden h-full flex flex-col", className)}>
       <Link to={`/community/${community.slug}`}>

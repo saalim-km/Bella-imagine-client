@@ -27,7 +27,7 @@ export const getAllClientNotification = async(input : GetAllNotificationsInput) 
     return response.data;
 }
 
-
+// update notification service
 export const updateClientNotificationService = async():Promise<ApiResponse> => {
     const response = await clientAxiosInstance.patch('/client/notification')
     return response.data;
@@ -36,4 +36,15 @@ export const updateClientNotificationService = async():Promise<ApiResponse> => {
 export const updateVendorNotificationService = async():Promise<ApiResponse> => {
     const response = await vendorAxiosInstance.patch('/vendor/notification')
     return response.data;
+}
+
+// delete notification service
+export const deleteClientNotifications = async(): Promise<ApiResponse>=> {
+    const response = await clientAxiosInstance.delete('/client/notification')
+    return response.data
+}
+
+export const deleteVendorNotifications = async(): Promise<ApiResponse>=> {
+    const response = await vendorAxiosInstance.delete('/vendor/notification')
+    return response.data
 }

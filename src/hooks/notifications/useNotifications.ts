@@ -8,11 +8,17 @@ export const useGetAllNotifications = (queryFn: (input : GetAllNotificationsInpu
     return useQuery({
         queryKey : ['notifications',input,role],
         queryFn : ()=> queryFn(input),
-        enabled : enabled
+        enabled : enabled,
     })
 }
 
 export const useUpdateNotification = (mutateFn : ()=> Promise<ApiResponse>)=> {
+    return useMutation({
+        mutationFn : mutateFn
+    })
+}
+
+export const useClearNotifications = (mutateFn : ()=> Promise<ApiResponse>)=> {
     return useMutation({
         mutationFn : mutateFn
     })

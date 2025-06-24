@@ -1,18 +1,35 @@
 import { useRef } from "react";
 import { format, formatDistanceToNow } from "date-fns";
-import { Check } from "lucide-react";
+import { Check, ClapperboardIcon } from "lucide-react";
 import { DropdownMenuContent } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import clsx from "clsx";
 import { useSelector, useDispatch } from "react-redux";
-import { markAllAsRead } from "@/store/slices/notificationSlice";
+import {
+  markAllAsRead,
+  setNotifications,
+} from "@/store/slices/notificationSlice";
 import type { RootState } from "@/store/store";
-import { useUpdateNotification } from "@/hooks/notifications/useNotifications";
-import { updateClientNotificationService, updateVendorNotificationService } from "@/services/notification/notificationService";
+import {
+  useClearNotifications,
+  useUpdateNotification,
+} from "@/hooks/notifications/useNotifications";
+import {
+  deleteClientNotifications,
+  deleteVendorNotifications,
+  updateClientNotificationService,
+  updateVendorNotificationService,
+} from "@/services/notification/notificationService";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { TRole } from "@/types/interfaces/User";
 
-export type TNotificationType = "booking" | "chat" | "contest" | "review" | "system" | "custom";
+export type TNotificationType =
+  | "booking"
+  | "chat"
+  | "contest"
+  | "review"
+  | "system"
+  | "custom";
 
 export interface TNotification {
   _id: string;
@@ -36,15 +53,35 @@ interface NotificationCardProps {
   totalNotifications: number;
   limit: number;
   isLoading: boolean;
-  userType : TRole
+  userType: TRole;
+  unReadCount: number;
 }
 
-export default function NotificationCard({ page, setPage, totalNotifications, limit, isLoading , userType}: NotificationCardProps) {
-  const mutateFn = userType === 'client'?  updateClientNotificationService : updateVendorNotificationService
-  const {mutate : markAdRead} = useUpdateNotification(mutateFn)
+export default function NotificationCard({
+  page,
+  setPage,
+  totalNotifications,
+  limit,
+  isLoading,
+  userType,
+  unReadCount,
+}: NotificationCardProps) {
+  const mutateFn =
+    userType === "client"
+      ? updateClientNotificationService
+      : updateVendorNotificationService;
+  const { mutate: markAdRead } = useUpdateNotification(mutateFn);
+  const clearMutateFn =
+    userType === "client"
+      ? deleteClientNotifications
+      : deleteVendorNotifications;
+  const { mutate: clearNotifications } = useClearNotifications(clearMutateFn);
+
   const dispatch = useDispatch();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { notifications } = useSelector((state: RootState) => state.notification);
+  const { notifications } = useSelector(
+    (state: RootState) => state.notification
+  );
 
   const handleShowMore = () => {
     if (totalNotifications > page * limit) {
@@ -55,17 +92,37 @@ export default function NotificationCard({ page, setPage, totalNotifications, li
   const hasNotifications = notifications.length > 0;
   const hasMore = totalNotifications > page * limit;
 
-  function handleMarkAsRead(){
-    markAdRead(undefined,{
-      onSuccess: (data)=> {
-        if(data.success){
-          dispatch(markAllAsRead())
+  function handleMarkAsRead() {
+    markAdRead(undefined, {
+      onSuccess: (data) => {
+        if (data.success) {
+          dispatch(markAllAsRead());
         }
       },
-      onError : (err)=> {
-        handleError(err)
-      }
-    })
+      onError: (err) => {
+        handleError(err);
+      },
+    });
+  }
+
+  function handleClearNotifications() {
+    clearNotifications(undefined, {
+      onSuccess: (data) => {
+        if (data.success) {
+          dispatch(
+            setNotifications({
+              notifications: [],
+              total: 0,
+              unReadCount: 0,
+              page: 1,
+            })
+          );
+        }
+      },
+      onError: (err) => {
+        handleError(err);
+      },
+    });
   }
 
   return (
@@ -80,10 +137,14 @@ export default function NotificationCard({ page, setPage, totalNotifications, li
           className="space-y-3 max-h-80 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
         >
           {!hasNotifications ? (
-            <p className="text-center text-sm text-muted-foreground">No notifications</p>
+            <p className="text-center text-sm text-muted-foreground">
+              No notifications
+            </p>
           ) : (
             notifications.map((notification: TNotification) => {
-              const createdDate = notification.createdAt ? new Date(notification.createdAt) : null;
+              const createdDate = notification.createdAt
+                ? new Date(notification.createdAt)
+                : null;
 
               return (
                 <div
@@ -134,14 +195,26 @@ export default function NotificationCard({ page, setPage, totalNotifications, li
                 Show More
               </Button>
             )}
-            <Button
-              variant="outline"
-              className="w-full flex items-center justify-center gap-2"
-              onClick={handleMarkAsRead}
-            >
-              <Check className="h-4 w-4" />
-              Mark all as read
-            </Button>
+            <div className="flex items-center">
+              <Button
+                variant="outline"
+                className="w-full flex items-center justify-center gap-2"
+                onClick={handleMarkAsRead}
+                disabled={!unReadCount}
+              >
+                <Check className="h-4 w-4" />
+                Mark all as read
+              </Button>
+              <Button
+                disabled={!totalNotifications}
+                variant="link"
+                size="sm"
+                className="h-7 text-xs"
+                onClick={handleClearNotifications}
+              >
+                clear notifications
+              </Button>
+            </div>
           </>
         )}
       </div>

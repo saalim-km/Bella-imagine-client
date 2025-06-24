@@ -1,8 +1,9 @@
 import React from "react";
 import Header from "@/components/common/Header";
-import LeftSidebar from "../community-contest/community/Leftsidebar";
+import LeftSidebar from "../community-contest/Leftsidebar";
 import { useLocation } from "react-router-dom";
-import RightSidebar from "../community-contest/community/RightSidebar";
+import RightSidebar from "../community-contest/RightSidebar";
+import { useGetAllCommunities } from "@/hooks/community-contest/useCommunity";
 
 interface CommunityLayoutProps {
   children: React.ReactNode;
@@ -10,13 +11,20 @@ interface CommunityLayoutProps {
 
 const CommunityLayout: React.FC<CommunityLayoutProps> = ({ children }) => {
   const location = useLocation();
+    const { data: communitiesData } = useGetAllCommunities({
+      limit: 1000,
+      page: 1,
+    });
+
+  const communities = communitiesData?.data.data || [];
+
 
   return (
     <>
       <Header />
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row gap-6">
-          <LeftSidebar />
+          <LeftSidebar communities={communities}/>
 
           {/* Main Content */}
           <div className="flex-1 max-w-3xl">{children}</div>

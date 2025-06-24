@@ -49,7 +49,7 @@ export function CreatePostForm({
   const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState("");
 
-  const communities = communitiesData?.data.data || [];
+  const communities = communitiesData?.data.data || []; 
 
   const MAX_MEDIA = 4;
   const MAX_TITLE_LENGTH = 300;
