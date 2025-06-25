@@ -20,6 +20,8 @@ import { useCreatePost, useGetAllCommunities } from "@/hooks/community-contest/u
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { CreatePostInput } from "@/services/community-contest/communityService";
 import { communityToast } from "../ui/community-toast";
+import { handleError } from "@/utils/Error/error-handler.utils";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CreatePostFormProps {
   communityId?: string;
@@ -33,6 +35,7 @@ export function CreatePostForm({
   const { data: communitiesData } = useGetAllCommunities({
     limit: 1000,
     page: 1,
+    membership: "member",
   });
   const { mutate: createPost } = useCreatePost();
   const navigate = useNavigate();
@@ -42,12 +45,15 @@ export function CreatePostForm({
   const [media, setMedia] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [titleError, setTitleError] = useState("");
+  const [contentError, setContentError] = useState("");
+  const [communityError, setCommunityError] = useState("");
   const [selectedCommunity, setSelectedCommunity] = useState(communityId || "");
   const [postType, setPostType] = useState<"text" | "image">("text");
   const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState("");
+  const queryClient = useQueryClient()
 
-  const communities = communitiesData?.data.data || []; 
+  const communities = communitiesData?.data?.data || [];
 
   const MAX_MEDIA = 4;
   const MAX_TITLE_LENGTH = 300;
@@ -60,14 +66,14 @@ export function CreatePostForm({
 
     // Validate number of files
     if (media.length + files.length > MAX_MEDIA) {
-      communityToast.error({title : `You can upload a maximum of ${MAX_MEDIA} files`});
+      communityToast.error({title: `You can upload a maximum of ${MAX_MEDIA} files`});
       return;
     }
 
     // Validate file types and sizes
     for (const file of files) {
       if (!file.type.match(/(image\/.*|video\/.*)/)) {
-        communityToast.error({title : `File ${file.name} is not an image or video`});
+        communityToast.error({title: `File ${file.name} is not an image or video`});
         return;
       }
 
@@ -98,6 +104,7 @@ export function CreatePostForm({
   const validateForm = () => {
     let isValid = true;
 
+    // Title validation
     if (!title.trim()) {
       setTitleError("Title is required");
       isValid = false;
@@ -108,13 +115,29 @@ export function CreatePostForm({
       setTitleError("");
     }
 
+    // Community validation
     if (!selectedCommunity) {
-      communityToast.error({title : 'select a community',description : 'please select a community to create post'});
+      setCommunityError("Please select a community");
+      communityToast.error({
+        title: "Select a community",
+        description: "Please select a community to create post",
+      });
       isValid = false;
+    } else {
+      setCommunityError("");
     }
 
+    // Content validation for text posts
+    if (postType === "text" && !content.trim()) {
+      setContentError("Content is required for text posts");
+      isValid = false;
+    } else {
+      setContentError("");
+    }
+
+    // Media validation for image posts
     if (postType === "image" && media.length === 0) {
-      communityToast.error({title : "Please upload at least one image or video"});
+      communityToast.error({title: "Please upload at least one image or video"});
       isValid = false;
     }
 
@@ -151,13 +174,14 @@ export function CreatePostForm({
 
       media.forEach((file) => formData.append("media", file));
 
-      tags.map((tag)=> formData.append('tags',tag))
+      tags.forEach((tag) => formData.append("tags", tag));
 
       createPost(formData as unknown as CreatePostInput);
-      communityToast.success({title : "Post created successfully!"});
+      queryClient.invalidateQueries({queryKey : ['community-post']})
+      communityToast.success({title: "Post created successfully!"});
       navigate(-1);
     } catch (error) {
-      communityToast.error({title : "Failed to create post"});
+      handleError(error)
     } finally {
       setIsSubmitting(false);
     }
@@ -178,41 +202,55 @@ export function CreatePostForm({
         <CardHeader className="border-b bg-background">
           <div className="space-y-4">
             {/* Community Selection */}
-            <div>
-              <Label className="text-sm font-medium">Choose a community</Label>
-              <Select
-                value={selectedCommunity}
-                onValueChange={setSelectedCommunity}
-              >
-                <SelectTrigger className="w-full mt-1 py-6">
-                  <SelectValue placeholder="Search for a community" />
-                </SelectTrigger>
-                <SelectContent>
-                  {communities.map((community) => (
-                    <SelectItem key={community._id} value={community._id}>
-                      <div className="flex items-center space-x-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage
-                            src={community.iconImage}
-                            alt={`${community.name}`}
-                            className="object-cover w-full h-full rounded-full"
-                          />
-                          <AvatarFallback className="flex items-center justify-center w-full h-full bg-gray-200 dark:bg-gray-700 rounded-full">
-                            {community.name?.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium">{community.name}</p>
-                          <p className="text-xs text-gray-500">
-                            {community.memberCount} members
-                          </p>
+            {communities.length === 0 ? (
+              <div className="p-4 text-center text-sm text-gray-500">
+                Join a community to post.
+              </div>
+            ) : (
+              <div>
+                <Label className="text-sm font-medium">
+                  Choose a community <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  value={selectedCommunity}
+                  onValueChange={(value) => {
+                    setSelectedCommunity(value);
+                    setCommunityError("");
+                  }}
+                >
+                  <SelectTrigger className={`w-full mt-1 py-6 ${communityError ? "border-red-500" : ""}`}>
+                    <SelectValue placeholder="Search for a community" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {communities.map((community) => (
+                      <SelectItem key={community._id} value={community._id}>
+                        <div className="flex items-center space-x-2">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage
+                              src={community.iconImage}
+                              alt={`${community.name}`}
+                              className="object-cover w-full h-full rounded-full"
+                            />
+                            <AvatarFallback className="flex items-center justify-center w-full h-full bg-gray-200 dark:bg-gray-700 rounded-full">
+                              {community.name?.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">{community.name}</p>
+                            <p className="text-xs text-gray-500">
+                              {community.memberCount} members
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {communityError && (
+                  <p className="text-red-500 text-sm mt-1">{communityError}</p>
+                )}
+              </div>
+            )}
 
             {/* Post Type Tabs */}
             <Tabs
@@ -254,7 +292,7 @@ export function CreatePostForm({
                   if (titleError) setTitleError("");
                 }}
                 placeholder="An interesting title"
-                className="mt-1"
+                className={`mt-1 ${titleError ? "border-red-500" : ""}`}
                 maxLength={MAX_TITLE_LENGTH}
               />
               <div className="flex justify-between items-center mt-1">
@@ -270,13 +308,21 @@ export function CreatePostForm({
             {/* Content based on post type */}
             {postType === "text" && (
               <div>
-                <Label className="text-sm font-medium">Text (optional)</Label>
+                <Label className="text-sm font-medium">
+                  Text <span className="text-red-500">*</span>
+                </Label>
                 <Textarea
                   value={content}
-                  onChange={(e) => setContent(e.target.value)}
+                  onChange={(e) => {
+                    setContent(e.target.value);
+                    if (contentError) setContentError("");
+                  }}
                   placeholder="What are your thoughts?"
-                  className="min-h-[200px] mt-1"
+                  className={`min-h-[200px] mt-1 ${contentError ? "border-red-500" : ""}`}
                 />
+                {contentError && (
+                  <p className="text-red-500 text-sm mt-1">{contentError}</p>
+                )}
               </div>
             )}
 
@@ -389,7 +435,7 @@ export function CreatePostForm({
             </div>
           </CardContent>
 
-          <div className="flex justify-between items-center border-t p-6  bg-background">
+          <div className="flex justify-between items-center border-t p-6 bg-background">
             <div className="flex space-x-2">
               <Button
                 type="button"
@@ -402,7 +448,12 @@ export function CreatePostForm({
             </div>
             <Button
               type="submit"
-              disabled={isSubmitting || !title.trim() || !selectedCommunity}
+              disabled={
+                isSubmitting ||
+                !title.trim() ||
+                !selectedCommunity ||
+                (postType === "text" && !content.trim())
+              }
               className="min-w-[100px]"
             >
               {isSubmitting ? "Posting..." : "Post"}

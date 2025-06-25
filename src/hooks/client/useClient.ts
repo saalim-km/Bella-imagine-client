@@ -19,7 +19,7 @@ export const useClientDetailsQuery = (enabled = true) => {
     queryKey: ["client-profile"],
     queryFn: getClientDetails,
     enabled,
-    staleTime : 1000 * 60 * 15 // 15 minutes
+    staleTime : 1000 * 60 * 5 // 15 minutes
   });
 };
 
@@ -41,7 +41,7 @@ export const useAllClientCategories = ()=> {
   return useQuery({
     queryKey : ["client-categories"],
     queryFn : getAllClientCategories,
-    staleTime : 1000 * 60 * 15 // 15 minutes
+    staleTime : 1000 * 60 * 5 // 15 minutes
   })
 }
 
@@ -49,7 +49,7 @@ export const useGetPhotographerDetails = (input : GetVendorDetails , vendorId: s
   return useQuery({
     queryKey : ["photographer",vendorId,input],
     queryFn : ()=> getPhotographerDetails(input,vendorId),
-    staleTime : 1000 * 60 * 15 // 15 minutes
+    staleTime : 1000 * 60 * 5 // 15 minutes
   })
 }
 
@@ -57,6 +57,6 @@ export const useGetServiceQuery = (id : string)=> {
   return useQuery({
     queryKey : ["service",id],
     queryFn : ()=> getService(id),
-    staleTime : 1000 * 60 * 15 // 15 minutes
+    staleTime : 1000 * 60 * 5 // 15 minutes
   })
 }

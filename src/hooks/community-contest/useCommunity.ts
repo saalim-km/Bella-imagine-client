@@ -1,4 +1,5 @@
 import { createCommunityService, createPostService, deleteCommunityService, getAllCommunitesAdmin, getAllCommunities, GetAllPostInput, getAllPostService, GetCommMemberInput, getCommunityBySlugForClient, getCommunityBySlugService, getCommunityMembersService, joinCommunityService, leaveCommunityService, updateCommunityService } from "@/services/community-contest/communityService"
+import { Community } from "@/types/interfaces/Community"
 
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 
@@ -10,7 +11,7 @@ export const useCreateCommunityMutation = ()=> {
 
 export const useGetlAllCommunityAdmin = (dto : { page : number , limit : number , search : string})=> {
     return useQuery({
-        queryKey : ["all-community",dto],
+        queryKey : ["Communities_Admin",dto],
         queryFn : ()=> getAllCommunitesAdmin(dto)
     })
 }
@@ -54,14 +55,14 @@ export const useGetAllCommunities = (
     search?: string; 
     category?: string; 
     membership?: string; 
-    sort?: string 
+    sort?: string;
   }
 ) => {
   return useQuery({
-    queryKey: ["all-communities", dto],
+    queryKey: ["Communities_User", dto],
     queryFn: () => getAllCommunities(dto),
     placeholderData: keepPreviousData, 
-    staleTime : 1000 * 60 * 15 // 15 minutes
+    staleTime : 1000 * 60 * 5 // 15 minutes
   });
 };
 
@@ -84,6 +85,7 @@ export const useLeaveCommunity = ()=> {
     })
 }
 
+// post 
 export const useCreatePost = ()=> {
     return useMutation({
         mutationFn : createPostService
@@ -94,6 +96,13 @@ export const useGetAllPost = (input : GetAllPostInput)=> {
     return useQuery({
         queryKey : ['community-post',input],
         queryFn : ()=> getAllPostService(input),
-        staleTime : 1000 * 60 * 15 // 15 minutes
+        staleTime : 1000 * 60 * 5 // 15 minutes
     })
+}
+
+export const useGetCommunityPosts = (input: GetAllPostInput) => {
+  return useQuery({
+    queryKey: ["community-post-details", input],
+    queryFn: () => getAllPostService(input),
+  })
 }
