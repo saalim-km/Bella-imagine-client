@@ -1,58 +1,77 @@
-// src/features/feed/feedSlice.ts
-import { FeedPost } from '@/utils/mockdata';
+// src/store/slices/communityPostsSlice.ts
+import { ICommunityPostResponse } from '@/components/User/Home';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface FeedState {
-  posts: FeedPost[];
-  loading: boolean;
-  error: string | null;
-  hasMore: boolean;
-  currentPage: number;
-  filter: 'recent' | 'top' | 'trending';
+interface PostsState {
+  posts: ICommunityPostResponse[];
+  total: number;
+  page: number;
+  limit: number;
 }
 
-const initialState: FeedState = {
+const initialState: PostsState = {
   posts: [],
-  loading: false,
-  error: null,
-  hasMore: true,
-  currentPage: 0,
-  filter: 'recent',
+  total: 0,
+  page: 1,
+  limit: 5,
 };
 
-const feedSlice = createSlice({
-  name: 'feed',
+const communityPostsSlice = createSlice({
+  name: 'communityPosts',
   initialState,
   reducers: {
-    setFilter(state, action: PayloadAction<'recent' | 'top' | 'trending'>) {
-      state.filter = action.payload;
-      state.currentPage = 0;
-      state.posts = [];
-      state.hasMore = true;
+    setPosts: (state, action: PayloadAction<{ data: ICommunityPostResponse[]; total: number }>) => {
+      state.posts = action.payload.data;
+      state.total = action.payload.total;
     },
-    fetchPostsStart(state) {
-      state.loading = true;
-      state.error = null;
+    addPost: (state, action: PayloadAction<ICommunityPostResponse>) => {
+      state.posts.unshift(action.payload);
+      state.total += 1;
     },
-    fetchPostsSuccess(state, action: PayloadAction<FeedPost[]>) {
-      state.posts = [...state.posts, ...action.payload];
-      state.loading = false;
-      state.currentPage += 1;
-      state.hasMore = action.payload.length > 0;
-    },
-    fetchPostsFailure(state, action: PayloadAction<string>) {
-      state.loading = false;
-      state.error = action.payload;
-    },
-    toggleLike(state, action: PayloadAction<string>) {
-      const post = state.posts.find(p => p.id === action.payload);
-      if (post) {
-        post.isLiked = !post.isLiked;
-        post.stats.likes += post.isLiked ? 1 : -1;
+    updatePost: (state, action: PayloadAction<ICommunityPostResponse>) => {
+      const index = state.posts.findIndex(post => post._id === action.payload._id);
+      if (index !== -1) {
+        state.posts[index] = action.payload;
       }
+    },
+    deletePost: (state, action: PayloadAction<string>) => {
+      state.posts = state.posts.filter(post => post._id !== action.payload);
+      state.total -= 1;
+    },
+    toggleLike: (state, action: PayloadAction<{ postId: string; isLiked: boolean }>) => {
+      const post = state.posts.find(p => p._id === action.payload.postId);
+      if (post) {
+        post.isLiked = action.payload.isLiked;
+        post.likeCount += action.payload.isLiked ? 1 : -1;
+      }
+    },
+    incrementPage: (state) => {
+      state.page += 1;
+    },
+    resetPage: (state) => {
+      state.page = 1;
+    },
+    setLimit: (state, action: PayloadAction<number>) => {
+      state.limit = action.payload;
+    },
+    clearPosts: (state) => {
+      state.posts = [];
+      state.total = 0;
+      state.page = 1;
     },
   },
 });
 
-export const { setFilter, fetchPostsStart, fetchPostsSuccess, fetchPostsFailure, toggleLike } = feedSlice.actions;
-export default feedSlice.reducer;
+export const {
+  setPosts,
+  addPost,
+  updatePost,
+  deletePost,
+  toggleLike,
+  incrementPage,
+  resetPage,
+  setLimit,
+  clearPosts,
+} = communityPostsSlice.actions;
+
+export default communityPostsSlice.reducer;

@@ -3,10 +3,10 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { initSocket } from "@/config/socket";
 import { Socket } from "socket.io-client";
-import { showNotificationToast } from "@/components/common/NotificationToast";
 import { TNotification } from "@/components/common/Notification";
 import { useDispatch } from "react-redux";
 import { addNotification } from "@/store/slices/notificationSlice";
+import { communityToast } from "@/components/ui/community-toast";
 
 interface SocketContextType {
   socket: Socket | null;
@@ -75,7 +75,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
     socketInstance.on("new_message_notification", (notification: TNotification) => {
       console.log(notification);
-      showNotificationToast(notification)
+      communityToast.newMessage(notification.message)
       dispatch(addNotification(notification))
     });
 

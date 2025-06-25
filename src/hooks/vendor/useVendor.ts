@@ -15,6 +15,7 @@ export const useVendorDetailsQuery = (enabled = true) => {
     queryKey: ["vendor-profile"],
     queryFn: getVendorDetails,
     enabled,
+    staleTime : 1000 * 60 * 15 // 15 minutes
   });
 };
 
@@ -29,6 +30,7 @@ export const useAllVendorCategoryQuery = ()=> {
   return useQuery({
     queryKey : ["vendor-categorries"],
     queryFn : getAllCategories,
+    staleTime : 1000 * 60 * 15 // 15 minutes
   })
 }
 
@@ -49,8 +51,10 @@ export const useVendorServices = (filters: IServiceFilter) => {
   return useQuery<BasePaginatedResponse<PaginatedResponse<IServiceResponse>>>({
     queryKey: ["services", filters],
     queryFn: () => getAllVendorServices(filters),
+    staleTime : 1000 * 60 * 15 // 15 minutes
   });
 };
+
 export const useUpdateVendorServiceMutation = ()=> {
   return useMutation({
     mutationFn : updateVendorService,
@@ -74,7 +78,8 @@ export const useVendorWorkSampleUploadMutataion = ()=> {
 export const useAllVendorWorkSample = (filters : IWorkSampleFilter)=> {
   return useQuery({
     queryKey : ["worksamples",filters],
-    queryFn : ()=> getAllWorkSampleService(filters)
+    queryFn : ()=> getAllWorkSampleService(filters),
+    staleTime : 1000 * 60 * 15 // 15 minutes
   })
 }
 

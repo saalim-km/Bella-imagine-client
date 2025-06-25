@@ -4,6 +4,7 @@ import { ApiResponse } from "@/hooks/vendor/useVendor";
 import { Community, CommunityResponse } from "@/types/interfaces/Community";
 import { PaginatedResponse } from "@/types/interfaces/vendor";
 import { BasePaginatedResponse } from "../client/clientService";
+import { ICommunityPost, ICommunityPostResponse } from "@/components/User/Home";
 
 export interface CommunityBySlugResponse {
   community: CommunityResponse;
@@ -25,6 +26,10 @@ export interface CreatePostInput {
   tags: string[];
 }
 
+export interface GetAllPostInput {
+  page : number;
+  limit : number;
+}
 
 export const createCommunityService = async (
   dto: Partial<Community>
@@ -132,6 +137,11 @@ export const leaveCommunityService = async (
 };
 
 export const createPostService = async(input : CreatePostInput)=> {
-    const response = await clientAxiosInstance.post('/client/community',input)
+    const response = await clientAxiosInstance.post('/client/community-post',input)
     console.log(response);
+}
+
+export const getAllPostService = async(input : GetAllPostInput) : Promise<BasePaginatedResponse<PaginatedResponse<ICommunityPostResponse>>> => {
+  const response = await clientAxiosInstance.get('/client/community-post',{params : input})
+  return response.data
 }

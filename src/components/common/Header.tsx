@@ -232,7 +232,7 @@ export default function Header({ onClick }: IHeader) {
 
                         {/* Indicator Dot */}
 
-                        <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
+                        <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-background animate-pulse" />
                       </div>
                     </button>
                   </DropdownMenuTrigger>
@@ -264,12 +264,12 @@ export default function Header({ onClick }: IHeader) {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                location.pathname !== "/register" &&
+                location.pathname !== "/signup" &&
                 location.pathname !== "/login" &&
                 location.pathname !== "/admin/login" && (
                   <button
                     onClick={() => onClick?.()}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium"
+                    className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-medium"
                   >
                     Sign Up
                   </button>

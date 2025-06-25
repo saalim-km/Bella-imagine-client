@@ -3,9 +3,9 @@ import { Routes, Route } from "react-router-dom";
 import VendorRoute from "./routes/VendorRoute";
 import AdminRoute from "./routes/AdminRoute";
 import ClientRoute from "./routes/UserRoute";
-import { Toaster } from "sonner";
 import { Custom404 } from "./components/404/Custom404";
 import { SocketProvider } from "./context/SocketContext";
+import { Toaster } from "./components/ui/toaster";
 
 
 function AppLayout() {
@@ -29,7 +29,7 @@ function App () {
   }, []);
   return (
     <>
-        <Toaster position="bottom-right" closeButton={false} expand={false} richColors/>
+        <Toaster/>
         <Routes>
           <Route path="/*" element={<ClientRoute />} />
           <Route path="/vendor/*" element={<VendorRoute />} />

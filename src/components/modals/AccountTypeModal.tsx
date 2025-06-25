@@ -51,7 +51,7 @@ const AccountTypeModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
 
         {/* Buttons */}
         <button
-          onClick={() => navigate("/register")}
+          onClick={() => navigate("/signup")}
           className={`w-full py-3 rounded-lg mb-2 text-lg font-medium transition bg-secondary text-foreground`}
         >
           User

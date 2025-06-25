@@ -12,8 +12,6 @@ const clientNavItems = [
 ]
 
 const vendorNavItems = [
-  { icon: FileText, label: "Posts", id: "posts" },
-  { icon: MessageCircle, label: "Comments", id: "comments" },
   { icon: Calendar, label: "Bookings", id: "bookings" },
   { icon: CreditCard, label: "Wallet & Transactions", id: "wallet" },
   { icon: Camera, label: "Services", id: "services" },

@@ -1,10 +1,7 @@
-"use client";
-
 import type React from "react";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, Upload, ImageIcon, Type } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { useCreatePost, useGetAllCommunities } from "@/hooks/community-contest/useCommunity";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { CreatePostInput } from "@/services/community-contest/communityService";
+import { communityToast } from "../ui/community-toast";
 
 interface CreatePostFormProps {
   communityId?: string;
@@ -62,19 +60,19 @@ export function CreatePostForm({
 
     // Validate number of files
     if (media.length + files.length > MAX_MEDIA) {
-      toast.error(`You can upload a maximum of ${MAX_MEDIA} files`);
+      communityToast.error({title : `You can upload a maximum of ${MAX_MEDIA} files`});
       return;
     }
 
     // Validate file types and sizes
     for (const file of files) {
       if (!file.type.match(/(image\/.*|video\/.*)/)) {
-        toast.error(`File ${file.name} is not an image or video`);
+        communityToast.error({title : `File ${file.name} is not an image or video`});
         return;
       }
 
       if (file.size > MAX_FILE_SIZE) {
-        toast.error(`File ${file.name} exceeds maximum size of 100MB`);
+        communityToast.error({title: `File ${file.name} exceeds maximum size of 100MB`});
         return;
       }
     }
@@ -111,12 +109,12 @@ export function CreatePostForm({
     }
 
     if (!selectedCommunity) {
-      toast.error("Please select a community");
+      communityToast.error({title : 'select a community',description : 'please select a community to create post'});
       isValid = false;
     }
 
     if (postType === "image" && media.length === 0) {
-      toast.error("Please upload at least one image or video");
+      communityToast.error({title : "Please upload at least one image or video"});
       isValid = false;
     }
 
@@ -156,10 +154,10 @@ export function CreatePostForm({
       tags.map((tag)=> formData.append('tags',tag))
 
       createPost(formData as unknown as CreatePostInput);
-      toast.success("Post created successfully!");
-      // navigate(-1);
+      communityToast.success({title : "Post created successfully!"});
+      navigate(-1);
     } catch (error) {
-      toast.error("Failed to create post");
+      communityToast.error({title : "Failed to create post"});
     } finally {
       setIsSubmitting(false);
     }

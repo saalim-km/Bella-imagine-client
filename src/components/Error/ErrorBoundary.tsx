@@ -40,8 +40,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
           </p>
           {process.env.NODE_ENV === "development" && error && (
             <details style={styles.details}>
-              <summary>Error Details</summary>
-              <pre>{error.message}</pre>
+              <summary className="text-gray-900">Error Details</summary>
+              <pre className="text-gray-900">{error.message}</pre>
             </details>
           )}
           <button onClick={this.handleRetry} style={styles.button}>

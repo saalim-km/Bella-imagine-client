@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import RightSidebar from "../community-contest/RightSidebar";
 import { useGetAllCommunities } from "@/hooks/community-contest/useCommunity";
 import { useAllVendorsListQuery } from "@/hooks/client/useClient";
+import { Spinner } from "../ui/spinner";
 
 interface CommunityLayoutProps {
   children: React.ReactNode;
@@ -18,17 +19,19 @@ const CommunityLayout: React.FC<CommunityLayoutProps> = ({ children }) => {
     });
   const [marker,setMarker] = useState<{lat : number,lng : number}>({lat:0,lng:0})
   const communities = communitiesData?.data.data || [];
-  const {data} = useAllVendorsListQuery({page : 1 , limit : 5 , location : {lat : marker.lat , lng : marker.lng}})
+  const {data , isFetching} = useAllVendorsListQuery({page : 1 , limit : 5 , location : {lat : marker.lat , lng : marker.lng}})
   const vendors = data?.data.data || []
 
   useEffect(() => {
     if (navigator.geolocation && marker.lat === 0) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          console.log('position : ',position);
           const userLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           }
+          console.log('userlocation: ',userLocation);
           setMarker(userLocation)
         },
         (error) => {
@@ -37,7 +40,6 @@ const CommunityLayout: React.FC<CommunityLayoutProps> = ({ children }) => {
       )
     }
   }, [marker])
-
   return (
     <>
       <Header />
