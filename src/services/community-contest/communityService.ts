@@ -26,9 +26,11 @@ export interface CreatePostInput {
   tags: string[];
 }
 
+
 export interface GetAllPostInput {
   page : number;
   limit : number;
+  communityId ?: string;
 }
 
 export const createCommunityService = async (
