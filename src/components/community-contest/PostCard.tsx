@@ -1,31 +1,36 @@
-// src/components/Feed/PostCard.tsx
-import React from "react";
-import { Heart, MessageSquare, Share2, MoreHorizontal } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { Button } from "@/components/ui/button";
-import { ICommunityPostResponse } from "../User/Home";
-import { LoadingBar } from "../ui/LoadBar";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+"use client"
+
+import type React from "react"
+import { Heart, MessageSquare, Share2, MoreHorizontal, Loader2 } from "lucide-react"
+import { formatDistanceToNow } from "date-fns"
+import { Button } from "@/components/ui/button"
+import type { ICommunityPostResponse } from "../User/Home"
+import { LoadingBar } from "../ui/LoadBar"
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
 
 interface PostCardProps {
-  post: ICommunityPostResponse;
-  handleLike (post : ICommunityPostResponse) : void;
-  handleUnLike (post : ICommunityPostResponse) : void;
+  post: ICommunityPostResponse
+  onLikeToggle: (post: ICommunityPostResponse) => void
+  isLiking?: boolean
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post ,handleLike,handleUnLike}) => {
+const PostCard: React.FC<PostCardProps> = ({ post, onLikeToggle, isLiking = false }) => {
   if (!post) {
-    return <LoadingBar/>;
+    return <LoadingBar />
   }
 
-  const likeAction = post.isLiked ? handleUnLike : handleLike
+  const handleLikeClick = () => {
+    if (isLiking) return // Prevent multiple clicks while processing
+    onLikeToggle(post)
+  }
+
   return (
-    <div className="  rounded-lg  overflow-hidden mb-4 border border-gray-200 dark:border-gray-700">
+    <div className="rounded-lg overflow-hidden mb-4 border border-gray-200 dark:border-gray-700">
       <div className="p-4">
         <div className="flex items-center mb-3">
           <Avatar className="h-8 w-8 mr-2">
             <AvatarImage
-              src={post.userId.profileImage}
+              src={post.userId.profileImage || "/placeholder.svg"}
               alt={`${post.userId.name}`}
               className="object-cover w-full h-full rounded-full"
             />
@@ -34,9 +39,7 @@ const PostCard: React.FC<PostCardProps> = ({ post ,handleLike,handleUnLike}) => 
             </AvatarFallback>
           </Avatar>
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-              {post.userId.name}
-            </h3>
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{post.userId.name}</h3>
             <p className="text-xs text-gray-500 dark:text-gray-400">
               {formatDistanceToNow(new Date(post.createdAt ?? 0), {
                 addSuffix: true,
@@ -45,9 +48,7 @@ const PostCard: React.FC<PostCardProps> = ({ post ,handleLike,handleUnLike}) => 
           </div>
         </div>
 
-        <h2 className="text-xl font-bold mb-2 text-gray-900 dark:text-gray-200">
-          {post.title}
-        </h2>
+        <h2 className="text-xl font-bold mb-2 text-gray-900 dark:text-gray-200">{post.title}</h2>
         <p className="text-gray-700 dark:text-gray-400 mb-4">{post.content}</p>
 
         {post.media && post.media.length > 0 && (
@@ -57,7 +58,7 @@ const PostCard: React.FC<PostCardProps> = ({ post ,handleLike,handleUnLike}) => 
                 {post.media.map((url: string, idx: number) => (
                   <img
                     key={idx}
-                    src={url}
+                    src={url || "/placeholder.svg"}
                     alt={`Post media ${idx + 1}`}
                     className="w-full h-auto max-h-96 object-cover rounded"
                   />
@@ -81,29 +82,24 @@ const PostCard: React.FC<PostCardProps> = ({ post ,handleLike,handleUnLike}) => 
             <Button
               variant="ghost"
               size="sm"
-              onClick={()=> likeAction(post)}
-              className={`flex items-center ${
-                post.isLiked ? "text-red-500" : "text-gray-500"
-              }`}
+              onClick={handleLikeClick}
+              disabled={isLiking}
+              className={`flex items-center transition-colors ${
+                post.isLiked ? "text-red-500 hover:text-red-600" : "text-gray-500 hover:text-red-500"
+              } ${isLiking ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              <Heart
-                className={`w-4 h-4 mr-1 ${post.isLiked ? "fill-current" : ""}`}
-              />
+              {isLiking ? (
+                <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+              ) : (
+                <Heart className={`w-4 h-4 mr-1 transition-all ${post.isLiked ? "fill-current" : ""}`} />
+              )}
               <span>{post.likeCount}</span>
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center text-gray-500"
-            >
+            <Button variant="ghost" size="sm" className="flex items-center text-gray-500 hover:text-blue-500">
               <MessageSquare className="w-4 h-4 mr-1" />
               <span>{post.commentCount}</span>
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center text-gray-500"
-            >
+            <Button variant="ghost" size="sm" className="flex items-center text-gray-500 hover:text-green-500">
               <Share2 className="w-4 h-4 mr-1" />
             </Button>
           </div>
@@ -113,7 +109,7 @@ const PostCard: React.FC<PostCardProps> = ({ post ,handleLike,handleUnLike}) => 
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PostCard;
+export default PostCard
