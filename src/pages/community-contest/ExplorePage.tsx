@@ -1,5 +1,3 @@
-"use client"
-
 import type { RootState } from "@/store/store"
 import type React from "react"
 import { useEffect, useState, useCallback, useRef } from "react"

@@ -104,5 +104,7 @@ export const useGetCommunityPosts = (input: GetAllPostInput) => {
   return useQuery({
     queryKey: ["community-post-details", input],
     queryFn: () => getAllPostService(input),
+    staleTime : 1000 * 60 * 5, // 15 minutes
+    enabled : input.enabled
   })
 }

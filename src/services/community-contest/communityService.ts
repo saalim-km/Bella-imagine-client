@@ -31,6 +31,7 @@ export interface GetAllPostInput {
   page : number;
   limit : number;
   communityId ?: string;
+  enabled ?: boolean
 }
 
 export const createCommunityService = async (
@@ -138,9 +139,9 @@ export const leaveCommunityService = async (
   return response.data;
 };
 
-export const createPostService = async(input : CreatePostInput)=> {
+export const createPostService = async(input : CreatePostInput) : Promise<BasePaginatedResponse<ICommunityPostResponse>>=> {
     const response = await clientAxiosInstance.post('/client/community-post',input)
-    console.log(response);
+    return response.data
 }
 
 export const getAllPostService = async(input : GetAllPostInput) : Promise<BasePaginatedResponse<PaginatedResponse<ICommunityPostResponse>>> => {

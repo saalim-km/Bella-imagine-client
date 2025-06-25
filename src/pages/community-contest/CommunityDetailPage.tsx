@@ -1,82 +1,104 @@
-import { useState } from "react";
-import { useParams, Link, data } from "react-router-dom";
-import { Image, MessageSquare, Users, Info, MessageCircle } from "lucide-react";
-import { PageLayout } from "@/components/community-contest/layout/CommunityLayout";
-import { Button } from "@/components/ui/button";
-import { CreatePostDialog } from "@/components/community-contest/CreatePostDialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PostsTab } from "@/components/community-contest/tab/PostTab";
-import { AboutTab } from "@/components/community-contest/tab/AboutTab";
-import { CommunityInfo } from "@/components/community-contest/CommunityInto";
+// src/pages/CommunityDetailPage.tsx
+import { useState, useEffect } from "react"
+import { useParams, Link, useNavigate } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import { MessageSquare, Users, Info, MessageCircle } from "lucide-react"
+import { PageLayout } from "@/components/community-contest/layout/CommunityLayout"
+import { Button } from "@/components/ui/button"
+import { CreatePostDialog } from "@/components/community-contest/CreatePostDialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { PostsTab } from "@/components/community-contest/tab/PostTab"
+import { AboutTab } from "@/components/community-contest/tab/AboutTab"
 import {
   useGetCommunityBySlugQueryClient,
   useJoinCommunity,
   useLeaveCommunity,
-} from "@/hooks/community-contest/useCommunity";
-import { Spinner } from "@/components/ui/spinner";
-import { CommunityHeader } from "@/components/community-contest/CommunityHeader";
-import { handleError } from "@/utils/Error/error-handler.utils";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+} from "@/hooks/community-contest/useCommunity"
+import { Spinner } from "@/components/ui/spinner"
+import { CommunityHeader } from "@/components/community-contest/CommunityHeader"
+import { handleError } from "@/utils/Error/error-handler.utils"
+import { useQueryClient } from "@tanstack/react-query"
+import { resetState } from "@/store/slices/communityDetailsSlice"
+import type { AppDispatch } from "@/store/store"
+import { CommunityInfo } from "@/components/community-contest/CommunityInto"
 
 const CommunityDetailPage = () => {
-  const { slug } = useParams<{ slug: string }>();
-  const [activeTab, setActiveTab] = useState("posts");
-  const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
-  const [isJoining, setIsJoining] = useState(false);
-  const [isLeaving, setIsLeaving] = useState(false);
-  const { mutate: joinCommunity } = useJoinCommunity();
-  const { mutate: leaveCommunity } = useLeaveCommunity();
+  const { slug } = useParams<{ slug: string }>()
+  const dispatch = useDispatch<AppDispatch>()
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  
+  const [activeTab, setActiveTab] = useState("posts")
+  const [isCreatePostOpen, setIsCreatePostOpen] = useState(false)
+  const [isJoining, setIsJoining] = useState(false)
+  const [isLeaving, setIsLeaving] = useState(false)
 
-  const user = useSelector((state: RootState) =>
-    state.client.client ? state.client.client : state.vendor.vendor
-  );
-  const {
-    data: communityData,
-    isLoading,
-    refetch,
-  } = useGetCommunityBySlugQueryClient(slug as string);
+  const { 
+    data: communityData, 
+    isLoading, 
+    error,
+    refetch 
+  } = useGetCommunityBySlugQueryClient(slug as string)
 
-  const community = communityData?.data.community;
-  console.log(communityData);
+  const { mutate: joinCommunity } = useJoinCommunity()
+  const { mutate: leaveCommunity } = useLeaveCommunity()
+
+  // Reset state when component unmounts or slug changes
+  useEffect(() => {
+    return () => {
+      dispatch(resetState())
+    }
+  }, [dispatch, slug])
+
+  // Handle errors
+  useEffect(() => {
+    if (error) {
+      handleError(error)
+      navigate("/communities")
+    }
+  }, [error, navigate])
+
   const handleJoinToggle = (communityId: string) => {
-    setIsJoining(true);
+    setIsJoining(true)
     joinCommunity(communityId, {
-      onSuccess: (data) => {
-        refetch();
-        setIsJoining(false);
+      onSuccess: () => {
+        queryClient.invalidateQueries({queryKey : ["community", slug]})
+        refetch()
       },
-      onError: (err) => {
-        handleError(err);
-        setIsJoining(false);
-      },
-    });
-  };
+      onError: handleError,
+      onSettled: () => setIsJoining(false),
+    })
+  }
 
   const handleLeaveCommunity = (communityId: string) => {
+    setIsLeaving(true)
     leaveCommunity(communityId, {
-      onSuccess: (data) => {
-        refetch();
+      onSuccess: () => {
+        queryClient.invalidateQueries({queryKey : ["community", slug]})
+        refetch()
       },
-      onError: (err) => {
-        handleError(err);
-      },
-    });
-  };
-
-  if (isLoading || !community) {
-    return <Spinner />;
+      onError: handleError,
+      onSettled: () => setIsLeaving(false),
+    })
   }
+
+  if (isLoading || !communityData) {
+    return <Spinner />
+  }
+
+  const community = communityData.data.community
+  const { isMember } = communityData.data
 
   return (
     <PageLayout>
       <div className="flex flex-col min-h-screen">
         <CommunityHeader community={community} />
+        
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-1 space-y-6">
-            <Tabs
-              defaultValue="posts"
-              value={activeTab}
+            <Tabs 
+              defaultValue="posts" 
+              value={activeTab} 
               onValueChange={setActiveTab}
             >
               <div className="flex justify-between items-center mb-4">
@@ -95,56 +117,55 @@ const CommunityDetailPage = () => {
                   </TabsTrigger>
                 </TabsList>
 
-                {communityData.data.isMember ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="hidden sm:flex items-center"
-                    asChild
-                  >
+                {isMember && (
+                  <Button variant="outline" size="sm" className="hidden sm:flex items-center" asChild>
                     <Link to={`/communities/${community._id}/chat`}>
                       <MessageCircle className="h-4 w-4 mr-2" />
                       Chat Room
                     </Link>
                   </Button>
-                ) : null}
+                )}
               </div>
 
               <TabsContent value="posts">
                 <PostsTab
                   slug={community.slug!}
-                  posts={[]} // Replace with fetched posts if available
-                  isMember={communityData.data.isMember}
+                  isMember={isMember}
                   communityId={community._id}
                 />
               </TabsContent>
 
               <TabsContent value="members">
-                {/* You can render members list here if available */}
+                <div className="text-center py-12">
+                  <h3 className="text-lg font-medium">Members</h3>
+                  <p className="text-gray-500">Members list coming soon...</p>
+                </div>
               </TabsContent>
 
               <TabsContent value="about">
                 <AboutTab
-                  createdAt={community.createdAt!}
+                  createdAt={community.createdAt ?? ""}
                   rules={community.rules!}
                   communityName={community.name}
                   description={community.description!}
                   memberCount={community.memberCount!}
                   postCount={community.postCount!}
-                  isMember={communityData.data.isMember}
+                  isMember={isMember}
                   communityId={community._id}
                 />
               </TabsContent>
             </Tabs>
 
-            <div className="sm:hidden">
-              <Button className="w-full" asChild>
-                <Link to={`/communities/${community._id}/chat`}>
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  Enter Community Chat
-                </Link>
-              </Button>
-            </div>
+            {isMember && (
+              <div className="sm:hidden">
+                <Button className="w-full" asChild>
+                  <Link to={`/communities/${community._id}/chat`}>
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Enter Community Chat
+                  </Link>
+                </Button>
+              </div>
+            )}
           </div>
 
           <div className="hidden lg:block w-64 flex-shrink-0">
@@ -156,7 +177,7 @@ const CommunityDetailPage = () => {
                 createdAt={community.createdAt!}
                 description={community.description!}
                 memberCount={community.memberCount!}
-                isMember={communityData.data.isMember}
+                isMember={isMember}
                 isJoining={isJoining}
                 onJoinToggle={handleJoinToggle}
               />
@@ -164,14 +185,10 @@ const CommunityDetailPage = () => {
               <div className="bg-secondary/30 rounded-lg p-4">
                 <h3 className="font-medium mb-2">Community Rules</h3>
                 <ul className="text-sm space-y-2 text-muted-foreground">
-                  {community.rules!.map((rule, index) => (
-                    <li
-                      key={index}
-                      className={
-                        index !== community.rules!.length - 1
-                          ? "border-b pb-1"
-                          : ""
-                      }
+                  {Array.isArray(community.rules) && community.rules.map((rule, index) => (
+                    <li 
+                      key={index} 
+                      className={index !== (community.rules?.length ?? 0) - 1 ? "border-b pb-1" : ""}
                     >
                       {index + 1}. {rule}
                     </li>
@@ -181,6 +198,7 @@ const CommunityDetailPage = () => {
             </div>
           </div>
         </div>
+
         <CreatePostDialog
           isOpen={isCreatePostOpen}
           onClose={() => setIsCreatePostOpen(false)}
@@ -189,7 +207,7 @@ const CommunityDetailPage = () => {
         />
       </div>
     </PageLayout>
-  );
-};
+  )
+}
 
-export default CommunityDetailPage;
+export default CommunityDetailPage

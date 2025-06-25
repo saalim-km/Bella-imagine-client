@@ -16,12 +16,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { useCreatePost, useGetAllCommunities } from "@/hooks/community-contest/useCommunity";
+import {
+  useCreatePost,
+  useGetAllCommunities,
+} from "@/hooks/community-contest/useCommunity";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { CreatePostInput } from "@/services/community-contest/communityService";
 import { communityToast } from "../ui/community-toast";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { useQueryClient } from "@tanstack/react-query";
+import { useDispatch } from "react-redux";
+import { addPost } from "@/store/slices/feedslice";
 
 interface CreatePostFormProps {
   communityId?: string;
@@ -51,7 +56,8 @@ export function CreatePostForm({
   const [postType, setPostType] = useState<"text" | "image">("text");
   const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState("");
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
+  const dispatch = useDispatch()
 
   const communities = communitiesData?.data?.data || [];
 
@@ -66,19 +72,25 @@ export function CreatePostForm({
 
     // Validate number of files
     if (media.length + files.length > MAX_MEDIA) {
-      communityToast.error({title: `You can upload a maximum of ${MAX_MEDIA} files`});
+      communityToast.error({
+        title: `You can upload a maximum of ${MAX_MEDIA} files`,
+      });
       return;
     }
 
     // Validate file types and sizes
     for (const file of files) {
       if (!file.type.match(/(image\/.*|video\/.*)/)) {
-        communityToast.error({title: `File ${file.name} is not an image or video`});
+        communityToast.error({
+          title: `File ${file.name} is not an image or video`,
+        });
         return;
       }
 
       if (file.size > MAX_FILE_SIZE) {
-        communityToast.error({title: `File ${file.name} exceeds maximum size of 100MB`});
+        communityToast.error({
+          title: `File ${file.name} exceeds maximum size of 100MB`,
+        });
         return;
       }
     }
@@ -137,7 +149,9 @@ export function CreatePostForm({
 
     // Media validation for image posts
     if (postType === "image" && media.length === 0) {
-      communityToast.error({title: "Please upload at least one image or video"});
+      communityToast.error({
+        title: "Please upload at least one image or video",
+      });
       isValid = false;
     }
 
@@ -159,9 +173,9 @@ export function CreatePostForm({
       // Determine mediaType based on uploaded files
       let mediaType: "image" | "video" | "mixed" | "none" = "none";
       if (media.length > 0) {
-        const hasImages = media.some(file => file.type.startsWith("image/"));
-        const hasVideos = media.some(file => file.type.startsWith("video/"));
-        
+        const hasImages = media.some((file) => file.type.startsWith("image/"));
+        const hasVideos = media.some((file) => file.type.startsWith("video/"));
+
         if (hasImages && hasVideos) {
           mediaType = "mixed";
         } else if (hasImages) {
@@ -176,12 +190,16 @@ export function CreatePostForm({
 
       tags.forEach((tag) => formData.append("tags", tag));
 
-      createPost(formData as unknown as CreatePostInput);
-      queryClient.invalidateQueries({queryKey : ['community-post']})
-      communityToast.success({title: "Post created successfully!"});
-      navigate(-1);
+      createPost(formData as unknown as CreatePostInput, {
+        onSuccess: (data) => {
+          queryClient.invalidateQueries({ queryKey: ["community-post"] });
+          communityToast.success({ title: "Post created successfully!" });
+          dispatch(addPost(data.data))
+          navigate(-1);
+        },
+      });
     } catch (error) {
-      handleError(error)
+      handleError(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -218,7 +236,11 @@ export function CreatePostForm({
                     setCommunityError("");
                   }}
                 >
-                  <SelectTrigger className={`w-full mt-1 py-6 ${communityError ? "border-red-500" : ""}`}>
+                  <SelectTrigger
+                    className={`w-full mt-1 py-6 ${
+                      communityError ? "border-red-500" : ""
+                    }`}
+                  >
                     <SelectValue placeholder="Search for a community" />
                   </SelectTrigger>
                   <SelectContent>
@@ -318,7 +340,9 @@ export function CreatePostForm({
                     if (contentError) setContentError("");
                   }}
                   placeholder="What are your thoughts?"
-                  className={`min-h-[200px] mt-1 ${contentError ? "border-red-500" : ""}`}
+                  className={`min-h-[200px] mt-1 ${
+                    contentError ? "border-red-500" : ""
+                  }`}
                 />
                 {contentError && (
                   <p className="text-red-500 text-sm mt-1">{contentError}</p>
