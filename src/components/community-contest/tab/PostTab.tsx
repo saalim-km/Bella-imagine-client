@@ -85,7 +85,7 @@ export function PostsTab({ isMember, communityId, slug }: PostsTabProps) {
       success,
       postId,
       action
-    }: {
+    }:{
       success: boolean
       postId: string
       action : 'like' | 'unlike'
@@ -97,7 +97,12 @@ export function PostsTab({ isMember, communityId, slug }: PostsTabProps) {
       })
 
       if (success) {
-        dispatch(toggleLikeCommunity({ postId, isLiked : action === 'like' ? true : false }))
+        const isLiked = action === 'like' ? true : false
+        communityToast.success({
+          title: "Success",
+          description: `Post ${isLiked ? "liked" : "unliked"} successfully`,
+        })
+        dispatch(toggleLikeCommunity({ postId, isLiked : isLiked }))
         queryClient.invalidateQueries({queryKey:  ['community-post']})
       } else {
         communityToast.error({

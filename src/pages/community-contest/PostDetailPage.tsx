@@ -5,16 +5,17 @@ import { Heart, MessageSquare, Share2, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 import CommunityLayout from "@/components/layout/CommunityLayout";
-import { useGetPostDetails } from "@/hooks/community-contest/useCommunity";
-// import { useAddComment } from "@/hooks/community-contest/useCommunity"; // Added hook for adding comments
+import { useAddComment, useGetPostDetails } from "@/hooks/community-contest/useCommunity";
 import { LoadingBar } from "@/components/ui/LoadBar";
 import { Textarea } from "@/components/ui/textarea"; // Added Textarea component
+import { communityToast } from "@/components/ui/community-toast";
+import { handleError } from "@/utils/Error/error-handler.utils";
 
 const PostDetailPage: React.FC = () => {
   const { postId } = useParams();
   const [commentContent, setCommentContent] = useState(""); // State for comment input
   const { data, isLoading } = useGetPostDetails(postId!);
-  // const addCommentMutation = useAddComment(); // Hook for comment submission
+  const {mutate : addComment , isPending} = useAddComment(); // Hook for comment submission
   const post = data?.data;
 
   if (!postId) {
@@ -29,7 +30,14 @@ const PostDetailPage: React.FC = () => {
     e.preventDefault();
     if (!commentContent.trim()) return; // Prevent empty comments
     try {
-      // await addCommentMutation.mutateAsync({ postId, content: commentContent });
+      addComment({content : commentContent , postId : postId},{
+        onSuccess : (data)=> {
+          communityToast.success({title: data.message})
+        },
+        onError : (err)=> {
+          handleError(err)
+        }
+      })
       setCommentContent(""); // Clear input after submission
     } catch (error) {
       console.error("Failed to add comment:", error);
@@ -137,13 +145,13 @@ const PostDetailPage: React.FC = () => {
               onChange={(e) => setCommentContent(e.target.value)}
               className="w-full p-2 border rounded-md"
             />
-            {/* <Button
+            <Button
               type="submit"
-              disabled={addCommentMutation.isLoading || !commentContent.trim()}
-              className="bg-blue-500 text-white hover:bg-blue-600"
+              disabled={isPending || !commentContent.trim()}
+              className="bg-orange-500 text-white hover:bg-orange-600"
             >
-              {addCommentMutation.isLoading ? "Posting..." : "Post Comment"}
-            </Button> */}
+              {isPending ? "Posting..." : "Post Comment"}
+            </Button>
           </form>
         </div>
 

@@ -13,6 +13,7 @@ import { LoadingBar } from "@/components/ui/LoadBar"
 import { useSocket } from "@/context/SocketContext"
 import { communityToast } from "@/components/ui/community-toast"
 import type { ICommunityPostResponse } from "@/components/User/Home"
+import { useQueryClient } from "@tanstack/react-query"
 
 const ExplorePage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -20,6 +21,7 @@ const ExplorePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [likingPosts, setLikingPosts] = useState<Set<string>>(new Set())
+  const queryClient = useQueryClient()
   const { socket } = useSocket()
 
   // Use ref to track if socket listeners are already set up
@@ -74,7 +76,7 @@ const ExplorePage: React.FC = () => {
       if (success) {
         const isLiked = action === "like"
         dispatch(toggleLike({ postId : postId , isLiked : isLiked }))
-
+        queryClient.invalidateQueries({queryKey : ['community-post']})
         communityToast.success({
           title: "Success",
           description: `Post ${isLiked ? "liked" : "unliked"} successfully`,

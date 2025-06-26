@@ -1,4 +1,4 @@
-import { createCommunityService, createPostService, deleteCommunityService, getAllCommunitesAdmin, getAllCommunities, GetAllPostInput, getAllPostService, GetCommMemberInput, getCommunityBySlugForClient, getCommunityBySlugService, getCommunityMembersService, getPostDetails, joinCommunityService, leaveCommunityService, updateCommunityService } from "@/services/community-contest/communityService"
+import { addCommentService, createCommunityService, createPostService, deleteCommunityService, getAllCommunitesAdmin, getAllCommunities, GetAllPostInput, getAllPostService, GetCommMemberInput, getCommunityBySlugForClient, getCommunityBySlugService, getCommunityMembersService, getPostDetails, joinCommunityService, leaveCommunityService, updateCommunityService } from "@/services/community-contest/communityService"
 
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 
@@ -111,5 +111,11 @@ export const useGetPostDetails = (postId : string)=> {
     return useQuery({
         queryKey: ['post',postId],
         queryFn : ()=> getPostDetails(postId)
+    })
+}
+
+export const useAddComment = ()=> {
+    return useMutation({
+        mutationFn : addCommentService
     })
 }

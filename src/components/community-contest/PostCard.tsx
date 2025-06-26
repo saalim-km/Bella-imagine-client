@@ -67,32 +67,32 @@ const PostCard: React.FC<PostCardProps> = ({
           <p className="text-gray-700 dark:text-gray-400 mb-4">
             {post.content}
           </p>
+          {post.media && post.media.length > 0 && (
+            <div className="mb-4 rounded-lg overflow-hidden">
+              {post.mediaType === "image" ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {post.media.map((url: string, idx: number) => (
+                    <img
+                      key={idx}
+                      src={url || "/placeholder.svg"}
+                      alt={`Post media ${idx + 1}`}
+                      className="w-full h-auto max-h-96 object-cover rounded"
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {post.media.map((url: string, idx: number) => (
+                    <video key={idx} controls className="w-full rounded">
+                      <source src={url} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </Link>
-        {post.media && post.media.length > 0 && (
-          <div className="mb-4 rounded-lg overflow-hidden">
-            {post.mediaType === "image" ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {post.media.map((url: string, idx: number) => (
-                  <img
-                    key={idx}
-                    src={url || "/placeholder.svg"}
-                    alt={`Post media ${idx + 1}`}
-                    className="w-full h-auto max-h-96 object-cover rounded"
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {post.media.map((url: string, idx: number) => (
-                  <video key={idx} controls className="w-full rounded">
-                    <source src={url} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
 
         <div className="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-3">
           <div className="flex space-x-4">
@@ -118,14 +118,16 @@ const PostCard: React.FC<PostCardProps> = ({
               )}
               <span>{post.likeCount}</span>
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center text-gray-500 hover:text-blue-500"
-            >
-              <MessageSquare className="w-4 h-4 mr-1" />
-              <span>{post.commentCount}</span>
-            </Button>
+            <Link to={`/post/${post._id}`}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center text-gray-500 hover:text-blue-500"
+              >
+                <MessageSquare className="w-4 h-4 mr-1" />
+                <span>{post.commentCount}</span>
+              </Button>{" "}
+            </Link>
             <Button
               variant="ghost"
               size="sm"

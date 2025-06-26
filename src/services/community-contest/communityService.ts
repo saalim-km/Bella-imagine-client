@@ -178,6 +178,7 @@ export const getPostDetails = async(postId : string) : Promise<BasePaginatedResp
   return response.data;
 }
 
-// export const addCommentService = async(input : AddCommentInput) : Promise<ApiResponse> {
-//   const response = await clientAxiosInstance.post('/client/')
-// }
+export const addCommentService = async(input : AddCommentInput) : Promise<ApiResponse> => {
+  const response = await clientAxiosInstance.post('/client/comment',input)
+  return response.data
+}
