@@ -36,15 +36,6 @@ const LeftSidebar: React.FC<LeftSideBarProps> = ({ communities }) => {
         <Button variant={"outline"} onClick={() => navigate("/communities")}>
           Explore communities
         </Button>
-        <div className="border-t border-gray-200 dark:border-gray-700 mt-4 pt-4">
-          <Link
-            to="/profile"
-            className="flex items-center space-x-2 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <Bookmark className="w-5 h-5" />
-            <span>Saved Posts</span>
-          </Link>
-        </div>
       </div>
     </div>
   );

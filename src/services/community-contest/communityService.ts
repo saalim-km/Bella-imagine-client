@@ -3,7 +3,7 @@ import { clientAxiosInstance } from "@/api/client.axios";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
 import { Community, CommunityResponse } from "@/types/interfaces/Community";
 import { PaginatedResponse } from "@/types/interfaces/vendor";
-import { BasePaginatedResponse } from "../client/clientService";
+import { BasePaginatedResponse, IClient } from "../client/clientService";
 import { ICommunityPost, ICommunityPostResponse } from "@/components/User/Home";
 import { IComment } from "@/components/User/CommentsTab";
 
@@ -35,9 +35,26 @@ export interface GetAllPostInput {
   enabled ?: boolean
 }
 
-export interface PostDetailsResponse {
-  post : ICommunityPostResponse;
-  comments : IComment
+export interface ILike {
+  _id?: string;
+  userId : {
+    name : string;
+    profileImage : string
+  }
+  postId : string;
+  userType : 'Client' | 'Vendor';
+  createdAt ?: string;
+  updatedAt ?: string;
+}
+
+export interface PostDetailsResponse extends Pick<IClient,'name' | 'profileImage'> , Omit<ICommunityPostResponse,'comments'> {
+  likes : ILike;
+  comments : IComment[]
+}
+
+export interface AddCommentInput {
+  postId : string;
+  content : string;
 }
 
 export const createCommunityService = async (
@@ -160,3 +177,7 @@ export const getPostDetails = async(postId : string) : Promise<BasePaginatedResp
   const response = await clientAxiosInstance.get(`/client/post/${postId}`)
   return response.data;
 }
+
+// export const addCommentService = async(input : AddCommentInput) : Promise<ApiResponse> {
+//   const response = await clientAxiosInstance.post('/client/')
+// }
