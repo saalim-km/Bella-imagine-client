@@ -1,5 +1,6 @@
 import Signup from "@/components/auth/SignUp";
 import AccountTypeModal from "@/components/modals/AccountTypeModal";
+import { communityToast } from "@/components/ui/community-toast";
 import { useSocket } from "@/context/SocketContext";
 import { useRegisterMutation } from "@/hooks/auth/useRegister";
 import { IUser } from "@/types/interfaces/User";

@@ -2,6 +2,7 @@ import Login from "@/components/auth/Login";
 import Footer from "@/components/common/Footer";
 import Header from "@/components/common/Header";
 import AccountTypeModal from "@/components/modals/AccountTypeModal";
+import { communityToast } from "@/components/ui/community-toast";
 import { useSocket } from "@/context/SocketContext";
 import { useLoginMutation } from "@/hooks/auth/useLogin";
 import { vendorLogin } from "@/store/slices/vendorSlice";
