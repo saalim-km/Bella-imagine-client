@@ -16,7 +16,7 @@ const initialState: CommunityDetailState = {
   posts: [],
   total: 0,
   page: 1,
-  limit: 10,
+  limit: 3,
   currentCommunityId: null,
   isLoading: false,
   error: null,

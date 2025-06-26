@@ -13,13 +13,13 @@ import {
   useJoinCommunity,
   useLeaveCommunity,
 } from "@/hooks/community-contest/useCommunity"
-import { Spinner } from "@/components/ui/spinner"
 import { CommunityHeader } from "@/components/community-contest/CommunityHeader"
 import { handleError } from "@/utils/Error/error-handler.utils"
 import { useQueryClient } from "@tanstack/react-query"
 import { resetState } from "@/store/slices/communityDetailsSlice"
 import type { AppDispatch } from "@/store/store"
 import { CommunityInfo } from "@/components/community-contest/CommunityInto"
+import { LoadingBar } from "@/components/ui/LoadBar"
 
 const CommunityDetailPage = () => {
   const { slug } = useParams<{ slug: string }>()
@@ -81,7 +81,7 @@ const CommunityDetailPage = () => {
   }
 
   if (isLoading || !communityData) {
-    return <Spinner />
+    return <LoadingBar />
   }
 
   const community = communityData.data.community

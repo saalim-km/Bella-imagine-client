@@ -13,7 +13,7 @@ const useInfiniteScroll = (callback: () => void) => {
           callback();
         }
       });
-    }, 200);
+    }, 500);
 
     observerRef.current = new IntersectionObserver(handleIntersection, {
       root: null,
