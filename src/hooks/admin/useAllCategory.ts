@@ -1,4 +1,4 @@
-import AdminService from "@/services/admin/adminService";
+import AdminService, { getDashBoardStatsService } from "@/services/admin/adminService";
 import { Category, getAllCategoryJoinRequests, PaginatedDataRequest, updateCategoryJoinRequest, updateCategoryService, updateCategoryStatus } from "@/services/categories/categoryService";
 import { PaginationParams } from "@/types/interfaces/Admin";
 import { PaginatedResponse } from "@/types/interfaces/vendor";
@@ -67,5 +67,12 @@ export const useUpdateCategoryRequest = ()=> {
 export const updateCategory = ()=> {
   return useMutation({
     mutationFn : updateCategoryService
+  })
+}
+
+export const useGetDashBoard = ()=> {
+  return useQuery({
+    queryKey : ['dashboard'],
+    queryFn : getDashBoardStatsService
   })
 }

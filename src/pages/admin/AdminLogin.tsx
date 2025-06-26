@@ -19,8 +19,11 @@ const AdminLogin = () => {
       onSuccess: (data: any) => {
         setIsSending(false);
         console.log(data);
-                  communityToast.success({title : data?.message});
-        
+        communityToast.success({
+          title: data?.message,
+          description: "User authenticated successfully",
+        });
+
         dispatch(adminLogin(data.data));
         navigate("/admin/dashboard");
       },

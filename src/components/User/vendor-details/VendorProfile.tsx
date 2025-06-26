@@ -3,28 +3,17 @@ import {
   MapPin,
   Star,
   Award,
-  MessageCircle,
-  Calendar,
   ArrowRight,
-  User,
-  Image as ImageIcon,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { IVendorDetails } from "@/types/interfaces/vendor";
 import { ImageWithFallback, ImageWithFallbackForWork } from "../ImageFallBack";
 
-// Define the Vendor type
 interface VendorProfileProps {
   vendor: IVendorDetails;
 }
 
-// Fallback image component
-
-
-export default function VendorProfile({ vendor }: VendorProfileProps) {
-
-  // Safe access to work sample image
+export function VendorProfile({ vendor }: VendorProfileProps) {
   const heroImage = vendor?.workSamples?.[0]?.media?.[0];
   const profileImage = vendor?.profileImage;
 
@@ -44,11 +33,11 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
           fallbackType="work"
         />
 
-        {/* Gradient overlay for better text readability */}
+        {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
         <div className="absolute bottom-0 left-0 p-8 z-20">
-          <h1 className=" text-3xl md:text-4xl lg:text-5xl text-white mb-2">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl text-white mb-2">
             {vendor?.name || "Vendor Name"}
           </h1>
           <div className="flex items-center gap-4 text-white/80">
@@ -68,9 +57,9 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
 
       {/* Profile Content */}
       <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-8">
-        {/* Left Column - Profile Image and Quick Actions */}
-        <div className="space-y-6">
-          <div className="relative">
+        {/* Left Column - Profile Image */}
+        <div className="flex flex-col items-center lg:items-start space-y-6">
+          <div className="relative w-32 h-32 sm:w-60 sm:h-6 0 lg:w-full lg:h-auto">
             <div className="aspect-square w-full overflow-hidden rounded-xl border border-border/10">
               <ImageWithFallback
                 src={profileImage}
@@ -81,7 +70,7 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
             </div>
             {vendor?.isVerified === "accept" && (
               <div className="absolute -bottom-3 left-1/2 -translate-x-1/2">
-                <Badge className=" px-4 py-1 flex items-center gap-1.5">
+                <Badge className="px-4 py-1 flex items-center gap-1.5">
                   <Award className="h-3.5 w-3.5" />
                   <span className="text-xs uppercase tracking-wider">
                     Verified Pro
@@ -95,20 +84,18 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
         {/* Right Column - Bio and Details */}
         <div className="space-y-8">
           <div className="space-y-4">
-            <h2 className=" text-2xl text-foreground">About</h2>
+            <h2 className="text-2xl text-foreground">About</h2>
             <p className="text-muted-foreground leading-relaxed">
               {vendor?.description || "No description available yet."}
             </p>
           </div>
 
-          {/* Only show specialties if they exist */}
+          {/* Specialties */}
           {vendor?.services?.[0]?.styleSpecialty &&
             vendor.services[0].styleSpecialty.length > 0 && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className=" text-2xl text-foreground">
-                    Specialties
-                  </h2>
+                  <h2 className="text-2xl text-foreground">Specialties</h2>
                   <a
                     href="#services"
                     className="text-sm uppercase tracking-wider flex items-center gap-1 group text-foreground/80 hover:text-foreground"
@@ -131,13 +118,11 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
               </div>
             )}
 
-          {/* Only show languages if they exist */}
+          {/* Languages */}
           {vendor?.languages && vendor.languages.length > 0 && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className=" text-2xl text-foreground">
-                  Languages speak
-                </h2>
+                <h2 className="text-2xl text-foreground">Languages spoken</h2>
               </div>
               <div className="flex flex-wrap gap-2">
                 {vendor.languages.map((lang, index) => (
@@ -153,15 +138,13 @@ export default function VendorProfile({ vendor }: VendorProfileProps) {
             </div>
           )}
 
-          {/* Only show experience if it exists */}
+          {/* Experience */}
           {vendor?.services?.[0]?.yearsOfExperience && (
             <div className="space-y-4">
-              <h2 className=" text-2xl text-foreground">
-                Experience
-              </h2>
+              <h2 className="text-2xl text-foreground">Experience</h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-4 border border-border/10 rounded-lg bg-muted/5">
-                  <div className="text-3xl  text-foreground mb-1">
+                  <div className="text-3xl text-foreground mb-1">
                     {vendor.services[0].yearsOfExperience}
                   </div>
                   <div className="text-sm text-muted-foreground">

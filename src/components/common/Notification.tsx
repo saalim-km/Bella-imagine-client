@@ -22,6 +22,7 @@ import {
 } from "@/services/notification/notificationService";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { TRole } from "@/types/interfaces/User";
+import { useQueryClient } from "@tanstack/react-query";
 
 export type TNotificationType =
   | "booking"
@@ -66,11 +67,14 @@ export default function NotificationCard({
   userType,
   unReadCount,
 }: NotificationCardProps) {
+
+  const queryClient = useQueryClient()
   const mutateFn =
     userType === "client"
       ? updateClientNotificationService
       : updateVendorNotificationService;
   const { mutate: markAdRead } = useUpdateNotification(mutateFn);
+
   const clearMutateFn =
     userType === "client"
       ? deleteClientNotifications
@@ -117,6 +121,8 @@ export default function NotificationCard({
               page: 1,
             })
           );
+          queryClient.removeQueries({queryKey : ["notifications"]})
+          queryClient.invalidateQueries({queryKey : ['notifications']})
         }
       },
       onError: (err) => {
@@ -206,7 +212,6 @@ export default function NotificationCard({
                 Mark all as read
               </Button>
               <Button
-                disabled={!totalNotifications}
                 variant="link"
                 size="sm"
                 className="h-7 text-xs"

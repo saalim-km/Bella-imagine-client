@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { Bell, Menu, X, Search, Plus } from "lucide-react";
-import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -39,14 +38,17 @@ export default function Header({ onClick }: IHeader) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
   const user = useSelector((state: RootState) => {
     if (state.vendor.vendor) return state.vendor.vendor;
     if (state.client.client) return state.client.client;
     return null;
   });
+
   const { page, total, unReadCount, notifications } = useSelector(
     (state: RootState) => state.notification
   );
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -58,6 +60,7 @@ export default function Header({ onClick }: IHeader) {
       ? getAllVendorNotification
       : getAllClientNotification;
   const limit = 6;
+  
   const { data: notificationsData, isLoading } = useGetAllNotifications(
     queryFn,
     user?.role as TRole,
@@ -92,8 +95,8 @@ export default function Header({ onClick }: IHeader) {
   const logoutUser = () => {
     logout(undefined, {
       onSuccess: (data: any) => {
-                  communityToast.success({title : data?.message});
-        
+        communityToast.success({ title: data?.message });
+
         if (user?.role === "vendor") {
           dispatch(vendorLogout());
           if (socket) socket.disconnect();
@@ -234,7 +237,9 @@ export default function Header({ onClick }: IHeader) {
 
                         {/* Indicator Dot */}
 
-                        <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-background animate-pulse" />
+                        {unReadCount > 0 && (
+                          <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-background animate-pulse" />
+                        )}
                       </div>
                     </button>
                   </DropdownMenuTrigger>

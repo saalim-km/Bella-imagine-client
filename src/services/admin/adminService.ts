@@ -1,4 +1,48 @@
 import { adminAxiosInstance } from "@/api/admin.axios";
+import { BasePaginatedResponse } from "../client/clientService";
+
+
+
+export interface DashboardData {
+  totalClients: number
+  totalVendors: number
+  totalBookings: number
+  totalPosts: number
+  bookingTrends: Array<{ month: string; count: number }>
+  topPhotographers: Array<{ vendorId: string; name: string; profileImage?: string; bookingCount: number }>
+  newUsersTrend: Array<{ month: string; count: number }>
+  recentUsers: Array<{
+    _id: string
+    name: string
+    email: string
+    profileImage?: string
+    createdAt: string
+    role: string
+  }>
+  recentBookings: Array<{
+    _id: string
+    serviceDetails: { serviceTitle: string }
+    totalPrice: number
+    status: string
+    paymentStatus: string
+    createdAt: string
+    userId: { name: string }
+    vendorId: { name: string }
+  }>
+  recentPosts: Array<{
+    _id: string
+    title: string
+    content: string
+    mediaType: string
+    likeCount: number
+    commentCount: number
+    createdAt: string
+    userId: { name: string; profileImage?: string }
+    communityId: { name: string }
+    userType: string
+  }>
+  postDistribution: Array<{ mediaType: string; count: number }>
+}
 
 const AdminService = {
   get: async <T>(url: string, params?: any): Promise<T> => {
@@ -44,4 +88,9 @@ export const updateVendorRequestService = async(params : {reason ?: string , id 
     params : params
   })
   return response.data;
+}
+
+export const getDashBoardStatsService = async(): Promise<BasePaginatedResponse<DashboardData>> => {
+  const response = await adminAxiosInstance.get('/dashboard')
+  return response.data
 }

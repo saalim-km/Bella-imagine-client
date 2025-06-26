@@ -10,8 +10,8 @@ import ServiceCard from "@/components/User/vendor-details/ServiceCard";
 import Pagination from "@/components/common/Pagination";
 import { ServiceDetailsModal } from "@/components/modals/ServiceDetailsModal";
 import WorkSample from "@/components/User/vendor-details/WorkSample";
-import VendorProfile from "./VendorProfile";
 import { LoadingBar } from "@/components/ui/LoadBar";
+import { VendorProfile } from "./VendorProfile";
 
 const VendorDetails = () => {
  const { id } = useParams() as { id: string }

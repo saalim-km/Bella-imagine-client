@@ -336,7 +336,7 @@ export default function CommunityHome() {
                         <AvatarFallback>{activity.photographer.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       {activity.photographer.isOnline && (
-                        <div className="absolute top-0 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 animate-pulse" />
+                        <div className="absolute bottom-0 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 animate-pulse" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -392,7 +392,7 @@ export default function CommunityHome() {
                       <AvatarFallback>{photographer.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     {photographer.isOnline && (
-                      <div className="absolute top-0 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 animate-pulse" />
+                      <div className="absolute bottom-0 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 animate-pulse" />
                     )}
                   </div>
                   <div className="flex items-center gap-1">

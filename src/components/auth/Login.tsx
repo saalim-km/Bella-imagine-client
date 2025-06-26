@@ -1,35 +1,49 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Formik, Form, Field, ErrorMessage } from "formik"
-import { loginSchema } from "@/utils/formikValidators/auth/login.validator"
-import GoogleAuth from "./GoogleAuth"
-import type { ILogin, TRole } from "@/types/interfaces/User"
-import type { CredentialResponse } from "@react-oauth/google"
-import { useGoogleLoginMutataion } from "@/hooks/auth/useGoogleLogin"
-import { toast } from "sonner"
-import { useDispatch } from "react-redux"
-import { clientLogin } from "@/store/slices/clientSlice"
-import { handleError } from "@/utils/Error/error-handler.utils"
-import { vendorLogin } from "@/store/slices/vendorSlice"
-import { useSocket } from "@/context/SocketContext"
-import { useState } from "react"
-import { Eye, EyeOff, Camera, Users, Star, Heart, MapPin, Award } from 'lucide-react'
-import { communityToast } from "../ui/community-toast"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import { loginSchema } from "@/utils/formikValidators/auth/login.validator";
+import GoogleAuth from "./GoogleAuth";
+import type { ILogin, TRole } from "@/types/interfaces/User";
+import type { CredentialResponse } from "@react-oauth/google";
+import { useGoogleLoginMutataion } from "@/hooks/auth/useGoogleLogin";
+import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { clientLogin } from "@/store/slices/clientSlice";
+import { handleError } from "@/utils/Error/error-handler.utils";
+import { vendorLogin } from "@/store/slices/vendorSlice";
+import { useSocket } from "@/context/SocketContext";
+import { useState } from "react";
+import {
+  Eye,
+  EyeOff,
+  Camera,
+  Users,
+  Star,
+  Heart,
+  MapPin,
+  Award,
+} from "lucide-react";
+import { communityToast } from "../ui/community-toast";
 
 interface LoginProps {
-  onClick?: () => void
-  userType: TRole
-  onSubmit: (data: ILogin) => void
-  isSending: boolean
+  onClick?: () => void;
+  userType: TRole;
+  onSubmit: (data: ILogin) => void;
+  isSending: boolean;
 }
 
-export default function CommunityLogin({ userType, onSubmit, isSending, onClick }: LoginProps) {
-  const dispatch = useDispatch()
-  const { mutate: Login } = useGoogleLoginMutataion()
-  const { reconnect, socket } = useSocket()
-  const [showPassword, setShowPassword] = useState(false)
+export default function CommunityLogin({
+  userType,
+  onSubmit,
+  isSending,
+  onClick,
+}: LoginProps) {
+  const dispatch = useDispatch();
+  const { mutate: Login } = useGoogleLoginMutataion();
+  const { reconnect, socket } = useSocket();
+  const [showPassword, setShowPassword] = useState(false);
 
   function handleGoogleLogin(credentialResponse: CredentialResponse) {
     Login(
@@ -40,9 +54,9 @@ export default function CommunityLogin({ userType, onSubmit, isSending, onClick 
       },
       {
         onSuccess: (data) => {
-          console.log(data)
-                    communityToast.success({title : data?.message});
-          
+          console.log(data);
+          communityToast.success({ title: data?.message , description : 'User authenticated successfully'});
+
           if (userType === "vendor") {
             dispatch(
               vendorLogin({
@@ -51,10 +65,10 @@ export default function CommunityLogin({ userType, onSubmit, isSending, onClick 
                 email: data.user.email,
                 avatar: data.user.avatar,
                 role: data.user.role,
-              }),
-            )
+              })
+            );
             if (socket) {
-              reconnect()
+              reconnect();
             }
           } else {
             dispatch(
@@ -64,18 +78,18 @@ export default function CommunityLogin({ userType, onSubmit, isSending, onClick 
                 email: data.user.email,
                 avatar: data.user.avatar,
                 role: data.user.role,
-              }),
-            )
+              })
+            );
             if (socket) {
-              reconnect()
+              reconnect();
             }
           }
         },
         onError: (error) => {
-          handleError(error)
+          handleError(error);
         },
-      },
-    )
+      }
+    );
   }
 
   return (
@@ -83,8 +97,14 @@ export default function CommunityLogin({ userType, onSubmit, isSending, onClick 
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-10 w-32 h-32 bg-orange-200 rounded-full opacity-20 float-animation" />
-        <div className="absolute top-40 right-20 w-24 h-24 bg-blue-200 rounded-full opacity-20 float-animation" style={{ animationDelay: '2s' }} />
-        <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-orange-100 rounded-full opacity-30 float-animation" style={{ animationDelay: '4s' }} />
+        <div
+          className="absolute top-40 right-20 w-24 h-24 bg-blue-200 rounded-full opacity-20 float-animation"
+          style={{ animationDelay: "2s" }}
+        />
+        <div
+          className="absolute bottom-20 left-1/4 w-40 h-40 bg-orange-100 rounded-full opacity-30 float-animation"
+          style={{ animationDelay: "4s" }}
+        />
       </div>
 
       <div className="relative z-10 min-h-screen flex">
@@ -93,11 +113,11 @@ export default function CommunityLogin({ userType, onSubmit, isSending, onClick 
           {/* Main Hero Image */}
           <div className="absolute inset-0">
             <img
-              src = {`https://picsum.photos/seed/${Math.random()}/800/600`}
+              src={`https://picsum.photos/seed/${Math.random()}/800/600`}
               alt="Photography community"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-900/80 via-gray-800/20 to-transparent"/>
+            <div className="absolute inset-0 bg-gradient-to-r from-gray-900/80 via-gray-800/20 to-transparent" />
           </div>
 
           {/* Community Stats Overlay */}
@@ -109,10 +129,9 @@ export default function CommunityLogin({ userType, onSubmit, isSending, onClick 
                 <span className="text-orange-300">Community</span>
               </h1>
               <p className="text-xl text-orange-100 mb-8 max-w-md">
-                {userType === "vendor" 
+                {userType === "vendor"
                   ? "Showcase your talent, connect with clients, and grow your photography business"
-                  : "Discover amazing photographers, book sessions, and capture your precious moments"
-                }
+                  : "Discover amazing photographers, book sessions, and capture your precious moments"}
               </p>
             </div>
 
@@ -156,9 +175,13 @@ export default function CommunityLogin({ userType, onSubmit, isSending, onClick 
             {/* Header */}
             <div className="text-center space-y-4">
               <div className="flex justify-center">
-                <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
-                  userType === "vendor" ? "community-gradient" : "photographer-gradient"
-                }`}>
+                <div
+                  className={`w-16 h-16 rounded-full flex items-center justify-center ${
+                    userType === "vendor"
+                      ? "community-gradient"
+                      : "photographer-gradient"
+                  }`}
+                >
                   {userType === "vendor" ? (
                     <Camera className="w-8 h-8 text-white" />
                   ) : (
@@ -166,17 +189,20 @@ export default function CommunityLogin({ userType, onSubmit, isSending, onClick 
                   )}
                 </div>
               </div>
-              
+
               {userType === "admin" ? (
-                <h2 className="text-3xl font-bold text-gray-900">Admin Portal</h2>
+                <h2 className="text-3xl font-bold text-gray-900">
+                  Admin Portal
+                </h2>
               ) : (
                 <div>
-                  <h2 className="text-3xl font-bold text-gray-900">Welcome Back!</h2>
+                  <h2 className="text-3xl font-bold text-gray-900">
+                    Welcome Back!
+                  </h2>
                   <p className="text-gray-600 mt-2">
-                    {userType === "vendor" 
-                      ? "Continue building your photography business" 
-                      : "Ready to find your perfect photographer?"
-                    }
+                    {userType === "vendor"
+                      ? "Continue building your photography business"
+                      : "Ready to find your perfect photographer?"}
                   </p>
                 </div>
               )}
@@ -191,15 +217,18 @@ export default function CommunityLogin({ userType, onSubmit, isSending, onClick 
                   email: values.email,
                   password: values.password,
                   role: userType,
-                }
-                setSubmitting(false)
-                onSubmit(loginData)
+                };
+                setSubmitting(false);
+                onSubmit(loginData);
               }}
             >
               {({ isSubmitting }) => (
                 <Form className="space-y-6">
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
                       Email Address
                     </label>
                     <Field
@@ -209,11 +238,18 @@ export default function CommunityLogin({ userType, onSubmit, isSending, onClick 
                       as={Input}
                       className="h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500 text-black"
                     />
-                    <ErrorMessage name="email" component="div" className="text-red-600 text-sm mt-1" />
+                    <ErrorMessage
+                      name="email"
+                      component="div"
+                      className="text-red-600 text-sm mt-1"
+                    />
                   </div>
 
                   <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label
+                      htmlFor="password"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
                       Password
                     </label>
                     <div className="relative">
@@ -236,23 +272,31 @@ export default function CommunityLogin({ userType, onSubmit, isSending, onClick 
                         )}
                       </button>
                     </div>
-                    <ErrorMessage name="password" component="div" className="text-red-600 text-sm mt-1" />
+                    <ErrorMessage
+                      name="password"
+                      component="div"
+                      className="text-red-600 text-sm mt-1"
+                    />
 
-                    <div className="mt-2 text-right">
-                      <a
-                        href={`/${userType}/forgot-password`}
-                        className="text-sm text-orange-700 hover:text-orange-800 hover:underline"
-                      >
-                        Forgot password?
-                      </a>
-                    </div>
+                    {userType !== "admin" && (
+                      <div className="mt-2 text-right">
+                        <a
+                          href={`/${userType}/forgot-password`}
+                          className="text-sm text-orange-700 hover:text-orange-800 hover:underline"
+                        >
+                          Forgot password?
+                        </a>
+                      </div>
+                    )}
                   </div>
 
                   <Button
                     type="submit"
                     disabled={isSubmitting || isSending}
                     className={`w-full h-12 text-white font-medium ${
-                      userType === "vendor" ? "community-gradient" : "photographer-gradient"
+                      userType === "vendor"
+                        ? "community-gradient"
+                        : "photographer-gradient"
                     } hover:opacity-90`}
                   >
                     {isSending ? "Signing in..." : "Sign In to Community"}
@@ -261,44 +305,59 @@ export default function CommunityLogin({ userType, onSubmit, isSending, onClick 
               )}
             </Formik>
 
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">or continue with</span>
-              </div>
-            </div>
+            {userType !== "admin" && (
+              <>
+                {/* Divider */}
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-300" />
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-white text-gray-500">
+                      or continue with
+                    </span>
+                  </div>
+                </div>
 
-            {/* Google Auth */}
-            {location.pathname !== "/admin/login" && (
-              <div className="flex justify-center">
-                <GoogleAuth handleGoogleSuccess={handleGoogleLogin} />
-              </div>
+                {/* Google Auth */}
+                {location.pathname !== "/admin/login" && (
+                  <div className="flex justify-center">
+                    <GoogleAuth handleGoogleSuccess={handleGoogleLogin} />
+                  </div>
+                )}
+
+                {/* Footer Links */}
+                <div className="text-center space-y-3">
+                  <p className="text-sm text-gray-600">
+                    New to our community?{" "}
+                    <a
+                      href={
+                        userType === "vendor" ? "/vendor/signup" : "/signup"
+                      }
+                      className="text-orange-700 hover:text-orange-800 font-medium hover:underline"
+                    >
+                      Join now
+                    </a>
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {userType === "client"
+                      ? "Want to become a photographer?"
+                      : "Looking to hire photographers?"}{" "}
+                    <button
+                      onClick={onClick}
+                      className="text-orange-700 hover:text-orange-800 font-medium hover:underline"
+                    >
+                      Switch to{" "}
+                      {userType === "client" ? "photographer" : "client"}{" "}
+                      account
+                    </button>
+                  </p>
+                </div>
+              </>
             )}
-
-            {/* Footer Links */}
-            <div className="text-center space-y-3">
-              <p className="text-sm text-gray-600">
-                New to our community?{" "}
-                <a
-                  href={userType === "vendor" ? "/vendor/signup" : "/signup"}
-                  className="text-orange-700 hover:text-orange-800 font-medium hover:underline"
-                >
-                  Join now
-                </a>
-              </p>
-              <p className="text-sm text-gray-600">
-                {userType === "client" ? "Want to become a photographer?" : "Looking to hire photographers?"}{" "}
-                <button onClick={onClick} className="text-orange-700 hover:text-orange-800 font-medium hover:underline">
-                  Switch to {userType === "client" ? "photographer" : "client"} account
-                </button>
-              </p>
-            </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
