@@ -20,6 +20,7 @@ import { LoadingOverlay } from "@/components/modals/LoadingProcessBooking";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
 import { useSocket } from "@/context/SocketContext";
+import { communityToast } from "@/components/ui/community-toast";
 
 interface BookingPageProps {
   service: IServiceResponse;
@@ -110,7 +111,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
   };
 
   const handleConfirmBooking = () => {
-    toast.success("Booking confirmed!", {
+    communityToast.success({title : "Booking confirmed!",
       description: "Your booking has been confirmed successfully.",
     });
 

@@ -28,6 +28,7 @@ import {
 } from "@/services/notification/notificationService";
 import { TRole } from "@/types/interfaces/User";
 import { setNotifications, setPage } from "@/store/slices/notificationSlice";
+import { communityToast } from "../ui/community-toast";
 
 interface IHeader {
   onClick?: () => void;
@@ -91,7 +92,8 @@ export default function Header({ onClick }: IHeader) {
   const logoutUser = () => {
     logout(undefined, {
       onSuccess: (data: any) => {
-        toast.success(data.message);
+                  communityToast.success({title : data?.message});
+        
         if (user?.role === "vendor") {
           dispatch(vendorLogout());
           if (socket) socket.disconnect();

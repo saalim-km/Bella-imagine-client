@@ -41,6 +41,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import Pagination from "@/components/common/Pagination";
 import { useNavigate } from "react-router-dom";
 import { LoadingBar } from "@/components/ui/LoadBar";
+import { communityToast } from "@/components/ui/community-toast";
 
 export function VendorRequestsTable() {
   const navigate = useNavigate();
@@ -145,7 +146,8 @@ export function VendorRequestsTable() {
         onSuccess: (data: any) => {
           setIsApproving(false);
           queryClient.invalidateQueries({ queryKey: vendorKeys.lists() });
-          toast.success(data.message);
+                    communityToast.success({title : data?.message});
+          
         },
         onError: (error) => {
           setIsApproving(false);
@@ -186,7 +188,8 @@ export function VendorRequestsTable() {
             queryClient.invalidateQueries({
               queryKey: ["vendor-notifications"],
             });
-            toast.success(data.message);
+                      communityToast.success({title : data?.message});
+
           },
           onError: (error) => {
             setIsApproving(false);

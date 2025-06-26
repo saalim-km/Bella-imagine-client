@@ -45,6 +45,7 @@ import { IService, IServiceResponse } from "@/types/interfaces/vendor";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
 import { IVendor } from "@/services/vendor/vendorService";
+import { communityToast } from "@/components/ui/community-toast";
 
 interface IServiceFormProps {
   handleIsCreatingService(state : boolean): void;
@@ -134,7 +135,8 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
           onSuccess : (data)=> {
             console.log(data);
             handleIsCreatingService(false)
-            toast.success(data.message)
+                      communityToast.success({title : data?.message});
+            
           },
           onError : (err)=> {
             handleError(err)
@@ -146,7 +148,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
           onSuccess: (data) => {
             handleIsCreatingService(false);
             localStorage.removeItem("serviceDraft");
-            toast.success("Service published successfully!");
+            communityToast.success({title : "Service published successfully!"});
           },
           onError: (err) => {
             handleError(err);

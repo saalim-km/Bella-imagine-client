@@ -5,7 +5,7 @@ import { useRegisterMutation } from "@/hooks/auth/useRegister";
 import { IUser } from "@/types/interfaces/User";
 import { toast } from "sonner";
 import { useSocket } from "@/context/SocketContext";
-import { UserLayout } from "@/components/layout/UserLayout";
+import { communityToast } from "@/components/ui/community-toast";
 
 const ClientSignup = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,7 +22,8 @@ const ClientSignup = () => {
   function handleRegister(data: IUser) {
     registerClient(data, {
       onSuccess: (data) => {
-        toast.success(data.message);
+                  communityToast.success({title : data?.message});
+        
         if (socket) {
           reconnect();
         }

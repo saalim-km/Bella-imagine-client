@@ -5,10 +5,15 @@ import { Heart, MessageSquare, Share2, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDistanceToNow } from 'date-fns';
 import CommunityLayout from '@/components/layout/CommunityLayout';
+import { useGetPostDetails } from '@/hooks/community-contest/useCommunity';
 
 const PostDetailPage: React.FC = () => {
   const { postId } = useParams();
-  
+  if(!postId) {
+    return <p>postid is required to fetch detials , please try again later</p>
+  }
+
+  const {data} = useGetPostDetails(postId)
   // In a real app, you would fetch this data based on postId
   const post = {
     id: '1',
@@ -60,7 +65,7 @@ const PostDetailPage: React.FC = () => {
     <CommunityLayout>
       <div className="space-y-6">
         {/* Post Content */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className=" rounded-lg shadow-sm border overflow-hidden">
           <div className="p-4">
             <div className="flex items-center mb-3">
               <Avatar className="h-10 w-10 mr-3">
@@ -68,15 +73,15 @@ const PostDetailPage: React.FC = () => {
                 <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="font-semibold">{post.author.name}</h3>
+                <h3 className="text-gray-900 dark:text-gray-100">{post.author.name}</h3>
                 <p className="text-xs text-gray-500">
                   {formatDistanceToNow(new Date(post.timestamp), { addSuffix: true })}
                 </p>
               </div>
             </div>
             
-            <h2 className="text-xl font-bold mb-2">{post.title}</h2>
-            <p className="text-gray-700 mb-4">{post.content}</p>
+            <h2 className="text-xl font-bold mb-2 text-gray-900 dark:text-gray-200">{post.title}</h2>
+            <p className="text-gray-700 dark:text-gray-400 mb-4">{post.content}</p>
             
             {post.media && (
               <div className="mb-4 rounded-lg overflow-hidden">
@@ -95,7 +100,7 @@ const PostDetailPage: React.FC = () => {
               </div>
             )}
             
-            <div className="flex justify-between items-center border-t border-gray-200 pt-3">
+            <div className="flex justify-between items-center border-t pt-3">
               <div className="flex space-x-4">
                 <Button 
                   variant="ghost" 
@@ -122,7 +127,7 @@ const PostDetailPage: React.FC = () => {
         </div>
 
         {/* Comment Form */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className=" rounded-lg shadow-sm border p-4">
           <div className="flex items-start space-x-3">
             <Avatar className="h-10 w-10">
               <AvatarImage src="https://example.com/current-user.jpg" />
@@ -130,7 +135,7 @@ const PostDetailPage: React.FC = () => {
             </Avatar>
             <div className="flex-1">
               <textarea
-                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-background"
                 placeholder="Add a comment..."
                 rows={3}
               />
@@ -146,7 +151,7 @@ const PostDetailPage: React.FC = () => {
           <h3 className="font-semibold text-lg">Comments ({comments.length})</h3>
           
           {comments.map((comment) => (
-            <div key={comment.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div key={comment.id} className=" rounded-lg shadow-sm border p-4">
               <div className="flex items-start space-x-3">
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={comment.author.avatar} />
@@ -154,12 +159,12 @@ const PostDetailPage: React.FC = () => {
                 </Avatar>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-semibold">{comment.author.name}</h4>
+                    <h4 className="text-gray-900 dark:text-gray-100">{comment.author.name}</h4>
                     <span className="text-xs text-gray-500">
                       {formatDistanceToNow(new Date(comment.timestamp), { addSuffix: true })}
                     </span>
                   </div>
-                  <p className="mt-1 text-gray-700">{comment.content}</p>
+                  <p className="mt-1 text-gray-200">{comment.content}</p>
                   <div className="mt-2">
                     <Button 
                       variant="ghost" 

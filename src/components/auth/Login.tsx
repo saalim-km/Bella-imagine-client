@@ -16,6 +16,7 @@ import { vendorLogin } from "@/store/slices/vendorSlice"
 import { useSocket } from "@/context/SocketContext"
 import { useState } from "react"
 import { Eye, EyeOff, Camera, Users, Star, Heart, MapPin, Award } from 'lucide-react'
+import { communityToast } from "../ui/community-toast"
 
 interface LoginProps {
   onClick?: () => void
@@ -40,7 +41,8 @@ export default function CommunityLogin({ userType, onSubmit, isSending, onClick 
       {
         onSuccess: (data) => {
           console.log(data)
-          toast.success(data.message)
+                    communityToast.success({title : data?.message});
+          
           if (userType === "vendor") {
             dispatch(
               vendorLogin({

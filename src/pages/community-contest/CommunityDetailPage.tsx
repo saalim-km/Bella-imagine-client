@@ -5,7 +5,6 @@ import { useDispatch } from "react-redux"
 import { MessageSquare, Users, Info, MessageCircle } from "lucide-react"
 import { PageLayout } from "@/components/community-contest/layout/CommunityLayout"
 import { Button } from "@/components/ui/button"
-import { CreatePostDialog } from "@/components/community-contest/CreatePostDialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PostsTab } from "@/components/community-contest/tab/PostTab"
 import { AboutTab } from "@/components/community-contest/tab/AboutTab"
@@ -29,7 +28,6 @@ const CommunityDetailPage = () => {
   const queryClient = useQueryClient()
   
   const [activeTab, setActiveTab] = useState("posts")
-  const [isCreatePostOpen, setIsCreatePostOpen] = useState(false)
   const [isJoining, setIsJoining] = useState(false)
   const [isLeaving, setIsLeaving] = useState(false)
 
@@ -198,13 +196,6 @@ const CommunityDetailPage = () => {
             </div>
           </div>
         </div>
-
-        <CreatePostDialog
-          isOpen={isCreatePostOpen}
-          onClose={() => setIsCreatePostOpen(false)}
-          communityId={community._id}
-          communityName={community.name}
-        />
       </div>
     </PageLayout>
   )

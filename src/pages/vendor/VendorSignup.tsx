@@ -1,6 +1,4 @@
 import Signup from "@/components/auth/SignUp";
-import Footer from "@/components/common/Footer";
-import Header from "@/components/common/Header";
 import AccountTypeModal from "@/components/modals/AccountTypeModal";
 import { useSocket } from "@/context/SocketContext";
 import { useRegisterMutation } from "@/hooks/auth/useRegister";
@@ -22,7 +20,8 @@ const VendorSignup = () => {
   function handleRegister(data: IUser) {
     registerClient(data, {
       onSuccess: (data) => {
-        toast.success(data.message);
+                  communityToast.success({title : data?.message});
+        
         if (socket) {
           reconnect();
         }

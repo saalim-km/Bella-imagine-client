@@ -110,7 +110,8 @@ export default function EditCommunityForm({ community, refetch }: CommunityFormP
           {
             onSuccess: (data) => {
               setIsSubmitting(false);
-              toast.success(data.message);
+                        communityToast.success({title : data?.message});
+              
               refetch();
               navigate("/admin/community");
             },

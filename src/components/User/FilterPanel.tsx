@@ -133,7 +133,7 @@ export const FilterPanel = ({ isOpen, onClose, onApplyFilters, currentFilters, v
         className={`fixed bottom-0 left-0 right-0 rounded-t-3xl shadow-2xl z-50  duration-300 transform ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         } bg-background`}
-        style={{ maxHeight: '70vh' }}
+        style={{ maxHeight: '90vh' }}
         aria-modal="true"
         role="dialog"
       >

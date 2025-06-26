@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { debounce } from "lodash";
+import { communityToast } from "@/components/ui/community-toast";
 
 // Define the Community interface
 
@@ -68,7 +69,8 @@ export default function Communities() {
   const handleDeleteCommunity = () => {
     deleteCommunity(communityToDelete as string, {
       onSuccess: (data) => {
-        toast.success(data.message);
+                  communityToast.success({title : data?.message});
+        
         setCommunityToDelete(null);
         refetchCommunities();
       },

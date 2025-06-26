@@ -1,5 +1,4 @@
-import { createCommunityService, createPostService, deleteCommunityService, getAllCommunitesAdmin, getAllCommunities, GetAllPostInput, getAllPostService, GetCommMemberInput, getCommunityBySlugForClient, getCommunityBySlugService, getCommunityMembersService, joinCommunityService, leaveCommunityService, updateCommunityService } from "@/services/community-contest/communityService"
-import { Community } from "@/types/interfaces/Community"
+import { createCommunityService, createPostService, deleteCommunityService, getAllCommunitesAdmin, getAllCommunities, GetAllPostInput, getAllPostService, GetCommMemberInput, getCommunityBySlugForClient, getCommunityBySlugService, getCommunityMembersService, getPostDetails, joinCommunityService, leaveCommunityService, updateCommunityService } from "@/services/community-contest/communityService"
 
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 
@@ -62,7 +61,6 @@ export const useGetAllCommunities = (
     queryKey: ["Communities_User", dto],
     queryFn: () => getAllCommunities(dto),
     placeholderData: keepPreviousData, 
-    staleTime : 1000 * 60 * 5 // 15 minutes
   });
 };
 
@@ -96,7 +94,7 @@ export const useGetAllPost = (input : GetAllPostInput)=> {
     return useQuery({
         queryKey : ['community-post',input],
         queryFn : ()=> getAllPostService(input),
-        staleTime : 1000 * 60 * 5 // 15 minutes
+        staleTime : 1000 * 60 * 1 
     })
 }
 
@@ -104,7 +102,14 @@ export const useGetCommunityPosts = (input: GetAllPostInput) => {
   return useQuery({
     queryKey: ["community-post-details", input],
     queryFn: () => getAllPostService(input),
-    staleTime : 1000 * 60 * 5, // 15 minutes
+    staleTime : 1000 * 60 * 1, 
     enabled : input.enabled
   })
+}
+
+export const useGetPostDetails = (postId : string)=> {
+    return useQuery({
+        queryKey: ['post',postId],
+        queryFn : ()=> getPostDetails(postId)
+    })
 }

@@ -14,6 +14,7 @@ import { Community } from "@/types/interfaces/Community";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { useAllCategoryQuery } from "@/hooks/admin/useAllCategory";
+import { communityToast } from "@/components/ui/community-toast";
 
 interface CommunityFormProps {
   initialData?: {
@@ -116,7 +117,8 @@ export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps)
         console.log("new community data: ", formData);
         createCommunity(formData as unknown as Partial<Community>, {
           onSuccess: (data) => {
-            toast.success(data.message);
+                      communityToast.success({title : data?.message});
+            
             navigate("/admin/community");
           },
           onError: (error) => {

@@ -8,6 +8,7 @@ import { clientLogin } from "@/store/slices/clientSlice";
 import { useState } from "react";
 import { useSocket } from "@/context/SocketContext";
 import AccountTypeModal from "@/components/modals/AccountTypeModal";
+import { communityToast } from "@/components/ui/community-toast";
 
 const ClientLogin = () => {
   const { reconnect, socket } = useSocket();
@@ -26,7 +27,8 @@ const ClientLogin = () => {
     login(user, {
       onSuccess: (data: any) => {
         setIsSending(false);
-        toast.success(data.message);
+        communityToast.success({ title: data?.message });
+
         dispatch(clientLogin(data.data));
         if (socket) {
           reconnect();

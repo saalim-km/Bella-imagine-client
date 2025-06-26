@@ -26,6 +26,7 @@ import { CommunityGrid } from "@/components/community-contest/CommunityGrid";
 import { CreateCommunityDialog } from "@/components/community-contest/CreateCommunityDialogue";
 import { useGetAllCommunities } from "@/hooks/community-contest/useCommunity";
 import { useAllClientCategories } from "@/hooks/client/useClient";
+import { communityToast } from "@/components/ui/community-toast";
 
 const Communities = () => {
   const [page, setPage] = useState(1);
@@ -62,13 +63,14 @@ const Communities = () => {
 
   const handleCreateCommunity = (communityData: any) => {
     console.log("Creating community:", communityData);
-    toast.success("Community created successfully! Awaiting approval.");
+              communityToast.success({title : data?.message});
+    
     setIsCreateDialogOpen(false);
   };
 
   return (
     <PageLayout>
-      <div className="space-y-6">
+      <div className="space-y-8 mt-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="text-xs px-2 py-0 h-5">

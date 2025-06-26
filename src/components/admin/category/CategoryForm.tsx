@@ -2,15 +2,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { categoryKeys, updateCategory, useAllCategoryMutation } from "@/hooks/admin/useAllCategory";
+import {
+  categoryKeys,
+  updateCategory,
+  useAllCategoryMutation,
+} from "@/hooks/admin/useAllCategory";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { AxiosResponse } from "@/hooks/auth/useOtpVerify";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { CategoryFormProps } from "@/types/component-types/admin-component.types";
-
-
+import { communityToast } from "@/components/ui/community-toast";
 
 const CategorySchema = Yup.object().shape({
   title: Yup.string().trim().required("Category title is required"),
@@ -39,29 +42,39 @@ export function CategoryForm({ initialData, onClose }: CategoryFormProps) {
           const isActive = values.status === "active";
 
           if (initialData) {
-            updateCategoryMutate({id : initialData._id , data : {
-              title : values.title,
-              status : isActive
-            }},
+            updateCategoryMutate(
+              {
+                id: initialData._id,
+                data: {
+                  title: values.title,
+                  status: isActive,
+                },
+              },
               {
                 onSuccess: (data) => {
-                  toast.success(data.message);
-                  queryClient.invalidateQueries({ queryKey: categoryKeys.lists() });
+                  communityToast.success({ title: data?.message });
+
+                  queryClient.invalidateQueries({
+                    queryKey: categoryKeys.lists(),
+                  });
                   onClose();
                 },
                 onError: (err) => {
                   handleError(err);
                 },
               }
-            )
+            );
           } else {
             addCategory(
               { title: values.title, status: isActive },
               {
                 onSuccess: (data) => {
                   const response = data as AxiosResponse;
-                  toast.success(response.message);
-                  queryClient.invalidateQueries({ queryKey: categoryKeys.lists() });
+                  communityToast.success({ title: response?.message });
+
+                  queryClient.invalidateQueries({
+                    queryKey: categoryKeys.lists(),
+                  });
                   onClose();
                 },
                 onError: (err) => {
@@ -84,7 +97,11 @@ export function CategoryForm({ initialData, onClose }: CategoryFormProps) {
 
             <div className="mb-4">
               <Label htmlFor="status">Status</Label>
-              <Field as="select" name="status" className="border p-2 rounded w-full">
+              <Field
+                as="select"
+                name="status"
+                className="border p-2 rounded w-full"
+              >
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </Field>

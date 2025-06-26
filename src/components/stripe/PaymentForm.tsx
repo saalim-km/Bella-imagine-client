@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import type { Booking } from "@/types/interfaces/User";
 import { useVendorBookingPaymentMutation } from "@/hooks/payment/usePayment";
 import { clientAxiosInstance } from "@/api/client.axios";
+import { communityToast } from "../ui/community-toast";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
@@ -77,7 +78,7 @@ const PaymentForm: React.FC<PaymentWrapperProps> = ({
               onError(stripeError.message || "Payment failed");
             } else if (paymentIntent?.status === "succeeded") {
               setIsSuccess();
-              toast.success("Payment completed", {
+              communityToast.success({title : "Payment completed", 
                 description: "Your payment has been successfully completed.",
               });
             }

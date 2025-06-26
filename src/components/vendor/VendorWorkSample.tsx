@@ -13,6 +13,7 @@ import { Badge } from "../ui/badge";
 import { ReusableAlertDialog } from "../common/AlertDialogue";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
+import { communityToast } from "../ui/community-toast";
 
 interface IVendorWorkSamplePageProps {
   handleIsCreateWorkSample(): void;
@@ -66,7 +67,8 @@ const VendorWorkSample = ({ handleIsCreateWorkSample , handleIsWorkSampleEditing
     setIsWorkSampleDelete(!isWorkSampleDelete);
     deleteWorkSample(worksampleId,{
       onSuccess : (data)=> {
-        toast.success(data.message);
+                  communityToast.success({title : data?.message});
+        
         refetch()
       },
       onError : (err)=> {

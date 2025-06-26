@@ -19,6 +19,7 @@ import { clientLogin } from "@/store/slices/clientSlice"
 import { useDispatch } from "react-redux"
 import { vendorLogin } from "@/store/slices/vendorSlice"
 import { Eye, EyeOff, Camera, Users, Sparkles, Zap, Globe, TrendingUp } from "lucide-react"
+import { communityToast } from "../ui/community-toast"
 
 interface SignUpProps {
   onSubmit: (data: IUser) => void
@@ -49,7 +50,8 @@ export default function CommunitySignup({ onSubmit, userType, onClick }: SignUpP
       { url: "/send-otp", email: user.email, role: userType },
       {
         onSuccess: (data) => {
-          toast.success(data.message)
+                    communityToast.success({title : data?.message});
+          
           setUserData(user)
           setIsSending(false)
           setIsOtpModalOpen(true)
@@ -69,7 +71,8 @@ export default function CommunitySignup({ onSubmit, userType, onClick }: SignUpP
       {
         onSuccess: (data) => {
           submitRegister()
-          toast.success(data.message)
+                    communityToast.success({title : data?.message});
+
           setIsOtpModalOpen(false)
           navigate("/login")
         },
@@ -90,7 +93,8 @@ export default function CommunitySignup({ onSubmit, userType, onClick }: SignUpP
       {
         onSuccess: (data) => {
           console.log("after google register of user : ", data)
-          toast.success(data.message)
+                    communityToast.success({title : data?.message});
+
           if (userType === "vendor") {
             dispatch(
               vendorLogin({

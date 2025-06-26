@@ -23,6 +23,7 @@ import { toast } from "sonner"
 import { adminLogout } from "@/store/slices/adminSlice"
 import ThemeToggle from "@/components/common/ThemeToggle"
 import { handleError } from "@/utils/Error/error-handler.utils"
+import { communityToast } from "../ui/community-toast"
 
 interface AdminLayoutProps {
   children: ReactNode
@@ -39,7 +40,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   function handleLogout() {
     logout(undefined,{
         onSuccess : (data)=> {
-            toast.success(data.message);
+                      communityToast.success({title : data?.message});
+            
             dispatch(adminLogout())
         },
         onError : (error)=> {

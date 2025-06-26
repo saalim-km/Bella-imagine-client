@@ -20,6 +20,7 @@ import {
   FREE_RADIUS_KM,
 } from "@/utils/helper/distance-calculator";
 import { libraries } from "@/utils/config/map.config";
+import { communityToast } from "@/components/ui/community-toast";
 
 interface LocationData {
   address: string;
@@ -94,7 +95,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
             })`,
           });
         } else {
-          toast.success("Within free service area!", {
+          communityToast.success( { title : "Within free service area!",
             description: `Distance: ${result.distance.toFixed(2)}km (${
               result.travelTime
             })`,
@@ -184,7 +185,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
       inputRef.current.value = "";
     }
 
-    toast.success("Location removed", {
+    communityToast.success({ title : "Location removed", 
       description: "Travel fee has been removed from your booking.",
     });
   }, [onLocationChange]);

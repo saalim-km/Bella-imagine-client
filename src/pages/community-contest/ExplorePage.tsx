@@ -73,7 +73,7 @@ const ExplorePage: React.FC = () => {
 
       if (success) {
         const isLiked = action === "like"
-        dispatch(toggleLike({ postId, isLiked }))
+        dispatch(toggleLike({ postId : postId , isLiked : isLiked }))
 
         communityToast.success({
           title: "Success",

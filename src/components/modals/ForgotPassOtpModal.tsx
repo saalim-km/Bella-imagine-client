@@ -21,6 +21,7 @@ import { useOtpVerifyMutataion } from "@/hooks/auth/useOtpVerify"
 import { toast } from "sonner"
 import { useSendOtp } from "@/hooks/auth/useSendOtp"
 import { handleError } from "@/utils/Error/error-handler.utils"
+import { communityToast } from "../ui/community-toast"
 
 const formSchema = z.object({
   otp: z.string().min(6, { message: "OTP must be 6 digits" }),
@@ -77,7 +78,8 @@ export function OTPVerificationModal({ isOpen, email, userType }: OTPVerificatio
     setIsVerifying(true)
     verifyOtp({ email, otp: data.otp }, {
       onSuccess: (data) => {
-        toast.success(data.message)
+                  communityToast.success({title : data?.message});
+        
         setIsVerified(true)
         setIsVerifying(false)
         setShowPasswordForm(true)
@@ -92,7 +94,8 @@ export function OTPVerificationModal({ isOpen, email, userType }: OTPVerificatio
   const handleResendOTP = () => {
     resendOtp({ url: '/forgot-password/send-otp', email: email , userType : userType }, {
       onSuccess: (data) => {
-        toast.success(data.message)
+                  communityToast.success({title : data?.message});
+
         startTimer()
       },
       onError: (error) => {

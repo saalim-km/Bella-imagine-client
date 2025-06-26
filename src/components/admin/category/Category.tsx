@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { Input } from "@/components/ui/input";
 import { LoadingBar } from "@/components/ui/LoadBar";
+import { communityToast } from "@/components/ui/community-toast";
 
 export function CategoryManagement() {
   const [searchTerm, setSerachTerm] = useState("");
@@ -82,7 +83,7 @@ export function CategoryManagement() {
       {
         onSuccess: (data: any) => {
           refetch();
-          toast.success(data?.message);
+          communityToast.success({title : data?.message});
         },
         onError: (err) => {
           handleError(err);

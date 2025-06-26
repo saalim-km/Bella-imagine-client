@@ -38,6 +38,7 @@ import { TRole } from "@/types/interfaces/User";
 import Pagination from "@/components/common/Pagination";
 import { Spinner } from "@/components/ui/spinner";
 import { PaymentStatus, TBookingStatus } from "@/types/interfaces/Payment";
+import { communityToast } from "@/components/ui/community-toast";
 
 interface FilterState {
   status: string;
@@ -60,7 +61,7 @@ export interface BookingList {
     _id: string;
     name: string;
   };
-  adminCommision : number;
+  adminCommision: number;
   paymentId: string | null;
   isClientApproved: boolean;
   isVendorApproved: boolean;
@@ -220,7 +221,7 @@ export default function ClientBookingList({
       updateBookingStatus(
         { bookingId, status },
         {
-          onSuccess: (data) => toast.success(data.message),
+          onSuccess: (data) => communityToast.success({ title: data?.message }),
           onError: (error: any) => toast.error(error.response.data.message),
         }
       );

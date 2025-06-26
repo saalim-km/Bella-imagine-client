@@ -41,7 +41,7 @@ export const useAllClientCategories = ()=> {
   return useQuery({
     queryKey : ["client-categories"],
     queryFn : getAllClientCategories,
-    staleTime : 1000 * 60 * 5 // 15 minutes
+    staleTime : 1000 * 60 * 5 // 5 minutes
   })
 }
 

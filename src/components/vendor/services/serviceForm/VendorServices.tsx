@@ -35,6 +35,7 @@ import { Badge } from "../../../ui/badge";
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
+import { communityToast } from "@/components/ui/community-toast";
 
 interface IVendorServicesPageProps {
   handleIsCreateService(state: boolean): void;
@@ -46,13 +47,13 @@ const VendorServicesPage = ({
   handleIsEditingService,
 }: IVendorServicesPageProps) => {
   const { data: categories } = useAllVendorCategoryQuery();
-  const [isDeleteModal , setDeleteModal]  = useState(false)
+  const [isDeleteModal, setDeleteModal] = useState(false);
   console.log("categoriees : ", categories);
   const [searchTerm, setSearchTerm] = useState("");
   const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
   const [filters, setFilters] = useState({ category: "", location: "" });
-  const {mutate : deleteService} = useDeleteService()
-  const [serviceId , setServiceId] = useState<string>('')
+  const { mutate: deleteService } = useDeleteService();
+  const [serviceId, setServiceId] = useState<string>("");
   const [appliedFilters, setAppliedFilters] = useState({
     category: "",
     location: "",
@@ -67,7 +68,7 @@ const VendorServicesPage = ({
     limit: 3,
   };
 
-  const { data, isLoading, error , refetch } = useVendorServices(queryFilters);
+  const { data, isLoading, error, refetch } = useVendorServices(queryFilters);
 
   const handleSearch = () => {
     setAppliedSearchTerm(searchTerm);
@@ -79,29 +80,29 @@ const VendorServicesPage = ({
     setCurrentPage(1);
   };
 
-  const handleServiceDelete = (serviceId : string)=> {
-    setDeleteModal(true)
-    setServiceId(serviceId)
-  }
+  const handleServiceDelete = (serviceId: string) => {
+    setDeleteModal(true);
+    setServiceId(serviceId);
+  };
 
   const handleDeleteServiceSucess = () => {
-    if(!serviceId){
-      toast.error('service id is requird to delete')
-      setServiceId('');
+    if (!serviceId) {
+      toast.error("service id is requird to delete");
+      setServiceId("");
       setDeleteModal(false);
       return;
     }
-    deleteService(serviceId,{
-      onSuccess : (data)=> {
-        refetch()
-        setDeleteModal(false)
-        toast.success(data.message)
+    deleteService(serviceId, {
+      onSuccess: (data) => {
+        refetch();
+        setDeleteModal(false);
+        communityToast.success({ title: data?.message });
       },
-      onError : (err)=> {
-        setDeleteModal(false)
-        handleError(err)
-      }
-    })
+      onError: (err) => {
+        setDeleteModal(false);
+        handleError(err);
+      },
+    });
   };
 
   useEffect(() => {
@@ -256,7 +257,12 @@ const VendorServicesPage = ({
                     >
                       Edit
                     </Button>
-                    <Button className="ml-1" variant="destructive" size="sm" onClick={()=> handleServiceDelete(service._id!)}>
+                    <Button
+                      className="ml-1"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleServiceDelete(service._id!)}
+                    >
                       Delete
                     </Button>
                   </CardFooter>
@@ -279,9 +285,9 @@ const VendorServicesPage = ({
       </div>
 
       <ReusableAlertDialog
-        onCancel={()=> setDeleteModal(false)}
+        onCancel={() => setDeleteModal(false)}
         onConfirm={handleDeleteServiceSucess}
-        open = {isDeleteModal}
+        open={isDeleteModal}
       />
     </>
   );

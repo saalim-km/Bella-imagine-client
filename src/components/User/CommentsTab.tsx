@@ -92,13 +92,12 @@ export function CommentsTab({ userRole }: CommentsTabProps) {
 
   const handleEditComment = (commentId: string) => {
     console.log("Editing comment:", commentId)
-    toast.success("Edit comment functionality triggered")
+    
   }
 
   const handleDeleteComment = (commentId: string) => {
     console.log("Deleting comment:", commentId)
     setComments(comments.filter((comment) => comment._id?.toString() !== commentId))
-    toast.success("Comment deleted successfully")
   }
 
   const formatDate = (date: Date) => {

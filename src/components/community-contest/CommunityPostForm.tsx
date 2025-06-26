@@ -193,9 +193,9 @@ export function CreatePostForm({
       createPost(formData as unknown as CreatePostInput, {
         onSuccess: (data) => {
           queryClient.invalidateQueries({ queryKey: ["community-post"] });
-          communityToast.success({ title: "Post created successfully!" });
+          communityToast.success({ title: "Post created",description : `your post has been created in the community` });
           dispatch(addPost(data.data))
-          navigate(-1);
+          navigate('/explore');
         },
       });
     } catch (error) {

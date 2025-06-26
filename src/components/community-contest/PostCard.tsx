@@ -1,28 +1,39 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { Heart, MessageSquare, Share2, MoreHorizontal, Loader2 } from "lucide-react"
-import { formatDistanceToNow } from "date-fns"
-import { Button } from "@/components/ui/button"
-import type { ICommunityPostResponse } from "../User/Home"
-import { LoadingBar } from "../ui/LoadBar"
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
+import type React from "react";
+import {
+  Heart,
+  MessageSquare,
+  Share2,
+  MoreHorizontal,
+  Loader2,
+} from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { Button } from "@/components/ui/button";
+import type { ICommunityPostResponse } from "../User/Home";
+import { LoadingBar } from "../ui/LoadBar";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Link } from "react-router-dom";
 
 interface PostCardProps {
-  post: ICommunityPostResponse
-  onLikeToggle: (post: ICommunityPostResponse) => void
-  isLiking?: boolean
+  post: ICommunityPostResponse;
+  onLikeToggle: (post: ICommunityPostResponse) => void;
+  isLiking?: boolean;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post, onLikeToggle, isLiking = false }) => {
+const PostCard: React.FC<PostCardProps> = ({
+  post,
+  onLikeToggle,
+  isLiking = false,
+}) => {
   if (!post) {
-    return <LoadingBar />
+    return <LoadingBar />;
   }
 
   const handleLikeClick = () => {
-    if (isLiking) return // Prevent multiple clicks while processing
-    onLikeToggle(post)
-  }
+    if (isLiking) return; // Prevent multiple clicks while processing
+    onLikeToggle(post);
+  };
 
   return (
     <div className="rounded-lg overflow-hidden mb-4 border border-gray-200 dark:border-gray-700">
@@ -39,7 +50,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, onLikeToggle, isLiking = fals
             </AvatarFallback>
           </Avatar>
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{post.userId.name}</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+              {post.userId.name}
+            </h3>
             <p className="text-xs text-gray-500 dark:text-gray-400">
               {formatDistanceToNow(new Date(post.createdAt ?? 0), {
                 addSuffix: true,
@@ -47,10 +60,14 @@ const PostCard: React.FC<PostCardProps> = ({ post, onLikeToggle, isLiking = fals
             </p>
           </div>
         </div>
-
-        <h2 className="text-xl font-bold mb-2 text-gray-900 dark:text-gray-200">{post.title}</h2>
-        <p className="text-gray-700 dark:text-gray-400 mb-4">{post.content}</p>
-
+        <Link to={`/post/${post._id}`}>
+          <h2 className="text-xl font-bold mb-2 text-gray-900 dark:text-gray-200">
+            {post.title}
+          </h2>
+          <p className="text-gray-700 dark:text-gray-400 mb-4">
+            {post.content}
+          </p>
+        </Link>
         {post.media && post.media.length > 0 && (
           <div className="mb-4 rounded-lg overflow-hidden">
             {post.mediaType === "image" ? (
@@ -85,21 +102,35 @@ const PostCard: React.FC<PostCardProps> = ({ post, onLikeToggle, isLiking = fals
               onClick={handleLikeClick}
               disabled={isLiking}
               className={`flex items-center transition-colors ${
-                post.isLiked ? "text-red-500 hover:text-red-600" : "text-gray-500 hover:text-red-500"
+                post.isLiked
+                  ? "text-red-500 hover:text-red-600"
+                  : "text-gray-500 hover:text-red-500"
               } ${isLiking ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               {isLiking ? (
                 <Loader2 className="w-4 h-4 mr-1 animate-spin" />
               ) : (
-                <Heart className={`w-4 h-4 mr-1 transition-all ${post.isLiked ? "fill-current" : ""}`} />
+                <Heart
+                  className={`w-4 h-4 mr-1 transition-all ${
+                    post.isLiked ? "fill-current" : ""
+                  }`}
+                />
               )}
               <span>{post.likeCount}</span>
             </Button>
-            <Button variant="ghost" size="sm" className="flex items-center text-gray-500 hover:text-blue-500">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center text-gray-500 hover:text-blue-500"
+            >
               <MessageSquare className="w-4 h-4 mr-1" />
               <span>{post.commentCount}</span>
             </Button>
-            <Button variant="ghost" size="sm" className="flex items-center text-gray-500 hover:text-green-500">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center text-gray-500 hover:text-green-500"
+            >
               <Share2 className="w-4 h-4 mr-1" />
             </Button>
           </div>
@@ -109,7 +140,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onLikeToggle, isLiking = fals
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PostCard
+export default PostCard;

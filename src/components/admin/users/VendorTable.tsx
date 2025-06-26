@@ -21,6 +21,7 @@ import { ReusableDropdown } from "@/components/common/ReusableDropdown";
 import { IVendor } from "@/services/vendor/vendorService";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
+import { communityToast } from "@/components/ui/community-toast";
 
 const FILTER_OPTIONS = [
   { label: "Blocked", value: "blocked" },
@@ -138,7 +139,8 @@ export function UserTable() {
       block(id, {
         onSuccess: (data) => {
           queryClient.invalidateQueries({ queryKey: vendorKeys.lists() });
-          toast.success(data?.message);
+                    communityToast.success({title : data?.message});
+          
         },
         onError: (err) => {
           handleError(err);
@@ -148,7 +150,8 @@ export function UserTable() {
       unBlock(id, {
         onSuccess: (data) => {
           queryClient.invalidateQueries({ queryKey: vendorKeys.lists() });
-          toast.success(data?.message);
+                    communityToast.success({title : data?.message});
+
         },
         onError: (err) => {
           handleError(err);

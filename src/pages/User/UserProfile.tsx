@@ -44,6 +44,7 @@ import { ProfileInfo } from "@/components/User/ProfileInfo";
 import { PostsTab } from "@/components/User/PostsTab";
 import { CommentsTab } from "@/components/User/CommentsTab";
 import { LoadingBar } from "@/components/ui/LoadBar";
+import { communityToast } from "@/components/ui/community-toast";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -134,7 +135,8 @@ export default function UserProfile() {
           };
           dispatch(updateVendorSlice(dataToUpdateRedux));
           queryClient.invalidateQueries({ queryKey: ["vendor-profile"] });
-          toast.success(data.message);
+                    communityToast.success({title : data?.message});
+          
         },
         onError: (error) => {
           setIsSubmitting(false);
@@ -157,7 +159,8 @@ export default function UserProfile() {
           };
           dispatch(updateClientslice(dataToUpdateRedux));
           queryClient.invalidateQueries({ queryKey: ["client-profile"] });
-          toast.success(data.message);
+                    communityToast.success({title : data?.message});
+
         },
         onError: (error) => {
           setIsSubmitting(false);
@@ -180,7 +183,8 @@ export default function UserProfile() {
     joinCategory(category, {
       onSuccess: (data) => {
         queryClient.invalidateQueries({ queryKey: ["client-profile"] });
-        toast.success(data.message);
+                  communityToast.success({title : data?.message});
+
       },
       onError: (err) => {
         handleError(err);

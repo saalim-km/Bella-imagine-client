@@ -32,7 +32,8 @@ const VendorLogin = () => {
       onSuccess: (data: any) => {
         setIsSending(false);
         console.log(data);
-        toast.success(data.message);
+                  communityToast.success({title : data?.message});
+        
         dispatch(vendorLogin(data.data));
         if (socket) {
           reconnect();

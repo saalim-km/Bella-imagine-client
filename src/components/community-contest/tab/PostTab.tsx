@@ -10,7 +10,7 @@ import { useGetCommunityPosts } from "@/hooks/community-contest/useCommunity"
 import { 
   setPosts, 
   incrementPage, 
-  toggleLike, 
+  toggleLikeCommunity, 
   setLoading,
   setCurrentCommunity,
   setError
@@ -22,6 +22,7 @@ import { useSocket } from "@/context/SocketContext"
 import { communityToast } from "@/components/ui/community-toast"
 import type { ICommunityPostResponse } from "@/components/User/Home"
 import type { RootState, AppDispatch } from "@/store/store"
+import { useQueryClient } from "@tanstack/react-query"
 
 interface PostsTabProps {
   isMember: boolean
@@ -39,7 +40,7 @@ export function PostsTab({ isMember, communityId, slug }: PostsTabProps) {
     limit,
     currentCommunityId 
   } = useSelector((state: RootState) => state.communityDetail)
-  
+  const queryClient = useQueryClient()
   const [likingPosts, setLikingPosts] = useState<Set<string>>(new Set())
   const { socket } = useSocket()
   const socketListenersSetup = useRef(false)
@@ -96,7 +97,8 @@ export function PostsTab({ isMember, communityId, slug }: PostsTabProps) {
       })
 
       if (success) {
-        dispatch(toggleLike({ postId, isLiked : action === 'like' ? true : false }))
+        dispatch(toggleLikeCommunity({ postId, isLiked : action === 'like' ? true : false }))
+        queryClient.invalidateQueries({queryKey:  ['community-post']})
       } else {
         communityToast.error({
           title: "Error",

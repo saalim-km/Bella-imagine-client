@@ -15,6 +15,7 @@ import { useForgotPassSendOtp, useSendOtp } from "@/hooks/auth/useSendOtp"
 import { toast } from "sonner"
 import { handleError } from "@/utils/Error/error-handler.utils"
 import { useNavigate } from "react-router-dom"
+import { communityToast } from "../ui/community-toast"
 
 
 const formSchema = z.object({
@@ -51,7 +52,8 @@ export function ForgotPassword({ userType }: ForgotPasswordProps) {
     sendOtp({email : data.email , role: userType},{
         onSuccess : (data)=> {
             setIsSending(false)
-            toast.success(data.message)
+                      communityToast.success({title : data?.message});
+            
             setIsOTPModalOpen(true)
         },
         onError : (err)=> {

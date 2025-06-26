@@ -9,6 +9,7 @@ import { handleError } from "@/utils/Error/error-handler.utils";
 import { Badge } from "@/components/ui/badge";
 import { ICategoryRequest } from "@/services/categories/categoryService";
 import { useState } from "react";
+import { communityToast } from "@/components/ui/community-toast";
 
 const CategoryRequest = () => {
   const [currPage, setCurrPage] = useState(1);
@@ -24,7 +25,8 @@ const CategoryRequest = () => {
       {
         onSuccess: (data) => {
           refetch();
-          toast.success(data.message);
+                    communityToast.success({title : data?.message});
+          
         },
         onError: (err) => {
           handleError(err);
@@ -39,7 +41,8 @@ const CategoryRequest = () => {
       {
         onSuccess: (data) => {
           refetch();
-          toast.success(data.message);
+                    communityToast.success({title : data?.message});
+
         },
         onError: (err) => {
           handleError(err);

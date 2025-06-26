@@ -70,7 +70,7 @@ const communityDetailSlice = createSlice({
       )
       state.total = Math.max(0, state.total - 1)
     },
-    toggleLike: (
+    toggleLikeCommunity: (
       state, 
       action: PayloadAction<{
         postId: string
@@ -104,7 +104,7 @@ export const {
   addPost,
   updatePost,
   deletePost,
-  toggleLike,
+  toggleLikeCommunity,
   incrementPage,
   resetState,
   setLoading,

@@ -14,6 +14,7 @@ import { useResetPasswordMUtation } from "@/hooks/auth/useResetPassword";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { useNavigate } from "react-router-dom";
+import { communityToast } from "../ui/community-toast";
 
 // Password strength requirements
 
@@ -64,7 +65,8 @@ export function NewPasswordForm({
       {
         onSuccess: (data) => {
           console.log(data.message);
-          toast.success(data.message);
+                    communityToast.success({title : data?.message});
+          
           userType === 'vendor' ? navigate('/vendor/login') : navigate('/login')
         },
         onError: (err) => {
