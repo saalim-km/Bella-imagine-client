@@ -36,7 +36,6 @@ import {
 import { buildQueryParams } from "@/utils/helper/query-generator";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
-import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import Pagination from "@/components/common/Pagination";
 import { useNavigate } from "react-router-dom";
@@ -59,7 +58,7 @@ export function VendorRequestsTable() {
   const [isApproving, setIsApproving] = useState(false);
   const { mutate: approveVendor } = useUpdateVendorRequest();
   const { mutate: rejectVendor } = useUpdateVendorRequest();
-  const itemsPerPage = 8;
+  const itemsPerPage = 4;
 
   const FILTER_OPTIONS = [
     { label: "Old Requests", value: "oldest" },

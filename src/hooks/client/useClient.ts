@@ -33,7 +33,7 @@ export const useAllVendorsListQuery = (filter: IVendorsFilter) => {
   return useQuery<BasePaginatedResponse<PaginatedResponse<IVendorsResponse>>, Error>({
     queryKey: ["client", filter],
     queryFn: () => getAllVendors(filter),
-    staleTime: 5 * 60 * 1000
+    staleTime: 1000 *60 *5
   });
 };
 

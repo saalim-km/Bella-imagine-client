@@ -5,18 +5,23 @@ import { Heart, MessageSquare, Share2, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 import CommunityLayout from "@/components/layout/CommunityLayout";
-import { useAddComment, useGetPostDetails } from "@/hooks/community-contest/useCommunity";
+import {
+  useAddComment,
+  useGetPostDetails,
+} from "@/hooks/community-contest/useCommunity";
 import { LoadingBar } from "@/components/ui/LoadBar";
 import { Textarea } from "@/components/ui/textarea"; // Added Textarea component
 import { communityToast } from "@/components/ui/community-toast";
 import { handleError } from "@/utils/Error/error-handler.utils";
+import { useQueryClient } from "@tanstack/react-query";
 
 const PostDetailPage: React.FC = () => {
   const { postId } = useParams();
   const [commentContent, setCommentContent] = useState(""); // State for comment input
   const { data, isLoading } = useGetPostDetails(postId!);
-  const {mutate : addComment , isPending} = useAddComment(); // Hook for comment submission
+  const { mutate: addComment, isPending } = useAddComment(); // Hook for comment submission
   const post = data?.data;
+  const queryclient = useQueryClient();
 
   if (!postId) {
     return <p>postid is required to fetch details, please try again later</p>;
@@ -30,14 +35,18 @@ const PostDetailPage: React.FC = () => {
     e.preventDefault();
     if (!commentContent.trim()) return; // Prevent empty comments
     try {
-      addComment({content : commentContent , postId : postId},{
-        onSuccess : (data)=> {
-          communityToast.success({title: data.message})
-        },
-        onError : (err)=> {
-          handleError(err)
+      addComment(
+        { content: commentContent, postId: postId },
+        {
+          onSuccess: (data) => {
+            queryclient.invalidateQueries({ queryKey: ["post", postId] });
+            communityToast.success({ title: data.message });
+          },
+          onError: (err) => {
+            handleError(err);
+          },
         }
-      })
+      );
       setCommentContent(""); // Clear input after submission
     } catch (error) {
       console.error("Failed to add comment:", error);
@@ -51,12 +60,16 @@ const PostDetailPage: React.FC = () => {
         <div className="rounded-lg shadow-sm border overflow-hidden">
           <div className="p-4">
             <div className="flex items-center mb-3">
-              <Avatar className="h-10 w-10 mr-3">
-                <AvatarImage src={post?.userId?.profileImage} />
-                <AvatarFallback>
-                  {post?.userId?.name?.charAt(0) || "U"}
-                </AvatarFallback>
-              </Avatar>
+                <Avatar className="h-12 w-12 mr-2 ">
+                  <AvatarImage
+                    src={post?.userId.profileImage}
+                    alt={`${post?.userId.name}`}
+                    className="object-cover w-full h-full rounded-full"
+                  />
+                  <AvatarFallback className="flex items-center justify-center w-full h-full bg-gray-200 dark:bg-gray-700 rounded-full">
+                    {post?.userId.name?.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
               <div>
                 <h3 className="text-gray-900 dark:text-gray-100">
                   {post?.userId?.name}
@@ -163,10 +176,14 @@ const PostDetailPage: React.FC = () => {
           {post?.comments?.map((comment: any) => (
             <div key={comment._id} className="rounded-lg shadow-sm border p-4">
               <div className="flex items-start space-x-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={comment.userId?.profileImage} />
-                  <AvatarFallback>
-                    {comment.userId?.name?.charAt(0) || "U"}
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    src={post.userId.profileImage}
+                    alt={`${post.userId.name}`}
+                    className="object-cover w-full h-full rounded-full"
+                  />
+                  <AvatarFallback className="flex items-center justify-center w-full h-full bg-gray-200 dark:bg-gray-700 rounded-full">
+                    {post.userId.name?.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
@@ -182,22 +199,6 @@ const PostDetailPage: React.FC = () => {
                     </span>
                   </div>
                   <p className="mt-1 text-gray-200">{comment.content}</p>
-                  <div className="mt-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className={`flex items-center ${
-                        comment.isLiked ? "text-red-500" : "text-gray-500"
-                      }`}
-                    >
-                      <Heart
-                        className={`w-4 h-4 mr-1 ${
-                          comment.isLiked ? "fill-current" : ""
-                        }`}
-                      />
-                      <span>{comment.likes || 0}</span>
-                    </Button>
-                  </div>
                 </div>
               </div>
             </div>

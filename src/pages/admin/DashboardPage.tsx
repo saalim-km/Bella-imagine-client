@@ -252,7 +252,7 @@ export default function AdminDashboard() {
                       <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
+                      <p className="text-sm font-medium dark:text-gray-200 truncate">{user.name}</p>
                       <p className="text-xs text-gray-500 truncate">{user.email}</p>
                     </div>
                     <Badge variant={user.role === "vendor" ? "default" : "secondary"}>{user.role}</Badge>

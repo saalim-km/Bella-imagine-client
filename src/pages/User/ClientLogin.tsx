@@ -1,7 +1,6 @@
 import Login from "@/components/auth/Login";
 import { useLoginMutation } from "@/hooks/auth/useLogin";
 import { ILogin } from "@/types/interfaces/User";
-import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { useDispatch } from "react-redux";
 import { clientLogin } from "@/store/slices/clientSlice";
@@ -27,7 +26,10 @@ const ClientLogin = () => {
     login(user, {
       onSuccess: (data: any) => {
         setIsSending(false);
-        communityToast.success({ title: data?.message });
+        communityToast.success({
+          title: data?.message,
+          description: "User authenticated successfully",
+        });
 
         dispatch(clientLogin(data.data));
         if (socket) {

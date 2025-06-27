@@ -14,7 +14,7 @@ export const handleError = (error: unknown) => {
         });
       } else if (data && data.message) {
         // Generic backend message
-        communityToast.error(data.message);
+        communityToast.error({title : data.message});
       } else {
         communityToast.error({title : "Something went wrong. Please try again."});
       }

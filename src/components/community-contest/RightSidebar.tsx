@@ -9,7 +9,7 @@ const RightSidebar: React.FC<{vendors : IVendorsResponse[]}> = ({vendors}) => {
   return (
     <div className="space-y-6">      
       {/* Suggested Photographers */}
-      <Card>
+      <Card className='bg-background shadow-none'>
         <CardHeader className=''>
           <CardTitle>Suggested Photographers</CardTitle>
         </CardHeader>

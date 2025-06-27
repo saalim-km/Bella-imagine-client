@@ -73,6 +73,7 @@ export const updateCategory = ()=> {
 export const useGetDashBoard = ()=> {
   return useQuery({
     queryKey : ['dashboard'],
-    queryFn : getDashBoardStatsService
+    queryFn : getDashBoardStatsService,
+    staleTime : 1000 * 60 * 5
   })
 }

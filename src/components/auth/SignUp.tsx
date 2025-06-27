@@ -93,7 +93,7 @@ export default function CommunitySignup({ onSubmit, userType, onClick }: SignUpP
       {
         onSuccess: (data) => {
           console.log("after google register of user : ", data)
-                    communityToast.success({title : data?.message});
+                    communityToast.success({title : data?.message , description : ''});
 
           if (userType === "vendor") {
             dispatch(
