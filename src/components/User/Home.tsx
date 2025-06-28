@@ -284,7 +284,7 @@ export default function CommunityHome() {
                   size="lg"
                   variant="outline"
                   className="border-white/30"
-                  onClick={() => navigate("/community")}
+                  onClick={() => navigate("/communities")}
                 >
                   <Users className="w-4 h-4 mr-2" />
                   Join Community

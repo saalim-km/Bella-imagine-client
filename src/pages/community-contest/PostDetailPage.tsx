@@ -14,11 +14,27 @@ import { Textarea } from "@/components/ui/textarea"; // Added Textarea component
 import { communityToast } from "@/components/ui/community-toast";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { useQueryClient } from "@tanstack/react-query";
+import { PostDetailsInput } from "@/services/community-contest/communityService";
+import Pagination from "@/components/common/Pagination";
 
 const PostDetailPage: React.FC = () => {
   const { postId } = useParams();
-  const [commentContent, setCommentContent] = useState(""); // State for comment input
-  const { data, isLoading } = useGetPostDetails(postId!);
+  const [commentContent, setCommentContent] = useState("");
+  const [page, setPage] = useState(1);
+  const commentLimit = 2;
+
+  const queryData: PostDetailsInput = {
+    postId: postId!,
+    limit: commentLimit,
+    page: page,
+  };
+  // State for comment input
+  const { data, isLoading } = useGetPostDetails(queryData);
+  const totalComments = data?.data.totalComments || 0;
+  const totalPages = Math.max(1, Math.ceil(totalComments / commentLimit));
+
+
+  console.log('total comments : ',totalComments);
   const { mutate: addComment, isPending } = useAddComment(); // Hook for comment submission
   const post = data?.data;
   const queryclient = useQueryClient();
@@ -30,6 +46,12 @@ const PostDetailPage: React.FC = () => {
   if (isLoading) {
     return <LoadingBar />;
   }
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setPage(newPage);
+    }
+  };
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,16 +82,16 @@ const PostDetailPage: React.FC = () => {
         <div className="rounded-lg shadow-sm border overflow-hidden">
           <div className="p-4">
             <div className="flex items-center mb-3">
-                <Avatar className="h-12 w-12 mr-2 ">
-                  <AvatarImage
-                    src={post?.userId.profileImage}
-                    alt={`${post?.userId.name}`}
-                    className="object-cover w-full h-full rounded-full"
-                  />
-                  <AvatarFallback className="flex items-center justify-center w-full h-full bg-gray-200 dark:bg-gray-700 rounded-full">
-                    {post?.userId.name?.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+              <Avatar className="h-12 w-12 mr-2 ">
+                <AvatarImage
+                  src={post?.userId.profileImage}
+                  alt={`${post?.userId.name}`}
+                  className="object-cover w-full h-full rounded-full"
+                />
+                <AvatarFallback className="flex items-center justify-center w-full h-full bg-gray-200 dark:bg-gray-700 rounded-full">
+                  {post?.userId.name?.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
               <div>
                 <h3 className="text-gray-900 dark:text-gray-100">
                   {post?.userId?.name}
@@ -173,23 +195,23 @@ const PostDetailPage: React.FC = () => {
           <h3 className="font-semibold text-lg">
             Comments ({post?.commentCount})
           </h3>
-          {post?.comments?.map((comment: any) => (
+          {post?.comments?.map((comment) => (
             <div key={comment._id} className="rounded-lg shadow-sm border p-4">
               <div className="flex items-start space-x-3">
                 <Avatar className="h-8 w-8">
                   <AvatarImage
-                    src={post.userId.profileImage}
-                    alt={`${post.userId.name}`}
+                    src={comment.avatar}
+                    alt={comment.userName}
                     className="object-cover w-full h-full rounded-full"
                   />
                   <AvatarFallback className="flex items-center justify-center w-full h-full bg-gray-200 dark:bg-gray-700 rounded-full">
-                    {post.userId.name?.charAt(0).toUpperCase()}
+                    {comment.userName?.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <h4 className="text-gray-900 dark:text-gray-100">
-                      {comment.userId?.name}
+                      {comment.userName}
                     </h4>
                     <span className="text-xs text-gray-500">
                       {comment.createdAt &&
@@ -205,6 +227,11 @@ const PostDetailPage: React.FC = () => {
           ))}
         </div>
       </div>
+      <Pagination
+        currentPage={page}
+        onPageChange={handlePageChange}
+        totalPages={totalPages}
+      />
     </CommunityLayout>
   );
 };

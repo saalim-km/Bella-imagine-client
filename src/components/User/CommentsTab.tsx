@@ -5,21 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Edit, Trash2, Heart } from "lucide-react"
 import { toast } from "sonner"
 import Pagination from "../common/Pagination"
+import { IComment } from "@/services/community-contest/communityService"
 
-export interface IComment {
-  _id?: string
-  postId: string
-  userId: {
-    _id: string
-    name: string
-    profileImage?: string
-    email: string
-  }
-  content: string
-  likesCount: number
-  createdAt?: Date
-  updatedAt?: Date
-}
+
 
 // Mock data for comments
 const mockComments: IComment[] = [
