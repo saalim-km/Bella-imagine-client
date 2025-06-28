@@ -1,12 +1,15 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowRight, Camera, Users, Zap, TrendingUp, Clock, MapPin, Star } from "lucide-react"
+import { ArrowRight, Camera, Users, Clock, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useNavigate } from "react-router-dom"
+import { useAllVendorsListQuery } from "@/hooks/client/useClient"
+import { LoadingBar } from "../ui/LoadBar"
+import { useSelector } from "react-redux"
+import type { RootState } from "@/store/store"
 
 // Your existing interface
 export interface ICommunityPost {
@@ -25,15 +28,16 @@ export interface ICommunityPost {
   createdAt?: string
   updatedAt?: string
 }
+
 export interface ICommunityPostResponse {
   _id?: string
   communityId: string
   userId: {
-    _id : string;
-    name : string;
-    profileImage : string
+    _id: string
+    name: string
+    profileImage: string
   }
-  isLiked : boolean;
+  isLiked: boolean
   title: string
   content: string
   media: string[]
@@ -47,246 +51,276 @@ export interface ICommunityPostResponse {
   updatedAt?: string
 }
 
-// Extended interfaces for the home page
-interface PhotographerProfile {
-  _id: string
-  name: string
-  avatar: string
-  location: string
-  specialties: string[]
-  isOnline: boolean
-  responseTime: string
-  rating: number
-  completedSessions: number
-  joinedDate: string
-  isVerified: boolean
-  currentlyBooking: boolean
+// Transform work samples into hero posts format
+const transformWorkSamplesToHeroPosts = (photographers: any[]) => {
+  const heroPosts: any[] = []
+
+  photographers.forEach((photographer) => {
+    if (photographer.workSamples && Array.isArray(photographer.workSamples)) {
+      photographer.workSamples.forEach((workSample: any) => {
+        if (workSample && workSample.media && Array.isArray(workSample.media) && workSample.media.length > 0) {
+          heroPosts.push({
+            _id: workSample._id || `work-${Math.random()}`,
+            title: workSample.title || "Professional Photography Work",
+            content: workSample.description || "Explore this amazing photography work...",
+            media: workSample.media.filter(Boolean), // Remove any null/undefined media
+            mediaType: "image",
+            likeCount: Math.floor(Math.random() * 100) + 20,
+            commentCount: Math.floor(Math.random() * 30) + 5,
+            tags: Array.isArray(workSample.tags) ? workSample.tags : [],
+            photographer: {
+              name: photographer.name || "Professional Photographer",
+              profileImage: photographer.profileImage || "/placeholder.svg",
+              location: photographer.location?.address || "Available",
+              categories: Array.isArray(photographer.categories)
+                ? photographer.categories.map((cat: any) => cat?.title).filter(Boolean)
+                : [],
+            },
+            service:
+              Array.isArray(photographer.services) && photographer.services.length > 0
+                ? photographer.services[0]
+                : null,
+          })
+        }
+      })
+    }
+  })
+
+  return heroPosts.length > 0 ? heroPosts : fallbackPosts
 }
 
-interface CommunityActivity {
-  type: "post" | "booking" | "join" | "achievement"
-  photographer: PhotographerProfile
-  content: string
-  timestamp: string
-  engagement?: number
-}
-
-// Mock data
-const categories = [
-  { _id: "1", title: "Wedding", count: 156 },
-  { _id: "2", title: "Portrait", count: 234 },
-  { _id: "3", title: "Family", count: 189 },
-  { _id: "4", title: "Events", count: 98 },
-  { _id: "5", title: "Fashion", count: 67 },
-  { _id: "6", title: "Travel", count: 145 },
-  { _id: "7", title: "Architecture", count: 78 },
-  { _id: "8", title: "Food", count: 92 },
-]
-
-const featuredPosts: ICommunityPost[] = [
+// Fallback posts if no work samples available
+const fallbackPosts = [
   {
-    _id: "1" as any,
-    communityId: "comm1" as any,
-    userId: "user1" as any,
-    title: "Golden Hour Magic at Marina Bay",
-    content: "Just wrapped up an incredible engagement shoot! The lighting was absolutely perfect...",
-    media: [
-      "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741531304/unnamed_5_i7qnb7.webp",
-      "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741531305/unnamed_2_yjfx4l.webp",
-    ],
+    _id: "fallback1",
+    title: "Discover Amazing Photography Services",
+    content: "Connect with professional photographers in your area for all your photography needs...",
+    media: ["/placeholder.svg?height=800&width=1200"],
     mediaType: "image",
     likeCount: 47,
     commentCount: 12,
-    tags: ["engagement", "goldenhour", "marina"],
-    comments: [],
-    createdAt: "2024-01-15T10:30:00Z",
-  },
-  {
-    _id: "2" as any,
-    communityId: "comm1" as any,
-    userId: "user2" as any,
-    title: "Traditional Wedding Ceremony Highlights",
-    content: "Honored to capture this beautiful traditional ceremony. Every moment was magical...",
-    media: ["https://res.cloudinary.com/deh2nuqeb/image/upload/v1741531305/unnamed_1_re5olq.webp"],
-    mediaType: "image",
-    likeCount: 89,
-    commentCount: 23,
-    tags: ["wedding", "traditional", "ceremony"],
-    comments: [],
-    createdAt: "2024-01-14T15:20:00Z",
-  },
-  {
-    _id: "3" as any,
-    communityId: "comm1" as any,
-    userId: "user3" as any,
-    title: "Family Portrait Session in the Park",
-    content: "Love capturing genuine family moments. This session was full of laughter and joy...",
-    media: ["https://res.cloudinary.com/deh2nuqeb/image/upload/v1741531305/unnamed_mnfmjo.webp"],
-    mediaType: "image",
-    likeCount: 34,
-    commentCount: 8,
-    tags: ["family", "portrait", "outdoor"],
-    comments: [],
-    createdAt: "2024-01-13T09:45:00Z",
-  },
-]
-
-const onlinePhotographers: PhotographerProfile[] = [
-  {
-    _id: "1",
-    name: "Anita Sharma",
-    avatar: "/placeholder.svg?height=40&width=40",
-    location: "Mumbai, India",
-    specialties: ["Wedding", "Portrait"],
-    isOnline: true,
-    responseTime: "~5 min",
-    rating: 4.9,
-    completedSessions: 127,
-    joinedDate: "2023-03-15",
-    isVerified: true,
-    currentlyBooking: true,
-  },
-  {
-    _id: "2",
-    name: "Rahul Mehta",
-    avatar: "/placeholder.svg?height=40&width=40",
-    location: "Delhi, India",
-    specialties: ["Family", "Events"],
-    isOnline: true,
-    responseTime: "~2 min",
-    rating: 4.8,
-    completedSessions: 89,
-    joinedDate: "2023-06-20",
-    isVerified: true,
-    currentlyBooking: true,
-  },
-  {
-    _id: "3",
-    name: "Priya Kapoor",
-    avatar: "/placeholder.svg?height=40&width=40",
-    location: "Bangalore, India",
-    specialties: ["Fashion", "Portrait"],
-    isOnline: true,
-    responseTime: "~3 min",
-    rating: 4.9,
-    completedSessions: 156,
-    joinedDate: "2022-11-10",
-    isVerified: true,
-    currentlyBooking: false,
-  },
-  {
-    _id: "4",
-    name: "Vikram Singh",
-    avatar: "/placeholder.svg?height=40&width=40",
-    location: "Jaipur, India",
-    specialties: ["Wedding", "Traditional"],
-    isOnline: false,
-    responseTime: "~15 min",
-    rating: 4.7,
-    completedSessions: 203,
-    joinedDate: "2022-08-05",
-    isVerified: true,
-    currentlyBooking: true,
-  },
-]
-
-const recentActivity: CommunityActivity[] = [
-  {
-    type: "booking",
-    photographer: onlinePhotographers[0],
-    content: "just completed a wedding session",
-    timestamp: "2 min ago",
-    engagement: 12,
-  },
-  {
-    type: "post",
-    photographer: onlinePhotographers[1],
-    content: "shared new family portrait tips",
-    timestamp: "5 min ago",
-    engagement: 34,
-  },
-  {
-    type: "join",
-    photographer: onlinePhotographers[2],
-    content: "joined the Fashion Photography community",
-    timestamp: "12 min ago",
-  },
-  {
-    type: "achievement",
-    photographer: onlinePhotographers[3],
-    content: "reached 200 completed sessions milestone",
-    timestamp: "1 hour ago",
-    engagement: 67,
+    tags: ["photography", "professional"],
+    photographer: {
+      name: "Professional Photographers",
+      profileImage: "/placeholder.svg?height=100&width=100",
+      location: "Available Nationwide",
+      categories: ["All Categories"],
+    },
   },
 ]
 
 export default function CommunityHome() {
-  const [currentPostIndex, setCurrentPostIndex] = useState(0)
-  const navigate = useNavigate()
-  const [activeCategory, setActiveCategory] = useState("All")
+  const user = useSelector((state: RootState) => {
+    if (state.vendor.vendor) return state.vendor.vendor
+    if (state.client.client) return state.client.client
+    return null
+  })
 
-  // Rotate through featured posts every 8 seconds
+  const [currentPostIndex, setCurrentPostIndex] = useState(0)
+  const [marker, setMarker] = useState<{ lng: number; lat: number }>({
+    lng: 0,
+    lat: 0,
+  })
+  const [heroPosts, setHeroPosts] = useState<any[]>(fallbackPosts)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+
+  const navigate = useNavigate()
+
+  const { data, isLoading, isError } = useAllVendorsListQuery({
+    maxCharge: 100000,
+    location: marker,
+    limit: 4,
+    page: 1,
+    enabled: user?.role === "client",
+  })
+
+  const onlinePhotographers = data?.data.data || []
+
+  // Transform real data into hero posts when data is available
   useEffect(() => {
+    if (onlinePhotographers.length > 0) {
+      const transformedPosts = transformWorkSamplesToHeroPosts(onlinePhotographers)
+      if (transformedPosts.length > 0) {
+        setHeroPosts(transformedPosts)
+      }
+    }
+  }, [onlinePhotographers])
+
+  // Smooth transition between posts every 6 seconds
+  useEffect(() => {
+    if (heroPosts.length <= 1) return
+
     const interval = setInterval(() => {
-      setCurrentPostIndex((prevIndex) => (prevIndex + 1) % featuredPosts.length)
-    }, 8000)
+      setIsTransitioning(true)
+
+      setTimeout(() => {
+        setCurrentPostIndex((prevIndex) => (prevIndex + 1) % heroPosts.length)
+        setIsTransitioning(false)
+      }, 300) // Half of transition duration
+    }, 6000)
+
     return () => clearInterval(interval)
+  }, [heroPosts.length])
+
+  useEffect(() => {
+    if (navigator.geolocation && marker.lat == 0) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const userLocation = {
+          lng: position.coords.longitude,
+          lat: position.coords.latitude,
+        }
+        setMarker(userLocation)
+      })
+    }
   }, [])
 
-  const currentPost = featuredPosts[currentPostIndex]
+  const currentPost = heroPosts[currentPostIndex]
+
+  // Add safety checks
+  if (!currentPost || !currentPost.media || currentPost.media.length === 0) {
+    return <LoadingBar />
+  }
+
+  if (isLoading) {
+    return <LoadingBar />
+  }
+
+  if (isError) {
+    return <p className="text-red-600">Error fetching photographers. Please try again later.</p>
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-br">
-      {/* Hero Section - Community Showcase */}
+      {/* Hero Section - Real Work Samples Showcase */}
       <section className="relative h-[70vh] w-full overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
-          style={{ backgroundImage: `url(${currentPost.media[0]})` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+        {/* Background Image with Smooth Transition */}
+        <div className="absolute inset-0">
+          <div
+            className={`absolute inset-0 bg-cover bg-center transition-all duration-700 ease-in-out ${
+              isTransitioning ? "opacity-0 scale-105" : "opacity-100 scale-100"
+            }`}
+            style={{
+              backgroundImage: `url(${currentPost?.media?.[0] || "/placeholder.svg?height=800&width=1200"})`,
+              filter: "brightness(0.7)",
+            }}
+          />
+        </div>
 
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+
+        {/* Content */}
         <div className="relative z-10 h-full flex items-center">
           <div className="container mx-auto px-6">
-            <div className="max-w-2xl">
-              <div className="flex items-center gap-2 mb-4">
-                <Badge variant="secondary" className="bg-orange-100 text-orange-800">
-                  Community Highlight
+            <div className="max-w-3xl">
+              {/* Badges */}
+              <div
+                className={`flex items-center gap-3 mb-6 transition-all duration-500 ${
+                  isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+                }`}
+              >
+                <Badge variant="secondary" className="bg-orange-100 text-orange-800 px-3 py-1">
+                  Featured Work
                 </Badge>
-                <Badge variant="outline" className="text-white border-white/30">
-                  {currentPost.tags[0]}
-                </Badge>
+                {currentPost?.photographer?.categories?.[0] && (
+                  <Badge variant="outline" className="text-white border-white/30 px-3 py-1">
+                    {currentPost.photographer.categories[0]}
+                  </Badge>
+                )}
+                {currentPost?.tags?.[0] && (
+                  <Badge variant="outline" className="text-orange-200 border-orange-200/30 px-3 py-1">
+                    {currentPost.tags[0]}
+                  </Badge>
+                )}
               </div>
 
-              <h1 className="text-5xl font-bold mb-4 text-white leading-tight">{currentPost.title}</h1>
-              <p className="text-xl mb-6 text-orange-100 leading-relaxed">{currentPost.content}</p>
+              {/* Title */}
+              <h1
+                className={`text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white leading-tight transition-all duration-500 delay-100 ${
+                  isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+                }`}
+              >
+                {currentPost?.title || "Discover Amazing Photography"}
+              </h1>
 
-              <div className="flex items-center gap-4 mb-8">
+              {/* Description */}
+              <p
+                className={`text-lg md:text-xl mb-6 text-orange-100 leading-relaxed max-w-2xl transition-all duration-500 delay-200 ${
+                  isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+                }`}
+              >
+                {currentPost?.content ||
+                  "Connect with professional photographers in your area for all your photography needs."}
+              </p>
+
+              {/* Photographer Info */}
+              {currentPost?.photographer && (
+                <div
+                  className={`flex items-center gap-4 mb-8 transition-all duration-500 delay-300 ${
+                    isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+                  }`}
+                >
+                  <Avatar className="w-12 h-12 border-2 border-white/20">
+                    <AvatarImage src={currentPost.photographer.profileImage || "/placeholder.svg"} />
+                    <AvatarFallback className="bg-orange-600 text-white">
+                      {currentPost.photographer.name?.charAt(0) || "P"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-white font-semibold">
+                      {currentPost.photographer.name || "Professional Photographer"}
+                    </p>
+                    <p className="text-orange-200 text-sm flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      {currentPost.photographer.location || "Available"}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Stats */}
+              <div
+                className={`flex items-center gap-6 mb-8 transition-all duration-500 delay-300 ${
+                  isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+                }`}
+              >
                 <div className="flex items-center gap-2 text-white/80">
                   <Users className="w-4 h-4" />
-                  <span>{currentPost.likeCount} likes</span>
+                  <span>{currentPost?.likeCount || 0} likes</span>
                 </div>
                 <div className="flex items-center gap-2 text-white/80">
                   <Camera className="w-4 h-4" />
-                  <span>{currentPost.commentCount} comments</span>
+                  <span>{currentPost?.commentCount || 0} comments</span>
                 </div>
+                {currentPost?.service?.sessionDurations?.durationInHours && (
+                  <div className="flex items-center gap-2 text-white/80">
+                    <Clock className="w-4 h-4" />
+                    <span>{currentPost.service.sessionDurations.durationInHours}h sessions</span>
+                  </div>
+                )}
               </div>
 
-              <div className="flex gap-4">
+              {/* Action Buttons */}
+              <div
+                className={`flex flex-col sm:flex-row gap-4 transition-all duration-500 delay-400 ${
+                  isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+                }`}
+              >
                 <Button
                   size="lg"
-                  className="community-gradient hover:opacity-90 text-white"
+                  className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 text-lg"
                   onClick={() => navigate("/photographers")}
                 >
-                  <Camera className="w-4 h-4 mr-2" />
+                  <Camera className="w-5 h-5 mr-2" />
                   Find Photographers
                 </Button>
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-white/30"
+                  className="border-white/30 text-white hover:bg-white/10 px-8 py-3 text-lg bg-transparent"
                   onClick={() => navigate("/communities")}
                 >
-                  <Users className="w-4 h-4 mr-2" />
+                  <Users className="w-5 h-5 mr-2" />
                   Join Community
                 </Button>
               </div>
@@ -294,84 +328,49 @@ export default function CommunityHome() {
           </div>
         </div>
 
-        {/* Post Navigation Dots */}
-        <div className="absolute bottom-6 left-6 flex gap-2">
-          {featuredPosts.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentPostIndex(index)}
-              className={`w-3 h-3 rounded-full transition-all ${
-                index === currentPostIndex ? "" : "/40"
-              }`}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Live Community Activity */}
-      <section className="py-12 backdrop-blur-sm">
-        <div className="container mx-auto px-6">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-200 mb-2">Live Community Activity</h2>
-              <p className="text-gray-600 dark:text-gray-400">See what's happening right now in our photography community</p>
-            </div>
-            <div className="flex items-center gap-2 text-green-600">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-sm font-medium">Live</span>
-            </div>
+        {/* Navigation Dots */}
+        {heroPosts.length > 1 && (
+          <div className="absolute bottom-6 left-6 flex gap-2">
+            {heroPosts.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setIsTransitioning(true)
+                  setTimeout(() => {
+                    setCurrentPostIndex(index)
+                    setIsTransitioning(false)
+                  }, 300)
+                }}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index === currentPostIndex ? "bg-orange-500 scale-110" : "bg-white/40 hover:bg-white/60"
+                }`}
+              />
+            ))}
           </div>
+        )}
 
-          <ScrollArea className="w-full">
-            <div className="flex gap-4 pb-4">
-              {recentActivity.map((activity, index) => (
-                <div
-                  key={index}
-                  className="flex-shrink-0 w-80 rounded-xl p-4 border shadow-sm transition-shadow"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="relative">
-                      <Avatar className="w-10 h-10">
-                        <AvatarImage src={activity.photographer.avatar || "/placeholder.svg"} />
-                        <AvatarFallback>{activity.photographer.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      {activity.photographer.isOnline && (
-                        <div className="absolute bottom-0 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 animate-pulse" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium text-gray-900 dark:text-gray-200 truncate">{activity.photographer.name}</span>
-                        {activity.photographer.isVerified && <Star className="w-3 h-3 text-orange-500 fill-current" />}
-                      </div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{activity.content}</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500">{activity.timestamp}</span>
-                        {activity.engagement && (
-                          <div className="flex items-center gap-1 text-xs text-gray-500">
-                            <Users className="w-3 h-3" />
-                            <span>{activity.engagement}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </div>
+        {/* Progress Bar */}
+        {heroPosts.length > 1 && (
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-black/20">
+            <div
+              className="h-full bg-orange-500 transition-all duration-75 ease-linear"
+              style={{
+                width: `${((currentPostIndex + 1) / heroPosts.length) * 100}%`,
+              }}
+            />
+          </div>
+        )}
       </section>
-
 
       {/* Online Photographers - Instant Booking */}
-      <section className="py-16 bg-gradient-to-r ">
+      <section className="py-16 bg-gradient-to-r">
         <div className="container mx-auto px-6">
           <div className="flex justify-between items-center mb-12">
             <div>
               <h2 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-200">Available Right Now</h2>
-              <p className="text-gray-600 dark:text-gray-400">Connect instantly with online photographers in your area</p>
+              <p className="text-gray-600 dark:text-gray-400">
+                Connect instantly with online photographers in your area
+              </p>
             </div>
             <Button variant="outline" onClick={() => navigate("/photographers")}>
               <span>View all photographers</span>
@@ -379,74 +378,53 @@ export default function CommunityHome() {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {onlinePhotographers.map((photographer) => (
-              <div
-                key={photographer._id}
-                className=" rounded-xl p-6 border transition-all group shadow-sm cursor-pointer"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="relative">
-                    <Avatar className="w-12 h-12">
-                      <AvatarImage src={photographer.avatar || "/placeholder.svg"} />
-                      <AvatarFallback>{photographer.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    {photographer.isOnline && (
-                      <div className="absolute bottom-0 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 animate-pulse" />
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 text-orange-500 fill-current" />
-                    <span className="text-sm font-medium">{photographer.rating}</span>
-                  </div>
-                </div>
-
-                <h3 className="font-semibold text-gray-900 dark:text-gray-200 mb-1">{photographer.name}</h3>
-                <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  <MapPin className="w-3 h-3" />
-                  <span>{photographer.location}</span>
-                </div>
-
-                <div className="flex flex-wrap gap-1 mb-4">
-                  {photographer.specialties.slice(0, 2).map((specialty) => (
-                    <Badge key={specialty} variant="secondary" className="text-xs">
-                      {specialty}
-                    </Badge>
-                  ))}
-                </div>
-
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Sessions completed</span>
-                    <span className="font-medium">{photographer.completedSessions}</span>
-                  </div>
-                </div>
-
-                <Button
-                  className={`w-full ${
-                    photographer.currentlyBooking
-                      ? "community-gradient hover:opacity-90"
-                      : "bg-gray-300 cursor-not-allowed"
-                  }`}
-                  disabled={!photographer.currentlyBooking}
+          {user?.role === "client" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {onlinePhotographers.map((photographer) => (
+                <div
+                  key={photographer._id}
+                  className="rounded-xl p-6 border transition-all group shadow-sm cursor-pointer hover:shadow-md"
                 >
-                  {photographer.currentlyBooking ? (
-                    <>
-                      <Zap className="w-4 h-4 mr-2" />
-                      Quick Book
-                    </>
-                  ) : (
-                    <>
-                      <Clock className="w-4 h-4 mr-2" />
-                      Busy
-                    </>
-                  )}
-                </Button>
-              </div>
-            ))}
-          </div>
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="relative">
+                      <Avatar className="w-12 h-12">
+                        <AvatarImage src={photographer.profileImage || "/placeholder.svg"} className="object-cover" />
+                        <AvatarFallback>{photographer.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      {photographer.isOnline && (
+                        <div className="absolute bottom-0 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 animate-pulse" />
+                      )}
+                    </div>
+                  </div>
+
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-200 mb-1">{photographer.name}</h3>
+                  <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    <MapPin className="w-3 h-3" />
+                    <span>{photographer.location?.address}</span>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1 mb-4">
+                    {photographer.services[0].styleSpecialty.slice(0, 2).map((specialty) => (
+                      <Badge key={specialty} variant="secondary" className="text-xs">
+                        {specialty}
+                      </Badge>
+                    ))}
+                  </div>
+
+                  <Button
+                    onClick={() => navigate(`/photographer/${photographer._id}`)}
+                    variant="default"
+                    className="w-full"
+                  >
+                    Book now
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </main>
   )
 }
+  

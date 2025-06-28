@@ -71,6 +71,7 @@ export interface IVendorsFilter {
   sortBy?: string;
   page?: number;
   limit?: number;
+  enabled ?: boolean
 }
 
 export interface IVendorsResponse extends IClient {

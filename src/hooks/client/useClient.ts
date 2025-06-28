@@ -31,9 +31,10 @@ export const useUpdateClientMutation = () => {
 
 export const useAllVendorsListQuery = (filter: IVendorsFilter) => {
   return useQuery<BasePaginatedResponse<PaginatedResponse<IVendorsResponse>>, Error>({
-    queryKey: ["client", filter],
+    queryKey: ["client", filter,filter.location],
     queryFn: () => getAllVendors(filter),
-    staleTime: 1000 *60 *5
+    staleTime: 1000 *60 *5,
+    enabled : filter.enabled
   });
 };
 

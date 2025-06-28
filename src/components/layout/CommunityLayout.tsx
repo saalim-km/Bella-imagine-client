@@ -19,14 +19,13 @@ const CommunityLayout: React.FC<CommunityLayoutProps> = ({ children }) => {
     });
   const [marker,setMarker] = useState<{lat : number,lng : number}>({lat:0,lng:0})
   const communities = communitiesData?.data.data || [];
-  const {data , isFetching} = useAllVendorsListQuery({page : 1 , limit : 5 , location : {lat : marker.lat , lng : marker.lng}})
+  const {data } = useAllVendorsListQuery({page : 1 , limit : 5 , location : {lat : marker.lat , lng : marker.lng},maxCharge : 100000})
   const vendors = data?.data.data || []
 
   useEffect(() => {
     if (navigator.geolocation && marker.lat === 0) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log('position : ',position);
           const userLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,

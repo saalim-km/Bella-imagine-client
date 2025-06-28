@@ -72,6 +72,7 @@ const Vendors = () => {
     services: debouncedFilters.services,
     languages: debouncedFilters.languages,
     sortBy: debouncedFilters.sortBy,
+    enabled : true
   });
 
   const totalVendors = vendors?.data.total || 0;

@@ -58,7 +58,7 @@ const VendorDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background mt-2">
+    <div className="min-h-screen bg-background my-4">
       <div className="max-w-7xl mx-auto px-6 ">
         {/* Photographer Profile Section */}
         <section className="mb-16">

@@ -54,7 +54,6 @@ interface IServiceFormProps {
 }
 
 export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: IServiceFormProps) => {
-  console.log('vendor data : ',vendorData);
   const { mutate: addNewService } = useCreateServiceMutation();
   const { mutate : updateService } = useUpdateVendorServiceMutation()
   const [activeTab, setActiveTab] = useState("basic");
@@ -81,19 +80,8 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
     "preview",
   ];
 
-  const loadSavedDraft = (): IService | null => {
-    if(editData) {
-      return {
-        ...editData,
-        category: editData.category._id,
-      };
-    }else {
-      const savedDraft = localStorage.getItem("serviceDraft");
-      return savedDraft ? JSON.parse(savedDraft) : null;
-    }
-  };
 
-  const initialValues: IService = loadSavedDraft() || {
+  const initialValues: IService =  {
     serviceTitle: "",
     category: "",
     yearsOfExperience: 0,

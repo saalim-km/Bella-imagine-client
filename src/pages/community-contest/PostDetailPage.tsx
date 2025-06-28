@@ -62,7 +62,7 @@ const PostDetailPage: React.FC = () => {
         {
           onSuccess: (data) => {
             queryclient.invalidateQueries({ queryKey: ["post", postId] });
-            communityToast.success({ title: data.message });
+            communityToast.success({ title: 'Comment added' , description : data.message });
           },
           onError: (err) => {
             handleError(err);
@@ -193,7 +193,7 @@ const PostDetailPage: React.FC = () => {
         {/* Comments Section */}
         <div className="space-y-4">
           <h3 className="font-semibold text-lg">
-            Comments ({post?.commentCount})
+            Comments ({totalComments})
           </h3>
           {post?.comments?.map((comment) => (
             <div key={comment._id} className="rounded-lg shadow-sm border p-4">
@@ -220,7 +220,7 @@ const PostDetailPage: React.FC = () => {
                         })}
                     </span>
                   </div>
-                  <p className="mt-1 text-gray-200">{comment.content}</p>
+                  <p className="mt-1 dark:text-gray-200">{comment.content}</p>
                 </div>
               </div>
             </div>

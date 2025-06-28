@@ -1,6 +1,7 @@
 import { Clock, ArrowRight } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { IServiceResponse, IWorkSampleResponse } from "@/types/interfaces/vendor"
+import { ImageWithFallback } from "../ImageFallBack"
 
 interface ServiceCardProps {
   service: IServiceResponse
@@ -15,13 +16,14 @@ export default function ServiceCard({ service, onViewDetails, workSample }: Serv
       onClick={() => onViewDetails(service)}
     >
       <div className="relative h-48 overflow-hidden">
-        <img
-          src={workSample.media[0] || "/placeholder.svg"}
+        <ImageWithFallback
+          src={workSample?.media[0]}
           alt={service.serviceTitle}
           className="object-cover w-full h-full"
+          fallbackType="work"
         />
         <div className="absolute bottom-0 left-0 p-6 z-20">
-          <h3 className=" text-xl text-white mb-1">{service.serviceTitle}</h3>
+          <h3 className="text-xl text-white mb-1">{service.serviceTitle}</h3>
           <div className="flex items-center gap-2">
             <Badge className="bg-white/20 text-white hover:bg-white/30 border-none">
               {service.yearsOfExperience} Years Experience
@@ -36,7 +38,7 @@ export default function ServiceCard({ service, onViewDetails, workSample }: Serv
         <div className="flex justify-between items-center">
           <div className="space-y-1">
             <div className="text-xs text-muted-foreground uppercase tracking-wider">Starting at</div>
-            <div className="text-xl  text-foreground">
+            <div className="text-xl text-foreground">
               ₹
               {service.sessionDurations.length > 0
                 ? Math.min(...service.sessionDurations.map((s: any) => s.price)).toLocaleString()

@@ -20,7 +20,7 @@ const RightSidebar: React.FC<{vendors : IVendorsResponse[]}> = ({vendors}) => {
                 <img 
                   src={user.profileImage} 
                   alt={user.name} 
-                  className="w-8 h-8 mr-2"
+                  className="w-8 h-8 mr-2 rounded-full object-cover"
                 />
                 <div>
                   <p className="text-sm font-medium">{user.name}</p>

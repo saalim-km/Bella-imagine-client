@@ -65,7 +65,7 @@ export const ImageWithFallback = ({
         version="1.2"
         style={{ display: "block" }}
       >
-        <foreignObject width="100%" height="100%" className="rounded-full">
+        <foreignObject width="100%" height="100%" className={`${fallbackType === "profile" ? 'rounded-full' : 'rounded-none'}`}>
           <img
             src={src}
             alt={alt}
