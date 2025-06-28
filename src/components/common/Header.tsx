@@ -48,7 +48,7 @@ export default function Header({ onClick }: IHeader) {
   const { page, total, unReadCount, notifications } = useSelector(
     (state: RootState) => state.notification
   );
-
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
