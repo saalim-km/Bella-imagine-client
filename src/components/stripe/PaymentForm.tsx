@@ -16,6 +16,7 @@ import type { Booking } from "@/types/interfaces/User";
 import { useVendorBookingPaymentMutation } from "@/hooks/payment/usePayment";
 import { clientAxiosInstance } from "@/api/client.axios";
 import { communityToast } from "../ui/community-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 

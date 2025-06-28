@@ -39,6 +39,7 @@ import Pagination from "@/components/common/Pagination";
 import { Spinner } from "@/components/ui/spinner";
 import { PaymentStatus, TBookingStatus } from "@/types/interfaces/Payment";
 import { communityToast } from "@/components/ui/community-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface FilterState {
   status: string;
@@ -115,6 +116,7 @@ export default function ClientBookingList({
   const [tempPriceRange, setTempPriceRange] = useState<[number, number]>(
     filters.priceRange
   );
+  const queryClient = useQueryClient();
 
   const limit = 3;
   const maxPrice = 100000;
@@ -221,7 +223,14 @@ export default function ClientBookingList({
       updateBookingStatus(
         { bookingId, status },
         {
-          onSuccess: (data) => communityToast.success({ title: data?.message }),
+          onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ["photographer"]});
+            communityToast.success({
+              title: "Photography Session cancelled",
+              description:
+                "Refund amount will be credited to your wallet within 24hrs",
+            });
+          },
           onError: (error: any) => toast.error(error.response.data.message),
         }
       );
