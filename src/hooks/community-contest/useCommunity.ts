@@ -92,9 +92,8 @@ export const useCreatePost = ()=> {
 
 export const useGetAllPost = (input : GetAllPostInput)=> {
     return useQuery({
-        queryKey : ['community-post',input],
+        queryKey : ['community_post',input],
         queryFn : ()=> getAllPostService(input),
-        staleTime : 1000 * 60 * 1 
     })
 }
 

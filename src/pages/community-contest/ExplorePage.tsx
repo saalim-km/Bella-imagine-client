@@ -76,7 +76,8 @@ const ExplorePage: React.FC = () => {
       if (success) {
         const isLiked = action === "like"
         dispatch(toggleLike({ postId : postId , isLiked : isLiked }))
-        queryClient.invalidateQueries({queryKey : ['community-post']})
+        queryClient.invalidateQueries({queryKey : ['community_post']})
+        queryClient.invalidateQueries({queryKey : ['post',postId,1]})
         communityToast.success({
           title: "Success",
           description: `Post ${isLiked ? "liked" : "unliked"} successfully`,
@@ -108,7 +109,7 @@ const ExplorePage: React.FC = () => {
   }, [isLoading, posts.length, total, dispatch])
 
   // Initialize infinite scroll
-  const sentinelRef = useInfiniteScroll(loadMorePosts)
+  const infiniteScrollRef = useInfiniteScroll(loadMorePosts)
 
   const handleLikeToggle = useCallback(
     (post: ICommunityPostResponse) => {
@@ -180,7 +181,7 @@ const ExplorePage: React.FC = () => {
             </div>
           )}
 
-          <div ref={sentinelRef} className="h-1 w-full" />
+          <div ref={infiniteScrollRef} className="h-1 w-full" />
         </div>
       </div>
     </CommunityLayout>
