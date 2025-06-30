@@ -8,6 +8,8 @@ import { useState } from "react";
 import { useSocket } from "@/context/SocketContext";
 import AccountTypeModal from "@/components/modals/AccountTypeModal";
 import { communityToast } from "@/components/ui/community-toast";
+import Header from "@/components/common/Header";
+import { UserLayout } from "@/components/layout/UserLayout";
 
 const ClientLogin = () => {
   const { reconnect, socket } = useSocket();
@@ -15,21 +17,21 @@ const ClientLogin = () => {
   const { mutate: login } = useLoginMutation();
   const [isSending, setIsSending] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   function handleOpenModal() {
     setIsModalOpen(true);
   }
+
   function handleOnClose() {
     setIsModalOpen(false);
   }
+
   function handleLogin(user: ILogin) {
     setIsSending(true);
     login(user, {
       onSuccess: (data: any) => {
         setIsSending(false);
-        communityToast.success({
-          title: data?.message,
-          description: "User authenticated successfully",
-        });
+        communityToast.welcomeClient(data.data.name);
 
         dispatch(clientLogin(data.data));
         if (socket) {
@@ -44,7 +46,7 @@ const ClientLogin = () => {
   }
 
   return (
-    <>
+    <UserLayout setIsModalOpen={handleOpenModal}>
       <Login
         userType="client"
         onSubmit={handleLogin}
@@ -56,7 +58,7 @@ const ClientLogin = () => {
           <AccountTypeModal isOpen={isModalOpen} onClose={handleOnClose} />
         </div>
       )}
-    </>
+    </UserLayout>
   );
 };
 

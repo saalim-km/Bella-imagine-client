@@ -4,7 +4,8 @@ import { ApiResponse } from "@/hooks/vendor/useVendor";
 import { Community, CommunityResponse } from "@/types/interfaces/Community";
 import { PaginatedResponse } from "@/types/interfaces/vendor";
 import { BasePaginatedResponse, IClient } from "../client/clientService";
-import { ICommunityPost, ICommunityPostResponse } from "@/components/User/Home";
+import { ICommunityPostResponse } from "@/components/User/Home";
+import { vendorAxiosInstance } from "@/api/vendor.axios";
 
 export interface CommunityBySlugResponse {
   community: CommunityResponse;
@@ -12,7 +13,7 @@ export interface CommunityBySlugResponse {
 }
 
 export interface GetCommMemberInput {
-  communityId: string;
+  slug : string;
   limit: number;
   page: number;
 }
@@ -47,7 +48,7 @@ export interface GetAllPostInput {
   page : number;
   limit : number;
   communityId ?: string;
-  enabled ?: boolean
+  enabled ?: boolean;
 }
 
 export interface ILike {
@@ -78,6 +79,7 @@ export interface PostDetailsInput {
   postId : string;
   limit : number;
   page : number;
+  enabled : boolean
 }
 
 export const createCommunityService = async (
@@ -129,11 +131,9 @@ export const updateCommunityService = async (
 };
 
 
-
-
-export const getCommunityMembersService = async (input: GetCommMemberInput) => {
+export const getCommunityMemersAdmin = async (input: GetCommMemberInput) => {
   const respone = await adminAxiosInstance.get(
-    `/community/members/${input.communityId}`,
+    `/${input.slug}/members`,
     {
       params: {
         limit: input.limit,
@@ -141,12 +141,14 @@ export const getCommunityMembersService = async (input: GetCommMemberInput) => {
       },
     }
   );
+
+  return respone.data;
 };
 
 
-// client service
+// client service for fommunity
 
-export const getAllCommunities = async (dto: {
+export const getAllCommunitiesClient = async (dto: {
   page: number;
   limit: number;
   search?: string;
@@ -167,7 +169,7 @@ export const getCommunityBySlugForClient = async (
   return response.data;
 };
 
-export const joinCommunityService = async (
+export const joinCommunityServiceClient = async (
   communtyId: string
 ): Promise<ApiResponse> => {
   const response = await clientAxiosInstance.post(`/client/community-join`, {
@@ -176,7 +178,7 @@ export const joinCommunityService = async (
   return response.data;
 };
 
-export const leaveCommunityService = async (
+export const leaveCommunityServiceClient = async (
   communityId: string
 ): Promise<ApiResponse> => {
   const response = await clientAxiosInstance.delete(
@@ -185,23 +187,83 @@ export const leaveCommunityService = async (
   return response.data;
 };
 
-export const createPostService = async(input : CreatePostInput) : Promise<BasePaginatedResponse<ICommunityPostResponse>>=> {
+export const createPostServiceClient = async(input : CreatePostInput) : Promise<BasePaginatedResponse<ICommunityPostResponse>>=> {
     const response = await clientAxiosInstance.post('/client/community-post',input)
     return response.data
 }
 
-export const getAllPostService = async(input : GetAllPostInput) : Promise<BasePaginatedResponse<PaginatedResponse<ICommunityPostResponse>>> => {
+export const getAllPostServiceClient = async(input : GetAllPostInput) : Promise<BasePaginatedResponse<PaginatedResponse<ICommunityPostResponse>>> => {
   const response = await clientAxiosInstance.get('/client/community-post',{params : input})
   return response.data
 }
 
-
-export const getPostDetails = async(input : PostDetailsInput) : Promise<BasePaginatedResponse<PostDetailsResponse>>=> {
+export const getPostDetailsClient = async(input : PostDetailsInput) : Promise<BasePaginatedResponse<PostDetailsResponse>>=> {
   const response = await clientAxiosInstance.get(`/client/post/${input.postId}`,{params : {page : input.page , limit : input.limit}})
   return response.data;
 }
 
-export const addCommentService = async(input : AddCommentInput) : Promise<ApiResponse> => {
+export const addCommentServiceClient = async(input : AddCommentInput) : Promise<ApiResponse> => {
   const response = await clientAxiosInstance.post('/client/comment',input)
+  return response.data
+}
+
+
+// vendor service for community
+export const getAllCommunitiesVendor = async (dto: {
+  page: number;
+  limit: number;
+  search?: string;
+  category?: string;
+  membership?: string;
+  sort?: string;
+}): Promise<BasePaginatedResponse<PaginatedResponse<CommunityResponse>>> => {
+  const response = await vendorAxiosInstance.get("/vendor/community", {
+    params: dto,
+  });
+  return response.data;
+};
+
+export const getCommunityBySlugForVendor = async (
+  slug: string
+): Promise<BasePaginatedResponse<CommunityBySlugResponse>> => {
+  const response = await vendorAxiosInstance.get(`/vendor/community/${slug}`);
+  return response.data;
+};
+
+export const joinCommunityServiceVendor = async (
+  communtyId: string
+): Promise<ApiResponse> => {
+  const response = await vendorAxiosInstance.post(`/vendor/community-join`, {
+    communityId: communtyId,
+  });
+  return response.data;
+};
+
+export const leaveCommunityServiceVendor = async (
+  communityId: string
+): Promise<ApiResponse> => {
+  const response = await vendorAxiosInstance.delete(
+    `/vendor/community-leave/${communityId}`
+  );
+  return response.data;
+};
+
+export const createPostServiceVendor = async(input : CreatePostInput) : Promise<BasePaginatedResponse<ICommunityPostResponse>>=> {
+    const response = await vendorAxiosInstance.post('/vendor/community-post',input)
+    return response.data
+}
+
+export const getAllPostServiceVendor = async(input : GetAllPostInput) : Promise<BasePaginatedResponse<PaginatedResponse<ICommunityPostResponse>>> => {
+  const response = await vendorAxiosInstance.get('/vendor/community-post',{params : input})
+  return response.data
+}
+
+export const getPostDetailsVendor = async(input : PostDetailsInput) : Promise<BasePaginatedResponse<PostDetailsResponse>>=> {
+  const response = await vendorAxiosInstance.get(`/vendor/post/${input.postId}`,{params : {page : input.page , limit : input.limit}})
+  return response.data;
+}
+
+export const addCommentServiceVendor = async(input : AddCommentInput) : Promise<ApiResponse> => {
+  const response = await vendorAxiosInstance.post('/vendor/comment',input)
   return response.data
 }

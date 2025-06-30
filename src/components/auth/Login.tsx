@@ -8,7 +8,6 @@ import GoogleAuth from "./GoogleAuth";
 import type { ILogin, TRole } from "@/types/interfaces/User";
 import type { CredentialResponse } from "@react-oauth/google";
 import { useGoogleLoginMutataion } from "@/hooks/auth/useGoogleLogin";
-import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { clientLogin } from "@/store/slices/clientSlice";
 import { handleError } from "@/utils/Error/error-handler.utils";
@@ -26,6 +25,7 @@ import {
   Award,
 } from "lucide-react";
 import { communityToast } from "../ui/community-toast";
+import { Link } from "react-router-dom";
 
 interface LoginProps {
   onClick?: () => void;
@@ -55,7 +55,6 @@ export default function CommunityLogin({
       {
         onSuccess: (data) => {
           console.log(data);
-          communityToast.success({ title: data?.message , description : 'User authenticated successfully'});
 
           if (userType === "vendor") {
             dispatch(
@@ -67,6 +66,7 @@ export default function CommunityLogin({
                 role: data.user.role,
               })
             );
+            communityToast.welcomePhotographer(data.user.name);
             if (socket) {
               reconnect();
             }
@@ -80,6 +80,7 @@ export default function CommunityLogin({
                 role: data.user.role,
               })
             );
+            communityToast.welcomeClient(data.user.name);
             if (socket) {
               reconnect();
             }
@@ -94,7 +95,7 @@ export default function CommunityLogin({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 relative overflow-hidden">
-      {/* Background Elements */}
+      {/* Background Elements */} 
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-10 w-32 h-32 bg-orange-200 rounded-full opacity-20 float-animation" />
         <div
@@ -313,7 +314,7 @@ export default function CommunityLogin({
                     <div className="w-full border-t border-gray-300" />
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">
+                    <span className="px-2  text-gray-900">
                       or continue with
                     </span>
                   </div>
@@ -330,14 +331,12 @@ export default function CommunityLogin({
                 <div className="text-center space-y-3">
                   <p className="text-sm text-gray-600">
                     New to our community?{" "}
-                    <a
-                      href={
-                        userType === "vendor" ? "/vendor/signup" : "/signup"
-                      }
+                    <Link
+                      to={userType === "vendor" ? "/vendor/signup" : "/signup"}
                       className="text-orange-700 hover:text-orange-800 font-medium hover:underline"
                     >
                       Join now
-                    </a>
+                    </Link>
                   </p>
                   <p className="text-sm text-gray-600">
                     {userType === "client"

@@ -31,9 +31,10 @@ import { communityToast } from "../ui/community-toast";
 
 interface IHeader {
   onClick?: () => void;
+  isAuthPage?: boolean;
 }
 
-export default function Header({ onClick }: IHeader) {
+export default function Header({ onClick, isAuthPage = false }: IHeader) {
   const { socket } = useSocket();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -95,7 +96,7 @@ export default function Header({ onClick }: IHeader) {
   const logoutUser = () => {
     logout(undefined, {
       onSuccess: (data: any) => {
-        communityToast.success({ title: data?.message });
+        communityToast.logout()
 
         if (user?.role === "vendor") {
           dispatch(vendorLogout());
@@ -137,7 +138,7 @@ export default function Header({ onClick }: IHeader) {
           setMobileMenuOpen(false);
         }}
         className={`px-2 py-1 text-sm font-medium rounded-md ${
-          active ? "text-blue-500 dark:text-blue-400" : ""
+          active ? "text-orange-500 dark:text-orange-400" : "hover:text-orange-500 dark:hover:text-orange-400"
         }`}
       >
         {children}
@@ -145,6 +146,9 @@ export default function Header({ onClick }: IHeader) {
     );
   };
 
+  const shouldShowAuthButton = !isLoggedIn && 
+    !isAuthPage && 
+    !isAdminPage
   return (
     <>
       <header
@@ -171,31 +175,31 @@ export default function Header({ onClick }: IHeader) {
                 </div>
               </a>
 
-              {location.pathname !== "/admin/login" && (
+              {!isAuthPage && !isAdminPage && isLoggedIn && (
                 <nav className="hidden md:flex items-center space-x-1">
-                  <NavLink to="/home">Home</NavLink>
-                  <NavLink to="/photographers">Photographers</NavLink>
-                  <NavLink to="/explore">Community</NavLink>
+                  <NavLink to="/home" active={location.pathname === "/home"}>Home</NavLink>
+                  <NavLink to="/photographers" active={location.pathname.startsWith("/photographers")}>Photographers</NavLink>
+                  <NavLink to="/explore" active={location.pathname.startsWith("/explore")}>Community</NavLink>
                 </nav>
               )}
             </div>
 
             {/* Right section - User controls */}
             <div className="flex items-center space-x-2">
-              {isLoggedIn && (
+              {isLoggedIn && !isAuthPage && (
                 <>
                   <button
-                    className="p-1 rounded-md flex flex-row items-center gap-1"
+                    className="p-1 rounded-md flex flex-row items-center gap-1 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                     onClick={() => navigate("/community/submit")}
                   >
-                    <Plus className="h-7 w-7" />
-                    Create
+                    <Plus className="h-5 w-5" />
+                    <span className="hidden sm:inline">Create</span>
                   </button>
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className="p-1 rounded-md relative"
+                        className="p-1 rounded-md relative hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         aria-label={`Notifications (${total} new)`}
                       >
                         <Bell className="h-5 w-5" />
@@ -219,10 +223,10 @@ export default function Header({ onClick }: IHeader) {
                 </>
               )}
 
-              {isLoggedIn && !isAdminPage ? (
+              {isLoggedIn && !isAdminPage && !isAuthPage ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center">
+                    <button className="flex items-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full p-1 transition-colors">
                       <div className="relative h-8 w-8">
                         <Avatar className="h-8 w-8">
                           <AvatarImage
@@ -234,8 +238,6 @@ export default function Header({ onClick }: IHeader) {
                             {user.name?.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
-
-                        {/* Indicator Dot */}
 
                         {unReadCount > 0 && (
                           <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-background animate-pulse" />
@@ -270,23 +272,19 @@ export default function Header({ onClick }: IHeader) {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              ) : (
-                location.pathname !== "/signup" &&
-                location.pathname !== "/login" &&
-                location.pathname !== "/admin/login" && (
-                  <button
-                    onClick={() => onClick?.()}
-                    className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-medium"
-                  >
-                    Sign Up
-                  </button>
-                )
-              )}
+              ) : shouldShowAuthButton ? (
+                <button
+                  onClick={() => onClick?.()}
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-medium transition-colors"
+                >
+                  Sign Up
+                </button>
+              ) : null}
 
               <ThemeToggle />
 
               <button
-                className="md:hidden p-1 rounded-md"
+                className="md:hidden p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               >
@@ -319,16 +317,16 @@ export default function Header({ onClick }: IHeader) {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 dark:bg-gray-900 md:hidden mt-14">
+        <div className="fixed inset-0 z-40 dark:bg-gray-900 md:hidden mt-14 bg-background">
           <div className="container mx-auto px-4 py-2">
             <nav className="flex flex-col space-y-2">
               {[
                 { to: "/", label: "Home" },
-                { to: "/photographers", label: "Photographers" },
-                { to: "/explore", label: "Community" },
-                ...(isLoggedIn
+                ...(isLoggedIn && !isAuthPage
                   ? [
-                      { to: "/create-post", label: "Create Post" },
+                      { to: "/photographers", label: "Photographers" },
+                      { to: "/explore", label: "Community" },
+                      { to: "/community/submit", label: "Create Post" },
                       { to: "/profile", label: "Profile" },
                       { to: "/settings", label: "Settings" },
                       { to: "/messages", label: "Messages" },
@@ -345,14 +343,14 @@ export default function Header({ onClick }: IHeader) {
               ))}
             </nav>
 
-            {!isLoggedIn && (
+            {shouldShowAuthButton && (
               <div className="mt-4">
                 <button
                   onClick={() => {
                     onClick?.();
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium"
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                   Sign Up
                 </button>
@@ -365,7 +363,7 @@ export default function Header({ onClick }: IHeader) {
                   logoutUser();
                   setMobileMenuOpen(false);
                 }}
-                className="mt-4 w-full text-left px-2 py-1 text-sm font-medium text-red-500 rounded-md"
+                className="mt-4 w-full text-left px-2 py-1 text-sm font-medium text-red-500 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
                 Logout
               </button>

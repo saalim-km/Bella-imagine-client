@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { Calendar, Clock, MapPin, Award, FileText, Camera } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -10,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { IServiceResponse } from "@/types/interfaces/vendor";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 interface ServiceModalProps {
   service: IServiceResponse;
@@ -39,6 +40,7 @@ const itemVariants = {
 };
 
 export const ServiceDetailsModal = ({ service, vendorId, isOpen, onClose }: ServiceModalProps) => {
+  const currentVendorId = useSelector((state : RootState)=> state.vendor.vendor?._id)
   if (!service) return null;
 
   // Fallback location if service.location is invalid or missing
@@ -160,12 +162,7 @@ export const ServiceDetailsModal = ({ service, vendorId, isOpen, onClose }: Serv
                     </div>
                   </div>
                   <div className="flex items-center gap-2 text-sm ">
-                    <MapPin size={16} />
-                    {service.location.travelFee ? (
-                      <span>Travel fee: ₹{service.location.travelFee}</span>
-                    ) : (
-                      <span>No travel fee</span>
-                    )}
+                    <MapPin size={16}/>
                   </div>
                 </motion.div>
 
@@ -244,9 +241,15 @@ export const ServiceDetailsModal = ({ service, vendorId, isOpen, onClose }: Serv
               Close
             </Button>
           </DialogClose>
-          <Link to={`/booking/${service._id}/${vendorId}`}>
-            <Button className="bg-blue-600 text-white hover:bg-blue-700">Book Now</Button>
-          </Link>
+            {service.vendor === currentVendorId ? null : (
+              <Link to={`/booking/${service._id}/${vendorId}`}>
+                <Button
+                  className="bg-blue-600 text-white hover:bg-blue-700"
+                >
+                  Book Now
+                </Button>
+              </Link>
+            )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -70,6 +70,7 @@ export interface IService {
 export interface IServiceResponse {
   _id ?: string;
   serviceTitle: string;
+  vendor : string;
   vendorId ?: string;
   category: Category
   yearsOfExperience: number;

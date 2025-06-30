@@ -6,7 +6,6 @@ import { Link } from "react-router-dom"
 import { Plus } from "lucide-react"
 import { useDispatch, useSelector } from "react-redux"
 import { Button } from "@/components/ui/button"
-import { useGetCommunityPosts } from "@/hooks/community-contest/useCommunity"
 import { 
   setPosts, 
   incrementPage, 
@@ -23,6 +22,7 @@ import { communityToast } from "@/components/ui/community-toast"
 import type { ICommunityPostResponse } from "@/components/User/Home"
 import type { RootState, AppDispatch } from "@/store/store"
 import { useQueryClient } from "@tanstack/react-query"
+import { useGetAllPostForClient, useGetAllPostForVendor, useGetCommunityPostsClient } from "@/hooks/community-contest/useCommunity"
 
 interface PostsTabProps {
   isMember: boolean
@@ -31,6 +31,18 @@ interface PostsTabProps {
 }
 
 export function PostsTab({ isMember, communityId, slug }: PostsTabProps) {
+  const user = useSelector((state : RootState)=> {
+    if(state.client.client) return state.client.client;
+    if(state.vendor.vendor) return state.vendor.vendor;
+    return undefined;
+  })
+
+  
+  if(!user){
+    return <p>user not found please try again later , or please relogin to continue</p>
+  }
+
+
   const dispatch = useDispatch<AppDispatch>()
   const { 
     posts, 
@@ -52,30 +64,20 @@ export function PostsTab({ isMember, communityId, slug }: PostsTabProps) {
     }
   }, [communityId, currentCommunityId, dispatch])
 
-  const { data: postsData, isFetching, error } = useGetCommunityPosts({
-    page,
-    limit,
-    communityId,
-    enabled: communityId === currentCommunityId // Only fetch if community matches
-  })
-
+  const { data: postsDataClient, isLoading : isClientLoading, isError : isClientError } = useGetAllPostForClient({ page, limit , enabled : user.role === 'client'})
+  const { data: postsDataVendor, isLoading : isVendorLoading, isError : isVendorError } = useGetAllPostForVendor({ page, limit , enabled : user.role === 'vendor'})
+  const postsData = postsDataClient?.data.data ? postsDataClient?.data : postsDataVendor?.data
   // Handle data updates
   useEffect(() => {
     if (!postsData || communityId !== currentCommunityId) return
     
     dispatch(setPosts({
-      data: postsData.data.data,
-      total: postsData.data.total,
+      data: postsData.data,
+      total: postsData.total,
       replace: page === 1 // Replace only on first page
     }))
-  }, [postsData, page, communityId, currentCommunityId, dispatch])
+  }, [postsData?.data, page, communityId, currentCommunityId, dispatch])
 
-  // Handle errors
-  useEffect(() => {
-    if (error) {
-      dispatch(setError(error.message))
-    }
-  }, [error, dispatch])
 
   // Socket listeners setup
   useEffect(() => {
@@ -123,10 +125,10 @@ export function PostsTab({ isMember, communityId, slug }: PostsTabProps) {
 
   // Infinite scroll callback
   const loadMorePosts = useCallback(() => {
-    if (!isLoading && !isFetching && posts.length < total) {
+    if (!isClientLoading || !isVendorLoading && posts.length < total) {
       dispatch(incrementPage())
     }
-  }, [isLoading, isFetching, posts.length, total, dispatch])
+  }, [isVendorLoading, isClientLoading, posts.length, total, dispatch])
 
   const sentinelRef = useInfiniteScroll(loadMorePosts)
 
@@ -144,6 +146,12 @@ export function PostsTab({ isMember, communityId, slug }: PostsTabProps) {
       communityId
     })
   }, [socket, likingPosts])
+
+  
+  if(isClientError || isVendorError){
+    return <p className="text-red-700">error feching post please try again later</p>
+  }
+
 
   return (
     <div className="space-y-4">
@@ -171,7 +179,7 @@ export function PostsTab({ isMember, communityId, slug }: PostsTabProps) {
           />
         ))}
 
-        {(isLoading || isFetching) && (
+        {(isClientLoading || isVendorLoading) && (
           <>
             <PostSkeleton />
             <PostSkeleton />
@@ -185,7 +193,7 @@ export function PostsTab({ isMember, communityId, slug }: PostsTabProps) {
           </div>
         )}
 
-        {!isLoading && !isFetching && posts.length === 0 && (
+        {!isClientLoading || !isVendorLoading && posts.length === 0 && (
           <div className="flex flex-col items-center justify-center p-10 text-center bg-secondary/30 rounded-lg">
             <h3 className="text-xl font-medium mb-2">No posts yet</h3>
             <p className="text-muted-foreground mb-4">

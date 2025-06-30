@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { CommunityResponse } from "@/types/interfaces/Community";
-import { Bookmark } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 

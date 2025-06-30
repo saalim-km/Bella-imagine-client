@@ -1,60 +1,99 @@
 import { useState } from "react";
-import { IServiceResponse, IWorkSampleResponse } from "@/types/interfaces/vendor";
+import {
+  IServiceResponse,
+  IWorkSampleResponse,
+} from "@/types/interfaces/vendor";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { motion } from "framer-motion"
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Camera, CheckSquare } from "lucide-react";
 import { useParams } from "react-router-dom";
-import { useGetPhotographerDetails } from "@/hooks/client/useClient";
 import ServiceCard from "@/components/User/vendor-details/ServiceCard";
 import Pagination from "@/components/common/Pagination";
 import { ServiceDetailsModal } from "@/components/modals/ServiceDetailsModal";
 import WorkSample from "@/components/User/vendor-details/WorkSample";
 import { LoadingBar } from "@/components/ui/LoadBar";
 import { VendorProfile } from "./VendorProfile";
+import { IBaseUser } from "@/types/interfaces/User";
+import { useGetPhotographerDetailsVendor } from "@/hooks/vendor/useVendor";
+import { useGetPhotographerDetailsClient } from "@/hooks/client/useClient";
 
-const VendorDetails = () => {
- const { id } = useParams() as { id: string }
-  const [servicePage, setServicePage] = useState<number>(1)
-  const [samplePage, setSamplePage] = useState<number>(1)
-  const [selectedService, setSelectedService] = useState<IServiceResponse | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+interface VendorDetails {
+  user: IBaseUser;
+}
+
+const VendorDetails = ({ user }: VendorDetails) => {
+  const { id } = useParams() as { id: string };
+  const [servicePage, setServicePage] = useState<number>(1);
+  const [samplePage, setSamplePage] = useState<number>(1);
+  const [selectedService, setSelectedService] =
+    useState<IServiceResponse | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   let sampleLimit = 3;
   let serviceLimit = 3;
-  const { data: vendor, isLoading, error } = useGetPhotographerDetails({sampleLimit : sampleLimit , samplePage : samplePage , serviceLimit : serviceLimit , servicePage : servicePage} , id)
+  const {
+    data: clientData,
+    isLoading: isClientLoading,
+    error: isCLientError,
+  } = useGetPhotographerDetailsClient(
+    {
+      sampleLimit: sampleLimit,
+      samplePage: samplePage,
+      serviceLimit: serviceLimit,
+      servicePage: servicePage,
+      enabled: user.role === "client",
+    },
+    id
+  );
+  const {
+    data: vendorData,
+    isLoading: isVendorLoading,
+    error: isVendorError,
+  } = useGetPhotographerDetailsVendor(
+    {
+      sampleLimit: sampleLimit,
+      samplePage: samplePage,
+      serviceLimit: serviceLimit,
+      servicePage: servicePage,
+      enabled: user.role === "vendor",
+    },
+    id
+  );
 
-  if(!vendor){
+  if (isClientLoading || isVendorLoading) {
+    return <LoadingBar />;
+  }
+
+  const vendorDetails = clientData?.data ? clientData.data : vendorData?.data;
+
+  if (!vendorDetails) {
     return (
-      <LoadingBar loading = {isLoading}/>
-    )
+      <p className="text-red-700">
+        An occured while fetching photographer details please try again later
+      </p>
+    );
   }
 
-  const vendorDetails =  vendor.data
-  console.log(vendorDetails);
   const handleViewServiceDetails = (service: IServiceResponse) => {
-    setSelectedService(service)
-    setIsModalOpen(true)
-  }
+    setSelectedService(service);
+    setIsModalOpen(true);
+  };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false)
-    setSelectedService(null)
+    setIsModalOpen(false);
+    setSelectedService(null);
+  };
+
+  if (isClientLoading || isVendorLoading) {
+    return <LoadingBar />;
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <LoadingBar />
-      </div>
-    )
-  }
-
-  if (error || !vendor) {
+  if (isCLientError || isVendorError) {
     return (
       <div className="flex justify-center items-center h-screen text-foreground">
         An error occurred. Please try again later.
       </div>
-    )
+    );
   }
 
   return (
@@ -74,14 +113,18 @@ const VendorDetails = () => {
                 className="flex items-center gap-2 px-6 py-2.5 rounded-full"
               >
                 <CheckSquare size={18} />
-                <span className="text-sm uppercase tracking-wider">Services</span>
+                <span className="text-sm uppercase tracking-wider">
+                  Services
+                </span>
               </TabsTrigger>
               <TabsTrigger
                 value="portfolio"
                 className="flex items-center gap-2 px-6 py-2.5 rounded-full"
               >
                 <Camera size={18} />
-                <span className="text-sm uppercase tracking-wider">Portfolio</span>
+                <span className="text-sm uppercase tracking-wider">
+                  Portfolio
+                </span>
               </TabsTrigger>
             </TabsList>
           </div>
@@ -96,33 +139,45 @@ const VendorDetails = () => {
             >
               <h2 className=" text-3xl text-foreground">Services</h2>
               <p className="text-muted-foreground max-w-2xl">
-                Explore the range of photography services offered, each tailored to capture your special moments with
-                artistic precision.
+                Explore the range of photography services offered, each tailored
+                to capture your special moments with artistic precision.
               </p>
             </motion.div>
 
             {vendorDetails.services?.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {vendorDetails.services.map((service: any) => (
-                  <ServiceCard key={service._id} service={service} onViewDetails={handleViewServiceDetails} workSample={vendorDetails.workSamples[0]}/>
+                  <ServiceCard
+                    key={service._id}
+                    service={service}
+                    onViewDetails={handleViewServiceDetails}
+                    workSample={vendorDetails.workSamples[0]}
+                  />
                 ))}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-16 border border-border/10 rounded-lg bg-muted/5">
-                <p className="text-muted-foreground text-center mb-4">No services available at the moment.</p>
+                <p className="text-muted-foreground text-center mb-4">
+                  No services available at the moment.
+                </p>
                 <Button variant="outline">Contact Photographer</Button>
               </div>
             )}
 
-            {vendorDetails.servicePagination && vendorDetails.servicePagination.total > vendorDetails.servicePagination.limit && (
-              <div className="mt-8 flex justify-center">
-                <Pagination
-                  totalPages={Math.ceil(vendorDetails.servicePagination.total / vendorDetails.servicePagination.limit)}
-                  currentPage={vendorDetails.servicePagination.page}
-                  onPageChange={(page: number) => setServicePage(page)}
-                />
-              </div>
-            )}
+            {vendorDetails.servicePagination &&
+              vendorDetails.servicePagination.total >
+                vendorDetails.servicePagination.limit && (
+                <div className="mt-8 flex justify-center">
+                  <Pagination
+                    totalPages={Math.ceil(
+                      vendorDetails.servicePagination.total /
+                        vendorDetails.servicePagination.limit
+                    )}
+                    currentPage={vendorDetails.servicePagination.page}
+                    onPageChange={(page: number) => setServicePage(page)}
+                  />
+                </div>
+              )}
           </TabsContent>
 
           {/* Portfolio Tab */}
@@ -135,32 +190,43 @@ const VendorDetails = () => {
             >
               <h2 className=" text-3xl text-foreground">Portfolio</h2>
               <p className="text-muted-foreground max-w-2xl">
-                A curated collection of work showcasing the photographer's style, expertise, and artistic vision.
+                A curated collection of work showcasing the photographer's
+                style, expertise, and artistic vision.
               </p>
             </motion.div>
 
-            {vendorDetails.workSamples && vendorDetails.workSamples.length > 0 ? (
+            {vendorDetails.workSamples &&
+            vendorDetails.workSamples.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {vendorDetails.workSamples.map((work: IWorkSampleResponse, idx: number) => (
-                  <WorkSample workSample={work} key={idx} />
-                ))}
+                {vendorDetails.workSamples.map(
+                  (work: IWorkSampleResponse, idx: number) => (
+                    <WorkSample workSample={work} key={idx} />
+                  )
+                )}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-16 border border-border/10 rounded-lg bg-muted/5">
-                <p className="text-muted-foreground text-center mb-4">No portfolio samples available.</p>
+                <p className="text-muted-foreground text-center mb-4">
+                  No portfolio samples available.
+                </p>
                 <Button variant="outline">Contact Photographer</Button>
               </div>
             )}
 
-            {vendorDetails.samplePagination && vendorDetails.samplePagination.total > vendorDetails.samplePagination.limit && (
-              <div className="mt-8 flex justify-center">
-                <Pagination
-                  totalPages={Math.ceil(vendorDetails.samplePagination.total / vendorDetails.samplePagination.limit)}
-                  currentPage={vendorDetails.samplePagination.page}
-                  onPageChange={(page: number) => setSamplePage(page)}
-                />
-              </div>
-            )}
+            {vendorDetails.samplePagination &&
+              vendorDetails.samplePagination.total >
+                vendorDetails.samplePagination.limit && (
+                <div className="mt-8 flex justify-center">
+                  <Pagination
+                    totalPages={Math.ceil(
+                      vendorDetails.samplePagination.total /
+                        vendorDetails.samplePagination.limit
+                    )}
+                    currentPage={vendorDetails.samplePagination.page}
+                    onPageChange={(page: number) => setSamplePage(page)}
+                  />
+                </div>
+              )}
           </TabsContent>
         </Tabs>
 
@@ -175,7 +241,7 @@ const VendorDetails = () => {
         )}
       </div>
     </div>
-  )
+  );
 };
 
 export default VendorDetails;

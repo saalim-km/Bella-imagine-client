@@ -27,7 +27,7 @@ const AdminRoute = () => {
       <Route path='/community' element = {<AuthAdminRoute element={<CommunityManagement/>} allowedRoles={["admin"]}/>}/>
       <Route path='/community/new' element = {<AuthAdminRoute element={<CreateCommunityPage/>} allowedRoles={["admin"]}/>}/>
       <Route path='community/edit/r/:slug' element = {<AuthAdminRoute element={<EditCommunityPage/>} allowedRoles={["admin"]}/>}/>
-      <Route path='community/:id/members' element = {<AuthAdminRoute element={<CommunityMembers/>} allowedRoles={["admin"]}/>}/>
+      <Route path='r/:slug/members' element = {<AuthAdminRoute element={<CommunityMembers/>} allowedRoles={["admin"]}/>}/>
       <Route path='*' element={<Admin404/>}/>
     </Routes>
   )

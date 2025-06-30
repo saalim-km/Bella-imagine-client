@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { IVendor } from "@/services/vendor/vendorService";
 import { IClient } from "@/services/client/clientService";
+import { Link } from "react-router-dom";
 
 type IProfileInfo = Partial<IVendor | IClient>
 
@@ -40,7 +41,7 @@ export function ProfileInfo({ data }: ProfileInfoProps) {
   return (
     <div className="space-y-4 dark:text-gray-300 border pb-6">
       {/* Header Section */}
-      <div className="bg-orange-700 h-32 w-full rounded-t-lg"></div>
+      <div className="bg-gradient-to-b from-orange-500 to-white dark:from-orange-600 h-32 w-full rounded-t-lg"></div>
       
       {/* Profile Content */}
       <div className="px-4 -mt-16">
@@ -84,7 +85,18 @@ export function ProfileInfo({ data }: ProfileInfoProps) {
                 <h2 className="text-lg font-semibold mb-3 border-b pb-2">Vendor Information</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <InfoItem icon={UserCheck} label="Vendor ID" value={data.vendorId} />
-                    <InfoItem icon={Globe} label="Portfolio" value={data.portfolioWebsite} />
+                    {data.portfolioWebsite ? (
+                      <a
+                        href={data.portfolioWebsite}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline text-blue-600 flex items-start"
+                      >
+                        <InfoItem icon={Globe} label="Portfolio" value={data.portfolioWebsite} />
+                      </a>
+                    ) : (
+                      <InfoItem icon={Globe} label="Portfolio" value={data.portfolioWebsite} />
+                    )}
                     <InfoItem icon={Languages} label="Languages" value={data.languages?.join(", ")} />
                     
                     <div className="flex items-center gap-3">
@@ -109,7 +121,7 @@ export function ProfileInfo({ data }: ProfileInfoProps) {
                     <Button 
                       variant="outline" 
                       onClick={() => setShowDocs(!showDocs)}
-                      className="text-orange-700 border-orange-700 hover:bg-orange-50"
+                      className="text-orange-700 border-orange-700"
                     >
                       {showDocs ? "Hide Documents" : "Show Documents"}
                     </Button>

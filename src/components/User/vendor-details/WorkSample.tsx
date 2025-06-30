@@ -28,7 +28,7 @@ export default function WorkSample({ workSample }: WorkSampleProps) {
 
   return (
     <>
-      <div className="border border-border/10 rounded-lg overflow-hidden bg-card">
+      <div className="border border-border/10 rounded-lg overflow-hidden bg-black/10">
         <div className="p-6">
           <h3 className=" text-xl text-foreground mb-2">{workSample.title}</h3>
           <p className="text-muted-foreground text-sm mb-4">{workSample.description}</p>

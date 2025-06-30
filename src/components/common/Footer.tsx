@@ -9,41 +9,20 @@ export default function Footer() {
         {/* Social Links */}
         <div className="flex gap-4">
           <a
-            href="#"
+            href="https://www.instagram.com/sa.liim__/"
             className=" "
             aria-label="Instagram"
           >
             <Instagram className="h-5 w-5" />
           </a>
           <a
-            href="#"
-            className=" "
-            aria-label="Twitter"
-          >
-            <Twitter className="h-5 w-5" />
-          </a>
-          <a
-            href="#"
+            href="https://www.linkedin.com/in/salim-k-m-3ab7ba246/"
             className=" "
             aria-label="LinkedIn"
           >
             <Linkedin className="h-5 w-5" />
           </a>
         </div>
-
-        {/* Minimal Links */}
-        <div className="flex gap-6 text-sm ">
-          <a href="/about" className="">
-            About
-          </a>
-          <a href="/privacy" className="">
-            Privacy
-          </a>
-          <a href="/terms" className="">
-            Terms
-          </a>
-        </div>
-
         {/* Copyright */}
         <p className="text-xs text-gray-400">
           © {new Date().getFullYear()} BellaImagine Community

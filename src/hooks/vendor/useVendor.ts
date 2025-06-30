@@ -1,6 +1,7 @@
 import { getAllCategories, vendorJoinCategory } from "@/services/categories/categoryService";
-import { BasePaginatedResponse } from "@/services/client/clientService";
-import { cerateWorkSampleService, createService, deleteWorkSampleService, getAllVendorServices, getAllWorkSampleService, getVendorDetails, updateVendorDetails,updateWorkSampleService, updateVendorService, deleteVendorService } from "@/services/vendor/vendorService";
+import { BasePaginatedResponse, GetVendorDetails } from "@/services/client/clientService";
+import { cerateWorkSampleService, createService, deleteWorkSampleService, getAllVendorServices, getAllWorkSampleService, getVendorDetails, updateVendorDetails,updateWorkSampleService, updateVendorService, deleteVendorService, getAllVendorsServiceVendor, getPhotographerDetailsVendor, getServiceVendor } from "@/services/vendor/vendorService";
+import { IVendorsFilter, IVendorsResponse } from "@/types/interfaces/User";
 import { IServiceFilter, IServiceResponse, IWorkSampleFilter, PaginatedResponse } from "@/types/interfaces/vendor";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -26,11 +27,12 @@ export const useUpdateVendorMutation = ()=> {
     })
 }
 
-export const useAllVendorCategoryQuery = ()=> {
+export const useAllVendorCategoryQuery = (enabled : boolean)=> {
   return useQuery({
     queryKey : ["vendor-categorries"],
     queryFn : getAllCategories,
-    staleTime : 1000 * 60 * 5 // 15 minutes
+    staleTime : 1000 * 60 * 5, // 15 minutes,
+    enabled : enabled
   })
 }
 
@@ -92,5 +94,34 @@ export const useDeleteWorkSample = ()=> {
 export const useUpdateWorkSample = ()=> {
   return useMutation({
     mutationFn : updateWorkSampleService
+  })
+}
+
+
+// query hooks
+export const useAllVendorsListQueryVendor = (filter: IVendorsFilter) => {
+  return useQuery<BasePaginatedResponse<PaginatedResponse<IVendorsResponse>>, Error>({
+    queryKey: ["client", filter,filter.location],
+    queryFn: () => getAllVendorsServiceVendor(filter),
+    staleTime: 1000 *60 *5,
+    enabled : filter.enabled
+  });
+};
+
+export const useGetPhotographerDetailsVendor = (input : GetVendorDetails , vendorId: string)=> {
+  return useQuery({
+    queryKey : ["photographer",vendorId,input],
+    queryFn : ()=> getPhotographerDetailsVendor(input,vendorId),
+    staleTime : 1000 * 60 * 5, // 15 minutes,
+    enabled : input.enabled
+  })
+}
+
+export const useGetServiceQueryVendor = (id : string , enabled : boolean)=> {
+  return useQuery({
+    queryKey : ["service",id],
+    queryFn : ()=> getServiceVendor(id),
+    staleTime : 1000 * 60 * 5, // 15 minutes
+    enabled : enabled
   })
 }

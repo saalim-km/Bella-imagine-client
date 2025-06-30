@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { debounce } from "lodash";
 import Filters from "@/components/User/Filters";
 import LocationHeader from "@/components/User/LocationHeader";
@@ -9,11 +9,14 @@ import Header from "@/components/common/Header";
 import { FilterPanel } from "@/components/User/FilterPanel";
 import {
   useAllClientCategories,
-  useAllVendorsListQuery,
+  useAllVendorsListQueryClient,
 } from "@/hooks/client/useClient";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { IVendorsResponse } from "@/types/interfaces/User";
 import { LoadingBar } from "@/components/ui/LoadBar";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { useAllVendorCategoryQuery, useAllVendorsListQueryVendor } from "@/hooks/vendor/useVendor";
 
 interface FilterParams {
   location?: { lat: number; lng: number };
@@ -26,6 +29,11 @@ interface FilterParams {
 }
 
 const Vendors = () => {
+  const user = useSelector((state: RootState) => {
+    if (state.vendor.vendor) return state.vendor.vendor
+    if (state.client.client) return state.client.client
+    return null
+  })
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -55,12 +63,13 @@ const Vendors = () => {
     return () => debouncedSetFilters.cancel();
   }, [filters, debouncedSetFilters]);
 
-  const { data: categories } = useAllClientCategories();
+  const { data: categoriesClient } = useAllClientCategories(user?.role === 'client');
+  const { data: categoriesVendor } = useAllVendorCategoryQuery(user?.role === 'vendor');
   const {
-    data: vendors,
-    isLoading,
-    isError,
-  } = useAllVendorsListQuery({
+    data: clientData,
+    isLoading : isClientLoading,
+    isError : isLClientError,
+  } = useAllVendorsListQueryClient({
     page: currentPage,
     limit: 6,
     category: selectedCategory,
@@ -72,12 +81,31 @@ const Vendors = () => {
     services: debouncedFilters.services,
     languages: debouncedFilters.languages,
     sortBy: debouncedFilters.sortBy,
-    enabled : true
+    enabled : user?.role === 'client'
+  });
+  const {
+    data: vendorData,
+    isLoading : isVendorLoading,
+    isError : isLVendorError,
+  } = useAllVendorsListQueryVendor({
+    page: currentPage,
+    limit: 6,
+    category: selectedCategory,
+    location: debouncedFilters.location,
+    categories: debouncedFilters.categories,
+    minCharge: debouncedFilters.priceRange?.[0],
+    maxCharge: debouncedFilters.priceRange?.[1],
+    tags: debouncedFilters.tags,
+    services: debouncedFilters.services,
+    languages: debouncedFilters.languages,
+    sortBy: debouncedFilters.sortBy,
+    enabled : user?.role === 'vendor'
   });
 
-  const totalVendors = vendors?.data.total || 0;
+  const vendors = clientData?.data.data ? clientData.data : vendorData?.data
+  const totalVendors = vendors?.total || 0;
   const totalPages = Math.max(1, Math.ceil(totalVendors / 6));
-
+  const categories = categoriesClient?.data.data ? categoriesClient.data : categoriesVendor?.data
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && newPage <= totalPages) {
       setCurrentPage(newPage);
@@ -128,10 +156,18 @@ const Vendors = () => {
     setFilters((prev) => ({ ...prev, sortBy }));
   };
 
-  if (isLoading) {
+  if (isClientLoading || isVendorLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <LoadingBar />
+      </div>
+    );
+  }
+
+  if (isLClientError || isLVendorError) {
+    return (
+      <div className="flex justify-center items-center min-h-screen text-red-700">
+        Error loading vendors please try again later
       </div>
     );
   }
@@ -142,10 +178,10 @@ const Vendors = () => {
       <LocationHeader />
       <div className="container mx-auto px-4">
         <Filters
-          vendors={vendors?.data.data || []}
+          vendors={vendors?.data || []}
           handleCategorySelect={handleSelectCategory}
           selectedCategory={filters.categories?.[0]}
-          categories={categories?.data.data || []}
+          categories={categories?.data || []}
           resetFilter={resetFilters}
           setIsFilter={setIsFiltersOpen}
           handleNearbySearch={handleNearbySearch}
@@ -154,7 +190,7 @@ const Vendors = () => {
         />
         <div>
           {vendors &&
-            vendors.data.data.map((vendor: IVendorsResponse) => (
+            vendors.data.map((vendor: IVendorsResponse) => (
               <PhotographerCard key={vendor._id} vendorData={vendor} />
             ))}
         </div>
@@ -165,12 +201,12 @@ const Vendors = () => {
         />
       </div>
       <FilterPanel
-        allCategories={categories?.data.data || []}
+        allCategories={categories?.data || []}
         isOpen={isFiltersOpen}
         onClose={() => setIsFiltersOpen(false)}
         onApplyFilters={handleApplyFilters}
         currentFilters={filters}
-        vendors={vendors?.data.data || []}
+        vendors={vendors?.data || []}
       />
       <Footer />
     </div>

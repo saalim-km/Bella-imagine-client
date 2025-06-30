@@ -129,7 +129,7 @@ export const communityToast = {
       variant: "info",
       title: options.title || "Info",
       description: options.description,
-      duration: options.duration,
+      duration: 1500,
     });
   },
 
@@ -145,7 +145,7 @@ export const communityToast = {
   welcomePhotographer: (name: string) => {
     return baseToast({
       variant: "default",
-      title: `Welcome to the community, ${name}!`,
+      title: `Welcome back to community, ${name}!`,
       description: "Start building your portfolio and connecting with clients",
       duration: 6000,
     });
@@ -154,7 +154,7 @@ export const communityToast = {
   welcomeClient: (name: string) => {
     return baseToast({
       variant: "default",
-      title: `Welcome, ${name}!`,
+      title: `Welcome back to community, ${name}!`,
       description: "Discover amazing photographers in your area",
       duration: 6000,
     });
@@ -192,6 +192,26 @@ export const communityToast = {
       title: `${action}...`,
       description: "This may take a few moments",
       duration: 8000,
+    });
+  },
+
+  logout: () => {
+    return baseToast({
+      variant: "info",
+      title: "Logged out",
+      description: "You have been successfully logged out.",
+      duration: 4000,
+    });
+  },
+
+  registerSuccess: (name?: string) => {
+    return baseToast({
+      variant: "success",
+      title: "Registration successful!",
+      description: name
+        ? `Welcome aboard, ${name}! Your account has been created.`
+        : "Your account has been created successfully.",
+      duration: 5000,
     });
   },
 };

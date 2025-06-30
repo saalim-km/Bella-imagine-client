@@ -135,8 +135,10 @@ export default function UserProfile() {
           };
           dispatch(updateVendorSlice(dataToUpdateRedux));
           queryClient.invalidateQueries({ queryKey: ["vendor-profile"] });
-                    communityToast.success({title : data?.message});
-          
+          communityToast.success({
+            title: data?.message,
+            description: "Your profile has been updated successfully.",
+          });
         },
         onError: (error) => {
           setIsSubmitting(false);
@@ -159,8 +161,10 @@ export default function UserProfile() {
           };
           dispatch(updateClientslice(dataToUpdateRedux));
           queryClient.invalidateQueries({ queryKey: ["client-profile"] });
-                    communityToast.success({title : data?.message});
-
+          communityToast.success({
+            title: data?.message,
+            description: "Your profile has been updated successfully",
+          });
         },
         onError: (error) => {
           setIsSubmitting(false);
@@ -183,8 +187,7 @@ export default function UserProfile() {
     joinCategory(category, {
       onSuccess: (data) => {
         queryClient.invalidateQueries({ queryKey: ["client-profile"] });
-                  communityToast.success({title : data?.message});
-
+        communityToast.success({ title: data?.message });
       },
       onError: (err) => {
         handleError(err);
@@ -233,11 +236,7 @@ export default function UserProfile() {
               </div>
             ) : (
               <div className="mb-4">
-                <Button
-                  variant="outline"
-                  onClick={handleModalOpen}
-                  className="border-orange-700 text-orange-700 hover:bg-orange-50"
-                >
+                <Button variant="outline" onClick={handleModalOpen}>
                   Add Category
                 </Button>
               </div>

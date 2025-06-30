@@ -3,7 +3,7 @@ import React from 'react';
 
 const PostSkeleton: React.FC = () => {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-4 border border-gray-200 dark:border-gray-700 animate-pulse">
+    <div className="dark:bg-background rounded-lg shadow-md overflow-hidden mb-4 border border-gray-200 dark:border-gray-700 animate-pulse">
       <div className="p-4">
         <div className="flex items-center mb-3">
           <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-600 mr-3"></div>

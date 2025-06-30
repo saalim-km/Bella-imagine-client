@@ -12,7 +12,7 @@ interface ServiceCardProps {
 export default function ServiceCard({ service, onViewDetails, workSample }: ServiceCardProps) {
   return (
     <div
-      className="group cursor-pointer border border-border/10 rounded-lg overflow-hidden bg-card"
+      className="group cursor-pointer border border-border/10 rounded-lg overflow-hidden bg-muted dark:bg-black/5"
       onClick={() => onViewDetails(service)}
     >
       <div className="relative h-48 overflow-hidden">

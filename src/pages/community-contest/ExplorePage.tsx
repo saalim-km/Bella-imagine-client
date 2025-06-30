@@ -7,7 +7,7 @@ import PostCard from "../../components/community-contest/PostCard"
 import PostSkeleton from "../../components/community-contest/PostSkeleton"
 import type { AppDispatch } from "@/store/store"
 import CommunityLayout from "@/components/layout/CommunityLayout"
-import { useGetAllPost } from "@/hooks/community-contest/useCommunity"
+import { useGetAllPostForClient, useGetAllPostForVendor } from "@/hooks/community-contest/useCommunity"
 import { incrementPage, setPosts, toggleLike } from "@/store/slices/feedslice"
 import { LoadingBar } from "@/components/ui/LoadBar"
 import { useSocket } from "@/context/SocketContext"
@@ -16,6 +16,18 @@ import type { ICommunityPostResponse } from "@/components/User/Home"
 import { useQueryClient } from "@tanstack/react-query"
 
 const ExplorePage: React.FC = () => {
+  const user = useSelector((state : RootState)=> {
+    if(state.client.client) return state.client.client;
+    if(state.vendor.vendor) return state.vendor.vendor;
+    return undefined;
+  })
+
+
+  if(!user){
+    return <p>user not found please try again later , or please relogin to continue</p>
+  }
+
+
   const dispatch = useDispatch<AppDispatch>()
   const { limit, page, posts, total } = useSelector((state: RootState) => state.feed)
   const [isLoading, setIsLoading] = useState(false)
@@ -27,27 +39,25 @@ const ExplorePage: React.FC = () => {
   // Use ref to track if socket listeners are already set up
   const socketListenersSetup = useRef(false)
 
-  const { data: postsData, isFetching } = useGetAllPost({ page, limit })
+  const { data: postsDataClient, isLoading : isClientLoading, isError : isClientError } = useGetAllPostForClient({ page, limit , enabled : user.role === 'client'})
+  const { data: postsDataVendor, isLoading : isVendorLoading, isError : isVendorError } = useGetAllPostForVendor({ page, limit , enabled : user.role === 'vendor'})
+
+
+  const postsData = postsDataClient?.data.data ? postsDataClient.data : postsDataVendor?.data
 
   // Update Redux store when new data is fetched
   useEffect(() => {
     if (postsData) {
       dispatch(
         setPosts({
-          data: postsData.data.data,
-          total: postsData.data.total,
+          data: postsData.data,
+          total: postsData.total,
         }),
       )
       setIsLoading(false)
     }
   }, [postsData, dispatch])
 
-  // Handle errors
-  useEffect(() => {
-    if (isFetching) {
-      setError(null)
-    }
-  }, [isFetching])
 
   // Set up socket listeners once
   useEffect(() => {
@@ -145,7 +155,9 @@ const ExplorePage: React.FC = () => {
     [socket, likingPosts],
   )
 
-  if (isFetching && posts.length === 0) return <LoadingBar />
+  if(isClientError || isVendorError){
+    return <p className="text-red-700">error feching post please try again later</p>
+  }
 
   return (
     <CommunityLayout>
@@ -162,7 +174,7 @@ const ExplorePage: React.FC = () => {
             />
           ))}
 
-          {(isLoading || isFetching) && (
+          {(isClientLoading || isVendorLoading) && (
             <>
               <PostSkeleton />
               <PostSkeleton />

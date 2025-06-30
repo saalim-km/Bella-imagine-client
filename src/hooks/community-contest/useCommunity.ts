@@ -1,6 +1,7 @@
-import { addCommentService, createCommunityService, createPostService, deleteCommunityService, getAllCommunitesAdmin, getAllCommunities, GetAllPostInput, getAllPostService, GetCommMemberInput, getCommunityBySlugForClient, getCommunityBySlugService, getCommunityMembersService, getPostDetails, joinCommunityService, leaveCommunityService, PostDetailsInput, updateCommunityService } from "@/services/community-contest/communityService"
+import { AddCommentInput, addCommentServiceClient, createCommunityService, createPostServiceClient, deleteCommunityService, getAllCommunitesAdmin, getAllCommunitiesClient, getAllCommunitiesVendor, GetAllPostInput, getAllPostServiceClient, getAllPostServiceVendor, GetCommMemberInput, getCommunityBySlugForClient, getCommunityBySlugForVendor, getCommunityBySlugService, getCommunityMemersAdmin, getPostDetailsClient, getPostDetailsVendor, joinCommunityServiceClient, leaveCommunityServiceClient, PostDetailsInput, updateCommunityService } from "@/services/community-contest/communityService"
 
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
+import { ApiResponse } from "../vendor/useVendor"
 
 export const useCreateCommunityMutation = ()=> {
     return useMutation({
@@ -14,7 +15,6 @@ export const useGetlAllCommunityAdmin = (dto : { page : number , limit : number 
         queryFn : ()=> getAllCommunitesAdmin(dto)
     })
 }
-
 
 export const useDeleteCommunity = ()=> {
     return useMutation({
@@ -35,19 +35,17 @@ export const useUpdateCommunity = ()=> {
     })
 }
 
-
-
 export const useGetCommunityMembers = (input : GetCommMemberInput)=> {
     return useQuery({
-        queryKey : ['community-members'],
-        queryFn : ()=> getCommunityMembersService(input)
+        queryKey : ['community-members',input],
+        queryFn : ()=> getCommunityMemersAdmin(input)
     })
 }
 
 
 // ------------------------Client hooks for community --------------------------------------------------
 
-export const useGetAllCommunities = (
+export const useGetAllCommunitiesClient = (
   dto: { 
     page: number; 
     limit: number; 
@@ -55,66 +53,122 @@ export const useGetAllCommunities = (
     category?: string; 
     membership?: string; 
     sort?: string;
+    enabled : boolean
   }
 ) => {
   return useQuery({
     queryKey: ["Communities_User", dto],
-    queryFn: () => getAllCommunities(dto),
+    queryFn: () => getAllCommunitiesClient(dto),
     placeholderData: keepPreviousData, 
+    enabled : dto.enabled
   });
 };
 
-export const useGetCommunityBySlugQueryClient = (slug : string)=> {
+export const useGetCommunityBySlugQueryClient = (slug : string , enabled : boolean)=> {
     return useQuery({
         queryKey : ['community',slug],
-        queryFn : ()=> getCommunityBySlugForClient(slug)
+        queryFn : ()=> getCommunityBySlugForClient(slug),
+        enabled : enabled
     })
 }
 
-export const useJoinCommunity = ()=> {
+export const useJoinCommunity = (mutateFn : (communtyId: string) => Promise<ApiResponse> )=> {
     return useMutation({
-        mutationFn : joinCommunityService
+        mutationFn : mutateFn
     })
 }
 
-export const useLeaveCommunity = ()=> {
+export const useLeaveCommunity = (mutateFn : (communtyId: string) => Promise<ApiResponse>)=> {
     return useMutation({
-        mutationFn : leaveCommunityService,
+        mutationFn : mutateFn,
     })
 }
 
 // post 
 export const useCreatePost = ()=> {
     return useMutation({
-        mutationFn : createPostService
+        mutationFn : createPostServiceClient
     })
 }
 
-export const useGetAllPost = (input : GetAllPostInput)=> {
+// explore page hook for client
+export const useGetAllPostForClient = (
+    input: GetAllPostInput,
+) => {
     return useQuery({
-        queryKey : ['community_post',input],
-        queryFn : ()=> getAllPostService(input),
-    })
+        queryKey: ['community_post', input],
+        queryFn: () => getAllPostServiceClient(input),
+        enabled: input.enabled
+    });
 }
 
-export const useGetCommunityPosts = (input: GetAllPostInput) => {
+export const useGetCommunityPostsClient = (input: GetAllPostInput) => {
   return useQuery({
     queryKey: ["community-post-details", input],
-    queryFn: () => getAllPostService(input),
+    queryFn: () => getAllPostServiceClient(input),
     staleTime : 1000 * 60 * 1, 
     enabled : input.enabled
   })
 }
 
-export const useGetPostDetails = (input: PostDetailsInput)=> {
+export const useGetPostDetailsClient = (input: PostDetailsInput)=> {
     return useQuery({
         queryKey: ['post',input.postId,input.page],
-        queryFn : ()=> getPostDetails(input)
+        queryFn : ()=> getPostDetailsClient(input),
+        enabled :input.enabled
     })
 }
 
-export const useAddComment = ()=> {
+export const useAddComment = (mutateFn : (input : AddCommentInput) => Promise<ApiResponse>)=> {
     return useMutation({
-        mutationFn : addCommentService
+        mutationFn : mutateFn
+    })
+}
+
+
+
+// ------------------------Vendor hooks for community --------------------------------------------------
+export const useGetAllPostForVendor = (
+    input: GetAllPostInput,
+) => {
+    return useQuery({
+        queryKey: ['community_post', input],
+        queryFn: () => getAllPostServiceVendor(input),
+        enabled: input.enabled
+    });
+}
+
+export const useGetAllCommunitiesVendor = (
+  dto: { 
+    page: number; 
+    limit: number; 
+    search?: string; 
+    category?: string; 
+    membership?: string; 
+    sort?: string;
+    enabled : boolean
+  }
+) => {
+  return useQuery({
+    queryKey: ["Communities_User", dto],
+    queryFn: () => getAllCommunitiesVendor(dto),
+    placeholderData: keepPreviousData, 
+    enabled : dto.enabled
+  });
+};
+
+export const useGetCommunityBySlugQueryVendor = (slug : string , enabled : boolean)=> {
+    return useQuery({
+        queryKey : ['community',slug],
+        queryFn : ()=> getCommunityBySlugForVendor(slug),
+        enabled : enabled
+    })
+}
+
+export const useGetPostDetailsVendor = (input: PostDetailsInput)=> {
+    return useQuery({
+        queryKey: ['post',input.postId,input.page],
+        queryFn : ()=> getPostDetailsVendor(input),
+        enabled : input.enabled
     })
 }

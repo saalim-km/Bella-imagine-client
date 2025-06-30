@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import { debounce } from "lodash";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -20,23 +20,29 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
-import { toast } from "sonner";
 import { PageLayout } from "@/components/community-contest/layout/CommunityLayout";
 import { CommunityGrid } from "@/components/community-contest/CommunityGrid";
-import { CreateCommunityDialog } from "@/components/community-contest/CreateCommunityDialogue";
-import { useGetAllCommunities } from "@/hooks/community-contest/useCommunity";
 import { useAllClientCategories } from "@/hooks/client/useClient";
-import { communityToast } from "@/components/ui/community-toast";
+import { useGetAllCommunitiesClient, useGetAllCommunitiesVendor } from "@/hooks/community-contest/useCommunity";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { useAllVendorCategoryQuery } from "@/hooks/vendor/useVendor";
 
 const Communities = () => {
+  const user = useSelector((state : RootState)=> {
+    if(state.client.client) return state.client.client;
+    if(state.vendor.vendor) return state.vendor.vendor;
+    return undefined;
+  })
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [membershipFilter, setMembershipFilter] = useState("all");
   const [sortOption, setSortOption] = useState("newest");
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const { data: categoriesData } = useAllClientCategories();
+  const { data: categoriesDataClient } = useAllClientCategories(user?.role === 'client');
+  const { data: categoriesDataVendor } = useAllVendorCategoryQuery(user?.role === 'vendor');
+
 
   const debouncedSetSearch = useMemo(
     () => debounce((value) => setSearchTerm(value), 500),
@@ -50,39 +56,38 @@ const Communities = () => {
     [debouncedSetSearch]
   );
 
-  const { data, isLoading, isError } = useGetAllCommunities({
+  const { data : communitiesForClient, isLoading, isError } = useGetAllCommunitiesClient({
     page,
     limit,
     search: searchTerm,
     category: categoryFilter === "all" ? undefined : categoryFilter,
     membership: membershipFilter === "all" ? undefined : membershipFilter,
     sort: sortOption,
+    enabled : user?.role === 'client'
+  });
+  const { data : communitiesForVendor } = useGetAllCommunitiesVendor({
+    page,
+    limit,
+    search: searchTerm,
+    category: categoryFilter === "all" ? undefined : categoryFilter,
+    membership: membershipFilter === "all" ? undefined : membershipFilter,
+    sort: sortOption,
+    enabled : user?.role === 'vendor'
   });
 
-  const categories = categoriesData?.data?.data;
+  const categories = categoriesDataClient?.data?.data ? categoriesDataClient.data : categoriesDataVendor?.data
 
-  const handleCreateCommunity = (communityData: any) => {
-    console.log("Creating community:", communityData);
-              communityToast.success({title : data?.message});
-    
-    setIsCreateDialogOpen(false);
-  };
 
+  const communities = communitiesForClient?.data.data ? communitiesForClient?.data : communitiesForVendor?.data
+  const totalCommunities = communities?.total || 0
   return (
     <PageLayout>
       <div className="space-y-8 mt-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="text-xs px-2 py-0 h-5">
-              {data?.data?.total || 0} communities
+              {totalCommunities} communities
             </Badge>
-            <Button 
-              variant="outline"
-              onClick={() => setIsCreateDialogOpen(true)}
-              className=""
-            >
-              <Plus className="mr-2 h-4 w-4" /> Create Community
-            </Button>
           </div>
         </div>
 
@@ -117,7 +122,7 @@ const Communities = () => {
               </SelectTrigger>
               <SelectContent className="">
                 <SelectItem value="all">All Categories</SelectItem>
-                {categories?.map((category) => (
+                {categories?.data?.map((category) => (
                   <SelectItem key={category._id} value={category._id || ""}>
                     {category.title}
                   </SelectItem>
@@ -192,7 +197,7 @@ const Communities = () => {
                           All Categories
                         </label>
                       </div>
-                      {categories?.map((category) => (
+                      {categories?.data?.map((category) => (
                         <div
                           key={category._id}
                           className="flex items-center space-x-2"
@@ -238,8 +243,8 @@ const Communities = () => {
               Please try again later.
             </p>
           </div>
-        ) : !isLoading && data?.data?.data?.length! > 0 ? (
-          <CommunityGrid communities={data?.data.data!} />
+        ) : !isLoading && communities?.data?.length! > 0 ? (
+          <CommunityGrid communities={communities?.data!} />
         ) : (
           <div className="flex flex-col items-center justify-center p-10 text-center  rounded-lg">
             <h3 className="text-xl font-medium mb-2">No communities found</h3>
@@ -260,12 +265,6 @@ const Communities = () => {
           </div>
         )}
       </div>
-
-      <CreateCommunityDialog
-        isOpen={isCreateDialogOpen}
-        onClose={() => setIsCreateDialogOpen(false)}
-        onSubmit={handleCreateCommunity}
-      />
     </PageLayout>
   );
 };

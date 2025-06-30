@@ -61,13 +61,12 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
 
     // Check if selected date is today
     if (date === currentDateStr) {
-      toast.error(
-        "Warning: You are booking for today. Bookings made for the current date cannot be canceled due to our 24-hour cancellation policy.",
-        {
-          duration: 5000, // Display for 5 seconds
-          position: "top-center",
-        }
-      );
+      communityToast.warning({
+        title: "Warning: You are booking for today.",
+        description:
+          "Bookings made for the current date cannot be canceled due to our 24-hour cancellation policy.",
+        duration: 5000, // Display for 5 seconds
+      });
     }
 
     console.log("user selected date : ", selectedDate);
@@ -140,7 +139,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-10 mt-16 relative">
+    <div className="container mx-auto px-4 my-10 relative">
       {isLoading && <LoadingOverlay message="Processing your booking..." />}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

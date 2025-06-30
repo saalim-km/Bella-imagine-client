@@ -1,10 +1,10 @@
 import {
   BasePaginatedResponse,
   getAllClientCategories,
-  getAllVendors,
+  getAllVendorsServiceClient,
   getClientDetails,
-  getPhotographerDetails,
-  getService,
+  getPhotographerDetailsClient,
+  getServiceClient,
   GetVendorDetails,
   updateClientDetails,
 } from "@/services/client/clientService";
@@ -29,35 +29,38 @@ export const useUpdateClientMutation = () => {
   });
 };
 
-export const useAllVendorsListQuery = (filter: IVendorsFilter) => {
+export const useAllVendorsListQueryClient = (filter: IVendorsFilter) => {
   return useQuery<BasePaginatedResponse<PaginatedResponse<IVendorsResponse>>, Error>({
     queryKey: ["client", filter,filter.location],
-    queryFn: () => getAllVendors(filter),
+    queryFn: () => getAllVendorsServiceClient(filter),
     staleTime: 1000 *60 *5,
     enabled : filter.enabled
   });
 };
 
-export const useAllClientCategories = ()=> {
+export const useAllClientCategories = (enabled : boolean)=> {
   return useQuery({
     queryKey : ["client-categories"],
     queryFn : getAllClientCategories,
-    staleTime : 1000 * 60 * 5 // 5 minutes
+    staleTime : 1000 * 60 * 5, // 5 minutes,
+    enabled : enabled
   })
 }
 
-export const useGetPhotographerDetails = (input : GetVendorDetails , vendorId: string)=> {
+export const useGetPhotographerDetailsClient = (input : GetVendorDetails , vendorId: string)=> {
   return useQuery({
     queryKey : ["photographer",vendorId,input],
-    queryFn : ()=> getPhotographerDetails(input,vendorId),
-    staleTime : 1000 * 60 * 5 // 15 minutes
+    queryFn : ()=> getPhotographerDetailsClient(input,vendorId),
+    staleTime : 1000 * 60 * 5, // 15 minutes
+    enabled : input.enabled
   })
 }
 
-export const useGetServiceQuery = (id : string)=> {
+export const useGetServiceQueryClient = (id : string , enabled : boolean)=> {
   return useQuery({
     queryKey : ["service",id],
-    queryFn : ()=> getService(id),
-    staleTime : 1000 * 60 * 5 // 15 minutes
+    queryFn : ()=> getServiceClient(id),
+    staleTime : 1000 * 60 * 5, // 15 minutes
+    enabled : enabled
   })
 }

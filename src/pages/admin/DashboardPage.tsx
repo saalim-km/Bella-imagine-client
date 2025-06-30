@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Users, Camera, Calendar, MessageSquare, TrendingUp, Award, Clock } from "lucide-react"
+import { Users, Camera, Calendar, MessageSquare, TrendingUp, Award, Clock, ChevronLeft, ChevronRight } from "lucide-react"
 import {
   LineChart,
   Line,
@@ -21,13 +21,19 @@ import { useGetDashBoard } from "@/hooks/admin/useAllCategory"
 import { LoadingBar } from "@/components/ui/LoadBar"
 import { DashboardData } from "@/services/admin/adminService"
 import { AdminLayout } from "@/components/layout/AdminLayout"
-
+import { Button } from "@/components/ui/button"
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"]
 
+const ITEMS_PER_PAGE = 5;
+
 export default function AdminDashboard() {
   const [data, setData] = useState<DashboardData | null>(null)
-
+  const [currentPage, setCurrentPage] = useState({
+    users: 1,
+    bookings: 1,
+    posts: 1,
+  })
 
   const {data : dashboardData , isLoading , isError} = useGetDashBoard()
 
@@ -64,6 +70,23 @@ export default function AdminDashboard() {
         return "bg-gray-100 text-gray-800"
     }
   }
+
+  const handlePageChange = (section: 'users' | 'bookings' | 'posts', direction: 'prev' | 'next') => {
+    setCurrentPage(prev => ({
+      ...prev,
+      [section]: direction === 'prev' ? Math.max(1, prev[section] - 1) : prev[section] + 1
+    }));
+  };
+
+  const getPaginatedData = (items: any[], section: 'users' | 'bookings' | 'posts') => {
+    const startIndex = (currentPage[section] - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return items.slice(startIndex, endIndex);
+  };
+
+  const hasNextPage = (items: any[], section: 'users' | 'bookings' | 'posts') => {
+    return currentPage[section] * ITEMS_PER_PAGE < items.length;
+  };
 
   if (isLoading) {
     return <LoadingBar/>
@@ -245,10 +268,10 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {data.recentUsers.map((user) => (
+                {getPaginatedData(data.recentUsers, 'users').map((user) => (
                   <div key={user._id} className="flex items-center space-x-3">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.profileImage || "/placeholder.svg"} />
+                      <AvatarImage src={user.profileImage || "/placeholder.svg"} className="object-cover"/>
                       <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
@@ -258,6 +281,27 @@ export default function AdminDashboard() {
                     <Badge variant={user.role === "vendor" ? "default" : "secondary"}>{user.role}</Badge>
                   </div>
                 ))}
+              </div>
+              <div className="flex justify-between items-center mt-4">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handlePageChange('users', 'prev')}
+                  disabled={currentPage.users === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm text-gray-500">
+                  Page {currentPage.users} of {Math.ceil(data.recentUsers.length / ITEMS_PER_PAGE)}
+                </span>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handlePageChange('users', 'next')}
+                  disabled={!hasNextPage(data.recentUsers, 'users')}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -272,7 +316,7 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {data.recentBookings.map((booking) => (
+                {getPaginatedData(data.recentBookings, 'bookings').map((booking) => (
                   <div key={booking._id} className="space-y-2">
                     <div className="flex justify-between items-start">
                       <p className="text-sm font-medium truncate">{booking.serviceDetails.serviceTitle}</p>
@@ -288,6 +332,27 @@ export default function AdminDashboard() {
                   </div>
                 ))}
               </div>
+              <div className="flex justify-between items-center mt-4">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handlePageChange('bookings', 'prev')}
+                  disabled={currentPage.bookings === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm text-gray-500">
+                  Page {currentPage.bookings} of {Math.ceil(data.recentBookings.length / ITEMS_PER_PAGE)}
+                </span>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handlePageChange('bookings', 'next')}
+                  disabled={!hasNextPage(data.recentBookings, 'bookings')}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
@@ -301,11 +366,11 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {data.recentPosts.map((post) => (
+                {getPaginatedData(data.recentPosts, 'posts').map((post) => (
                   <div key={post._id} className="space-y-2">
                     <div className="flex items-start space-x-2">
                       <Avatar className="h-6 w-6">
-                        <AvatarImage src={post.userId.profileImage || "/placeholder.svg"} />
+                        <AvatarImage src={post.userId.profileImage || "/placeholder.svg"} className="object-cover"/>
                         <AvatarFallback>{post.userId.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
@@ -324,12 +389,32 @@ export default function AdminDashboard() {
                   </div>
                 ))}
               </div>
+              <div className="flex justify-between items-center mt-4">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handlePageChange('posts', 'prev')}
+                  disabled={currentPage.posts === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm text-gray-500">
+                  Page {currentPage.posts} of {Math.ceil(data.recentPosts.length / ITEMS_PER_PAGE)}
+                </span>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handlePageChange('posts', 'next')}
+                  disabled={!hasNextPage(data.recentPosts, 'posts')}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
     </AdminLayout>
-
   )
 }

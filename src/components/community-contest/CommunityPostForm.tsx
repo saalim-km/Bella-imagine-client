@@ -18,7 +18,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import {
   useCreatePost,
-  useGetAllCommunities,
+  useGetAllCommunitiesClient,
+  useGetAllCommunitiesVendor,
 } from "@/hooks/community-contest/useCommunity";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { CreatePostInput } from "@/services/community-contest/communityService";
@@ -31,17 +32,35 @@ import { addPost } from "@/store/slices/feedslice";
 interface CreatePostFormProps {
   communityId?: string;
   onSuccess?: () => void;
+  user: {
+    _id: string;
+    name: string;
+    avatar: string;
+    role: string;
+  };
 }
 
 export function CreatePostForm({
   communityId,
   onSuccess,
+  user,
 }: CreatePostFormProps) {
-  const { data: communitiesData } = useGetAllCommunities({
+  const { data: communitiesDataClient } = useGetAllCommunitiesClient({
     limit: 1000,
     page: 1,
-    membership: "member",
+    enabled: user.role === "client",
+    membership : 'member'
   });
+  const { data: communitiesDataVendor } = useGetAllCommunitiesVendor({
+    limit: 1000,
+    page: 1,
+    membership : 'member',
+    enabled: user.role === "vendor",
+  });
+  const communitiesData = communitiesDataClient?.data.data
+    ? communitiesDataClient?.data
+    : communitiesDataVendor?.data;
+
   const { mutate: createPost } = useCreatePost();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -57,9 +76,9 @@ export function CreatePostForm({
   const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState("");
   const queryClient = useQueryClient();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const communities = communitiesData?.data?.data || [];
+  const communities = communitiesData?.data || [];
 
   const MAX_MEDIA = 4;
   const MAX_TITLE_LENGTH = 300;
@@ -193,9 +212,12 @@ export function CreatePostForm({
       createPost(formData as unknown as CreatePostInput, {
         onSuccess: (data) => {
           queryClient.invalidateQueries({ queryKey: ["community-post"] });
-          communityToast.success({ title: "Post created",description : `your post has been created in the community` });
-          dispatch(addPost(data.data))
-          navigate('/explore');
+          communityToast.success({
+            title: "Post created",
+            description: `your post has been created in the community`,
+          });
+          dispatch(addPost(data.data));
+          navigate("/explore");
         },
       });
     } catch (error) {

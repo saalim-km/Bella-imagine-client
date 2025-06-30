@@ -6,6 +6,8 @@ import { IUser } from "@/types/interfaces/User";
 import { toast } from "sonner";
 import { useSocket } from "@/context/SocketContext";
 import { communityToast } from "@/components/ui/community-toast";
+import Header from "@/components/common/Header";
+import { UserLayout } from "@/components/layout/UserLayout";
 
 const ClientSignup = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,8 +24,9 @@ const ClientSignup = () => {
   function handleRegister(data: IUser) {
     registerClient(data, {
       onSuccess: (data) => {
-                  communityToast.success({title : data?.message});
-        
+        alert("register success");
+        communityToast.registerSuccess();
+
         if (socket) {
           reconnect();
         }
@@ -35,7 +38,7 @@ const ClientSignup = () => {
   }
 
   return (
-    <>
+    <UserLayout setIsModalOpen={handleOpenModal}>
       <Signup
         onClick={handleOpenModal}
         userType="client"
@@ -46,7 +49,7 @@ const ClientSignup = () => {
           <AccountTypeModal isOpen={isModalOpen} onClose={handleOnClose} />
         </div>
       )}
-    </>
+    </UserLayout>
   );
 };
 

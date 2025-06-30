@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useNavigate } from "react-router-dom"
-import { useAllVendorsListQuery } from "@/hooks/client/useClient"
 import { LoadingBar } from "../ui/LoadBar"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/store/store"
+import { useAllVendorsListQueryClient } from "@/hooks/client/useClient"
+import { useAllVendorsListQueryVendor } from "@/hooks/vendor/useVendor"
 
 // Your existing interface
 export interface ICommunityPost {
@@ -126,20 +127,27 @@ export default function CommunityHome() {
 
   const navigate = useNavigate()
 
-  const { data, isLoading, isError } = useAllVendorsListQuery({
+  const { data : clientData, isLoading : isClientLoading, isError : isCLienterror } = useAllVendorsListQueryClient({
     maxCharge: 100000,
     location: marker,
     limit: 4,
     page: 1,
     enabled: user?.role === "client",
   })
+  const { data : vendorData, isLoading : isVendorLoading, isError : isVendorerror } = useAllVendorsListQueryVendor({
+    maxCharge: 100000,
+    location: marker,
+    limit: 4,
+    page: 1,
+    enabled: user?.role === "vendor",
+  })
 
-  const onlinePhotographers = data?.data.data || []
+  const onlinePhotographers = clientData?.data.data ? clientData.data : vendorData?.data
 
   // Transform real data into hero posts when data is available
   useEffect(() => {
-    if (onlinePhotographers.length > 0) {
-      const transformedPosts = transformWorkSamplesToHeroPosts(onlinePhotographers)
+    if (onlinePhotographers?.data.length || 0 > 0) {
+      const transformedPosts = transformWorkSamplesToHeroPosts(onlinePhotographers?.data!)
       if (transformedPosts.length > 0) {
         setHeroPosts(transformedPosts)
       }
@@ -181,11 +189,11 @@ export default function CommunityHome() {
     return <LoadingBar />
   }
 
-  if (isLoading) {
+  if (isClientLoading || isVendorLoading) {
     return <LoadingBar />
   }
 
-  if (isError) {
+  if (isCLienterror || isVendorerror) {
     return <p className="text-red-600">Error fetching photographers. Please try again later.</p>
   }
 
@@ -378,9 +386,8 @@ export default function CommunityHome() {
             </Button>
           </div>
 
-          {user?.role === "client" && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {onlinePhotographers.map((photographer) => (
+              {onlinePhotographers?.data.map((photographer) => (
                 <div
                   key={photographer._id}
                   className="rounded-xl p-6 border transition-all group shadow-sm cursor-pointer hover:shadow-md"
@@ -421,7 +428,6 @@ export default function CommunityHome() {
                 </div>
               ))}
             </div>
-          )}
         </div>
       </section>
     </main>

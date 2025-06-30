@@ -13,7 +13,8 @@ import { formatDistanceToNow } from "date-fns";
 import CommunityLayout from "@/components/layout/CommunityLayout";
 import {
   useAddComment,
-  useGetPostDetails,
+  useGetPostDetailsClient,
+  useGetPostDetailsVendor,
 } from "@/hooks/community-contest/useCommunity";
 import { LoadingBar } from "@/components/ui/LoadBar";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,6 +22,8 @@ import { communityToast } from "@/components/ui/community-toast";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  addCommentServiceClient,
+  addCommentServiceVendor,
   PostDetailsInput,
   PostDetailsResponse,
 } from "@/services/community-contest/communityService";
@@ -29,8 +32,24 @@ import { useSocket } from "@/context/SocketContext";
 import { useDispatch } from "react-redux";
 import { toggleLike } from "@/store/slices/feedslice";
 import { BasePaginatedResponse } from "@/services/client/clientService";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 const PostDetailPage: React.FC = () => {
+    const user = useSelector((state: RootState) => {
+    if (state.client.client) return state.client.client;
+    if (state.vendor.vendor) return state.vendor.vendor;
+    return undefined;
+  });
+
+  if (!user) {
+    return (
+      <p className="text-red-700">
+        user not found please try again later , or please relogin to continue
+      </p>
+    );
+  }
+
   const { postId } = useParams();
   const { socket } = useSocket();
   const dispatch = useDispatch();
@@ -39,19 +58,25 @@ const PostDetailPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const commentLimit = 4;
   const isLiking = postId ? likingPosts.has(postId.toString()) : false;
-  const queryData: PostDetailsInput = {
+
+  const queryData = {
     postId: postId!,
     limit: commentLimit,
     page: page,
   };
 
-  const { data, isLoading, isFetching } = useGetPostDetails(queryData);
-  const totalComments = data?.data.totalComments || 0;
+  const { data : postDetailsClient, isLoading : isLoadingClient } = useGetPostDetailsClient({...queryData,enabled : user.role === 'client'});
+  const { data : postDetailsVendor, isLoading : isLoadingVendor } = useGetPostDetailsVendor({...queryData,enabled : user.role === 'vendor'});
+
+
+  const totalComments = postDetailsClient?.data ? postDetailsClient.data.totalComments : postDetailsVendor?.data.totalComments || 0
   const totalPages = Math.max(1, Math.ceil(totalComments / commentLimit));
-  const { mutate: addComment, isPending } = useAddComment();
+
+  const addCommentMutateFn = user.role === 'client' ? addCommentServiceClient : addCommentServiceVendor
+  const { mutate: addComment, isPending } = useAddComment(addCommentMutateFn);
   
   // Fix 1: Better handling of post data and isLiked state
-  const post = data?.data;
+  const post = postDetailsClient?.data ? postDetailsClient.data : postDetailsVendor?.data
   const isPostLiked = Boolean(post?.isLiked); // Ensure it's always a boolean
   const queryClient = useQueryClient();
   
@@ -203,7 +228,7 @@ const PostDetailPage: React.FC = () => {
     return <p>Post ID is required to fetch details, please try again later</p>;
   }
 
-  if (isLoading) {
+  if (isLoadingClient || isLoadingVendor) {
     return <LoadingBar />;
   }
 

@@ -1,6 +1,7 @@
 import Login from "@/components/auth/Login";
 import Footer from "@/components/common/Footer";
 import Header from "@/components/common/Header";
+import { UserLayout } from "@/components/layout/UserLayout";
 import AccountTypeModal from "@/components/modals/AccountTypeModal";
 import { communityToast } from "@/components/ui/community-toast";
 import { useSocket } from "@/context/SocketContext";
@@ -10,7 +11,6 @@ import { ILogin } from "@/types/interfaces/User";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { toast } from "sonner";
 
 const VendorLogin = () => {
   const dispatch = useDispatch();
@@ -32,9 +32,8 @@ const VendorLogin = () => {
     login(user, {
       onSuccess: (data: any) => {
         setIsSending(false);
-        console.log(data);
-                  communityToast.success({title : data?.message});
-        
+        communityToast.welcomePhotographer(data.data.name);
+
         dispatch(vendorLogin(data.data));
         if (socket) {
           reconnect();
@@ -48,7 +47,7 @@ const VendorLogin = () => {
   }
 
   return (
-    <>
+    <UserLayout setIsModalOpen={handleOpenModal}>
       <Login
         onClick={handleOpenModal}
         userType="vendor"
@@ -60,7 +59,7 @@ const VendorLogin = () => {
           <AccountTypeModal isOpen={isModalOpen} onClose={handleOnClose} />
         </div>
       )}
-    </>
+    </UserLayout>
   );
 };
 
