@@ -3,9 +3,9 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Edit, Trash2, Heart } from "lucide-react"
-import { toast } from "sonner"
 import Pagination from "../common/Pagination"
 import { IComment } from "@/types/interfaces/Community"
+import { useGetCommentsForClient, useGetCommentsForVendor } from "@/hooks/community-contest/useCommunity"
 
 
 
@@ -76,8 +76,17 @@ interface CommentsTabProps {
 }
 
 export function CommentsTab({ userRole }: CommentsTabProps) {
+  const [queryData,setQueryData] = useState<{page : number , limit : number}>({
+    limit : 4,
+    page : 1
+  })
+  const {data : clientData , isLoading : isClientLoding , isError : isClientError} = useGetCommentsForClient({...queryData,enabled : userRole === 'client'})
+  const {data : vendorData , isLoading : isVendorLoding , isError : isVendorError} = useGetCommentsForVendor({...queryData,enabled : userRole === 'vendor'})
   const [comments, setComments] = useState<IComment[]>(mockComments)
 
+  const commentsData = clientData?.data.data ? clientData.data : vendorData?.data
+  console.log('got the comments data',commentsData);
+  console.log();
   const handleEditComment = (commentId: string) => {
     console.log("Editing comment:", commentId)
     

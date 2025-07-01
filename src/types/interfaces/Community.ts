@@ -146,4 +146,5 @@ export interface AddCommentInput {
 export interface GetCommentsInput {
   page : number;
   limit : number;
+  enabled : boolean
 }

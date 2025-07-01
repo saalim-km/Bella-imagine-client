@@ -130,7 +130,8 @@ export const useAddComment = (mutateFn : (input : AddCommentInput) => Promise<Ap
 export const useGetCommentsForClient = (input : GetCommentsInput)=> {
     return useQuery({
         queryKey : ['comments',input],
-        queryFn : ()=> getAllCommentsByClient(input)
+        queryFn : ()=> getAllCommentsByClient(input),
+        enabled : input.enabled
     })
 }
 
@@ -186,6 +187,7 @@ export const useGetPostDetailsVendor = (input: PostDetailsInput)=> {
 export const useGetCommentsForVendor = (input : GetCommentsInput)=> {
     return useQuery({
         queryKey : ['comments',input],
-        queryFn : ()=> getAllCommentsByVendor(input)
+        queryFn : ()=> getAllCommentsByVendor(input),
+        enabled : input.enabled
     })
 }
