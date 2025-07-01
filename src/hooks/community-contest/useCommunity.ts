@@ -131,6 +131,7 @@ export const useGetCommentsForClient = (input : GetCommentsInput)=> {
     return useQuery({
         queryKey : ['comments',input],
         queryFn : ()=> getAllCommentsByClient(input),
+        staleTime : 1000 * 60 * 5,
         enabled : input.enabled
     })
 }
@@ -188,6 +189,7 @@ export const useGetCommentsForVendor = (input : GetCommentsInput)=> {
     return useQuery({
         queryKey : ['comments',input],
         queryFn : ()=> getAllCommentsByVendor(input),
+        staleTime : 1000 * 60 * 5,
         enabled : input.enabled
     })
 }

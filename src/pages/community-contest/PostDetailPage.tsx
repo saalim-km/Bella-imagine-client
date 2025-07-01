@@ -317,7 +317,7 @@ const PostDetailPage: React.FC = () => {
                 </Avatar>
 
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                  <span className="font-medium text-gray-900 dark:text-gray-100">u/{post?.userName}</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{post?.userName}</span>
                   <span>•</span>
                   <span>
                     {post?.createdAt &&
@@ -513,23 +513,6 @@ const PostDetailPage: React.FC = () => {
                   </div>
 
                   <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-2">{comment.content}</p>
-
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-xs text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-1 h-6"
-                    >
-                      Reply
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-xs text-gray-500 hover:text-green-600 dark:hover:text-green-400 px-2 py-1 h-6"
-                    >
-                      Share
-                    </Button>
-                  </div>
                 </div>
               </div>
             </Card>

@@ -111,6 +111,10 @@ export interface IComment {
   updatedAt?: Date
 }
 
+export interface ICommentResponse {
+  
+}
+
 export interface GetAllPostInput {
   page : number;
   limit : number;
