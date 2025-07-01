@@ -50,7 +50,7 @@ export const ServiceDetailsModal = ({ service, vendorId, isOpen, onClose }: Serv
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-7xl max-h-[95vh] overflow-hidden  rounded-lg shadow-xl p-0">
+      <DialogContent className="max-w-7xl max-h-[98vh] overflow-hidden  rounded-lg shadow-xl p-0">
         <DialogHeader className="px-8 pt-8 pb-4 bg-gradient-to-r from-primary/5 to-secondary/5">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-2xl font-bold ">{service.serviceTitle}</DialogTitle>

@@ -1,6 +1,10 @@
-import { Clock, ArrowRight } from "lucide-react"
+"use client"
+
+import { Clock, ArrowRight, Star, Users } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { IServiceResponse, IWorkSampleResponse } from "@/types/interfaces/vendor"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import type { IServiceResponse, IWorkSampleResponse } from "@/types/interfaces/vendor"
 import { ImageWithFallback } from "../ImageFallBack"
 
 interface ServiceCardProps {
@@ -10,76 +14,101 @@ interface ServiceCardProps {
 }
 
 export default function ServiceCard({ service, onViewDetails, workSample }: ServiceCardProps) {
+  const minPrice =
+    service.sessionDurations.length > 0 ? Math.min(...service.sessionDurations.map((s: any) => s.price)) : 0
+
+  const minHours =
+    service.sessionDurations.length > 0 ? Math.min(...service.sessionDurations.map((s: any) => s.durationInHours)) : 0
+
   return (
-    <div
-      className="group cursor-pointer border border-border/10 rounded-lg overflow-hidden bg-muted dark:bg-black/5"
+    <Card
+      className="group cursor-pointer overflow-hidden bg-background border border-border hover:border-orange-200 dark:hover:border-orange-800 transition-all duration-200 hover:shadow-md"
       onClick={() => onViewDetails(service)}
     >
       <div className="relative h-48 overflow-hidden">
         <ImageWithFallback
-          src={workSample?.media[0]}
+          src={workSample?.media[0] || "/placeholder.svg?height=192&width=400"}
           alt={service.serviceTitle}
-          className="object-cover w-full h-full"
+          className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
           fallbackType="work"
         />
-        <div className="absolute bottom-0 left-0 p-6 z-20">
-          <h3 className="text-xl text-white mb-1">{service.serviceTitle}</h3>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+        {/* Service Title Overlay */}
+        <div className="absolute bottom-4 left-4 right-4">
+          <h3 className="text-lg font-semibold text-white mb-2">{service.serviceTitle}</h3>
           <div className="flex items-center gap-2">
-            <Badge className="bg-white/20 text-white hover:bg-white/30 border-none">
-              {service.yearsOfExperience} Years Experience
+            <Badge className="bg-white/20 text-white hover:bg-white/30 border-0 backdrop-blur-sm">
+              <Star className="w-3 h-3 mr-1" />
+              {service.yearsOfExperience} Years
+            </Badge>
+            <Badge className="bg-white/20 text-white hover:bg-white/30 border-0 backdrop-blur-sm">
+              <Users className="w-3 h-3 mr-1" />
+              Popular
             </Badge>
           </div>
         </div>
       </div>
 
-      <div className="p-6 space-y-4">
-        <p className="text-muted-foreground line-clamp-2">{service.serviceDescription}</p>
+      <CardContent className="p-6 space-y-4">
+        {/* Description */}
+        <p className="text-muted-foreground text-sm line-clamp-2 leading-relaxed">{service.serviceDescription}</p>
 
-        <div className="flex justify-between items-center">
+        {/* Pricing and Duration */}
+        <div className="flex justify-between items-center py-3 border-y border-border">
           <div className="space-y-1">
             <div className="text-xs text-muted-foreground uppercase tracking-wider">Starting at</div>
-            <div className="text-xl text-foreground">
-              ₹
-              {service.sessionDurations.length > 0
-                ? Math.min(...service.sessionDurations.map((s: any) => s.price)).toLocaleString()
-                : "N/A"}
+            <div className="text-xl font-semibold text-foreground">
+              ₹{minPrice > 0 ? minPrice.toLocaleString() : "N/A"}
             </div>
           </div>
-
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Clock className="h-4 w-4" />
-            <span>
-              {service.sessionDurations.length > 0
-                ? Math.min(...service.sessionDurations.map((s: any) => s.durationInHours))
-                : "N/A"}{" "}
-              hours minimum
-            </span>
+          <div className="text-right space-y-1">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Clock className="w-3 h-3" />
+              <span>Duration</span>
+            </div>
+            <div className="text-sm font-medium text-foreground">
+              {minHours > 0 ? `${minHours}h minimum` : "Custom"}
+            </div>
           </div>
         </div>
 
+        {/* Style Specialties */}
         <div className="space-y-2">
-          <div className="text-xs text-muted-foreground uppercase tracking-wider">Style Specialties</div>
-          <div className="flex flex-wrap gap-2">
+          <div className="text-xs text-muted-foreground uppercase tracking-wider">Specialties</div>
+          <div className="flex flex-wrap gap-1.5">
             {service.styleSpecialty.slice(0, 3).map((style: string, idx: number) => (
-              <Badge key={idx} variant="secondary" className="bg-muted/30 text-foreground/80 hover:text-foreground">
+              <Badge
+                key={idx}
+                variant="secondary"
+                className="text-xs px-2 py-0.5 bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300"
+              >
                 {style}
               </Badge>
             ))}
             {service.styleSpecialty.length > 3 && (
-              <Badge variant="secondary" className="bg-muted/30 text-foreground/80 hover:text-foreground">
-                +{service.styleSpecialty.length - 3} more
+              <Badge variant="outline" className="text-xs px-2 py-0.5">
+                +{service.styleSpecialty.length - 3}
               </Badge>
             )}
           </div>
         </div>
 
-        <div className="pt-2 flex items-center justify-end">
-          <div className="text-sm flex items-center gap-1 text-foreground group-hover:underline">
-            <span>View Details</span>
-            <ArrowRight className="h-4 w-4" />
-          </div>
+        {/* View Details Button */}
+        <div className="pt-2">
+          <Button
+            variant="outline"
+            className="w-full border-orange-200 text-orange-600 hover:bg-orange-50 dark:border-orange-800 dark:text-orange-400 dark:hover:bg-orange-950/50 group-hover:bg-orange-50 dark:group-hover:bg-orange-950/50 bg-transparent"
+            onClick={(e) => {
+              e.stopPropagation()
+              onViewDetails(service)
+            }}
+          >
+            <span>View Details & Packages</span>
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }
