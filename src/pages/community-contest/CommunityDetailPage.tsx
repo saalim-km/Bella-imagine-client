@@ -22,7 +22,7 @@ import type { AppDispatch, RootState } from "@/store/store"
 import { CommunityInfo } from "@/components/community-contest/CommunityInto"
 import { LoadingBar } from "@/components/ui/LoadBar"
 import { useSelector } from "react-redux"
-import { joinCommunityServiceClient, joinCommunityServiceVendor, leaveCommunityServiceClient, leaveCommunityServiceVendor } from "@/services/community-contest/communityService"
+import { joinCommunityServiceClient, joinCommunityServiceVendor, leaveCommunityServiceClient, leaveCommunityServiceVendor } from "@/services/community/communityService"
 
 const CommunityDetailPage = () => {
     const user = useSelector((state : RootState)=> {

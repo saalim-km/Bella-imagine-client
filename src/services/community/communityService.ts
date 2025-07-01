@@ -1,86 +1,14 @@
 import { adminAxiosInstance } from "@/api/admin.axios";
 import { clientAxiosInstance } from "@/api/client.axios";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
-import { Community, CommunityResponse } from "@/types/interfaces/Community";
+import { AddCommentInput, Community, CommunityBySlugResponse, CommunityResponse, CreatePostInput, GetAllPostInput, GetCommentsInput, GetCommMemberInput, IComment, PostDetailsInput, PostDetailsResponse } from "@/types/interfaces/Community";
 import { PaginatedResponse } from "@/types/interfaces/vendor";
 import { BasePaginatedResponse, IClient } from "../client/clientService";
 import { ICommunityPostResponse } from "@/components/User/Home";
 import { vendorAxiosInstance } from "@/api/vendor.axios";
 
-export interface CommunityBySlugResponse {
-  community: CommunityResponse;
-  isMember: boolean;
-}
-
-export interface GetCommMemberInput {
-  slug : string;
-  limit: number;
-  page: number;
-}
-
-export interface CreatePostInput {
-  communityId: string;
-  title: string;
-  content: string;
-  media?: File[];
-  mediaType?: "image" | "video" | "mixed" | "none";
-  tags: string[];
-}
-
-export interface IComment {
-  _id?: string
-  postId: string
-  userId: {
-    _id: string
-    name: string
-    profileImage?: string
-    email: string
-  }
-  userName ?: string;
-  avatar ?: string
-  content: string
-  likesCount: number
-  createdAt?: Date
-  updatedAt?: Date
-}
-
-export interface GetAllPostInput {
-  page : number;
-  limit : number;
-  communityId ?: string;
-  enabled ?: boolean;
-}
-
-export interface ILike {
-  _id?: string;
-  userId : {
-    name : string;
-    profileImage : string
-  }
-  postId : string;
-  userType : 'Client' | 'Vendor';
-  createdAt ?: string;
-  updatedAt ?: string;
-}
-
-export interface PostDetailsResponse extends Pick<IClient,'name' | 'profileImage'> , Omit<ICommunityPostResponse,'comments'> {
-  likes : ILike;
-  comments : IComment[];
-  totalComments : number
-}
-
-export interface AddCommentInput {
-  postId : string;
-  content : string;
-}
 
 
-export interface PostDetailsInput {
-  postId : string;
-  limit : number;
-  page : number;
-  enabled : boolean
-}
 
 export const createCommunityService = async (
   dto: Partial<Community>
@@ -147,7 +75,6 @@ export const getCommunityMemersAdmin = async (input: GetCommMemberInput) => {
 
 
 // client service for fommunity
-
 export const getAllCommunitiesClient = async (dto: {
   page: number;
   limit: number;
@@ -207,6 +134,10 @@ export const addCommentServiceClient = async(input : AddCommentInput) : Promise<
   return response.data
 }
 
+export const getAllCommentsByClient = async (input : GetCommentsInput) : Promise<BasePaginatedResponse<PaginatedResponse<IComment>>> => {
+  const response = await clientAxiosInstance.get('/client/comment',{params : input})
+  return response.data;
+}
 
 // vendor service for community
 export const getAllCommunitiesVendor = async (dto: {
@@ -266,4 +197,9 @@ export const getPostDetailsVendor = async(input : PostDetailsInput) : Promise<Ba
 export const addCommentServiceVendor = async(input : AddCommentInput) : Promise<ApiResponse> => {
   const response = await vendorAxiosInstance.post('/vendor/comment',input)
   return response.data
+}
+
+export const getAllCommentsByVendor = async (input : GetCommentsInput) : Promise<BasePaginatedResponse<PaginatedResponse<IComment>>> => {
+  const response = await vendorAxiosInstance.get('/vendor/comment',{params : input})
+  return response.data;
 }

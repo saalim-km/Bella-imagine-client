@@ -22,7 +22,7 @@ import {
   useGetAllCommunitiesVendor,
 } from "@/hooks/community-contest/useCommunity";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { CreatePostInput } from "@/services/community-contest/communityService";
+import { CreatePostInput } from "@/services/community/communityService";
 import { communityToast } from "../ui/community-toast";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { useQueryClient } from "@tanstack/react-query";

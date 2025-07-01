@@ -67,6 +67,19 @@ const PostCard: React.FC<PostCardProps> = ({
           <p className="text-gray-700 dark:text-gray-400 mb-4">
             {post.content}
           </p>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className="px-2 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-medium cursor-pointer hover:underline hover:bg-orange-200 transition-colors"
+                tabIndex={0}
+                role="link"
+                title={`View posts tagged "${tag}"`}
+              >
+                {`#${tag}`}
+              </span>
+            ))}
+          </div>
           {post.media && post.media.length > 0 && (
             <div className="mb-4 rounded-lg overflow-hidden">
               {post.mediaType === "image" ? (

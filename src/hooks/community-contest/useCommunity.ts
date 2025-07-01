@@ -1,7 +1,8 @@
-import { AddCommentInput, addCommentServiceClient, createCommunityService, createPostServiceClient, deleteCommunityService, getAllCommunitesAdmin, getAllCommunitiesClient, getAllCommunitiesVendor, GetAllPostInput, getAllPostServiceClient, getAllPostServiceVendor, GetCommMemberInput, getCommunityBySlugForClient, getCommunityBySlugForVendor, getCommunityBySlugService, getCommunityMemersAdmin, getPostDetailsClient, getPostDetailsVendor, joinCommunityServiceClient, leaveCommunityServiceClient, PostDetailsInput, updateCommunityService } from "@/services/community-contest/communityService"
+import { addCommentServiceClient, createCommunityService, createPostServiceClient, deleteCommunityService, getAllCommentsByClient, getAllCommentsByVendor, getAllCommunitesAdmin, getAllCommunitiesClient, getAllCommunitiesVendor,  getAllPostServiceClient, getAllPostServiceVendor,  getCommunityBySlugForClient, getCommunityBySlugForVendor, getCommunityBySlugService, getCommunityMemersAdmin, getPostDetailsClient, getPostDetailsVendor, joinCommunityServiceClient, leaveCommunityServiceClient, updateCommunityService } from "@/services/community/communityService"
 
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { ApiResponse } from "../vendor/useVendor"
+import { AddCommentInput, GetAllPostInput, GetCommentsInput, GetCommMemberInput, PostDetailsInput } from "@/types/interfaces/Community"
 
 export const useCreateCommunityMutation = ()=> {
     return useMutation({
@@ -126,6 +127,12 @@ export const useAddComment = (mutateFn : (input : AddCommentInput) => Promise<Ap
     })
 }
 
+export const useGetCommentsForClient = (input : GetCommentsInput)=> {
+    return useQuery({
+        queryKey : ['comments',input],
+        queryFn : ()=> getAllCommentsByClient(input)
+    })
+}
 
 
 // ------------------------Vendor hooks for community --------------------------------------------------
@@ -172,5 +179,13 @@ export const useGetPostDetailsVendor = (input: PostDetailsInput)=> {
         queryKey: ['post',input.postId,input.page],
         queryFn : ()=> getPostDetailsVendor(input),
         enabled : input.enabled
+    })
+}
+
+
+export const useGetCommentsForVendor = (input : GetCommentsInput)=> {
+    return useQuery({
+        queryKey : ['comments',input],
+        queryFn : ()=> getAllCommentsByVendor(input)
     })
 }

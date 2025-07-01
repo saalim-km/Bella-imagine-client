@@ -24,9 +24,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   addCommentServiceClient,
   addCommentServiceVendor,
-  PostDetailsInput,
-  PostDetailsResponse,
-} from "@/services/community-contest/communityService";
+} from "@/services/community/communityService";
 import Pagination from "@/components/common/Pagination";
 import { useSocket } from "@/context/SocketContext";
 import { useDispatch } from "react-redux";
@@ -34,9 +32,10 @@ import { toggleLike } from "@/store/slices/feedslice";
 import { BasePaginatedResponse } from "@/services/client/clientService";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { PostDetailsResponse } from "@/types/interfaces/Community";
 
 const PostDetailPage: React.FC = () => {
-    const user = useSelector((state: RootState) => {
+  const user = useSelector((state: RootState) => {
     if (state.client.client) return state.client.client;
     if (state.vendor.vendor) return state.vendor.vendor;
     return undefined;
@@ -65,24 +64,42 @@ const PostDetailPage: React.FC = () => {
     page: page,
   };
 
-  const { data : postDetailsClient, isLoading : isLoadingClient , refetch : clientRefetch } = useGetPostDetailsClient({...queryData,enabled : user.role === 'client'});
-  const { data : postDetailsVendor, isLoading : isLoadingVendor , refetch : vendorRefresh} = useGetPostDetailsVendor({...queryData,enabled : user.role === 'vendor'});
+  const {
+    data: postDetailsClient,
+    isLoading: isLoadingClient,
+    refetch: clientRefetch,
+  } = useGetPostDetailsClient({
+    ...queryData,
+    enabled: user.role === "client",
+  });
+  const {
+    data: postDetailsVendor,
+    isLoading: isLoadingVendor,
+    refetch: vendorRefresh,
+  } = useGetPostDetailsVendor({
+    ...queryData,
+    enabled: user.role === "vendor",
+  });
 
-
-  const totalComments = postDetailsClient?.data ? postDetailsClient.data.totalComments : postDetailsVendor?.data.totalComments || 0
+  const totalComments = postDetailsClient?.data
+    ? postDetailsClient.data.totalComments
+    : postDetailsVendor?.data.totalComments || 0;
   const totalPages = Math.max(1, Math.ceil(totalComments / commentLimit));
 
-  const addCommentMutateFn = user.role === 'client' ? addCommentServiceClient : addCommentServiceVendor
+  const addCommentMutateFn =
+    user.role === "client" ? addCommentServiceClient : addCommentServiceVendor;
   const { mutate: addComment, isPending } = useAddComment(addCommentMutateFn);
-  
+
   // Fix 1: Better handling of post data and isLiked state
-  const post = postDetailsClient?.data ? postDetailsClient.data : postDetailsVendor?.data
+  const post = postDetailsClient?.data
+    ? postDetailsClient.data
+    : postDetailsVendor?.data;
   const isPostLiked = Boolean(post?.isLiked); // Ensure it's always a boolean
   const queryClient = useQueryClient();
-  
-  console.log('post details 🤞', post);
-  console.log('isPostLiked:', isPostLiked); // Debug log
-  
+
+  console.log("post details 🤞", post);
+  console.log("isPostLiked:", isPostLiked); // Debug log
+
   let socketListenerSetup = useRef(false);
 
   useEffect(() => {
@@ -110,30 +127,30 @@ const PostDetailPage: React.FC = () => {
       if (success) {
         const isLiked = action === "like";
         dispatch(toggleLike({ postId: postId, isLiked: isLiked }));
-        
+
         // Fix 2: Properly update query cache without mutation
         queryClient.setQueryData(
           ["post", postId, page],
           (oldData: BasePaginatedResponse<PostDetailsResponse> | undefined) => {
             if (!oldData?.data) return oldData;
-            
+
             const currentPost = oldData.data;
             // Create new objects instead of mutating
             const updatedPost = {
               ...currentPost,
-              likeCount: isLiked 
-                ? (currentPost.likeCount || 0) + 1 
+              likeCount: isLiked
+                ? (currentPost.likeCount || 0) + 1
                 : Math.max(0, (currentPost.likeCount || 0) - 1),
               isLiked: isLiked,
             };
-            
+
             return {
               ...oldData,
-              data: updatedPost
+              data: updatedPost,
             };
           }
         );
-        
+
         communityToast.success({
           title: "Success",
           description: `Post ${isLiked ? "liked" : "unliked"} successfully`,
@@ -169,7 +186,7 @@ const PostDetailPage: React.FC = () => {
         { content: commentContent, postId: postId! },
         {
           onSuccess: (data) => {
-            user.role === 'client' ? clientRefetch() : vendorRefresh()
+            user.role === "client" ? clientRefetch() : vendorRefresh();
             communityToast.success({
               title: "Comment added",
               description: data.message,
@@ -190,7 +207,8 @@ const PostDetailPage: React.FC = () => {
     if (!socket) {
       communityToast.error({
         title: "Connection Error",
-        description: "Socket connection not available. Please refresh the page.",
+        description:
+          "Socket connection not available. Please refresh the page.",
       });
       return;
     }
@@ -219,7 +237,7 @@ const PostDetailPage: React.FC = () => {
     setLikingPosts((prev) => new Set(prev).add(postId.toString()));
 
     // Remove the alert - it was for debugging
-    console.log('Current like status:', isPostLiked);
+    console.log("Current like status:", isPostLiked);
     const eventName = isPostLiked ? "unLike_post" : "like_post";
     socket.emit(eventName, { postId: postId });
   }, [socket, likingPosts, postId, isPostLiked, post]); // Fix 5: Add proper dependencies
@@ -246,8 +264,8 @@ const PostDetailPage: React.FC = () => {
             <div className="flex items-center mb-3">
               <Avatar className="h-12 w-12 mr-2 ">
                 <AvatarImage
-                  src={post?.userId.profileImage}
-                  alt={`${post?.userId.name}`}
+                  src={post.avatar}
+                  alt={`${post?.userName}`}
                   className="object-cover w-full h-full rounded-full"
                 />
                 <AvatarFallback className="flex items-center justify-center w-full h-full bg-gray-200 dark:bg-gray-700 rounded-full">
@@ -256,7 +274,7 @@ const PostDetailPage: React.FC = () => {
               </Avatar>
               <div>
                 <h3 className="text-gray-900 dark:text-gray-100">
-                  {post?.userId?.name}
+                  {post?.userName}
                 </h3>
                 <p className="text-xs text-gray-500">
                   {post?.createdAt &&
@@ -273,7 +291,19 @@ const PostDetailPage: React.FC = () => {
             <p className="text-gray-700 dark:text-gray-400 mb-4">
               {post?.content}
             </p>
-
+            <div className="flex flex-wrap gap-2 mb-2">
+              {post.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="px-2 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-medium cursor-pointer hover:underline hover:bg-orange-200 transition-colors"
+                  tabIndex={0}
+                  role="link"
+                  title={`View posts tagged "${tag}"`}
+                >
+                  {`#${tag}`}
+                </span>
+              ))}
+            </div>
             {Array.isArray(post?.media) && post.media.length > 0 && (
               <div className="mb-4 rounded-lg overflow-hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {post.media.map((mediaUrl: string, idx: number) =>

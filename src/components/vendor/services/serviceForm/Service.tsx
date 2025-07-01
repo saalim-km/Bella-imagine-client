@@ -48,19 +48,25 @@ import { IVendor } from "@/services/vendor/vendorService";
 import { communityToast } from "@/components/ui/community-toast";
 
 interface IServiceFormProps {
-  handleIsCreatingService(state : boolean): void;
-  editData ?: IServiceResponse
-  vendorData ?: IVendor
+  handleIsCreatingService(state: boolean): void;
+  editData?: IServiceResponse;
+  vendorData?: IVendor;
 }
 
-export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: IServiceFormProps) => {
+export const ServiceForm = ({
+  handleIsCreatingService,
+  editData,
+  vendorData,
+}: IServiceFormProps) => {
   const { mutate: addNewService } = useCreateServiceMutation();
-  const { mutate : updateService } = useUpdateVendorServiceMutation()
+  const { mutate: updateService } = useUpdateVendorServiceMutation();
   const [activeTab, setActiveTab] = useState("basic");
   const [showExitDialog, setShowExitDialog] = useState(false);
   const [allowReload, setAllowReload] = useState(false);
   const [showExitDialogDraft, setShowExitDialogDraft] = useState(false);
-  const [completedSections, setCompletedSections] = useState<Record<string, boolean>>({
+  const [completedSections, setCompletedSections] = useState<
+    Record<string, boolean>
+  >({
     basic: false,
     session: false,
     location: false,
@@ -69,8 +75,12 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
     preview: false,
   });
   const [isValidating, setIsValidating] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<Record<string, any>>({});
-  const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
+  const [validationErrors, setValidationErrors] = useState<Record<string, any>>(
+    {}
+  );
+  const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>(
+    {}
+  );
   const tabSequence = [
     "basic",
     "session",
@@ -80,35 +90,39 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
     "preview",
   ];
 
-
-  const initialValues: IService =  {
-    serviceTitle: "",
-    category: "",
-    yearsOfExperience: 0,
-    styleSpecialty: [],
-    tags: [],
-    serviceDescription: "",
-    sessionDurations: [{ durationInHours: 1, price: 0 }],
-    features: [],
-    availableDates: [
-      {
-        date: format(new Date(), "yyyy-MM-dd"),
-        timeSlots: [{ startTime: "09:00", endTime: "18:00", capacity: 1 }],
-      },
-      {
-        date: format(new Date(Date.now() + 86400000), "yyyy-MM-dd"), // Tomorrow
-        timeSlots: [{ startTime: "09:00", endTime: "18:00", capacity: 1 }],
-      },
-    ],
-    location: {
-      address :'',
-      lat : 0,
-      lng : 0,
-    },
-    equipment: [],
-    cancellationPolicies: [""],
-    termsAndConditions: [""],
-  };
+  const initialValues: IService = editData
+    ? {
+      ...editData,
+      category : editData.category._id
+    }
+    : {
+        serviceTitle: "",
+        category: "",
+        yearsOfExperience: 0,
+        styleSpecialty: [],
+        tags: [],
+        serviceDescription: "",
+        sessionDurations: [{ durationInHours: 1, price: 0 }],
+        features: [],
+        availableDates: [
+          {
+            date: format(new Date(), "yyyy-MM-dd"),
+            timeSlots: [{ startTime: "09:00", endTime: "18:00", capacity: 1 }],
+          },
+          {
+            date: format(new Date(Date.now() + 86400000), "yyyy-MM-dd"),
+            timeSlots: [{ startTime: "09:00", endTime: "18:00", capacity: 1 }],
+          },
+        ],
+        location: {
+          address: "",
+          lat: 0,
+          lng: 0,
+        },
+        equipment: [],
+        cancellationPolicies: [""],
+        termsAndConditions: [""],
+      };
 
   const formik = useFormik<IService>({
     initialValues,
@@ -116,27 +130,28 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: async (values) => {
-      console.log('service form submitted',values);
-      if(editData) {
-        console.log('updated data : ', values);
-        updateService(values,{
-          onSuccess : (data)=> {
+      console.log("service form submitted", values);
+      if (editData) {
+        console.log("updated data : ", values);
+        updateService(values, {
+          onSuccess: (data) => {
             console.log(data);
-            handleIsCreatingService(false)
-                      communityToast.success({title : data?.message});
-            
+            handleIsCreatingService(false);
+            communityToast.success({ title: data?.message });
           },
-          onError : (err)=> {
-            handleError(err)
-          }
-        })
-      }else {
+          onError: (err) => {
+            handleError(err);
+          },
+        });
+      } else {
         values.isPublished = true;
         addNewService(values, {
           onSuccess: (data) => {
             handleIsCreatingService(false);
             localStorage.removeItem("serviceDraft");
-            communityToast.success({title : "Service published successfully!"});
+            communityToast.success({
+              title: "Service published successfully!",
+            });
           },
           onError: (err) => {
             handleError(err);
@@ -145,7 +160,6 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
       }
     },
   });
-
 
   const markFieldAsTouched = (fieldName: string) => {
     setTouchedFields((prev) => ({ ...prev, [fieldName]: true }));
@@ -174,33 +188,46 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
 
     if (targetIndex === currentIndex + 1 || value === "preview") {
       setIsValidating(true);
-      
+
       try {
         const { isValid, errors } = await validateSection(
           formik.values,
           activeTab
         );
-        
+
         if (isValid) {
           setCompletedSections((prev) => ({ ...prev, [activeTab]: true }));
           setValidationErrors({});
           setActiveTab(value);
         } else {
           setValidationErrors(errors);
-          
+
           if (activeTab === "basic") {
-            ["serviceTitle", "category", "yearsOfExperience", "styleSpecialty", "tags", "serviceDescription"]
-              .forEach(markFieldAsTouched);
+            [
+              "serviceTitle",
+              "category",
+              "yearsOfExperience",
+              "styleSpecialty",
+              "tags",
+              "serviceDescription",
+            ].forEach(markFieldAsTouched);
           } else if (activeTab === "session") {
             ["sessionDurations", "features"].forEach(markFieldAsTouched);
           } else if (activeTab === "location") {
-            ["location.city", "location.state", "location.country", "equipment"].forEach(markFieldAsTouched);
+            [
+              "location.city",
+              "location.state",
+              "location.country",
+              "equipment",
+            ].forEach(markFieldAsTouched);
           } else if (activeTab === "availability") {
             ["availableDates"].forEach(markFieldAsTouched);
           } else if (activeTab === "policies") {
-            ["cancellationPolicies", "termsAndConditions"].forEach(markFieldAsTouched);
+            ["cancellationPolicies", "termsAndConditions"].forEach(
+              markFieldAsTouched
+            );
           }
-          
+
           toast.error("Please correct the errors before proceeding");
         }
       } catch (error) {
@@ -235,10 +262,11 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
     const touched = isFieldTouched(name);
     const formikError = formik.errors[name as keyof typeof formik.errors];
     const validationError = validationErrors[name];
-    
+
     // Show error only if field is touched and has errors
-    const error = (touched || validationError) && (validationError || formikError);
-    
+    const error =
+      (touched || validationError) && (validationError || formikError);
+
     if (error) {
       if (typeof error === "string") {
         return (
@@ -249,13 +277,13 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
         );
       }
     }
-    
+
     return null;
   };
 
   const SectionError = ({ section }: { section: string }) => {
     if (Object.keys(validationErrors).length === 0) return null;
-    
+
     // Filter errors relevant to the current section
     const errors = Object.entries(validationErrors)
       .filter(([key]) => {
@@ -270,9 +298,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
           ].includes(key)
         ) {
           return section === "basic";
-        } else if (
-          ["sessionDurations", "features"].includes(key)
-        ) {
+        } else if (["sessionDurations", "features"].includes(key)) {
           return section === "session";
         } else if (["location", "equipment"].includes(key)) {
           return section === "location";
@@ -301,10 +327,10 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
         return false;
       })
       .map(([_, error]) => error)
-      .filter(error => error && typeof error === 'string'); // Ensure we only include string errors
-    
+      .filter((error) => error && typeof error === "string"); // Ensure we only include string errors
+
     if (errors.length === 0) return null;
-    
+
     return (
       <Alert variant="destructive" className="mb-6 animate-fade-in">
         <AlertCircle className="h-4 w-4" />
@@ -317,22 +343,24 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
     );
   };
 
-  const handleFieldChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleFieldChange = async (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    
+
     // Update formik value
     formik.handleChange(e);
-    
+
     // Mark field as touched
     markFieldAsTouched(name);
-    
+
     // Validate this specific field
     try {
       await serviceValidationSchema.validateAt(name, {
         ...formik.values,
-        [name]: value
+        [name]: value,
       });
-      
+
       // If validation passes, clear error for this field
       if (validationErrors[name]) {
         const newErrors = { ...validationErrors };
@@ -343,11 +371,10 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
       // If validation fails, set error
       setValidationErrors({
         ...validationErrors,
-        [name]: error.message
+        [name]: error.message,
       });
     }
   };
-
 
   const handleConfirmExit = () => {
     setAllowReload(true);
@@ -359,37 +386,39 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
       const hasUnsavedChanges =
         formik.values.serviceTitle !== "" ||
         formik.values.serviceDescription !== "" ||
-        formik.values.availableDates.length > 0 ;
+        formik.values.availableDates.length > 0;
 
       if (hasUnsavedChanges && !allowReload) {
         e.preventDefault();
-      }else {
-        localStorage.removeItem("serviceDraft")
+      } else {
+        localStorage.removeItem("serviceDraft");
       }
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [formik.values, allowReload]);
-  
+
   const valueRef = useRef(formik.values);
   useEffect(() => {
-      localStorage.setItem('serviceDraft', JSON.stringify(formik.values));
-      valueRef.current = formik.values;
+    localStorage.setItem("serviceDraft", JSON.stringify(formik.values));
+    valueRef.current = formik.values;
   }, [formik.values]);
 
   useEffect(() => {
-    if (activeTab === 'availability') {
-      const { isValid, errors } = validateAvailableDates(formik.values.availableDates);
+    if (activeTab === "availability") {
+      const { isValid, errors } = validateAvailableDates(
+        formik.values.availableDates
+      );
       if (!isValid) {
         setValidationErrors((prev) => ({
           ...prev,
-          ...errors
+          ...errors,
         }));
       } else {
         const newErrors = { ...validationErrors };
-        Object.keys(newErrors).forEach(key => {
-          if (key.startsWith('availableDates')) {
+        Object.keys(newErrors).forEach((key) => {
+          if (key.startsWith("availableDates")) {
             delete newErrors[key];
           }
         });
@@ -427,7 +456,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
           try {
             // Try to validate just this field
             await serviceValidationSchema.validateAt(fieldName, formik.values);
-            
+
             // If validation passes, remove the error
             if (newErrors[fieldName]) {
               delete newErrors[fieldName];
@@ -522,11 +551,11 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
                     </Label>
                     <Select
                       name="category"
-                      value={formik.values.category}
+                      value={editData?.category._id ? editData.category._id : formik.values.category}
                       onValueChange={(value) => {
                         formik.setFieldValue("category", value);
                         markFieldAsTouched("category");
-                        
+
                         // Clear error if value is not empty
                         if (value && validationErrors.category) {
                           const newErrors = { ...validationErrors };
@@ -609,9 +638,12 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
                       updateValues={(values) => {
                         formik.setFieldValue("styleSpecialty", values);
                         markFieldAsTouched("styleSpecialty");
-                        
+
                         // Clear error if at least one value
-                        if (values.length > 0 && validationErrors.styleSpecialty) {
+                        if (
+                          values.length > 0 &&
+                          validationErrors.styleSpecialty
+                        ) {
                           const newErrors = { ...validationErrors };
                           delete newErrors.styleSpecialty;
                           setValidationErrors(newErrors);
@@ -637,7 +669,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
                       updateValues={(values) => {
                         formik.setFieldValue("tags", values);
                         markFieldAsTouched("tags");
-                        
+
                         // Clear error if at least one value
                         if (values.length > 0 && validationErrors.tags) {
                           const newErrors = { ...validationErrors };
@@ -653,7 +685,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
 
               <div className="flex justify-between mt-6">
                 <Button
-                  onClick={()=> handleIsCreatingService(false)}
+                  onClick={() => handleIsCreatingService(false)}
                   variant={"destructive"}
                 >
                   Cancel
@@ -690,9 +722,12 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
                   updateDurations={(durations) => {
                     formik.setFieldValue("sessionDurations", durations);
                     markFieldAsTouched("sessionDurations");
-                    
+
                     // Clear error if valid
-                    if (durations.length > 0 && validationErrors.sessionDurations) {
+                    if (
+                      durations.length > 0 &&
+                      validationErrors.sessionDurations
+                    ) {
                       const newErrors = { ...validationErrors };
                       delete newErrors.sessionDurations;
                       setValidationErrors(newErrors);
@@ -721,7 +756,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
                   updateValues={(values) => {
                     formik.setFieldValue("features", values);
                     markFieldAsTouched("features");
-                    
+
                     // Clear error if at least one value
                     if (values.length > 0 && validationErrors.features) {
                       const newErrors = { ...validationErrors };
@@ -802,7 +837,7 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
                   updateValues={(values) => {
                     formik.setFieldValue("equipment", values);
                     markFieldAsTouched("equipment");
-                    
+
                     // Clear error if at least one value
                     if (values.length > 0 && validationErrors.equipment) {
                       const newErrors = { ...validationErrors };
@@ -906,11 +941,11 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
                       updateValues={(values) => {
                         formik.setFieldValue("cancellationPolicies", values);
                         markFieldAsTouched("cancellationPolicies");
-                        
+
                         // Clear error if valid
                         if (
-                          values.length > 0 && 
-                          values[0].trim() !== "" && 
+                          values.length > 0 &&
+                          values[0].trim() !== "" &&
                           validationErrors.cancellationPolicies
                         ) {
                           const newErrors = { ...validationErrors };
@@ -939,11 +974,11 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
                       updateValues={(values) => {
                         formik.setFieldValue("termsAndConditions", values);
                         markFieldAsTouched("termsAndConditions");
-                        
+
                         // Clear error if valid
                         if (
-                          values.length > 0 && 
-                          values[0].trim() !== "" && 
+                          values.length > 0 &&
+                          values[0].trim() !== "" &&
                           validationErrors.termsAndConditions
                         ) {
                           const newErrors = { ...validationErrors };
@@ -998,17 +1033,13 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
                   Previous
                 </Button>
                 <div className="flex gap-3">
-                  {
-                    !editData ? (
-                      <Button type="submit" className="w-32">
-                        Publish
-                      </Button>
-                    ) : (
-                      <Button className="w-32">
-                        Update
-                      </Button>
-                    )
-                  }
+                  {!editData ? (
+                    <Button type="submit" className="w-32">
+                      Publish
+                    </Button>
+                  ) : (
+                    <Button className="w-32">Update</Button>
+                  )}
                 </div>
               </div>
             </TabsContent>
@@ -1016,7 +1047,6 @@ export const ServiceForm = ({ handleIsCreatingService , editData , vendorData}: 
         </form>
       </div>
 
-         
       <ReusableAlertDialog
         onCancel={() => setShowExitDialog(false)}
         open={showExitDialog}

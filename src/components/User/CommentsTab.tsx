@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Edit, Trash2, Heart } from "lucide-react"
 import { toast } from "sonner"
 import Pagination from "../common/Pagination"
-import { IComment } from "@/services/community-contest/communityService"
+import { IComment } from "@/types/interfaces/Community"
 
 
 
