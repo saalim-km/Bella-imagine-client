@@ -75,8 +75,8 @@ export function Sidebar({
             variant={activeTab === "profile" ? "ghost" : "ghost"}
             className={`w-full justify-start ${
               activeTab === "profile"
-                ? "bg-orange-700 hover:bg-orange-800 text-white"
-                : "text-white hover:bg-orange-50 hover:text-orange-700"
+                ? "bg-orange-700 hover:bg-orange-800 text-white dark:hover:text-white hover:text-white"
+                : "hover:bg-orange-50 dark:hover:text-orange-700"
             }`}
             onClick={() => setActiveTab && setActiveTab("profile")}
           >

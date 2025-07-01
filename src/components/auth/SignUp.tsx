@@ -182,7 +182,7 @@ export default function CommunitySignup({
                     ? "Become a Photographer"
                     : "Join Our Community"}
                 </h1>
-                <p className="text-gray-600 mt-2">
+                <p className="dark:text-gray-300 mt-2">
                   {userType === "vendor"
                     ? "Start your photography journey and connect with clients"
                     : "Discover talented photographers for your special moments"}
@@ -194,7 +194,7 @@ export default function CommunitySignup({
             <div className="grid grid-cols-2 gap-4">
               {userType === "vendor" ? (
                 <>
-                  <div className="flex items-center gap-2 p-3 bg-orange-50 rounded-lg">
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-orange-50">
                     <Sparkles className="w-5 h-5 text-orange-600" />
                     <span className="text-sm font-medium text-orange-800">
                       Showcase Work
@@ -258,7 +258,7 @@ export default function CommunitySignup({
                       type="text"
                       name="name"
                       placeholder="Enter your full name"
-                      className="h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500 "
+                      className="h-12 dark:border-gray-700 focus:border-orange-500 focus:ring-orange-500 "
                     />
                     <ErrorMessage
                       name="name"
@@ -279,7 +279,7 @@ export default function CommunitySignup({
                       type="email"
                       name="email"
                       placeholder="Enter your email"
-                      className="h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500 "
+                      className="h-12 dark:border-gray-700 focus:border-orange-500 focus:ring-orange-500 "
                     />
                     <ErrorMessage
                       name="email"
@@ -301,7 +301,7 @@ export default function CommunitySignup({
                         type={showPassword ? "text" : "password"}
                         name="password"
                         placeholder="Create a strong password"
-                        className="h-12 pr-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500 "
+                        className="h-12 pr-12 dark:border-gray-700 focus:border-orange-500 focus:ring-orange-500 "
                       />
                       <button
                         type="button"
@@ -329,7 +329,7 @@ export default function CommunitySignup({
                         type={showConfirmPassword ? "text" : "password"}
                         name="confirmPassword"
                         placeholder="Confirm your password"
-                        className="h-12 pr-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500 "
+                        className="h-12 pr-12 dark:border-gray-700 focus:border-orange-500 focus:ring-orange-500 "
                       />
                       <button
                         type="button"
@@ -390,25 +390,25 @@ export default function CommunitySignup({
 
             {/* Footer Links */}
             <div className="text-center space-y-3">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm dark:text-gray-400">
                 {userType === "client"
                   ? "Want to become a photographer?"
                   : "Looking to hire photographers?"}{" "}
                 <button
                   onClick={onClick}
-                  className="text-orange-700 hover:text-orange-800 font-medium hover:underline"
+                  className="dark:text-orange-400 text-orange-700 hover:text-orange-800 font-medium hover:underline"
                 >
                   Switch to {userType === "client" ? "photographer" : "client"}{" "}
                   signup
                 </button>
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm dark:text-gray-400">
                 Already part of our community?{" "}
                 <button
                   onClick={() =>
                     navigate(userType === "vendor" ? "/vendor/login" : "/login")
                   }
-                  className="text-orange-700 hover:text-orange-800 font-medium hover:underline"
+                  className="dark:text-orange-400 text-orange-700 hover:text-orange-800 font-medium hover:underline"
                 >
                   Sign in
                 </button>

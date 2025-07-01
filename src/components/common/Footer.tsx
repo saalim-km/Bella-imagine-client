@@ -13,14 +13,14 @@ export default function Footer() {
             className=" "
             aria-label="Instagram"
           >
-            <Instagram className="h-5 w-5" />
+            <Instagram className="h-5 w-5 text-gray-400" />
           </a>
           <a
             href="https://www.linkedin.com/in/salim-k-m-3ab7ba246/"
             className=" "
             aria-label="LinkedIn"
           >
-            <Linkedin className="h-5 w-5" />
+            <Linkedin className="h-5 w-5 text-gray-400" />
           </a>
         </div>
         {/* Copyright */}
