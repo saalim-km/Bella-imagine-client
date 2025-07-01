@@ -79,19 +79,22 @@ export default function UserProfile() {
     return null;
   });
 
+  if(!userType){
+    return <p className="text-red-700">An error occured while fetching user details please try again later</p>
+  }
   // Fetching client data if the role is only client
   const {
     data: clientData,
     isLoading: isClientLoading,
     isError: isClientError,
-  } = useClientDetailsQuery(userType?.role === "client");
+  } = useClientDetailsQuery(userType?.role === "client" , userType._id);
 
   // Fetching vendor data if the role is only vendor
   const {
     data: vendorData,
     isLoading: isVendorLoading,
     isError: isVendorError,
-  } = useVendorDetailsQuery(userType?.role === "vendor");
+  } = useVendorDetailsQuery(userType?.role === "vendor" , userType._id);
 
   const isLoading = isClientLoading || isVendorLoading;
   const isError = isClientError || isVendorError;

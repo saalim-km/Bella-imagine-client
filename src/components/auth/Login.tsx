@@ -224,7 +224,7 @@ export default function CommunityLogin({
                       type="email"
                       placeholder="Enter your email"
                       as={Input}
-                      className="h-12 dark:border-gray-700 focus:border-orange-500 focus:ring-orange-500 text-white"
+                      className="h-12 dark:border-gray-700 focus:border-orange-500 focus:ring-orange-500 dark:text-white"
                     />
                     <ErrorMessage
                       name="email"
@@ -246,7 +246,7 @@ export default function CommunityLogin({
                         type={showPassword ? "text" : "password"}
                         placeholder="Enter your password"
                         as={Input}
-                        className="h-12 pr-12 dark:border-gray-700 focus:border-orange-500 focus:ring-orange-500 text-white"
+                        className="h-12 pr-12 dark:border-gray-700 focus:border-orange-500 focus:ring-orange-500 dark:text-white"
                       />
                       <button
                         type="button"

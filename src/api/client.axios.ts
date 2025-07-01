@@ -30,7 +30,7 @@ clientAxiosInstance.interceptors.response.use(
 
           toast.info("Please login again");
           localStorage.removeItem("clientSession");
-          window.location.href = "/";
+          // window.location.href = "/";
           return Promise.reject(refreshError);
         }
       }
@@ -39,7 +39,7 @@ clientAxiosInstance.interceptors.response.use(
     if (
       (error.response.status === 403 && error.response.data.message === "Access denied: Your account has been blocked")){
       localStorage.removeItem("clientSession");
-      window.location.href = "/";
+      // window.location.href = "/";
       toast.info(error.response.data.message);
       return Promise.reject(error);
     }

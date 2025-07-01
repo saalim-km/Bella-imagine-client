@@ -1,7 +1,3 @@
-import { Link } from "react-router-dom";
-import { Settings } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
 interface AboutTabProps {
   communityName: string;
   description: string;
@@ -18,9 +14,7 @@ export function AboutTab({
   description,
   memberCount,
   postCount,
-  isMember,
   createdAt,
-  communityId,
   rules,
 }: AboutTabProps) {
   return (
@@ -70,16 +64,6 @@ export function AboutTab({
           </div>
         </div>
       </div>
-
-      {isMember && (
-        <div className="flex justify-end">
-          <Button variant="outline" size="sm" asChild>
-            <Link to={`/communities/${communityId}/settings`}>
-              <Settings className="h-4 w-4 mr-2" /> Community Settings
-            </Link>
-          </Button>
-        </div>
-      )}
     </div>
   );
 }

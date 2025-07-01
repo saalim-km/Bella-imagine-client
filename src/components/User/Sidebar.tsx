@@ -57,7 +57,7 @@ export function Sidebar({
               alt={name}
               className="object-cover"
             />
-            <AvatarFallback className="bg-orange-100 text-foreground text-xl font-semibold">
+            <AvatarFallback className="bg-orange-100 dark:bg-orange-700 text-foreground text-xl font-semibold">
               {name?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>

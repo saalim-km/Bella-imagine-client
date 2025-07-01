@@ -65,8 +65,8 @@ const PostDetailPage: React.FC = () => {
     page: page,
   };
 
-  const { data : postDetailsClient, isLoading : isLoadingClient } = useGetPostDetailsClient({...queryData,enabled : user.role === 'client'});
-  const { data : postDetailsVendor, isLoading : isLoadingVendor } = useGetPostDetailsVendor({...queryData,enabled : user.role === 'vendor'});
+  const { data : postDetailsClient, isLoading : isLoadingClient , refetch : clientRefetch } = useGetPostDetailsClient({...queryData,enabled : user.role === 'client'});
+  const { data : postDetailsVendor, isLoading : isLoadingVendor , refetch : vendorRefresh} = useGetPostDetailsVendor({...queryData,enabled : user.role === 'vendor'});
 
 
   const totalComments = postDetailsClient?.data ? postDetailsClient.data.totalComments : postDetailsVendor?.data.totalComments || 0
@@ -169,7 +169,7 @@ const PostDetailPage: React.FC = () => {
         { content: commentContent, postId: postId! },
         {
           onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: ["post", postId, page] });
+            user.role === 'client' ? clientRefetch() : vendorRefresh()
             communityToast.success({
               title: "Comment added",
               description: data.message,

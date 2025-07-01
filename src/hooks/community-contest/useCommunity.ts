@@ -64,9 +64,10 @@ export const useGetAllCommunitiesClient = (
   });
 };
 
-export const useGetCommunityBySlugQueryClient = (slug : string , enabled : boolean)=> {
+export const useGetCommunityBySlugQueryClient = (slug : string , enabled : boolean,userId : string)=> {
+    console.log('client hook trigger',enabled)
     return useQuery({
-        queryKey : ['community',slug],
+        queryKey : ['community',slug,userId],
         queryFn : ()=> getCommunityBySlugForClient(slug),
         enabled : enabled
     })
@@ -157,9 +158,10 @@ export const useGetAllCommunitiesVendor = (
   });
 };
 
-export const useGetCommunityBySlugQueryVendor = (slug : string , enabled : boolean)=> {
+export const useGetCommunityBySlugQueryVendor = (slug : string , enabled : boolean,userId : string)=> {
+    console.log('vendor hook trigger',enabled)
     return useQuery({
-        queryKey : ['community',slug],
+        queryKey : ['community',slug,userId],
         queryFn : ()=> getCommunityBySlugForVendor(slug),
         enabled : enabled
     })

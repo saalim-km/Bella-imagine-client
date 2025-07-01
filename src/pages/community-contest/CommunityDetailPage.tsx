@@ -33,13 +33,12 @@ const CommunityDetailPage = () => {
 
 
   if(!user){
-    return <p>user not found please try again later , or please relogin to continue</p>
+    return <LoadingBar/>
   }
 
 
   const { slug } = useParams<{ slug: string }>()
   const dispatch = useDispatch<AppDispatch>()
-  const navigate = useNavigate()
   const queryClient = useQueryClient()
   
   const [activeTab, setActiveTab] = useState("posts")
@@ -51,14 +50,14 @@ const CommunityDetailPage = () => {
     isLoading : isCLientLoading, 
     error : isClientError,
     refetch : refetchClient
-  } = useGetCommunityBySlugQueryClient(slug as string , user.role === 'client')
+  } = useGetCommunityBySlugQueryClient(slug as string , user.role === 'client',user._id)
 
   const { 
     data: communityDataVendor, 
     isLoading : isVendorLoading, 
     error : isVendorError,
     refetch : refetchVendor
-  } = useGetCommunityBySlugQueryVendor(slug as string , user.role === 'vendor')
+  } = useGetCommunityBySlugQueryVendor(slug as string , user.role === 'vendor',user._id)
 
 
   const joinMutateFn = user.role === 'client' ? joinCommunityServiceClient : joinCommunityServiceVendor
@@ -78,7 +77,6 @@ const CommunityDetailPage = () => {
     setIsJoining(true)
     joinCommunity(communityId, {
       onSuccess: () => {
-        queryClient.invalidateQueries({queryKey : ["community", slug]})
         user.role === 'client' ? refetchClient() : refetchVendor()
 
       },
@@ -91,7 +89,6 @@ const CommunityDetailPage = () => {
     setIsLeaving(true)
     leaveCommunity(communityId, {
       onSuccess: () => {
-        queryClient.invalidateQueries({queryKey : ["community", slug]})
         user.role === 'client' ? refetchClient() : refetchVendor()
       },
       onError: handleError,
@@ -105,8 +102,12 @@ const CommunityDetailPage = () => {
 
   const community = communityDataClient?.data.community ? communityDataClient?.data : communityDataVendor?.data 
 
+  if(isClientError || isVendorError){
+    return <p className="text-red-700">An unexpected error occured please try again later</p>
+  }
+
   if(!community){
-    return <p className="text-red-700">an unexpected error occured please try again later</p>
+    return <p className="text-red-700">An unexpected error occured while fetching community data please try again later</p>
   }
 
   return (

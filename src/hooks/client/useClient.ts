@@ -14,9 +14,9 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 
 
-export const useClientDetailsQuery = (enabled = true) => {
+export const useClientDetailsQuery = (enabled = true , userId : string) => {
   return useQuery({
-    queryKey: ["client-profile"],
+    queryKey: ["client-profile",userId],
     queryFn: getClientDetails,
     enabled,
     staleTime : 1000 * 60 * 5 // 15 minutes

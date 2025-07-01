@@ -11,9 +11,9 @@ export interface ApiResponse {
   message : string
 }
 
-export const useVendorDetailsQuery = (enabled = true) => {
+export const useVendorDetailsQuery = (enabled = true,userId : string) => {
   return useQuery({
-    queryKey: ["vendor-profile"],
+    queryKey: ["vendor-profile",userId],
     queryFn: getVendorDetails,
     enabled,
     staleTime : 1000 * 60 * 5 // 15 minutes

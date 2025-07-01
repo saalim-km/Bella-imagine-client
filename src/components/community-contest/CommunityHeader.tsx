@@ -1,11 +1,4 @@
 import { User, Users, Info } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Community, CommunityResponse } from "@/types/interfaces/Community";
 
 interface CommunityHeaderProps {
@@ -14,7 +7,7 @@ interface CommunityHeaderProps {
 
 export function CommunityHeader({ community }: CommunityHeaderProps) {
   return (
-    <div className="relative">
+    <div className="relative mb-8">
       <div className="h-40 md:h-60 w-full overflow-hidden relative z-0">
         <img
           src={
@@ -28,7 +21,7 @@ export function CommunityHeader({ community }: CommunityHeaderProps) {
         <div className="absolute inset-0 bg-black/40" />
       </div>
       {/* Content Section - with higher z-index */}
-      <div className="container relative z-10 mt-8">
+      <div className=" relative z-10 mt-8">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 -mt-8 md:-mt-12">
           <div className="flex flex-col md:flex-row md:items-center gap-4">
             <div className="bg-background rounded-full p-1 shadow-lg">
@@ -55,20 +48,6 @@ export function CommunityHeader({ community }: CommunityHeaderProps) {
                 </div>
               </div>
             </div>
-          </div>
-          <div className="flex items-center gap-2 md:pb-4">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon">
-                    <Info className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Community details</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
           </div>
         </div>
       </div>

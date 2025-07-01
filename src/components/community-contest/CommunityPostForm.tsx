@@ -61,7 +61,7 @@ export function CreatePostForm({
     ? communitiesDataClient?.data
     : communitiesDataVendor?.data;
 
-  const { mutate: createPost } = useCreatePost();
+  const { mutate: createPost , isPending } = useCreatePost();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState("");
@@ -219,6 +219,9 @@ export function CreatePostForm({
           dispatch(addPost(data.data));
           navigate("/explore");
         },
+        onError : (err)=> {
+          handleError(err)
+        }
       });
     } catch (error) {
       handleError(error);
@@ -238,8 +241,8 @@ export function CreatePostForm({
         </p>
       </div>
 
-      <Card>
-        <CardHeader className="border-b bg-background">
+      <Card className="bg-background">
+        <CardHeader className="border-b">
           <div className="space-y-4">
             {/* Community Selection */}
             {communities.length === 0 ? (
@@ -322,7 +325,7 @@ export function CreatePostForm({
         </CardHeader>
 
         <form onSubmit={handleSubmit}>
-          <CardContent className="p-6 space-y-6 bg-background">
+          <CardContent className="p-6 space-y-6">
             {/* Title */}
             <div>
               <Label htmlFor="title" className="text-sm font-medium">
@@ -481,7 +484,7 @@ export function CreatePostForm({
             </div>
           </CardContent>
 
-          <div className="flex justify-between items-center border-t p-6 bg-background">
+          <div className="flex justify-between items-center border-t p-6">
             <div className="flex space-x-2">
               <Button
                 type="button"
@@ -498,11 +501,12 @@ export function CreatePostForm({
                 isSubmitting ||
                 !title.trim() ||
                 !selectedCommunity ||
-                (postType === "text" && !content.trim())
+                (postType === "text" && !content.trim())||
+                isPending
               }
               className="min-w-[100px]"
             >
-              {isSubmitting ? "Posting..." : "Post"}
+              {isPending ? "Posting..." : "Post"}
             </Button>
           </div>
         </form>
