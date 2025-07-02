@@ -50,12 +50,6 @@ const PostCard: React.FC<PostCardProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            className="p-1 h-8 w-8 text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-950"
-          ></Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
             onClick={handleLikeClick}
             disabled={isLiking}
             className={`p-1 h-8 w-8 font-semibold text-xs transition-colors ${
@@ -72,16 +66,9 @@ const PostCard: React.FC<PostCardProps> = ({
               />
             )}
           </Button>
-
           <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 mt-1">
             {post.likeCount}
           </span>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            className="p-1 h-8 w-8 text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950"
-          ></Button>
         </div>
 
         {/* Main content area */}

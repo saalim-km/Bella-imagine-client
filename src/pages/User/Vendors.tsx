@@ -69,6 +69,7 @@ const Vendors = () => {
     data: clientData,
     isLoading : isClientLoading,
     isError : isLClientError,
+    isFetching : isCLientFetchig
   } = useAllVendorsListQueryClient({
     page: currentPage,
     limit: 6,
@@ -87,6 +88,7 @@ const Vendors = () => {
     data: vendorData,
     isLoading : isVendorLoading,
     isError : isLVendorError,
+    isFetching : isVendorFetchig
   } = useAllVendorsListQueryVendor({
     page: currentPage,
     limit: 6,
@@ -164,7 +166,7 @@ const Vendors = () => {
     );
   }
 
-  if (isLClientError || isLVendorError) {
+  if (isLClientError || isLVendorError || isCLientFetchig || isVendorFetchig) {
     return (
       <div className="flex justify-center items-center min-h-screen text-red-700">
         Error loading vendors please try again later

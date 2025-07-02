@@ -113,19 +113,21 @@ export function VendorProfile({ vendor }: VendorProfileProps) {
 
               {/* Quick Actions */}
               <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  className="bg-orange-600 hover:bg-orange-700 text-white"
-                  onClick={handleSendMessage}
-                  disabled={isPending}
-                >
-                  {isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  ) : (
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                  )}
-                  Contact
-                </Button>
+                {user._id !== vendor._id && (
+                  <Button
+                    size="sm"
+                    className="bg-orange-600 hover:bg-orange-700 text-white"
+                    onClick={handleSendMessage}
+                    disabled={isPending}
+                  >
+                    {isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    ) : (
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                    )}
+                    Contact
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -138,24 +140,23 @@ export function VendorProfile({ vendor }: VendorProfileProps) {
         <Card className="bg-background border border-border h-fit">
           <CardContent className="p-6 space-y-6">
             {/* Profile Image */}
-            <div className="relative">
-              <div className="aspect-square w-full overflow-hidden rounded-lg">
+            <div className="relative flex flex-col items-center">
+              <div className="relative aspect-square overflow-hidden rounded-lg cursor-pointer group w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-full lg:h-auto">
                 <ImageWithFallback
                   src={profileImage || "/placeholder.svg?height=240&width=240"}
                   alt={`${vendor?.name || "Vendor"} profile`}
                   className="object-cover w-full h-full"
                   fallbackType="profile"
                 />
+                {vendor?.isVerified === "accept" && (
+                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2">
+                    <Badge className="bg-orange-500 text-white border-0 shadow-lg px-3 py-1 flex items-center">
+                      <Award className="w-3 h-3 mr-1" />
+                      Verified Pro
+                    </Badge>
+                  </div>
+                )}
               </div>
-
-              {vendor?.isVerified === "accept" && (
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-orange-500 text-white border-0 shadow-lg px-3 py-1">
-                    <Award className="w-3 h-3 mr-1" />
-                    Verified Pro
-                  </Badge>
-                </div>
-              )}
             </div>
 
             {/* Quick Stats */}
@@ -288,17 +289,19 @@ export function VendorProfile({ vendor }: VendorProfileProps) {
                 <Calendar className="w-4 h-4" />
                 <span>Typically responds within 2 hours</span>
               </div>
-              <Button
-                className="w-full bg-orange-600 hover:bg-orange-700 text-white"
-                onClick={handleSendMessage}
-              >
+              {user._id !== vendor._id ? (
+                <Button
+                  className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                  onClick={handleSendMessage}
+                >
                   {isPending ? (
                     <Loader2 className="w-4 h-4 animate-spin mr-2" />
                   ) : (
                     <MessageSquare className="w-4 h-4 mr-2" />
                   )}
                   Send Message
-              </Button>
+                </Button>
+              ) : null}
             </CardContent>
           </Card>
         </div>

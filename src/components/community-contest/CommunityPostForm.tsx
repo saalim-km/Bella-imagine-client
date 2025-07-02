@@ -17,7 +17,8 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import {
-  useCreatePost,
+  useCreatePostClient,
+  useCreatePostVendor,
   useGetAllCommunitiesClient,
   useGetAllCommunitiesVendor,
 } from "@/hooks/community-contest/useCommunity";
@@ -61,7 +62,10 @@ export function CreatePostForm({
     ? communitiesDataClient?.data
     : communitiesDataVendor?.data;
 
-  const { mutate: createPost , isPending } = useCreatePost();
+
+  const { mutate: createPostClient , isPending : isCLiendPending } = useCreatePostClient();
+  const { mutate: createPostVendor , isPending : isVendorPending } = useCreatePostVendor();
+  const createPost = user.role === 'client' ? createPostClient : createPostVendor
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState("");
@@ -502,11 +506,11 @@ export function CreatePostForm({
                 !title.trim() ||
                 !selectedCommunity ||
                 (postType === "text" && !content.trim())||
-                isPending
+                isCLiendPending || isVendorPending
               }
               className="min-w-[100px]"
             >
-              {isPending ? "Posting..." : "Post"}
+              {isCLiendPending || isVendorPending ? "Posting..." : "Post"}
             </Button>
           </div>
         </form>

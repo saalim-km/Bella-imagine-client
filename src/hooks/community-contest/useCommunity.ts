@@ -1,4 +1,4 @@
-import { addCommentServiceClient, createCommunityService, createPostServiceClient, deleteCommunityService, getAllCommentsByClient, getAllCommentsByVendor, getAllCommunitesAdmin, getAllCommunitiesClient, getAllCommunitiesVendor,  getAllPostServiceClient, getAllPostServiceVendor,  getCommunityBySlugForClient, getCommunityBySlugForVendor, getCommunityBySlugService, getCommunityMemersAdmin, getPostDetailsClient, getPostDetailsVendor, joinCommunityServiceClient, leaveCommunityServiceClient, updateCommunityService } from "@/services/community/communityService"
+import { addCommentServiceClient, createCommunityService, createPostServiceClient, createPostServiceVendor, deleteCommunityService, getAllCommentsByClient, getAllCommentsByVendor, getAllCommunitesAdmin, getAllCommunitiesClient, getAllCommunitiesVendor,  getAllPostServiceClient, getAllPostServiceVendor,  getCommunityBySlugForClient, getCommunityBySlugForVendor, getCommunityBySlugService, getCommunityMemersAdmin, getPostDetailsClient, getPostDetailsVendor, joinCommunityServiceClient, leaveCommunityServiceClient, updateCommunityService } from "@/services/community/communityService"
 
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { ApiResponse } from "../vendor/useVendor"
@@ -86,8 +86,7 @@ export const useLeaveCommunity = (mutateFn : (communtyId: string) => Promise<Api
     })
 }
 
-// post 
-export const useCreatePost = ()=> {
+export const useCreatePostClient = ()=> {
     return useMutation({
         mutationFn : createPostServiceClient
     })
@@ -184,12 +183,17 @@ export const useGetPostDetailsVendor = (input: PostDetailsInput)=> {
     })
 }
 
-
 export const useGetCommentsForVendor = (input : GetCommentsInput)=> {
     return useQuery({
         queryKey : ['comments',input],
         queryFn : ()=> getAllCommentsByVendor(input),
         staleTime : 1000 * 60 * 5,
         enabled : input.enabled
+    })
+}
+
+export const useCreatePostVendor = ()=> {
+    return useMutation({
+        mutationFn : createPostServiceVendor
     })
 }

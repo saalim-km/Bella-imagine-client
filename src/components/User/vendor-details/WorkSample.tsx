@@ -29,13 +29,14 @@ export default function WorkSample({ workSample, viewMode = "grid" }: WorkSample
   if (viewMode === "list") {
     return (
       <Card className="overflow-hidden bg-background border border-border hover:border-orange-200 dark:hover:border-orange-800 transition-colors">
-        <div className="flex">
+        <div className="flex flex-col md:flex-row">
           {/* Featured Image */}
-          <div className="w-80 h-48 flex-shrink-0 relative overflow-hidden">
+          <div className="w-full md:w-[360px] h-48 md:h-auto md:min-h-[320px] flex-shrink-0 relative overflow-hidden flex items-center justify-center">
             <img
-              src={workSample.media[0] || "/placeholder.svg?height=192&width=320"}
+              src={workSample.media[0] || "/placeholder.svg?height=320&width=360"}
               alt={workSample.title}
               className="object-cover w-full h-full cursor-pointer hover:scale-105 transition-transform duration-300"
+              style={{ maxHeight: 400 }}
               onClick={() => setSelectedImage(workSample.media[0])}
             />
             <div className="absolute top-3 right-3">
@@ -46,7 +47,7 @@ export default function WorkSample({ workSample, viewMode = "grid" }: WorkSample
           </div>
 
           {/* Content */}
-          <CardContent className="flex-1 p-6">
+          <CardContent className="flex-1 p-6 flex flex-col justify-between">
             <div className="space-y-4">
               <div>
                 <h3 className="text-xl font-semibold text-foreground mb-2">{workSample.title}</h3>
@@ -72,33 +73,17 @@ export default function WorkSample({ workSample, viewMode = "grid" }: WorkSample
                   </div>
                 ))}
               </div>
-
-              {/* Actions */}
-              <div className="flex items-center justify-between pt-2 border-t border-border">
-                <div className="flex items-center gap-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsLiked(!isLiked)}
-                    className={`p-0 h-auto ${isLiked ? "text-red-500" : "text-muted-foreground"}`}
-                  >
-                    <Heart className={`w-4 h-4 mr-1 ${isLiked ? "fill-current" : ""}`} />
-                    <span className="text-sm">24</span>
-                  </Button>
-                  <Button variant="ghost" size="sm" className="p-0 h-auto text-muted-foreground">
-                    <Share2 className="w-4 h-4 mr-1" />
-                    <span className="text-sm">Share</span>
-                  </Button>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-orange-600 border-orange-200 hover:bg-orange-50 dark:border-orange-800 dark:text-orange-400 dark:hover:bg-orange-950/50 bg-transparent"
-                  onClick={() => setSelectedImage(workSample.media[0])}
-                >
-                  View Gallery
-                </Button>
-              </div>
+            </div>
+            {/* Actions */}
+            <div className="flex items-center justify-end pt-2 border-t border-border mt-4">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-orange-600 border-orange-200 hover:bg-orange-50 dark:border-orange-800 dark:text-orange-400 dark:hover:bg-orange-950/50 bg-transparent"
+                onClick={() => setSelectedImage(workSample.media[0])}
+              >
+                View Gallery
+              </Button>
             </div>
           </CardContent>
         </div>

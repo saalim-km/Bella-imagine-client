@@ -2,6 +2,7 @@ import { chatAxionInstance } from "@/api/chat.axios";
 import { BasePaginatedResponse } from "../client/clientService";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
 import { clientAxiosInstance } from "@/api/client.axios";
+import { vendorAxiosInstance } from "@/api/vendor.axios";
 
 export interface IUploadMediaResponse {
   key: string;
@@ -32,8 +33,8 @@ export const createConversationClient = async (input: CreateConvInput): Promise<
 };
 
 export const createConversationVendor = async (input: CreateConvInput): Promise<ApiResponse> => {
-  const response = await clientAxiosInstance.post(
-    "/client/conversation",
+  const response = await vendorAxiosInstance.post(
+    "/vendor/conversation",
     input
   );
   return response.data;
