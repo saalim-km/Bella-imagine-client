@@ -40,7 +40,17 @@ const itemVariants = {
 };
 
 export const ServiceDetailsModal = ({ service, vendorId, isOpen, onClose }: ServiceModalProps) => {
-  const currentVendorId = useSelector((state : RootState)=> state.vendor.vendor?._id)
+  const user = useSelector((state : RootState)=> {
+    if(state.client.client) return state.client.client;
+    if(state.vendor.vendor) return state.vendor.vendor;
+    return undefined;
+  })
+
+
+  if(!user){
+    return <p>user not found please try again later , or please relogin to continue</p>
+  }
+
   if (!service) return null;
 
   // Fallback location if service.location is invalid or missing
@@ -241,7 +251,7 @@ export const ServiceDetailsModal = ({ service, vendorId, isOpen, onClose }: Serv
               Close
             </Button>
           </DialogClose>
-            {service.vendor === currentVendorId ? null : (
+            {user.role !== 'vendor' && (
               <Link to={`/booking/${service._id}/${vendorId}`}>
                 <Button
                   className="bg-blue-600 text-white hover:bg-blue-700"

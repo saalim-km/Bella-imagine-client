@@ -9,7 +9,6 @@ export const useGetAllNotifications = (queryFn: (input : GetAllNotificationsInpu
         queryKey : ['notifications',input,role],
         queryFn : ()=> queryFn(input),
         enabled : enabled,
-        staleTime : 1000 * 60 * 5 // 5 minutes
     })
 }
 

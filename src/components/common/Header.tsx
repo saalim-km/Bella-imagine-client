@@ -49,7 +49,7 @@ export default function Header({ onClick, isAuthPage = false }: IHeader) {
   const { page, total, unReadCount, notifications } = useSelector(
     (state: RootState) => state.notification
   );
-  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -61,7 +61,7 @@ export default function Header({ onClick, isAuthPage = false }: IHeader) {
       ? getAllVendorNotification
       : getAllClientNotification;
   const limit = 6;
-  
+
   const { data: notificationsData, isLoading } = useGetAllNotifications(
     queryFn,
     user?.role as TRole,
@@ -77,18 +77,51 @@ export default function Header({ onClick, isAuthPage = false }: IHeader) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Fixed useEffect for handling notifications
   useEffect(() => {
     if (notificationsData?.data?.data) {
-      dispatch(
-        setNotifications({
-          notifications: [...notifications, ...notificationsData.data.data],
-          total: notificationsData.data.total || 0,
-          page: page,
-          unReadCount: notificationsData.data.unReadTotal,
-        })
-      );
+      const newNotifications = notificationsData.data.data;
+
+      // For page 1, replace all notifications (fresh start)
+      if (page === 1) {
+        dispatch(
+          setNotifications({
+            notifications: newNotifications,
+            total: notificationsData.data.total || 0,
+            page: page,
+            unReadCount: notificationsData.data.unReadTotal || 0,
+          })
+        );
+      } else {
+        // For subsequent pages, only append if we don't already have these notifications
+        const existingIds = new Set(notifications.map((n) => n._id));
+        const uniqueNewNotifications = newNotifications.filter(
+          (notification: any) => !existingIds.has(notification._id)
+        );
+
+        if (uniqueNewNotifications.length > 0) {
+          dispatch(
+            setNotifications({
+              notifications: [...notifications, ...uniqueNewNotifications],
+              total: notificationsData.data.total || 0,
+              page: page,
+              unReadCount: notificationsData.data.unReadTotal || 0,
+            })
+          );
+        } else {
+          // Just update counts without adding duplicates
+          dispatch(
+            setNotifications({
+              notifications: notifications,
+              total: notificationsData.data.total || 0,
+              page: page,
+              unReadCount: notificationsData.data.unReadTotal || 0,
+            })
+          );
+        }
+      }
     }
-  }, [notificationsData, dispatch, page]);
+  }, [notificationsData, dispatch, page]); // Removed notifications from dependencies to prevent infinite loop
 
   const logoutFunction = user?.role === "vendor" ? logoutVendor : logoutClient;
   const { mutate: logout } = useLogoutMutation(logoutFunction);
@@ -96,7 +129,7 @@ export default function Header({ onClick, isAuthPage = false }: IHeader) {
   const logoutUser = () => {
     logout(undefined, {
       onSuccess: (data: any) => {
-        communityToast.logout()
+        communityToast.logout();
 
         if (user?.role === "vendor") {
           dispatch(vendorLogout());
@@ -110,14 +143,6 @@ export default function Header({ onClick, isAuthPage = false }: IHeader) {
         handleError(error);
       },
     });
-  };
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-      setSearchQuery("");
-    }
   };
 
   const NavLink = ({
@@ -138,7 +163,9 @@ export default function Header({ onClick, isAuthPage = false }: IHeader) {
           setMobileMenuOpen(false);
         }}
         className={`px-2 py-1 text-sm font-medium rounded-md ${
-          active ? "text-orange-500 dark:text-orange-400" : "hover:text-orange-500 dark:hover:text-orange-400"
+          active
+            ? "text-orange-500 dark:text-orange-400"
+            : "hover:text-orange-500 dark:hover:text-orange-400"
         }`}
       >
         {children}
@@ -146,9 +173,8 @@ export default function Header({ onClick, isAuthPage = false }: IHeader) {
     );
   };
 
-  const shouldShowAuthButton = !isLoggedIn && 
-    !isAuthPage && 
-    !isAdminPage
+  const shouldShowAuthButton = !isLoggedIn && !isAuthPage && !isAdminPage;
+
   return (
     <>
       <header
@@ -177,9 +203,21 @@ export default function Header({ onClick, isAuthPage = false }: IHeader) {
 
               {!isAuthPage && !isAdminPage && isLoggedIn && (
                 <nav className="hidden md:flex items-center space-x-1">
-                  <NavLink to="/home" active={location.pathname === "/home"}>Home</NavLink>
-                  <NavLink to="/photographers" active={location.pathname.startsWith("/photographers")}>Photographers</NavLink>
-                  <NavLink to="/explore" active={location.pathname.startsWith("/explore")}>Community</NavLink>
+                  <NavLink to="/home" active={location.pathname === "/home"}>
+                    Home
+                  </NavLink>
+                  <NavLink
+                    to="/photographers"
+                    active={location.pathname.startsWith("/photographers")}
+                  >
+                    Photographers
+                  </NavLink>
+                  <NavLink
+                    to="/explore"
+                    active={location.pathname.startsWith("/explore")}
+                  >
+                    Community
+                  </NavLink>
                 </nav>
               )}
             </div>
@@ -200,7 +238,7 @@ export default function Header({ onClick, isAuthPage = false }: IHeader) {
                     <DropdownMenuTrigger asChild>
                       <button
                         className="p-1 rounded-md relative hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                        aria-label={`Notifications (${total} new)`}
+                        aria-label={`Notifications (${unReadCount} new)`}
                       >
                         <Bell className="h-5 w-5" />
                         {unReadCount > 0 && (
@@ -297,27 +335,11 @@ export default function Header({ onClick, isAuthPage = false }: IHeader) {
             </div>
           </div>
         </div>
-
-        {/* Mobile search */}
-        {mobileMenuOpen && (
-          <div className="md:hidden p-2 border-t border-gray-200 dark:border-gray-700">
-            <form onSubmit={handleSearch} className="relative">
-              <input
-                type="text"
-                placeholder="Search BellaImagine"
-                className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md py-1 px-3 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            </form>
-          </div>
-        )}
       </header>
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 dark:bg-gray-900 md:hidden mt-14 bg-background">
+        <div className="fixed inset-0 z-40 dark:bg-background md:hidden mt-20 bg-background">
           <div className="container mx-auto px-4 py-2">
             <nav className="flex flex-col space-y-2">
               {[

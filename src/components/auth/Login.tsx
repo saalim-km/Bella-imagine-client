@@ -111,7 +111,7 @@ export default function CommunityLogin({
           {/* Community Stats Overlay */}
           <div className="relative z-10 p-12 flex flex-col justify-between h-full">
             <div>
-              <h1 className="text-5xl font-bold mb-6 leading-tight">
+              <h1 className="text-5xl font-bold mb-6 leading-tight text-white">
                 Join the Creative
                 <br />
                 <span className="text-orange-300">Community</span>

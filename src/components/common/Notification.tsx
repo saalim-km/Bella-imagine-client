@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   markAllAsRead,
   setNotifications,
+  setPage,
 } from "@/store/slices/notificationSlice";
 import type { RootState } from "@/store/store";
 import {
@@ -68,24 +69,24 @@ export default function NotificationCard({
   unReadCount,
 }: NotificationCardProps) {
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
+  const dispatch = useDispatch();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const { notifications } = useSelector(
+    (state: RootState) => state.notification
+  );
+
   const mutateFn =
     userType === "client"
       ? updateClientNotificationService
       : updateVendorNotificationService;
-  const { mutate: markAdRead } = useUpdateNotification(mutateFn);
+  const { mutate: markAsRead } = useUpdateNotification(mutateFn);
 
   const clearMutateFn =
     userType === "client"
       ? deleteClientNotifications
       : deleteVendorNotifications;
   const { mutate: clearNotifications } = useClearNotifications(clearMutateFn);
-
-  const dispatch = useDispatch();
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const { notifications } = useSelector(
-    (state: RootState) => state.notification
-  );
 
   const handleShowMore = () => {
     if (totalNotifications > page * limit) {
@@ -97,10 +98,19 @@ export default function NotificationCard({
   const hasMore = totalNotifications > page * limit;
 
   function handleMarkAsRead() {
-    markAdRead(undefined, {
+    markAsRead(undefined, {
       onSuccess: (data) => {
         if (data.success) {
+          // Update Redux state
           dispatch(markAllAsRead());
+          
+          // Invalidate and refetch notifications to ensure cache is up to date
+          queryClient.invalidateQueries({ 
+            queryKey: ["notifications", userType] 
+          });
+          
+          // Optionally, reset page to 1 to avoid pagination issues
+          setPage(1);
         }
       },
       onError: (err) => {
@@ -113,6 +123,7 @@ export default function NotificationCard({
     clearNotifications(undefined, {
       onSuccess: (data) => {
         if (data.success) {
+          // Clear Redux state
           dispatch(
             setNotifications({
               notifications: [],
@@ -121,8 +132,14 @@ export default function NotificationCard({
               page: 1,
             })
           );
-          queryClient.removeQueries({queryKey : ["notifications"]})
-          queryClient.invalidateQueries({queryKey : ['notifications']})
+          
+          // Clear React Query cache completely
+          queryClient.removeQueries({ 
+            queryKey: ["notifications", userType] 
+          });
+          
+          // Reset page to 1
+          setPage(1);
         }
       },
       onError: (err) => {
