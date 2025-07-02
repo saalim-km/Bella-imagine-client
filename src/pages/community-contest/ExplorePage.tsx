@@ -9,7 +9,6 @@ import type { AppDispatch } from "@/store/store"
 import CommunityLayout from "@/components/layout/CommunityLayout"
 import { useGetAllPostForClient, useGetAllPostForVendor } from "@/hooks/community-contest/useCommunity"
 import { incrementPage, setPosts, toggleLike } from "@/store/slices/feedslice"
-import { LoadingBar } from "@/components/ui/LoadBar"
 import { useSocket } from "@/context/SocketContext"
 import { communityToast } from "@/components/ui/community-toast"
 import type { ICommunityPostResponse } from "@/components/User/Home"
@@ -121,7 +120,7 @@ const ExplorePage: React.FC = () => {
   // Initialize infinite scroll
   const infiniteScrollRef = useInfiniteScroll(loadMorePosts)
 
-  const handleLikeToggle = useCallback(
+  const   handleLikeToggle = useCallback(
     (post: ICommunityPostResponse) => {
       if (!socket) {
         communityToast.error({

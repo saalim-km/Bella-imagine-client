@@ -16,24 +16,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
+import { ICommunityPostResponse } from "../User/Home";
 
-// Mock interfaces - replace with your actual types
-interface ICommunityPostResponse {
-  _id: string;
-  title: string;
-  content: string;
-  userId: {
-    name: string;
-    profileImage?: string;
-  };
-  createdAt: string;
-  tags: string[];
-  media?: string[];
-  mediaType?: "image" | "video";
-  isLiked: boolean;
-  likeCount: number;
-  commentCount: number;
-}
 
 interface PostCardProps {
   post: ICommunityPostResponse;

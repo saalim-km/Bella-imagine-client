@@ -53,7 +53,7 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
               {/* Profile Image */}
               <div className="relative">
                 <div
-                  className="relative aspect-square overflow-hidden rounded-lg cursor-pointer group"
+                  className="relative aspect-square overflow-hidden rounded-lg cursor-pointer group w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-full lg:h-auto"
                   onClick={handleNavigate}
                 >
                   <ImageWithFallback

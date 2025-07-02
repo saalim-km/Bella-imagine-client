@@ -6,9 +6,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import {
   setConversations,
   setSelectedConversationId,
-  setMessages,
-  setUsers,
-  setLoading,
   setShowConversations,
   updateConversation,
   updateMessage,
@@ -53,7 +50,7 @@ export function ChatInterface() {
     ? users.find(
         (user) =>
           user._id !== userFromRedux?._id &&
-          (user._id === selectedConversation.client._id ||
+          (user._id === selectedConversation.user._id ||
             user._id === selectedConversation.vendor._id)
       )
     : undefined;
