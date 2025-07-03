@@ -164,6 +164,7 @@ const PostDetailPage: React.FC = () => {
         {
           onSuccess: (data) => {
             user?.role === "client" ? clientRefetch() : vendorRefresh()
+            queryClient.invalidateQueries({queryKey : ['comments']})
             communityToast.success({
               title: "Comment added",
               description: data.message,

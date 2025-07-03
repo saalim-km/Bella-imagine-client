@@ -120,7 +120,7 @@ const ExplorePage: React.FC = () => {
   // Initialize infinite scroll
   const infiniteScrollRef = useInfiniteScroll(loadMorePosts)
 
-  const   handleLikeToggle = useCallback(
+  const handleLikeToggle = useCallback(
     (post: ICommunityPostResponse) => {
       if (!socket) {
         communityToast.error({

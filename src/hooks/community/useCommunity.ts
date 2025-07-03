@@ -2,7 +2,10 @@ import { createCommunityService, createPostServiceClient, createPostServiceVendo
 
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { ApiResponse } from "../vendor/useVendor"
-import { AddCommentInput, EditCommentInput, GetAllPostInput, GetCommentsInput, GetCommMemberInput, PostDetailsInput } from "@/types/interfaces/Community"
+import { AddCommentInput, EditCommentInput, GetAllPostInput, GetAllPostUserInput, GetCommentsInput, GetCommMemberInput, GetPostForUserOutput, PostDetailsInput } from "@/types/interfaces/Community"
+import { BasePaginatedResponse } from "@/services/client/clientService"
+import { PaginatedResponse } from "@/types/interfaces/vendor"
+import { ICommunityPost } from "@/components/User/Home"
 
 export const useCreateCommunityMutation = ()=> {
     return useMutation({
@@ -146,6 +149,18 @@ export const useDeleteComment = (mutateFn : (commentId : string)=> Promise<ApiRe
     })
 }
 
+export const useEditPost = (mutateFn  : (data : any)=> Promise<ApiResponse>) => {
+    return useMutation({
+        mutationFn : mutateFn
+    })
+}
+
+export const useDeletePost = (mutateFn : (postId : string) => Promise<ApiResponse>) => {
+    return useMutation({
+        mutationFn : mutateFn
+    })
+}
+
 // ------------------------Vendor hooks for community --------------------------------------------------
 export const useGetAllPostForVendor = (
     input: GetAllPostInput,
@@ -205,5 +220,13 @@ export const useGetCommentsForVendor = (input : GetCommentsInput)=> {
 export const useCreatePostVendor = ()=> {
     return useMutation({
         mutationFn : createPostServiceVendor
+    })
+}
+
+export const useGetAllPostUser = (input : GetAllPostUserInput , queryFn : (input : GetAllPostUserInput)=> Promise<BasePaginatedResponse<PaginatedResponse<GetPostForUserOutput>>>)=> {
+    return useQuery({
+        queryKey : ['user_posts',input],
+        queryFn : ()=> queryFn(input),
+        staleTime : 1000 * 60 * 5
     })
 }

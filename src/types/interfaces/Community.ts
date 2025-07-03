@@ -90,6 +90,28 @@ export interface GetAllPostInput {
   enabled ?: boolean;
 }
 
+export interface GetPostForUserOutput {
+  _id: string;
+  communityId: string;
+  userId: string;
+  userType: 'Client' | 'Vendor';
+  title: string;
+  content: string;
+  media: string[];
+  mediaType: 'image' | 'video' | 'mixed' | 'none';
+  isEdited: boolean;
+  likeCount: number;
+  commentCount: number;
+  tags: string[];
+  comments: string[];
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  communityName: string;
+  iconImage: string;
+  coverImage: string;
+}
+
+
 export interface ILike {
   _id?: string;
   userId : {
@@ -129,4 +151,9 @@ export interface ICommentResponse extends IComment {
 export interface EditCommentInput {
   commentId : string;
   content : string
+}
+
+export interface GetAllPostUserInput {
+  limit : number;
+  page : number;
 }

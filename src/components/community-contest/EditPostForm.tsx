@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, Upload, ImageIcon, Type } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,31 +8,26 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import {
-  useCreatePostClient,
-  useCreatePostVendor,
-  useGetAllCommunitiesClient,
-  useGetAllCommunitiesVendor,
-} from "@/hooks/community/useCommunity";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { communityToast } from "../ui/community-toast";
-import { handleError } from "@/utils/Error/error-handler.utils";
+import { PostDetailsResponse } from "@/types/interfaces/Community";
+import {
+  editPostServiceClient,
+  editPostServiceVendor,
+} from "@/services/community/communityService";
+import { useEditPost } from "@/hooks/community/useCommunity";
 import { useQueryClient } from "@tanstack/react-query";
-import { useDispatch } from "react-redux";
-import { addPost } from "@/store/slices/feedslice";
-import { CreatePostInput } from "@/types/interfaces/Community";
 
-interface CreatePostFormProps {
-  communityId?: string;
+interface MediaItem {
+  url: string;
+  file?: File;
+  isNew?: boolean;
+  s3Key?: string;
+}
+
+interface EditPostFormProps {
   onSuccess?: () => void;
+  post: PostDetailsResponse;
   user: {
     _id: string;
     name: string;
@@ -41,52 +36,52 @@ interface CreatePostFormProps {
   };
 }
 
-export function CreatePostForm({
-  communityId,
-  onSuccess,
-  user,
-}: CreatePostFormProps) {
-  const { data: communitiesDataClient } = useGetAllCommunitiesClient({
-    limit: 1000,
-    page: 1,
-    enabled: user.role === "client",
-    membership : 'member'
-  });
-  const { data: communitiesDataVendor } = useGetAllCommunitiesVendor({
-    limit: 1000,
-    page: 1,
-    membership : 'member',
-    enabled: user.role === "vendor",
-  });
-  const communitiesData = communitiesDataClient?.data.data
-    ? communitiesDataClient?.data
-    : communitiesDataVendor?.data;
-
-
-  const { mutate: createPostClient , isPending : isCLiendPending } = useCreatePostClient();
-  const { mutate: createPostVendor , isPending : isVendorPending } = useCreatePostVendor();
-  const createPost = user.role === 'client' ? createPostClient : createPostVendor
+export function EditPostForm({ onSuccess, user, post }: EditPostFormProps) {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [media, setMedia] = useState<File[]>([]);
+  const [title, setTitle] = useState(post.title);
+  const [content, setContent] = useState(post.content);
+  const [media, setMedia] = useState<MediaItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [titleError, setTitleError] = useState("");
   const [contentError, setContentError] = useState("");
-  const [communityError, setCommunityError] = useState("");
-  const [selectedCommunity, setSelectedCommunity] = useState(communityId || "");
-  const [postType, setPostType] = useState<"text" | "image">("text");
-  const [tags, setTags] = useState<string[]>([]);
+  const [postType, setPostType] = useState<"text" | "image">(
+    post.media.length > 0 ? "image" : "text"
+  );
+  const [tags, setTags] = useState<string[]>(post.tags || []);
   const [currentTag, setCurrentTag] = useState("");
-  const queryClient = useQueryClient();
-  const dispatch = useDispatch();
-
-  const communities = communitiesData?.data || [];
-
+  const queryCLient = useQueryClient()
+  const mutateFn =
+    user.role == "client" ? editPostServiceClient : editPostServiceVendor;
+  const { mutate: editPost, isPending } = useEditPost(mutateFn);
   const MAX_MEDIA = 4;
   const MAX_TITLE_LENGTH = 300;
   const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+
+  // Helper function to extract S3 key from URL
+  const extractS3KeyFromUrl = (url: string): string => {
+    try {
+      const urlObj = new URL(url);
+      return urlObj.pathname.startsWith("/")
+        ? urlObj.pathname.substring(1)
+        : urlObj.pathname;
+    } catch {
+      return url; // Return as-is if not a valid URL
+    }
+  };
+
+  // Initialize media state with existing post media
+  useEffect(() => {
+    if (post.media && post.media.length > 0) {
+      setMedia(
+        post.media.map((url) => ({
+          url,
+          s3Key: extractS3KeyFromUrl(url),
+          isNew: false,
+        }))
+      );
+    }
+  }, [post.media]);
 
   const handleMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -118,11 +113,28 @@ export function CreatePostForm({
       }
     }
 
-    setMedia((prev) => [...prev, ...files]);
+    // Add new files to media state
+    const newMediaItems = files.map((file) => ({
+      url: URL.createObjectURL(file),
+      file,
+      isNew: true,
+    }));
+
+    setMedia((prev) => [...prev, ...newMediaItems]);
   };
 
   const removeMedia = (index: number) => {
-    setMedia((prev) => prev.filter((_, i) => i !== index));
+    setMedia((prev) => {
+      const newMedia = [...prev];
+      const removedItem = newMedia.splice(index, 1)[0];
+
+      // Revoke object URL if it's a new file
+      if (removedItem.file && removedItem.url.startsWith("blob:")) {
+        URL.revokeObjectURL(removedItem.url);
+      }
+
+      return newMedia;
+    });
   };
 
   const addTag = () => {
@@ -148,18 +160,6 @@ export function CreatePostForm({
       isValid = false;
     } else {
       setTitleError("");
-    }
-
-    // Community validation
-    if (!selectedCommunity) {
-      setCommunityError("Please select a community");
-      communityToast.error({
-        title: "Select a community",
-        description: "Please select a community to create post",
-      });
-      isValid = false;
-    } else {
-      setCommunityError("");
     }
 
     // Content validation for text posts
@@ -189,121 +189,69 @@ export function CreatePostForm({
     setIsSubmitting(true);
 
     try {
-      const formData = new FormData();
-      formData.append("title", title);
-      formData.append("content", content);
-      formData.append("communityId", selectedCommunity);
-      // Determine mediaType based on uploaded files
-      let mediaType: "image" | "video" | "mixed" | "none" = "none";
-      if (media.length > 0) {
-        const hasImages = media.some((file) => file.type.startsWith("image/"));
-        const hasVideos = media.some((file) => file.type.startsWith("video/"));
+      // Prepare the data to be logged
+      const formData = {
+        _id: post._id,
+        title,
+        content,
+        tags,
+        existingImageKeys: media
+          .filter((item) => !item.isNew && item.s3Key)
+          .map((item) => item.s3Key!),
+        deletedImageKeys: post.media
+          .map(extractS3KeyFromUrl)
+          .filter((key) => !media.some((item) => item.s3Key === key)),
+        newImages: media
+          .filter((item) => item.isNew && item.file)
+          .map((item) => item.file!),
+      };
 
-        if (hasImages && hasVideos) {
-          mediaType = "mixed";
-        } else if (hasImages) {
-          mediaType = "image";
-        } else if (hasVideos) {
-          mediaType = "video";
-        }
-      }
-      formData.append("mediaType", mediaType);
-
-      media.forEach((file) => formData.append("media", file));
-
-      tags.forEach((tag) => formData.append("tags", tag));
-
-      createPost(formData as unknown as CreatePostInput, {
+      editPost(formData, {
         onSuccess: (data) => {
-          queryClient.invalidateQueries({ queryKey: ["community-post"] });
-          queryClient.invalidateQueries({queryKey : ['user_posts']})
+          queryCLient.invalidateQueries({queryKey : ['user_posts']})
           communityToast.success({
-            title: "Post created",
-            description: `your post has been created in the community`,
+            title: data.message,
+            description: "Post has been updated successfully",
           });
-          dispatch(addPost(data.data));
-          navigate("/explore");
+          navigate(-1);
         },
-        onError : (err)=> {
-          handleError(err)
-        }
       });
+      if (onSuccess) onSuccess();
     } catch (error) {
-      handleError(error);
+      communityToast.error({
+        title: "Error updating post",
+        description: "An error occurred while preparing the update",
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // Clean up object URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      media.forEach((item) => {
+        if (item.file && item.url.startsWith("blob:")) {
+          URL.revokeObjectURL(item.url);
+        }
+      });
+    };
+  }, [media]);
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-6">
         <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-          Create a post
+          Edit Post
         </h1>
         <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-          Share your thoughts with the community
+          Update your post content
         </p>
       </div>
 
       <Card className="bg-background">
         <CardHeader className="border-b">
           <div className="space-y-4">
-            {/* Community Selection */}
-            {communities.length === 0 ? (
-              <div className="p-4 text-center text-sm text-gray-500">
-                Join a community to post.
-              </div>
-            ) : (
-              <div>
-                <Label className="text-sm font-medium">
-                  Choose a community <span className="text-red-500">*</span>
-                </Label>
-                <Select
-                  value={selectedCommunity}
-                  onValueChange={(value) => {
-                    setSelectedCommunity(value);
-                    setCommunityError("");
-                  }}
-                >
-                  <SelectTrigger
-                    className={`w-full mt-1 py-6 ${
-                      communityError ? "border-red-500" : ""
-                    }`}
-                  >
-                    <SelectValue placeholder="Search for a community" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {communities.map((community) => (
-                      <SelectItem key={community._id} value={community._id}>
-                        <div className="flex items-center space-x-2">
-                          <Avatar className="h-8 w-8">
-                            <AvatarImage
-                              src={community.iconImage}
-                              alt={`${community.name}`}
-                              className="object-cover w-full h-full rounded-full"
-                            />
-                            <AvatarFallback className="flex items-center justify-center w-full h-full bg-gray-200 dark:bg-gray-700 rounded-full">
-                              {community.name?.charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium">{community.name}</p>
-                            <p className="text-xs text-gray-500">
-                              {community.memberCount} members
-                            </p>
-                          </div>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {communityError && (
-                  <p className="text-red-500 text-sm mt-1">{communityError}</p>
-                )}
-              </div>
-            )}
-
             {/* Post Type Tabs */}
             <Tabs
               value={postType}
@@ -388,19 +336,11 @@ export function CreatePostForm({
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       {media.map((file, index) => (
                         <div key={index} className="relative group">
-                          {file.type.startsWith("image/") ? (
-                            <img
-                              src={URL.createObjectURL(file)}
-                              alt={`Preview ${index}`}
-                              className="w-full h-32 object-cover rounded-md border"
-                            />
-                          ) : (
-                            <div className="w-full h-32 flex items-center justify-center bg-gray-100 rounded-md border">
-                              <span className="text-sm text-gray-500">
-                                Video file
-                              </span>
-                            </div>
-                          )}
+                          <img
+                            src={file.url}
+                            alt={`Preview ${index}`}
+                            className="w-full h-32 object-cover rounded-md border"
+                          />
                           <Button
                             type="button"
                             variant="destructive"
@@ -505,13 +445,13 @@ export function CreatePostForm({
               disabled={
                 isSubmitting ||
                 !title.trim() ||
-                !selectedCommunity ||
-                (postType === "text" && !content.trim())||
-                isCLiendPending || isVendorPending
+                (postType === "text" && !content.trim()) ||
+                (postType === "image" && media.length === 0) ||
+                isPending
               }
               className="min-w-[100px]"
             >
-              {isCLiendPending || isVendorPending ? "Posting..." : "Post"}
+              {isPending ? "Updating..." : "Update"}
             </Button>
           </div>
         </form>

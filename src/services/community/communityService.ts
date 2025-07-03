@@ -1,14 +1,15 @@
 import { adminAxiosInstance } from "@/api/admin.axios";
 import { clientAxiosInstance } from "@/api/client.axios";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
-import { AddCommentInput, Community, CommunityBySlugResponse, CommunityResponse, CreatePostInput, EditCommentInput, GetAllPostInput, GetCommentsInput, GetCommMemberInput, IComment, ICommentResponse, PostDetailsInput, PostDetailsResponse } from "@/types/interfaces/Community";
+import { AddCommentInput, Community, CommunityBySlugResponse, CommunityResponse, CreatePostInput, EditCommentInput, GetAllPostInput, GetAllPostUserInput, GetCommentsInput, GetCommMemberInput, GetPostForUserOutput, IComment, ICommentResponse, PostDetailsInput, PostDetailsResponse } from "@/types/interfaces/Community";
 import { PaginatedResponse } from "@/types/interfaces/vendor";
-import { BasePaginatedResponse, IClient } from "../client/clientService";
-import { ICommunityPostResponse } from "@/components/User/Home";
+import { BasePaginatedResponse } from "../client/clientService";
+import { ICommunityPost, ICommunityPostResponse } from "@/components/User/Home";
 import { vendorAxiosInstance } from "@/api/vendor.axios";
 
 
 
+// Admin service for community
 
 export const createCommunityService = async (
   dto: Partial<Community>
@@ -57,7 +58,6 @@ export const updateCommunityService = async (
   });
   return response.data;
 };
-
 
 export const getCommunityMemersAdmin = async (input: GetCommMemberInput) => {
   const respone = await adminAxiosInstance.get(
@@ -149,6 +149,25 @@ export const deleteCommentClient = async(commentId : string) : Promise<ApiRespon
   return response.data;
 }
 
+export const getAllPostForUserServiceClient = async(input : GetAllPostUserInput) : Promise<BasePaginatedResponse<PaginatedResponse<GetPostForUserOutput>>>=> {
+  const response = await clientAxiosInstance.get('/client/post',{params : input})
+  return response.data
+}
+
+export const editPostServiceClient = async (data: any): Promise<ApiResponse> => {
+  const response = await clientAxiosInstance.put('/client/community-post', data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
+
+export const deletePostServiceClient = async(postId : string) : Promise<ApiResponse> => {
+  const response = await clientAxiosInstance.delete(`/client/post/${postId}`)
+  return response.data
+}
+
 // vendor service for community
 export const getAllCommunitiesVendor = async (dto: {
   page: number;
@@ -222,4 +241,19 @@ export const editCommentByVendor = async (input : EditCommentInput) : Promise<Ap
 export const deleteCommentVendor = async(commentId : string) : Promise<ApiResponse> => {
   const response = await vendorAxiosInstance.delete(`/vendor/comment/${commentId}`)
   return response.data;
+}
+
+export const getAllPostForUserServiceVendor = async(input : GetAllPostUserInput) : Promise<BasePaginatedResponse<PaginatedResponse<GetPostForUserOutput>>>=> {
+  const response = await vendorAxiosInstance.get('/vendor/post',{params : input})
+  return response.data
+}
+
+export const editPostServiceVendor = async(data : any) : Promise<ApiResponse> => {
+  const response = await vendorAxiosInstance.put('/vendor/community-post',data)
+  return response.data
+}
+
+export const deletePostServiceVendor = async(postId : string) : Promise<ApiResponse> => {
+  const response = await vendorAxiosInstance.delete(`/vendor/post/${postId}`)
+  return response.data
 }

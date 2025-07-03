@@ -52,6 +52,7 @@ export function VendorProfile({ vendor }: VendorProfileProps) {
     user.role === "client"
       ? createConversationClient
       : createConversationVendor;
+      
   const { mutate: createConversation, isPending } =
     useCreateConversation(mutateFn);
 
@@ -103,10 +104,6 @@ export function VendorProfile({ vendor }: VendorProfileProps) {
                   <div className="flex items-center gap-1.5">
                     <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                     <span>4.9 (124 reviews)</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Users className="w-4 h-4" />
-                    <span>256 bookings</span>
                   </div>
                 </div>
               </div>
