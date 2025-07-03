@@ -49,11 +49,12 @@ export const useCreateServiceMutation = ()=> {
     mutationFn : createService
   })
 }
+
 export const useVendorServices = (filters: IServiceFilter) => {
   return useQuery<BasePaginatedResponse<PaginatedResponse<IServiceResponse>>>({
-    queryKey: ["services", filters],
+    queryKey: ["vendor_services", filters],
     queryFn: () => getAllVendorServices(filters),
-    staleTime : 1000 * 60 * 5 // 15 minutes
+    staleTime : 1000 * 60 * 5 
   });
 };
 

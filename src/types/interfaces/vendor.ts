@@ -91,11 +91,6 @@ export interface IServiceResponse {
 export interface IServiceFilter {
   serviceTitle?: string;
   category?: string; 
-  location?: string;
-  tags?: string[];
-  styleSpecialty?: string[];
-  isPublished?: boolean;
-  createdAt?: 1 | -1;
   page ?: number;
   limit ?: number
 }

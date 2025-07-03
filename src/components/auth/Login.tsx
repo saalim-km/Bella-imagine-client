@@ -124,7 +124,7 @@ export default function CommunityLogin({
             </div>
 
             {/* Community Stats */}
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-6 text-white">
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
                 <div className="flex items-center gap-3 mb-2">
                   <Camera className="w-6 h-6 text-orange-300" />

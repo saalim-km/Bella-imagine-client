@@ -46,6 +46,7 @@ import { handleError } from "@/utils/Error/error-handler.utils";
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
 import { IVendor } from "@/services/vendor/vendorService";
 import { communityToast } from "@/components/ui/community-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface IServiceFormProps {
   handleIsCreatingService(state: boolean): void;
@@ -64,6 +65,7 @@ export const ServiceForm = ({
   const [showExitDialog, setShowExitDialog] = useState(false);
   const [allowReload, setAllowReload] = useState(false);
   const [showExitDialogDraft, setShowExitDialogDraft] = useState(false);
+  const queryClient = useQueryClient();
   const [completedSections, setCompletedSections] = useState<
     Record<string, boolean>
   >({
@@ -130,12 +132,10 @@ export const ServiceForm = ({
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: async (values) => {
-      console.log("service form submitted", values);
       if (editData) {
-        console.log("updated data : ", values);
         updateService(values, {
           onSuccess: (data) => {
-            console.log(data);
+            queryClient.invalidateQueries({ queryKey: ['vendor_services'] });
             handleIsCreatingService(false);
             communityToast.success({ title: data?.message });
           },
@@ -149,8 +149,10 @@ export const ServiceForm = ({
           onSuccess: (data) => {
             handleIsCreatingService(false);
             localStorage.removeItem("serviceDraft");
+            queryClient.invalidateQueries({ queryKey: ['vendor_services'] });
             communityToast.success({
-              title: "Service published successfully!",
+              title: "Service published successfully",
+              description: "Your service is now live and available for clients to book."
             });
           },
           onError: (err) => {
@@ -231,7 +233,6 @@ export const ServiceForm = ({
           toast.error("Please correct the errors before proceeding");
         }
       } catch (error) {
-        console.error("Validation error:", error);
         toast.error("An error occurred during validation");
       } finally {
         setIsValidating(false);
@@ -438,7 +439,7 @@ export const ServiceForm = ({
         const { isValid } = await validateSection(formik.values, activeTab);
         setCompletedSections((prev) => ({ ...prev, [activeTab]: isValid }));
       } catch (error) {
-        console.error("Validation error:", error);
+        handleError(error)
       }
     };
 
@@ -502,7 +503,6 @@ export const ServiceForm = ({
               </TabsTrigger>
               <TabsTrigger
                 value="policies"
-                disabled={!completedSections.policies}
               >
                 Policies
               </TabsTrigger>

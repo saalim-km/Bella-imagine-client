@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -36,6 +36,8 @@ import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { communityToast } from "@/components/ui/community-toast";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 interface IVendorServicesPageProps {
   handleIsCreateService(state: boolean): void;
@@ -46,7 +48,18 @@ const VendorServicesPage = ({
   handleIsCreateService,
   handleIsEditingService,
 }: IVendorServicesPageProps) => {
-  const { data: categories } = useAllVendorCategoryQuery();
+    const user = useSelector((state : RootState)=> {
+    if(state.client.client) return state.client.client;
+    if(state.vendor.vendor) return state.vendor.vendor;
+    return undefined;
+  })
+
+
+  if(!user){
+    return <p>user not found please try again later , or please relogin to continue</p>
+  }
+
+  const { data: categories } = useAllVendorCategoryQuery(user.role === 'vendor');
   const [isDeleteModal, setDeleteModal] = useState(false);
   console.log("categoriees : ", categories);
   const [searchTerm, setSearchTerm] = useState("");
@@ -56,17 +69,15 @@ const VendorServicesPage = ({
   const [serviceId, setServiceId] = useState<string>("");
   const [appliedFilters, setAppliedFilters] = useState({
     category: "",
-    location: "",
   });
   const [currentPage, setCurrentPage] = useState(1);
 
-  const queryFilters = {
+  const queryFilters = useMemo(()=> ({
     serviceTitle: appliedSearchTerm,
     category: appliedFilters.category,
-    location: appliedFilters.location,
     page: currentPage,
     limit: 3,
-  };
+  }),[currentPage,appliedFilters.category,appliedSearchTerm])
 
   const { data, isLoading, error, refetch } = useVendorServices(queryFilters);
 
