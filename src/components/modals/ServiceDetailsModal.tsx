@@ -197,11 +197,20 @@ export const ServiceDetailsModal = ({ service, vendorId, isOpen, onClose }: Serv
                             <TableCell>{date.date}</TableCell>
                             <TableCell>
                               <div className="space-y-1">
-                                {date.timeSlots.map((slot, slotIdx) => (
-                                  <div key={slotIdx} className="text-xs">
-                                    {slot.startTime} - {slot.endTime} ({slot.capacity} slots)
-                                  </div>
-                                ))}
+                                {date.timeSlots.map((slot, slotIdx) => {
+                                  // Helper to format "HH:mm" to "h:mm AM/PM"
+                                  const formatTime = (timeStr: string) => {
+                                    const [hour, minute] = timeStr.split(":").map(Number);
+                                    const ampm = hour >= 12 ? "PM" : "AM";
+                                    const hour12 = hour % 12 === 0 ? 12 : hour % 12;
+                                    return `${hour12}:${minute.toString().padStart(2, "0")} ${ampm}`;
+                                  };
+                                  return (
+                                    <div key={slotIdx} className="text-xs">
+                                      {formatTime(slot.startTime)} - {formatTime(slot.endTime)} ({slot.capacity} slots)
+                                    </div>
+                                  );
+                                })}
                               </div>
                             </TableCell>
                           </TableRow>

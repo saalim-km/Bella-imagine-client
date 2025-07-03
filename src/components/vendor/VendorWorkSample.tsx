@@ -1,90 +1,101 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Search, Filter } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { Search, Filter, ImageIcon } from "lucide-react";
 import Pagination from "../common/Pagination";
 import { useAllVendorWorkSample, useDeleteWorkSample, useVendorServices } from "@/hooks/vendor/useVendor";
 import { IWorkSampleResponse } from "@/types/interfaces/vendor";
 import { Spinner } from "../ui/spinner";
-import { Badge } from "../ui/badge";
 import { ReusableAlertDialog } from "../common/AlertDialogue";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { communityToast } from "../ui/community-toast";
+import WorkSampleCard from "./work-sample/WorkSampleCard"; // Make sure the path is correct
+import { Badge } from "../ui/badge";
 
 interface IVendorWorkSamplePageProps {
   handleIsCreateWorkSample(): void;
-  handleIsWorkSampleEditing(workSample : IWorkSampleResponse): void;
+  handleIsWorkSampleEditing(workSample: IWorkSampleResponse): void;
 }
 
-const VendorWorkSample = ({ handleIsCreateWorkSample , handleIsWorkSampleEditing }: IVendorWorkSamplePageProps) => {
+const VendorWorkSample = ({ handleIsCreateWorkSample, handleIsWorkSampleEditing }: IVendorWorkSamplePageProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
-  const [filters, setFilters] = useState({ service: "", tags: "", isPublished: "" });
-  const [appliedFilters, setAppliedFilters] = useState({ service: "", tags: "", isPublished: "" });
+  const [filters, setFilters] = useState({
+    service: "",
+    isPublished: ""
+  });
   const [currentPage, setCurrentPage] = useState(1);
-  const [worksampleId , setWorkSampleId] = useState('');
-  const [isWorkSampleDelete , setIsWorkSampleDelete] = useState(false);
+  const [worksampleId, setWorkSampleId] = useState('');
+  const [isWorkSampleDelete, setIsWorkSampleDelete] = useState(false);
 
   const { data: services } = useVendorServices({ page: 1, limit: 20 });
 
   const queryFilters = {
-    title: appliedSearchTerm, 
-    service: appliedFilters.service,
-    tags: appliedFilters.tags ? appliedFilters.tags.split(",").map(tag => tag.trim()) : undefined,
-    isPublished: appliedFilters.isPublished ? appliedFilters.isPublished === "true" : undefined,
+    title: searchTerm,
+    service: filters.service,
+    isPublished: filters.isPublished !== "" ? filters.isPublished === "true" : undefined,
     page: currentPage,
     limit: 3,
   };
 
-  const { data, isLoading, error , refetch} = useAllVendorWorkSample(queryFilters);
-  const {mutate : deleteWorkSample} = useDeleteWorkSample()
+  const { data, isLoading, error, refetch } = useAllVendorWorkSample(queryFilters);
+  const { mutate: deleteWorkSample } = useDeleteWorkSample();
   
   const handleSearch = () => {
-    setAppliedSearchTerm(searchTerm);
     setCurrentPage(1);
+    refetch();
   };
 
   const applyFilters = () => {
-    setAppliedFilters(filters);
     setCurrentPage(1);
+    refetch();
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  const handleWorkSampleDelete = (id : string)=> {
+  const handleWorkSampleDelete = (id: string) => {
     setIsWorkSampleDelete(true);
     setWorkSampleId(id);
-  }
+  };
 
-  const handleOnSuccessDeleteWorkSample = ()=> {
-    console.log('trigger success delete work sample',worksampleId);
-    setIsWorkSampleDelete(!isWorkSampleDelete);
-    deleteWorkSample(worksampleId,{
-      onSuccess : (data)=> {
-                  communityToast.success({title : data?.message});
-        
-        refetch()
+  const handleOnSuccessDeleteWorkSample = () => {
+    if (!worksampleId) {
+      toast.error("Work sample ID is required");
+      setIsWorkSampleDelete(false);
+      return;
+    }
+    deleteWorkSample(worksampleId, {
+      onSuccess: (data) => {
+        communityToast.success({ title: data?.message });
+        refetch();
       },
-      onError : (err)=> {
-        handleError(err)
-      }
-    })
-  }
+      onError: (err) => {
+        handleError(err);
+      },
+    });
+    setIsWorkSampleDelete(false);
+  };
 
-  const handleOnCancelWorkSample = ()=> {
-    setIsWorkSampleDelete(!isWorkSampleDelete);
+  const handleOnCancelWorkSample = () => {
+    setIsWorkSampleDelete(false);
     setWorkSampleId('');
-  }
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      service: "",
+      isPublished: ""
+    });
+    setSearchTerm("");
+    setCurrentPage(1);
+  };
 
   const workSamples: IWorkSampleResponse[] = data?.data.data || [];
   const totalPages = Math.max(1, Math.ceil((data?.data.total || 0) / 3));
-
 
   return (
     <div className="container mx-auto p-4">
@@ -101,9 +112,9 @@ const VendorWorkSample = ({ handleIsCreateWorkSample , handleIsWorkSampleEditing
             placeholder="Search work samples..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={(e)=> {
-              if(e.key === "Enter"){
-                handleSearch()
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
               }
             }}
           />
@@ -120,20 +131,27 @@ const VendorWorkSample = ({ handleIsCreateWorkSample , handleIsWorkSampleEditing
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Filter Work Samples</DialogTitle>
+              <DialogDescription>
+                Narrow down your work samples by service or status
+              </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div>
                 <label className="block mb-2">Service</label>
                 <Select
                   value={filters.service}
-                  onValueChange={(value) => setFilters((prev) => ({ ...prev, service: value }))}
+                  onValueChange={(value) => setFilters(prev => ({ ...prev, service: value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Service" />
                   </SelectTrigger>
                   <SelectContent>
                     {services?.data?.data.map((service) => (
-                      <SelectItem key={service._id} value={service._id || ""}>
+                      <SelectItem 
+                        key={service._id} 
+                        value={service._id || "undefined"}
+                        disabled={!service._id}
+                      >
                         {service.serviceTitle || "Untitled Service"}
                       </SelectItem>
                     ))}
@@ -144,7 +162,7 @@ const VendorWorkSample = ({ handleIsCreateWorkSample , handleIsWorkSampleEditing
                 <label className="block mb-2">Status</label>
                 <Select
                   value={filters.isPublished}
-                  onValueChange={(value) => setFilters((prev) => ({ ...prev, isPublished: value }))}
+                  onValueChange={(value) => setFilters(prev => ({ ...prev, isPublished: value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Status" />
@@ -156,14 +174,42 @@ const VendorWorkSample = ({ handleIsCreateWorkSample , handleIsWorkSampleEditing
                 </Select>
               </div>
             </div>
-            <div className="flex justify-end">
-              <Button variant="outline" onClick={applyFilters}>
-                <Search className="mr-2 h-4 w-4" /> Apply Filters
+            <div className="flex justify-between">
+              <Button variant="ghost" onClick={resetFilters}>
+                Reset Filters
+              </Button>
+              <Button onClick={applyFilters}>
+                Apply Filters
               </Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Filter indicators */}
+      {(filters.service || filters.isPublished || searchTerm) && (
+        <div className="mb-4 flex items-center gap-2 flex-wrap">
+          <span className="text-sm text-muted-foreground">Active filters:</span>
+          {searchTerm && (
+            <Badge variant="outline" className="text-sm">
+              Search: "{searchTerm}"
+            </Badge>
+          )}
+          {filters.service && (
+            <Badge variant="outline" className="text-sm">
+              Service: {services?.data?.data.find(s => s._id === filters.service)?.serviceTitle || filters.service}
+            </Badge>
+          )}
+          {filters.isPublished && (
+            <Badge variant="outline" className="text-sm">
+              Status: {filters.isPublished === "true" ? "Published" : "Draft"}
+            </Badge>
+          )}
+          <Button variant="ghost" size="sm" onClick={resetFilters}>
+            Clear all
+          </Button>
+        </div>
+      )}
 
       {isLoading ? (
         <Spinner />
@@ -173,68 +219,31 @@ const VendorWorkSample = ({ handleIsCreateWorkSample , handleIsWorkSampleEditing
         <>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {workSamples.map((sample) => (
-              <Card key={sample._id} className="hover:shadow-lg transition-shadow">
-                <Badge
-                  variant="outline"
-                  className={`
-                    relative top-2 left-3 
-                    ${sample.isPublished 
-                      ? "bg-green-500 text-white border-green-600" 
-                      : "bg-yellow-300 text-gray-800 border-yellow-400"
-                    }
-                  `}
-                >
-                  {sample.isPublished ? "Published" : "Draft"}
-                </Badge>
-                <CardHeader>
-                  <CardTitle>{sample.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {sample.media.length > 0 ? (
-                    <img
-                      src={sample.media[0]}
-                      alt={sample.title}
-                      className="w-full h-48 object-cover rounded-md mb-4"
-                    />
-                  ) : (
-                    <div className="w-full h-48 bg-gray-200 rounded-md mb-4 flex items-center justify-center">
-                      No Image
-                    </div>
-                  )}
-                  <p className="text-muted-foreground mb-2">
-                    {sample.description || "No description available"}
-                  </p>
-                  <div className="flex justify-between items-center">
-                    <p className="font-semibold">Service: {sample.service?.serviceTitle || "N/A"}</p>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <div className="flex space-x-2">
-                    {(sample.tags || []).slice(0, 2).map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-secondary-foreground px-2 py-1 rounded-full text-xs border-2"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={()=> handleIsWorkSampleEditing(sample)}>
-                      Edit
-                    </Button>
-                    <Button variant="destructive" size="sm" onClick={()=> handleWorkSampleDelete(sample._id|| '')}>
-                      Delete
-                    </Button>
-                  </div>
-                </CardFooter>
-              </Card>
+              <WorkSampleCard
+                key={sample._id}
+                workSample={sample}
+                onEdit={() => handleIsWorkSampleEditing(sample)}
+                onDelete={() => handleWorkSampleDelete(sample._id || '')}
+              />
             ))}
           </div>
 
           {workSamples.length === 0 && (
             <div className="text-center py-10 text-muted-foreground">
-              No work samples found
+              <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <ImageIcon className="h-12 w-12 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium mb-1">No work samples found</h3>
+              <p className="text-sm">
+                Try adjusting your search or filters, or create a new work sample
+              </p>
+              <Button
+                variant="outline"
+                className="mt-4"
+                onClick={handleIsCreateWorkSample}
+              >
+                Create New Work Sample
+              </Button>
             </div>
           )}
 
@@ -245,7 +254,13 @@ const VendorWorkSample = ({ handleIsCreateWorkSample , handleIsWorkSampleEditing
           />
         </>
       )}
-      <ReusableAlertDialog confirmLabel="Delete" onCancel={handleOnCancelWorkSample} onConfirm={handleOnSuccessDeleteWorkSample} open = {isWorkSampleDelete} confirmVariant="destructive"/>
+      <ReusableAlertDialog 
+        confirmLabel="Delete" 
+        onCancel={handleOnCancelWorkSample} 
+        onConfirm={handleOnSuccessDeleteWorkSample} 
+        open={isWorkSampleDelete} 
+        confirmVariant="destructive"
+      />
     </div>
   );
 };

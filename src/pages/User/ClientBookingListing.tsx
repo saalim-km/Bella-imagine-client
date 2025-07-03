@@ -40,6 +40,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { PaymentStatus, TBookingStatus } from "@/types/interfaces/Payment";
 import { communityToast } from "@/components/ui/community-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { handleError } from "@/utils/Error/error-handler.utils";
 
 interface FilterState {
   status: string;
@@ -224,14 +225,16 @@ export default function ClientBookingList({
         { bookingId, status },
         {
           onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: ["photographer"]});
+            queryClient.invalidateQueries({ queryKey: ["paginated-booking"]});
             communityToast.success({
               title: "Photography Session cancelled",
               description:
                 "Refund amount will be credited to your wallet within 24hrs",
             });
           },
-          onError: (error: any) => toast.error(error.response.data.message),
+          onError: (error: any) => {
+            handleError(error)
+          },
         }
       );
     }

@@ -133,7 +133,6 @@ const WorkSampleUpload = ({
   handleCancelCreatingWorkSample,
   workSampleData,
 }: WorkSampleUploadProps) => {
-  // Initialize with workSampleData if editing, otherwise empty
   const initialMediaKeys = useMemo(
     () => workSampleData?.media?.map(extractS3KeyFromUrl) || [],
     [workSampleData?.media]
@@ -321,7 +320,7 @@ const WorkSampleUpload = ({
         updateWorkSample(formDataToSubmit as unknown as IWorkSampleRequest, {
           onSuccess: (data) => {
             communityToast.success({ title: data?.message });
-            queryClient.invalidateQueries({ queryKey: ["vendor-worksamples"] });
+            queryClient.invalidateQueries({ queryKey: ["worksamples"] });
             handleCancelCreatingWorkSample();
           },
           onError: (err) => {
@@ -349,7 +348,7 @@ const WorkSampleUpload = ({
               tags: [],
               isPublished: false,
             });
-            queryClient.invalidateQueries({ queryKey: ["worksamples"] });
+            queryClient.invalidateQueries({ queryKey: ["worksamples"]});
             handleCancelCreatingWorkSample();
           },
           onError: (err) => {

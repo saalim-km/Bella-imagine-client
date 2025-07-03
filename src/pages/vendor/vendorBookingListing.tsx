@@ -39,9 +39,9 @@ import { debounce } from "lodash";
 import { TRole } from "@/types/interfaces/User";
 import Pagination from "@/components/common/Pagination";
 import { Spinner } from "@/components/ui/spinner";
-import { PaymentStatus, TBookingStatus } from "@/types/interfaces/Payment";
 import { communityToast } from "@/components/ui/community-toast";
 import { BookingList } from "../User/ClientBookingListing";
+import { handleError } from "@/utils/Error/error-handler.utils";
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component<
@@ -217,9 +217,7 @@ export default function VendorBookingList({
         {
           onSuccess: (data) => communityToast.success({ title: data?.message }),
           onError: (error: any) =>
-            toast.error(
-              error.response?.data.message || "Failed to update status"
-            ),
+            handleError(error)
         }
       );
     }

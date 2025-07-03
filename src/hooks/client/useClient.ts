@@ -51,7 +51,6 @@ export const useGetPhotographerDetailsClient = (input : GetVendorDetails , vendo
   return useQuery({
     queryKey : ["photographer",vendorId,input],
     queryFn : ()=> getPhotographerDetailsClient(input,vendorId),
-    staleTime : 1000 * 60 * 5, // 15 minutes
     enabled : input.enabled
   })
 }
@@ -60,7 +59,6 @@ export const useGetServiceQueryClient = (id : string , enabled : boolean)=> {
   return useQuery({
     queryKey : ["service",id],
     queryFn : ()=> getServiceClient(id),
-    staleTime : 1000 * 60 * 5, // 15 minutes
     enabled : enabled
   })
 }
