@@ -66,8 +66,6 @@ const transformWorkSamplesToHeroPosts = (photographers: any[]) => {
             content: workSample.description || "Explore this amazing photography work...",
             media: workSample.media.filter(Boolean), // Remove any null/undefined media
             mediaType: "image",
-            likeCount: Math.floor(Math.random() * 100) + 20,
-            commentCount: Math.floor(Math.random() * 30) + 5,
             tags: Array.isArray(workSample.tags) ? workSample.tags : [],
             photographer: {
               name: photographer.name || "Professional Photographer",
@@ -292,14 +290,6 @@ export default function CommunityHome() {
                   isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
                 }`}
               >
-                <div className="flex items-center gap-2 text-white/80">
-                  <Users className="w-4 h-4" />
-                  <span>{currentPost?.likeCount || 0} likes</span>
-                </div>
-                <div className="flex items-center gap-2 text-white/80">
-                  <Camera className="w-4 h-4" />
-                  <span>{currentPost?.commentCount || 0} comments</span>
-                </div>
                 {currentPost?.service?.sessionDurations?.durationInHours && (
                   <div className="flex items-center gap-2 text-white/80">
                     <Clock className="w-4 h-4" />

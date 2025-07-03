@@ -21,7 +21,7 @@ import {
   useCreatePostVendor,
   useGetAllCommunitiesClient,
   useGetAllCommunitiesVendor,
-} from "@/hooks/community-contest/useCommunity";
+} from "@/hooks/community/useCommunity";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { communityToast } from "../ui/community-toast";
 import { handleError } from "@/utils/Error/error-handler.utils";

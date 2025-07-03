@@ -30,7 +30,7 @@ vendorAxiosInstance.interceptors.response.use(
 
           toast.info("Please login again");
           localStorage.removeItem("vendorSession");
-          // window.location.href = "/";
+          window.location.href = "/";
           return Promise.reject(refreshError);
         }
       }
@@ -43,7 +43,7 @@ vendorAxiosInstance.interceptors.response.use(
         !originalRequest._retry)
     ) {
       localStorage.removeItem("vendorSession");
-      // window.location.href = "/";
+      window.location.href = "/";
       toast.info("Please login again");
       return Promise.reject(error);
     }

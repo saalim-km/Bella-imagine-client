@@ -1,4 +1,4 @@
-import { useGetCommunityMembers } from "@/hooks/community-contest/useCommunity";
+import { useGetCommunityMembers } from "@/hooks/community/useCommunity";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 

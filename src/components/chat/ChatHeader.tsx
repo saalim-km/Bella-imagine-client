@@ -35,26 +35,6 @@ export function ChatHeader({ user }: ChatHeaderProps) {
           </p>
         </div>
       </div>
-      <div className="flex items-center space-x-2">
-        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-          <Phone size={20} />
-        </Button>
-        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-          <Video size={20} />
-        </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-              <MoreVertical size={20} />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Contact</DropdownMenuItem>
-            <DropdownMenuItem>Clear Chat</DropdownMenuItem>
-            <DropdownMenuItem>Block</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
     </div>
   );
 }

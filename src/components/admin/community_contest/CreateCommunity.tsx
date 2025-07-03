@@ -9,7 +9,7 @@ import * as Yup from "yup";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Link, useNavigate } from "react-router-dom";
-import { useCreateCommunityMutation } from "@/hooks/community-contest/useCommunity";
+import { useCreateCommunityMutation } from "@/hooks/community/useCommunity";
 import { Community } from "@/types/interfaces/Community";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";

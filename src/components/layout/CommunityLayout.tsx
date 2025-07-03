@@ -7,7 +7,7 @@ import { useAllVendorsListQueryClient } from "@/hooks/client/useClient";
 import {
   useGetAllCommunitiesClient,
   useGetAllCommunitiesVendor,
-} from "@/hooks/community-contest/useCommunity";
+} from "@/hooks/community/useCommunity";
 import { useAllVendorsListQueryVendor } from "@/hooks/vendor/useVendor";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";

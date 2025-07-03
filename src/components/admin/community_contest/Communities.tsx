@@ -13,7 +13,7 @@ import { Community, CommunityResponse } from "@/types/interfaces/Community";
 import {
   useDeleteCommunity,
   useGetlAllCommunityAdmin,
-} from "@/hooks/community-contest/useCommunity";
+} from "@/hooks/community/useCommunity";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { debounce } from "lodash";

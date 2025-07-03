@@ -13,7 +13,7 @@ import {
   useGetCommunityBySlugQueryVendor,
   useJoinCommunity,
   useLeaveCommunity,
-} from "@/hooks/community-contest/useCommunity"
+} from "@/hooks/community/useCommunity"
 import { CommunityHeader } from "@/components/community-contest/CommunityHeader"
 import { handleError } from "@/utils/Error/error-handler.utils"
 import { useQueryClient } from "@tanstack/react-query"
@@ -137,7 +137,7 @@ const CommunityDetailPage = () => {
                     About
                   </TabsTrigger>
                 </TabsList>
-
+{/* 
                 {community.isMember && (
                   <Button variant="outline" size="sm" className="hidden sm:flex items-center" asChild>
                     <Link to={`/communities/${community.community._id}/chat`}>
@@ -145,7 +145,7 @@ const CommunityDetailPage = () => {
                       Chat Room
                     </Link>
                   </Button>
-                )}
+                )} */}
               </div>
 
               <TabsContent value="posts">

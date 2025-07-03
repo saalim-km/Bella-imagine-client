@@ -8,7 +8,7 @@ import { Heart, MessageSquare, Share2, MoreHorizontal, Loader2, ChevronUp, Chevr
 import { Button } from "@/components/ui/button"
 import { formatDistanceToNow } from "date-fns"
 import CommunityLayout from "@/components/layout/CommunityLayout"
-import { useAddComment, useGetPostDetailsClient, useGetPostDetailsVendor } from "@/hooks/community-contest/useCommunity"
+import { useAddComment, useGetPostDetailsClient, useGetPostDetailsVendor } from "@/hooks/community/useCommunity"
 import { LoadingBar } from "@/components/ui/LoadBar"
 import { Textarea } from "@/components/ui/textarea"
 import { communityToast } from "@/components/ui/community-toast"

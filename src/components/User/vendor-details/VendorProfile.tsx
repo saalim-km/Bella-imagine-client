@@ -149,7 +149,7 @@ export function VendorProfile({ vendor }: VendorProfileProps) {
                   fallbackType="profile"
                 />
                 {vendor?.isVerified === "accept" && (
-                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2">
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
                     <Badge className="bg-orange-500 text-white border-0 shadow-lg px-3 py-1 flex items-center">
                       <Award className="w-3 h-3 mr-1" />
                       Verified Pro

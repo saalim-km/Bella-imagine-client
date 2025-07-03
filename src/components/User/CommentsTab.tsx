@@ -8,7 +8,7 @@ import { Edit, Trash2, MessageSquare, ExternalLink, Calendar, User } from "lucid
 import { formatDistanceToNow } from "date-fns"
 import Pagination from "../common/Pagination"
 import type { IComment } from "@/types/interfaces/Community"
-import { useGetCommentsForClient, useGetCommentsForVendor } from "@/hooks/community-contest/useCommunity"
+import { useGetCommentsForClient, useGetCommentsForVendor } from "@/hooks/community/useCommunity"
 import { EditCommentModal } from "../modals/EditComment"
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue"
 import { Link } from "react-router-dom"

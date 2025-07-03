@@ -16,13 +16,13 @@ import {
 } from "@/store/slices/communityDetailsSlice"
 import PostCard from "../PostCard"
 import PostSkeleton from "../PostSkeleton"
-import useInfiniteScroll from "../useInfiniteScroll"
+import useInfiniteScroll from "../../../hooks/community/useInfiniteScroll"
 import { useSocket } from "@/context/SocketContext"
 import { communityToast } from "@/components/ui/community-toast"
 import type { ICommunityPostResponse } from "@/components/User/Home"
 import type { RootState, AppDispatch } from "@/store/store"
 import { useQueryClient } from "@tanstack/react-query"
-import { useGetAllPostForClient, useGetAllPostForVendor, useGetCommunityPostsClient } from "@/hooks/community-contest/useCommunity"
+import { useGetAllPostForClient, useGetAllPostForVendor, useGetCommunityPostsClient } from "@/hooks/community/useCommunity"
 
 interface PostsTabProps {
   isMember: boolean
