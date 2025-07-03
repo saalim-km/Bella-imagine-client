@@ -1,117 +1,161 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Edit, Trash2, MessageSquare, ExternalLink, Calendar, User } from "lucide-react"
-import { formatDistanceToNow } from "date-fns"
-import Pagination from "../common/Pagination"
-import type { IComment } from "@/types/interfaces/Community"
-import { useGetCommentsForClient, useGetCommentsForVendor } from "@/hooks/community/useCommunity"
-import { EditCommentModal } from "../modals/EditComment"
-import { ReusableAlertDialog } from "@/components/common/AlertDialogue"
-import { Link } from "react-router-dom"
-
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Edit,
+  Trash2,
+  MessageSquare,
+  ExternalLink,
+  Calendar,
+  User,
+} from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import Pagination from "../common/Pagination";
+import type { IComment, ICommentResponse } from "@/types/interfaces/Community";
+import {
+  useDeleteComment,
+  useEditComment,
+  useGetCommentsForClient,
+  useGetCommentsForVendor,
+} from "@/hooks/community/useCommunity";
+import { EditCommentModal } from "../modals/EditComment";
+import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import {
+  deleteCommentClient,
+  deleteCommentVendor,
+  editCommentByClient,
+  editCommentByVendor,
+} from "@/services/community/communityService";
+import { communityToast } from "../ui/community-toast";
+import { handleError } from "@/utils/Error/error-handler.utils";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CommentsTabProps {
-  userRole: "client" | "vendor"
+  userRole: "client" | "vendor";
 }
 
 export function CommentsTab({ userRole }: CommentsTabProps) {
+  const user = useSelector((state: RootState) => {
+    if (state.client.client) return state.client.client;
+    if (state.vendor.vendor) return state.vendor.vendor;
+    return undefined;
+  });
+
+  if (!user) {
+    return (
+      <p>
+        user not found please try again later , or please relogin to continue
+      </p>
+    );
+  }
   const [queryData, setQueryData] = useState<{ page: number; limit: number }>({
     limit: 6,
     page: 1,
-  })
+  });
 
-  const [editingComment, setEditingComment] = useState<IComment | null>(null)
-  const [deletingComment, setDeletingComment] = useState<IComment | null>(null)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [isEditLoading, setIsEditLoading] = useState(false)
+  const [editingComment, setEditingComment] = useState<IComment | null>(null);
+  const [deletingComment, setDeletingComment] = useState<IComment | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditLoading, setIsEditLoading] = useState(false);
+  const queryCLient = useQueryClient()
+  const mutateFnForCommentEdit =
+    user.role === "client" ? editCommentByClient : editCommentByVendor;
+  const { mutate: editComment } = useEditComment(mutateFnForCommentEdit);
+  const mutateFnForDeleteComment = user.role === 'client' ? deleteCommentClient : deleteCommentVendor
+  const {mutate : deleteComment} = useDeleteComment(mutateFnForDeleteComment)
 
   const {
     data: clientData,
     isLoading: isClientLoading,
     isError: isClientError,
-  } = useGetCommentsForClient({ ...queryData, enabled: userRole === "client" })
+  } = useGetCommentsForClient({ ...queryData, enabled: userRole === "client" });
 
   const {
     data: vendorData,
     isLoading: isVendorLoading,
     isError: isVendorError,
-  } = useGetCommentsForVendor({ ...queryData, enabled: userRole === "vendor" })
+  } = useGetCommentsForVendor({ ...queryData, enabled: userRole === "vendor" });
 
   // Use real data if available, otherwise fall back to mock data
-  const commentsData = clientData?.data.data ? clientData.data : vendorData?.data
-  const comments = commentsData?.data || []
-  const totalComments = commentsData?.total || 0
-  const totalPages = Math.ceil(totalComments / queryData.limit)
+  const commentsData = clientData?.data.data
+    ? clientData.data
+    : vendorData?.data;
+  const comments = commentsData?.data || [];
+  const totalComments = commentsData?.total || 0;
+  const totalPages = Math.ceil(totalComments / queryData.limit);
 
-  const isLoading = isClientLoading || isVendorLoading
-  const isError = isClientError || isVendorError
+  const isLoading = isClientLoading || isVendorLoading;
+  const isError = isClientError || isVendorError;
 
-  const handleEditComment = (comment: IComment) => {
-    setEditingComment(comment)
-    setIsEditModalOpen(true)
-  }
+  const handleEditComment = (comment: ICommentResponse) => {
+    setEditingComment(comment);
+    setIsEditModalOpen(true);
+  };
 
-  const handleDeleteComment = (comment: IComment) => {
-    setDeletingComment(comment)
-    setIsDeleteDialogOpen(true)
-  }
+  const handleDeleteComment = (comment: ICommentResponse) => {
+    setDeletingComment(comment);
+    setIsDeleteDialogOpen(true);
+  };
 
   const handleSaveEdit = async (commentId: string, newContent: string) => {
-    setIsEditLoading(true)
-    try {
-      // TODO: Implement actual API call to update comment
-      console.log("Updating comment:", commentId, "with content:", newContent)
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Update local state or refetch data
-      // You would typically call your update comment API here
-    } catch (error) {
-      console.error("Failed to update comment:", error)
-      throw error
-    } finally {
-      setIsEditLoading(false)
-    }
-  }
+    setIsEditLoading(true);
+    editComment(
+      { commentId: commentId, content: newContent },
+      {
+        onSuccess: (data) => {
+          queryCLient.invalidateQueries({queryKey : ['comments']})
+          communityToast.success({
+            title: data.message,
+            description: "Your comment has been updated successfully.",
+          });
+        },
+        onError: (err) => {
+          handleError(err);
+        },
+      }
+    );
+    setIsEditLoading(false);
+  };
 
   const handleConfirmDelete = async () => {
-    if (!deletingComment) return
+    if (!deletingComment) return;
 
-    try {
-      // TODO: Implement actual API call to delete comment
-      console.log("Deleting comment:", deletingComment._id)
+    deleteComment(deletingComment._id!,{
+      onSuccess : (data)=> {
+        queryCLient.invalidateQueries({queryKey : ['comments']})
+        communityToast.success({
+            title: data.message,
+            description: "Your comment has been deleted successfully.",
+        });
+      },
+      onError : (err)=> {
+        handleError(err)
+      }
+    })
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      // Update local state or refetch data
-      // You would typically call your delete comment API here
-    } catch (error) {
-      console.error("Failed to delete comment:", error)
-    } finally {
-      setIsDeleteDialogOpen(false)
-      setDeletingComment(null)
-    }
-  }
+      setIsDeleteDialogOpen(false);
+      setDeletingComment(null);
+  };
 
   const handlePageChange = (newPage: number) => {
-    setQueryData((prev) => ({ ...prev, page: newPage }))
-  }
+    setQueryData((prev) => ({ ...prev, page: newPage }));
+  };
 
   const truncateContent = (content: string, maxLength = 200) => {
-    if (content.length <= maxLength) return content
-    return content.substring(0, maxLength) + "..."
-  }
+    if (content.length <= maxLength) return content;
+    return content.substring(0, maxLength) + "...";
+  };
 
-  const getPostReference = (comment: IComment) => {
-    return comment.post && comment.post.length > 0 ? comment.post[0] : null
-  }
+  const getPostReference = (comment: ICommentResponse) => {
+    return comment.post && comment.post.length > 0 ? comment.post[0] : null;
+  };
 
   if (isLoading) {
     return (
@@ -126,21 +170,25 @@ export function CommentsTab({ userRole }: CommentsTabProps) {
           </Card>
         ))}
       </div>
-    )
+    );
   }
 
   if (isError) {
     return (
       <Card className="p-8 text-center bg-background border-destructive/20">
         <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-destructive">Error loading comments</h3>
-          <p className="text-muted-foreground">Something went wrong. Please try again later.</p>
+          <h3 className="text-lg font-semibold text-destructive">
+            Error loading comments
+          </h3>
+          <p className="text-muted-foreground">
+            Something went wrong. Please try again later.
+          </p>
           <Button variant="outline" onClick={() => window.location.reload()}>
             Retry
           </Button>
         </div>
       </Card>
-    )
+    );
   }
 
   return (
@@ -168,38 +216,51 @@ export function CommentsTab({ userRole }: CommentsTabProps) {
             </div>
             <h3 className="text-xl font-semibold">No comments yet</h3>
             <p className="text-muted-foreground max-w-md mx-auto">
-              You haven't made any comments yet. Start engaging with the community by commenting on posts!
+              You haven't made any comments yet. Start engaging with the
+              community by commenting on posts!
             </p>
           </div>
         </Card>
       ) : (
         <div className="space-y-4">
           {comments.map((comment) => {
-            const postRef = getPostReference(comment)
+            const postRef = getPostReference(comment);
             return (
-              <Card key={comment._id?.toString()} className="overflow-hidden bg-background border-border">
+              <Card
+                key={comment._id?.toString()}
+                className="overflow-hidden bg-background border-border"
+              >
                 <div className="p-4 space-y-4">
                   {/* Comment Content */}
                   <div className="space-y-3">
-                    <p className="text-sm leading-relaxed text-foreground">{truncateContent(comment.content)}</p>
+                    <p className="text-sm leading-relaxed text-foreground">
+                      {truncateContent(comment.content)}
+                    </p>
 
                     {/* Comment Metadata */}
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
                         <span>
-                          {formatDistanceToNow(new Date(comment.createdAt || new Date()), { addSuffix: true })}
+                          {formatDistanceToNow(
+                            new Date(comment.createdAt || new Date()),
+                            { addSuffix: true }
+                          )}
                         </span>
                       </div>
                       <div className="flex items-center gap-1">
                         <User className="w-3 h-3" />
                         <span>{comment.userType}</span>
                       </div>
-                      {comment.updatedAt && comment.updatedAt !== comment.createdAt && (
-                        <Badge variant="outline" className="text-xs px-1 py-0 h-4">
-                          Edited
-                        </Badge>
-                      )}
+                      {comment.updatedAt &&
+                        comment.updatedAt !== comment.createdAt && (
+                          <Badge
+                            variant="outline"
+                            className="text-xs px-1 py-0 h-4"
+                          >
+                            Edited
+                          </Badge>
+                        )}
                     </div>
                   </div>
 
@@ -209,13 +270,20 @@ export function CommentsTab({ userRole }: CommentsTabProps) {
                       <div className="space-y-2">
                         <div className="flex items-start justify-between gap-2">
                           <div className="space-y-1 flex-1">
-                            <h4 className="text-sm font-medium text-foreground line-clamp-1">{postRef.title}</h4>
-                            <p className="text-xs text-muted-foreground line-clamp-2">{postRef.content}</p>
+                            <h4 className="text-sm font-medium text-foreground line-clamp-1">
+                              {postRef.title}
+                            </h4>
+                            <p className="text-xs text-muted-foreground line-clamp-2">
+                              {postRef.content}
+                            </p>
                           </div>
-                          <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-muted-foreground">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 text-muted-foreground"
+                          >
                             <Link to={`/post/${comment.postId}`}>
-                            <ExternalLink className="w-3 h-3" />
-
+                              <ExternalLink className="w-3 h-3" />
                             </Link>
                           </Button>
                         </div>
@@ -233,7 +301,10 @@ export function CommentsTab({ userRole }: CommentsTabProps) {
                               </Badge>
                             ))}
                             {postRef.tags.length > 3 && (
-                              <Badge variant="outline" className="text-xs px-2 py-0 h-4">
+                              <Badge
+                                variant="outline"
+                                className="text-xs px-2 py-0 h-4"
+                              >
                                 +{postRef.tags.length - 3}
                               </Badge>
                             )}
@@ -272,7 +343,7 @@ export function CommentsTab({ userRole }: CommentsTabProps) {
                   </div>
                 </div>
               </Card>
-            )
+            );
           })}
         </div>
       )}
@@ -280,7 +351,11 @@ export function CommentsTab({ userRole }: CommentsTabProps) {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center pt-4">
-          <Pagination currentPage={queryData.page} onPageChange={handlePageChange} totalPages={totalPages} />
+          <Pagination
+            currentPage={queryData.page}
+            onPageChange={handlePageChange}
+            totalPages={totalPages}
+          />
         </div>
       )}
 
@@ -303,10 +378,10 @@ export function CommentsTab({ userRole }: CommentsTabProps) {
         cancelLabel="Cancel"
         onConfirm={handleConfirmDelete}
         onCancel={() => {
-          setIsDeleteDialogOpen(false)
-          setDeletingComment(null)
+          setIsDeleteDialogOpen(false);
+          setDeletingComment(null);
         }}
       />
     </div>
-  )
+  );
 }

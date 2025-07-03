@@ -38,36 +38,6 @@ export interface CommunityResponse {
   updatedAt?: string;
 }
 
-export interface IPostRequest {
-  _id: string;
-  communityId: string;
-  userId : string;
-  title: string;
-  content: string;
-  media?: string[];
-  voteUpCount: number;
-  voteDownCount: number;
-  commentCount: number;
-  tags?: string[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface IPostResponse {
-  _id: string;
-  communityId: string;
-  userId : IClient;
-  title: string;
-  content: string;
-  media?: string[];
-  voteUpCount: number;
-  voteDownCount: number;
-  commentCount: number;
-  tags?: string[];
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface CommunityBySlugResponse {
   community: CommunityResponse;
   isMember: boolean;
@@ -111,9 +81,7 @@ export interface IComment {
   updatedAt?: Date
 }
 
-export interface ICommentResponse {
-  
-}
+
 
 export interface GetAllPostInput {
   page : number;
@@ -151,4 +119,14 @@ export interface GetCommentsInput {
   page : number;
   limit : number;
   enabled : boolean
+}
+
+export interface ICommentResponse extends IComment {
+  post : PostDetailsResponse[]
+  userType : string
+}
+
+export interface EditCommentInput {
+  commentId : string;
+  content : string
 }

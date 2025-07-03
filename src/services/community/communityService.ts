@@ -1,7 +1,7 @@
 import { adminAxiosInstance } from "@/api/admin.axios";
 import { clientAxiosInstance } from "@/api/client.axios";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
-import { AddCommentInput, Community, CommunityBySlugResponse, CommunityResponse, CreatePostInput, GetAllPostInput, GetCommentsInput, GetCommMemberInput, IComment, PostDetailsInput, PostDetailsResponse } from "@/types/interfaces/Community";
+import { AddCommentInput, Community, CommunityBySlugResponse, CommunityResponse, CreatePostInput, EditCommentInput, GetAllPostInput, GetCommentsInput, GetCommMemberInput, IComment, ICommentResponse, PostDetailsInput, PostDetailsResponse } from "@/types/interfaces/Community";
 import { PaginatedResponse } from "@/types/interfaces/vendor";
 import { BasePaginatedResponse, IClient } from "../client/clientService";
 import { ICommunityPostResponse } from "@/components/User/Home";
@@ -134,8 +134,18 @@ export const addCommentServiceClient = async(input : AddCommentInput) : Promise<
   return response.data
 }
 
-export const getAllCommentsByClient = async (input : GetCommentsInput) : Promise<BasePaginatedResponse<PaginatedResponse<IComment>>> => {
+export const getAllCommentsByClient = async (input : GetCommentsInput) : Promise<BasePaginatedResponse<PaginatedResponse<ICommentResponse>>> => {
   const response = await clientAxiosInstance.get('/client/comment',{params : input})
+  return response.data;
+}
+
+export const editCommentByClient = async (input : EditCommentInput) : Promise<ApiResponse>=> {
+  const response = await clientAxiosInstance.patch('/client/comment',input)
+  return response.data
+}
+
+export const deleteCommentClient = async(commentId : string) : Promise<ApiResponse> => {
+  const response = await clientAxiosInstance.delete(`/client/comment/${commentId}`)
   return response.data;
 }
 
@@ -199,7 +209,17 @@ export const addCommentServiceVendor = async(input : AddCommentInput) : Promise<
   return response.data
 }
 
-export const getAllCommentsByVendor = async (input : GetCommentsInput) : Promise<BasePaginatedResponse<PaginatedResponse<IComment>>> => {
+export const getAllCommentsByVendor = async (input : GetCommentsInput) : Promise<BasePaginatedResponse<PaginatedResponse<ICommentResponse>>> => {
   const response = await vendorAxiosInstance.get('/vendor/comment',{params : input})
+  return response.data;
+}
+
+export const editCommentByVendor = async (input : EditCommentInput) : Promise<ApiResponse>=> {
+  const response = await vendorAxiosInstance.patch('/vendor/comment',input)
+  return response.data
+}
+
+export const deleteCommentVendor = async(commentId : string) : Promise<ApiResponse> => {
+  const response = await vendorAxiosInstance.delete(`/vendor/comment/${commentId}`)
   return response.data;
 }

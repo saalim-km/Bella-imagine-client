@@ -1,8 +1,8 @@
-import { addCommentServiceClient, createCommunityService, createPostServiceClient, createPostServiceVendor, deleteCommunityService, getAllCommentsByClient, getAllCommentsByVendor, getAllCommunitesAdmin, getAllCommunitiesClient, getAllCommunitiesVendor,  getAllPostServiceClient, getAllPostServiceVendor,  getCommunityBySlugForClient, getCommunityBySlugForVendor, getCommunityBySlugService, getCommunityMemersAdmin, getPostDetailsClient, getPostDetailsVendor, joinCommunityServiceClient, leaveCommunityServiceClient, updateCommunityService } from "@/services/community/communityService"
+import { createCommunityService, createPostServiceClient, createPostServiceVendor, deleteCommunityService, getAllCommentsByClient, getAllCommentsByVendor, getAllCommunitesAdmin, getAllCommunitiesClient, getAllCommunitiesVendor,  getAllPostServiceClient, getAllPostServiceVendor,  getCommunityBySlugForClient, getCommunityBySlugForVendor, getCommunityBySlugService, getCommunityMemersAdmin, getPostDetailsClient, getPostDetailsVendor, joinCommunityServiceClient, leaveCommunityServiceClient, updateCommunityService } from "@/services/community/communityService"
 
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { ApiResponse } from "../vendor/useVendor"
-import { AddCommentInput, GetAllPostInput, GetCommentsInput, GetCommMemberInput, PostDetailsInput } from "@/types/interfaces/Community"
+import { AddCommentInput, EditCommentInput, GetAllPostInput, GetCommentsInput, GetCommMemberInput, PostDetailsInput } from "@/types/interfaces/Community"
 
 export const useCreateCommunityMutation = ()=> {
     return useMutation({
@@ -92,7 +92,6 @@ export const useCreatePostClient = ()=> {
     })
 }
 
-// explore page hook for client
 export const useGetAllPostForClient = (
     input: GetAllPostInput,
 ) => {
@@ -135,6 +134,17 @@ export const useGetCommentsForClient = (input : GetCommentsInput)=> {
     })
 }
 
+export const useEditComment = (mutateFn : (input : EditCommentInput)=> Promise<ApiResponse>) => {
+    return useMutation({
+        mutationFn : mutateFn
+    })
+}
+
+export const useDeleteComment = (mutateFn : (commentId : string)=> Promise<ApiResponse>)=> {
+    return useMutation({
+        mutationFn : mutateFn
+    })
+}
 
 // ------------------------Vendor hooks for community --------------------------------------------------
 export const useGetAllPostForVendor = (

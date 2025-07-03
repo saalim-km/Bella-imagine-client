@@ -3,9 +3,9 @@ import { lazy, Suspense } from "react";
 import { AuthClientRoute } from "@/protected/ProtectedRoute";
 import { NoClientAuthRoute } from "@/protected/PublicRoute";
 import { Client404 } from "@/components/404/Client404";
-import ExplorePage from "@/pages/community-contest/ExplorePage";
+import ExplorePage from "@/pages/community/ExplorePage";
 import { LoadingBar } from "@/components/ui/LoadBar";
-import PostDetailPage from "@/pages/community-contest/PostDetailPage";
+import PostDetailPage from "@/pages/community/PostDetailPage";
 
 // Lazy load all components
 const ClientHomePage = lazy(() => import("@/pages/User/UserHomePage"));
@@ -18,10 +18,10 @@ const ForgotPassPage = lazy(() => import("@/pages/User/ForgotPassPage"));
 const BookingServicePage = lazy(() => import("@/pages/User/BookingServicePage"));
 const ChatPage = lazy(() => import("@/pages/chat/ChatPage"));
 // const CommunityHomePage = lazy(() => import("@/pages/community-contest/CommunityHomePage"));
-const CommunityDetailPage = lazy(() => import("@/pages/community-contest/CommunityDetailPage"));
-const CreatePostPage = lazy(() => import("@/pages/community-contest/CreatePostPage"));
+const CommunityDetailPage = lazy(() => import("@/pages/community/CommunityDetailPage"));
+const CreatePostPage = lazy(() => import("@/pages/community/CreatePostPage"));
 const VendorDetailsPage = lazy(() => import("@/pages/User/VendorDetailsPage"));
-const Communities = lazy(() => import("@/pages/community-contest/Communities"));
+const Communities = lazy(() => import("@/pages/community/Communities"));
 
 const ClientRoute = () => {
   return (
