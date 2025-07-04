@@ -1,4 +1,4 @@
-import EditCommunityForm  from "@/components/admin/community_contest/EditCommunity";
+import EditCommunityForm  from "@/components/admin/community/EditCommunity";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Spinner } from "@/components/ui/spinner";
 import { useGetCommunityBySlug } from "@/hooks/community/useCommunity";

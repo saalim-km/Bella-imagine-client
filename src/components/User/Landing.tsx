@@ -142,8 +142,8 @@ const Landing = () => {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button
               size="lg"
-              onClick={() => navigate("/register")}
-              className="bg-orange-700 hover:bg-pink-700 transition-colors"
+              onClick={() => navigate("/signup")}
+              className="bg-orange-700 hover:bg-orange-800 transition-colors"
             >
               Get Started - It's Free
             </Button>

@@ -4,7 +4,6 @@ import {
 } from "@/hooks/admin/useAllCategory";
 import { DataTable, ColumnDef } from "@/components/common/Table";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { Badge } from "@/components/ui/badge";
 import { ICategoryRequest } from "@/services/categories/categoryService";
@@ -125,7 +124,7 @@ const CategoryRequest = () => {
     <div className="p-4">
       <h2 className="text-xl font-bold mb-4">Category Join Requests</h2>
       <DataTable
-        data={categoryRequests as ICategoryRequest[]}
+        data={categoryRequests as unknown as  ICategoryRequest[]}
         columns={columns}
         totalPages={totalPages}
         currentPage={currPage}

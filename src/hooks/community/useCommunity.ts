@@ -5,7 +5,6 @@ import { ApiResponse } from "../vendor/useVendor"
 import { AddCommentInput, EditCommentInput, GetAllPostInput, GetAllPostUserInput, GetCommentsInput, GetCommMemberInput, GetPostForUserOutput, PostDetailsInput } from "@/types/interfaces/Community"
 import { BasePaginatedResponse } from "@/services/client/clientService"
 import { PaginatedResponse } from "@/types/interfaces/vendor"
-import { ICommunityPost } from "@/components/User/Home"
 
 export const useCreateCommunityMutation = ()=> {
     return useMutation({
