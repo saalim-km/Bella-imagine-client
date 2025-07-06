@@ -1,6 +1,5 @@
 import { ICommunityPostResponse } from "@/components/User/Home";
 import { Category } from "@/services/categories/categoryService";
-import { IClient } from "@/services/client/clientService";
 
 export interface Community {
   _id: string;

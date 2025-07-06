@@ -5,7 +5,6 @@ import {
   Star,
   Award,
   ArrowRight,
-  Users,
   Calendar,
   MessageSquare,
   Loader2,

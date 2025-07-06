@@ -146,7 +146,7 @@ export const ServiceForm = ({
       } else {
         values.isPublished = true;
         addNewService(values, {
-          onSuccess: (data) => {
+          onSuccess: () => {
             handleIsCreatingService(false);
             localStorage.removeItem("serviceDraft");
             queryClient.invalidateQueries({ queryKey: ['vendor_services'] });
@@ -233,6 +233,7 @@ export const ServiceForm = ({
           toast.error("Please correct the errors before proceeding");
         }
       } catch (error) {
+        handleError(error)
         toast.error("An error occurred during validation");
       } finally {
         setIsValidating(false);
@@ -327,7 +328,7 @@ export const ServiceForm = ({
         }
         return false;
       })
-      .map(([_, error]) => error)
+      .map(([error]) => error)
       .filter((error) => error && typeof error === "string"); // Ensure we only include string errors
 
     if (errors.length === 0) return null;
@@ -464,7 +465,7 @@ export const ServiceForm = ({
               hasChanged = true;
             }
           } catch (error) {
-            // Keep the error if validation fails
+            console.log(error);
           }
         }
       });

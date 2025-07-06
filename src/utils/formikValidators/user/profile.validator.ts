@@ -11,7 +11,7 @@ export const clientProfileSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email address"),
   phoneNumber: Yup.string()
     .matches(
-      /^(\+91[\-\s]?)?[6-9]\d{9}$/,
+      /^(\+91[\s]?)?[6-9]\d{9}$/,
       "Phone number must be a valid Indian number"
     )
     .optional(),

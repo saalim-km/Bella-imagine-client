@@ -5,7 +5,6 @@ import {
   DollarSign,
   Layers,
   LayoutDashboard,
-  Settings,
   Tag,
   Users,
 } from "lucide-react";

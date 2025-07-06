@@ -2,19 +2,18 @@ import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Search, Star, StarOff, Pencil, Trash2 } from "lucide-react";
+import { Plus, Search , Pencil, } from "lucide-react";
 import { BigModal } from "@/components/modals/BigModalReusable";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, type ColumnDef } from "@/components/common/Table";
 import { ReusableDropdown } from "@/components/common/ReusableDropdown";
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
 import { Link } from "react-router-dom";
-import { Community, CommunityResponse } from "@/types/interfaces/Community";
+import { CommunityResponse } from "@/types/interfaces/Community";
 import {
   useDeleteCommunity,
   useGetlAllCommunityAdmin,
 } from "@/hooks/community/useCommunity";
-import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { debounce } from "lodash";
 import { communityToast } from "@/components/ui/community-toast";
@@ -28,9 +27,8 @@ export default function Communities() {
     null
   );
   const [viewDetailsOpen, setViewDetailsOpen] = useState(false);
-  const [selectedCommunity, setSelectedCommunity] = useState<CommunityResponse | null>(
-    null
-  );
+  const [selectedCommunity, setSelectedCommunity] =
+    useState<CommunityResponse | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   const itemsPerPage = 4;
@@ -56,10 +54,6 @@ export default function Communities() {
     []
   );
 
-  const handleDeleteClick = (communityId: string) => {
-    setCommunityToDelete(communityId);
-    setDeleteDialogOpen(true);
-  };
 
   const handleViewDetails = (community: CommunityResponse) => {
     setSelectedCommunity(community);
@@ -69,8 +63,8 @@ export default function Communities() {
   const handleDeleteCommunity = () => {
     deleteCommunity(communityToDelete as string, {
       onSuccess: (data) => {
-                  communityToast.success({title : data?.message});
-        
+        communityToast.success({ title: data?.message });
+
         setCommunityToDelete(null);
         refetchCommunities();
       },
@@ -299,8 +293,9 @@ export default function Communities() {
                     <li key={index}>{rule}</li>
                   ))}
                 </ul>
-                                <p className="font-semibold mb-2 my-4">Category : {selectedCommunity.category.title}</p>
-
+                <p className="font-semibold mb-2 my-4">
+                  Category : {selectedCommunity.category.title}
+                </p>
               </div>
             )}
 

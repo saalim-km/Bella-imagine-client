@@ -17,7 +17,6 @@ import {
   useVendorDetailsQuery,
 } from "@/hooks/vendor/useVendor";
 import type { IProfileUpdate } from "@/types/interfaces/User";
-import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { VendorCategoryModal } from "@/components/modals/VendorCategoryModal";
 import { useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
@@ -79,22 +78,19 @@ export default function UserProfile() {
     return null;
   });
 
-  if(!userType){
-    return <p className="text-red-700">An error occured while fetching user details please try again later</p>
-  }
   // Fetching client data if the role is only client
   const {
     data: clientData,
     isLoading: isClientLoading,
     isError: isClientError,
-  } = useClientDetailsQuery(userType?.role === "client" , userType._id);
+  } = useClientDetailsQuery(userType?.role === "client", userType ? userType._id : "");
 
   // Fetching vendor data if the role is only vendor
   const {
     data: vendorData,
     isLoading: isVendorLoading,
     isError: isVendorError,
-  } = useVendorDetailsQuery(userType?.role === "vendor" , userType._id);
+  } = useVendorDetailsQuery(userType?.role === "vendor", userType ? userType._id : "");
 
   const isLoading = isClientLoading || isVendorLoading;
   const isError = isClientError || isVendorError;
@@ -211,6 +207,14 @@ export default function UserProfile() {
 
   if (isLoading) {
     return <LoadingBar />;
+  }
+
+  if (!userType) {
+    return (
+      <p className="text-red-700">
+        An error occured while fetching user details please try again later
+      </p>
+    );
   }
 
   if (isError || !userData) {

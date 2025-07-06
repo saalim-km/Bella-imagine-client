@@ -29,8 +29,8 @@ const VendorDetails = ({ user }: VendorDetails) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [portfolioView, setPortfolioView] = useState<"grid" | "list">("grid")
 
-  const sampleLimit = 6
-  const serviceLimit = 6
+  const sampleLimit = 2
+  const serviceLimit = 2
 
   const {
     data: clientData,

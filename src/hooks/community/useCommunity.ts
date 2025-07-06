@@ -1,4 +1,4 @@
-import { createCommunityService, createPostServiceClient, createPostServiceVendor, deleteCommunityService, getAllCommentsByClient, getAllCommentsByVendor, getAllCommunitesAdmin, getAllCommunitiesClient, getAllCommunitiesVendor,  getAllPostServiceClient, getAllPostServiceVendor,  getCommunityBySlugForClient, getCommunityBySlugForVendor, getCommunityBySlugService, getCommunityMemersAdmin, getPostDetailsClient, getPostDetailsVendor, joinCommunityServiceClient, leaveCommunityServiceClient, updateCommunityService } from "@/services/community/communityService"
+import { createCommunityService, createPostServiceClient, createPostServiceVendor, deleteCommunityService, getAllCommentsByClient, getAllCommentsByVendor, getAllCommunitesAdmin, getAllCommunitiesClient, getAllCommunitiesVendor,  getAllPostServiceClient, getAllPostServiceVendor,  getCommunityBySlugForClient, getCommunityBySlugForVendor, getCommunityBySlugService, getCommunityMemersAdmin, getPostDetailsClient, getPostDetailsVendor, updateCommunityService } from "@/services/community/communityService"
 
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { ApiResponse } from "../vendor/useVendor"
@@ -100,7 +100,8 @@ export const useGetAllPostForClient = (
     return useQuery({
         queryKey: ['community_post', input],
         queryFn: () => getAllPostServiceClient(input),
-        enabled: input.enabled
+        enabled: input.enabled,
+        staleTime : 1000 * 60 * 5
     });
 }
 
@@ -167,7 +168,8 @@ export const useGetAllPostForVendor = (
     return useQuery({
         queryKey: ['community_post', input],
         queryFn: () => getAllPostServiceVendor(input),
-        enabled: input.enabled
+        enabled: input.enabled,
+        staleTime : 1000 * 60 * 5
     });
 }
 

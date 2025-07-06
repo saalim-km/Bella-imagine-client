@@ -15,10 +15,8 @@ import {
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
 import { NewPasswordForm } from "../auth/NewPasswordForm"
-import { useThemeConstants } from "@/utils/theme/theme.utils"
 import { TRole } from "@/types/interfaces/User"
 import { useOtpVerifyMutataion } from "@/hooks/auth/useOtpVerify"
-import { toast } from "sonner"
 import { useSendOtp } from "@/hooks/auth/useSendOtp"
 import { handleError } from "@/utils/Error/error-handler.utils"
 import { communityToast } from "../ui/community-toast"
@@ -38,7 +36,6 @@ interface OTPVerificationModalProps {
 export function OTPVerificationModal({ isOpen, email, userType }: OTPVerificationModalProps) {
   const { mutate: resendOtp } = useSendOtp()
   const { mutate: verifyOtp } = useOtpVerifyMutataion()
-  const { bgColor } = useThemeConstants()
   
   const [isVerifying, setIsVerifying] = useState(false)
   const [isVerified, setIsVerified] = useState(false)

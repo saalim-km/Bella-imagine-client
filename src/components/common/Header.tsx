@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Bell, Menu, X, Search, Plus } from "lucide-react";
+import { Bell, Menu, X, Plus } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -38,7 +38,6 @@ export default function Header({ onClick, isAuthPage = false }: IHeader) {
   const { socket } = useSocket();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const user = useSelector((state: RootState) => {
     if (state.vendor.vendor) return state.vendor.vendor;
@@ -128,7 +127,7 @@ export default function Header({ onClick, isAuthPage = false }: IHeader) {
 
   const logoutUser = () => {
     logout(undefined, {
-      onSuccess: (data: any) => {
+      onSuccess: () => {
         communityToast.logout();
 
         if (user?.role === "vendor") {

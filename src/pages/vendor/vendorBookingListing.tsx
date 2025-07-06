@@ -32,7 +32,6 @@ import {
 import { useBookingStatusMutation } from "@/hooks/booking/useBooking";
 import { ConfirmationModal } from "@/components/modals/ConfimationModal";
 import { BookingDetailsModal } from "@/components/modals/BookingDetailsModal";
-import { toast } from "sonner";
 import { formatPrice } from "@/utils/formatters/format-price.utils";
 import moment from "moment";
 import { debounce } from "lodash";

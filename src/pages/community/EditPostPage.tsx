@@ -11,19 +11,9 @@ import { LoadingBar } from "@/components/ui/LoadBar";
 import { Card } from "@/components/ui/card";
 
 const EditPostPage = () => {
-  const user = useSelector((state: RootState) => {
-    if (state.client.client) return state.client.client;
-    if (state.vendor.vendor) return state.vendor.vendor;
-    return undefined;
-  });
-
-  if (!user) {
-    return (
-      <p className="text-red-700">
-        user not found please try again later , or please relogin to continue
-      </p>
-    );
-  }
+  const client = useSelector((state: RootState) => state.client.client);
+  const vendor = useSelector((state: RootState) => state.vendor.vendor);
+  const user = client || vendor;
 
   const { postId } = useParams<{ postId: string }>();
 
@@ -68,6 +58,14 @@ const EditPostPage = () => {
     );
   }
 
+  if (!user) {
+    return (
+      <p className="text-red-700">
+        user not found please try again later , or please relogin to continue
+      </p>
+    );
+  }
+
   if (!post) {
     return (
       <CommunityLayout>
@@ -79,8 +77,6 @@ const EditPostPage = () => {
       </CommunityLayout>
     );
   }
-
-  console.log("got the post for editing : ✅✅", post);
   return (
     <CommunityLayout>
       <EditPostForm post={post} user={user} />

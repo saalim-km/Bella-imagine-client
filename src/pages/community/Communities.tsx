@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useMemo, useCallback } from "react"
 import { debounce } from "lodash"
 import { Input } from "@/components/ui/input"
@@ -25,7 +23,6 @@ const Communities = () => {
     return undefined
   })
 
-  const [page, setPage] = useState(1)
   const [limit] = useState(12)
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("all")
@@ -50,7 +47,7 @@ const Communities = () => {
     isLoading,
     isError,
   } = useGetAllCommunitiesClient({
-    page,
+    page: 1,
     limit,
     search: searchTerm,
     category: categoryFilter === "all" ? undefined : categoryFilter,
@@ -60,7 +57,7 @@ const Communities = () => {
   })
 
   const { data: communitiesForVendor } = useGetAllCommunitiesVendor({
-    page,
+    page : 1,
     limit,
     search: searchTerm,
     category: categoryFilter === "all" ? undefined : categoryFilter,
@@ -350,8 +347,8 @@ const Communities = () => {
               </Button>
             </div>
           </Card>
-        ) : !isLoading && communities?.data?.length! > 0 ? (
-          <CommunityGrid communities={communities?.data!} />
+        ) : !isLoading && communities?.data.length || 0 > 0 ? (
+          <CommunityGrid communities={communities ? communities.data : []} />
         ) : !isLoading ? (
           <Card className="p-12 text-center bg-gray-50 dark:bg-gray-800/50">
             <div className="space-y-4">

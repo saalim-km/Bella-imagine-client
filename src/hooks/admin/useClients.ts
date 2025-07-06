@@ -29,7 +29,7 @@ export const clientKeys = {
 
 export const useAllClientQuery = (filter : any = {} ,pagination : PaginationParams = {page : 1 , limit : 4} )=> {
     return useQuery({
-        queryKey : clientKeys.list(filter,pagination),
+        queryKey : ["client-list-admin",filter,pagination],
         queryFn : ()=> AdminService.get<TPaginatedClientRequest>('/users',{...filter,...pagination,role : "client"})
     })
 }

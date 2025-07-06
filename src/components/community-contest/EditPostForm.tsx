@@ -17,6 +17,7 @@ import {
 } from "@/services/community/communityService";
 import { useEditPost } from "@/hooks/community/useCommunity";
 import { useQueryClient } from "@tanstack/react-query";
+import { handleError } from "@/utils/Error/error-handler.utils";
 
 interface MediaItem {
   url: string;
@@ -218,10 +219,7 @@ export function EditPostForm({ onSuccess, user, post }: EditPostFormProps) {
       });
       if (onSuccess) onSuccess();
     } catch (error) {
-      communityToast.error({
-        title: "Error updating post",
-        description: "An error occurred while preparing the update",
-      });
+      handleError(error)
     } finally {
       setIsSubmitting(false);
     }

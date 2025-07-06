@@ -1,12 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -31,7 +24,6 @@ import {
 } from "@/hooks/vendor/useVendor";
 import { IServiceResponse } from "@/types/interfaces/vendor";
 import { Spinner } from "../../../ui/spinner";
-import { Badge } from "../../../ui/badge";
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
 import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
@@ -55,11 +47,9 @@ const VendorServicesPage = ({
     return undefined;
   });
 
-  if (!user) {
-    return <p>User not found. Please try again later or relogin to continue.</p>;
-  }
-
-  const { data: categories } = useAllVendorCategoryQuery(user.role === 'vendor');
+  const { data: categories } = useAllVendorCategoryQuery(
+    user?.role === "vendor"
+  );
   const [isDeleteModal, setDeleteModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
@@ -69,12 +59,15 @@ const VendorServicesPage = ({
   const [appliedFilters, setAppliedFilters] = useState({ category: "" });
   const [currentPage, setCurrentPage] = useState(1);
 
-  const queryFilters = useMemo(() => ({
-    serviceTitle: appliedSearchTerm,
-    category: appliedFilters.category,
-    page: currentPage,
-    limit: 3,
-  }), [currentPage, appliedFilters.category, appliedSearchTerm]);
+  const queryFilters = useMemo(
+    () => ({
+      serviceTitle: appliedSearchTerm,
+      category: appliedFilters.category,
+      page: currentPage,
+      limit: 3,
+    }),
+    [currentPage, appliedFilters.category, appliedSearchTerm]
+  );
 
   const { data, isLoading, error, refetch } = useVendorServices(queryFilters);
 
@@ -124,12 +117,21 @@ const VendorServicesPage = ({
   const services: IServiceResponse[] = data?.data.data || [];
   const totalPages = Math.max(1, Math.ceil((data?.data.total || 0) / 3));
 
+  if (!user) {
+    return (
+      <p>User not found. Please try again later or relogin to continue.</p>
+    );
+  }
+
   return (
     <>
       <div className="container mx-auto p-4">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">My Services</h1>
-          <Button variant={"outline"} onClick={() => handleIsCreateService(true)}>
+          <Button
+            variant={"outline"}
+            onClick={() => handleIsCreateService(true)}
+          >
             Create new service
           </Button>
         </div>

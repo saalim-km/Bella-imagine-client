@@ -16,25 +16,32 @@ const BookingServicePage = () => {
     return undefined;
   });
 
+  const { data: clientData, isLoading: isClientLoading } =
+    useGetServiceQueryClient(id as string, user?.role === "client");
+  const { data: vendorData, isLoading: isVendorLoading } =
+    useGetServiceQueryVendor(id as string, user?.role === "vendor");
+
+  if (isClientLoading || isVendorLoading) {
+    return <Spinner />;
+  }
+
+  const serviceDetails = clientData?.data ? clientData.data : vendorData?.data;
+
+  if (!serviceDetails) {
+    return (
+      <p className="text-red-700">
+        An unexpected error occured while fetching service details for booking ,
+        please try again later
+      </p>
+    );
+  }
+
   if (!user) {
     return (
       <p>
         user not found please try again later , or please relogin to continue
       </p>
     );
-  }
-
-  const { data: clientData, isLoading : isClientLoading } = useGetServiceQueryClient(id as string , user.role === 'client');
-  const { data: vendorData, isLoading : isVendorLoading } = useGetServiceQueryVendor(id as string , user.role === 'vendor');
-
-  if (isClientLoading || isVendorLoading) {
-    return <Spinner />;
-  }
-
-  const serviceDetails = clientData?.data ? clientData.data : vendorData?.data
-
-  if(!serviceDetails){
-    return <p className="text-red-700">An unexpected error occured while fetching service details for booking , please try again later</p>
   }
   return (
     <>

@@ -23,21 +23,16 @@ const CommunityLayout: React.FC<CommunityLayoutProps> = ({ children }) => {
     return undefined;
   });
 
-  
-  if(!user){
-    return <p className="text-red-700">user not found please try again later , or please relogin to continue</p>
-  }
-
   const location = useLocation();
   const { data: communitiesDataClient } = useGetAllCommunitiesClient({
     limit: 1000,
     page: 1,
-    enabled: user.role === "client",
+    enabled: user?.role === "client",
   });
   const { data: communitiesDataVendor } = useGetAllCommunitiesVendor({
     limit: 1000,
     page: 1,
-    enabled: user.role === "vendor",
+    enabled: user?.role === "vendor",
   });
 
   const [marker, setMarker] = useState<{ lat: number; lng: number }>({
@@ -53,14 +48,14 @@ const CommunityLayout: React.FC<CommunityLayoutProps> = ({ children }) => {
     limit: 5,
     location: { lat: marker.lat, lng: marker.lng },
     maxCharge: 100000,
-    enabled: user.role === "client",
+    enabled: user?.role === "client",
   });
   const { data: vendorsForVendor } = useAllVendorsListQueryVendor({
     page: 1,
     limit: 5,
     location: { lat: marker.lat, lng: marker.lng },
     maxCharge: 100000,
-    enabled: user.role === "vendor",
+    enabled: user?.role === "vendor",
   });
   const vendors = vendorsForClient?.data.data
     ? vendorsForClient?.data.data
@@ -84,6 +79,13 @@ const CommunityLayout: React.FC<CommunityLayoutProps> = ({ children }) => {
     }
   }, [marker]);
 
+  if (!user) {
+    return (
+      <p className="text-red-700">
+        user not found please try again later , or please relogin to continue
+      </p>
+    );
+  }
   return (
     <>
       <Header />

@@ -160,7 +160,7 @@ export const DateTimeSection: React.FC<DateTimeSectionProps> = ({
   ) => {
     const updatedDates = [...availableDates];
     const errorKey = `${dateIndex}-${slotIndex}`;
-    let newErrors: string[] = [];
+    const newErrors: string[] = [];
     
     if (field === 'startTime' || field === 'endTime') {
       const timePattern = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;

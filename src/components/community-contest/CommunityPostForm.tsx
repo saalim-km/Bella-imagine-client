@@ -25,7 +25,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { communityToast } from "../ui/community-toast";
 import { handleError } from "@/utils/Error/error-handler.utils";
-import { useQueryClient } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 import { addPost } from "@/store/slices/feedslice";
 import { CreatePostInput } from "@/types/interfaces/Community";
@@ -43,7 +42,6 @@ interface CreatePostFormProps {
 
 export function CreatePostForm({
   communityId,
-  onSuccess,
   user,
 }: CreatePostFormProps) {
   const { data: communitiesDataClient } = useGetAllCommunitiesClient({
@@ -79,7 +77,6 @@ export function CreatePostForm({
   const [postType, setPostType] = useState<"text" | "image">("text");
   const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState("");
-  const queryClient = useQueryClient();
   const dispatch = useDispatch();
 
   const communities = communitiesData?.data || [];
@@ -215,8 +212,8 @@ export function CreatePostForm({
 
       createPost(formData as unknown as CreatePostInput, {
         onSuccess: (data) => {
-          queryClient.invalidateQueries({ queryKey: ["community-post"] });
-          queryClient.invalidateQueries({queryKey : ['user_posts']})
+          // queryClient.invalidateQueries({ queryKey: ["community-post"] });
+          // queryClient.invalidateQueries({queryKey : ['user_posts']})
           communityToast.success({
             title: "Post created",
             description: `your post has been created in the community`,

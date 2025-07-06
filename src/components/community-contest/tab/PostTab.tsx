@@ -1,157 +1,169 @@
 // src/components/community-contest/tab/PostTab.tsx
-"use client"
+"use client";
 
-import { useState, useEffect, useCallback, useRef } from "react"
-import { Link } from "react-router-dom"
-import { Plus } from "lucide-react"
-import { useDispatch, useSelector } from "react-redux"
-import { Button } from "@/components/ui/button"
-import { 
-  setPosts, 
-  incrementPage, 
-  toggleLikeCommunity, 
-  setLoading,
+import { useState, useEffect, useCallback, useRef } from "react";
+import { Link } from "react-router-dom";
+import { Plus } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { Button } from "@/components/ui/button";
+import {
+  setPosts,
+  incrementPage,
+  toggleLikeCommunity,
   setCurrentCommunity,
-  setError
-} from "@/store/slices/communityDetailsSlice"
-import PostCard from "../PostCard"
-import PostSkeleton from "../PostSkeleton"
-import useInfiniteScroll from "../../../hooks/community/useInfiniteScroll"
-import { useSocket } from "@/context/SocketContext"
-import { communityToast } from "@/components/ui/community-toast"
-import type { ICommunityPostResponse } from "@/components/User/Home"
-import type { RootState, AppDispatch } from "@/store/store"
-import { useQueryClient } from "@tanstack/react-query"
-import { useGetAllPostForClient, useGetAllPostForVendor, useGetCommunityPostsClient } from "@/hooks/community/useCommunity"
+} from "@/store/slices/communityDetailsSlice";
+import PostCard from "../PostCard";
+import PostSkeleton from "../PostSkeleton";
+import useInfiniteScroll from "../../../hooks/community/useInfiniteScroll";
+import { useSocket } from "@/context/SocketContext";
+import { communityToast } from "@/components/ui/community-toast";
+import type { ICommunityPostResponse } from "@/components/User/Home";
+import type { RootState, AppDispatch } from "@/store/store";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  useGetAllPostForClient,
+  useGetAllPostForVendor,
+} from "@/hooks/community/useCommunity";
 
 interface PostsTabProps {
-  isMember: boolean
-  communityId: string
-  slug: string
+  isMember: boolean;
+  communityId: string;
+  slug: string;
 }
 
 export function PostsTab({ isMember, communityId, slug }: PostsTabProps) {
-  const user = useSelector((state : RootState)=> {
-    if(state.client.client) return state.client.client;
-    if(state.vendor.vendor) return state.vendor.vendor;
+  const user = useSelector((state: RootState) => {
+    if (state.client.client) return state.client.client;
+    if (state.vendor.vendor) return state.vendor.vendor;
     return undefined;
-  })
+  });
 
-  
-  if(!user){
-    return <p>user not found please try again later , or please relogin to continue</p>
-  }
-
-
-  const dispatch = useDispatch<AppDispatch>()
-  const { 
-    posts, 
-    total, 
-    isLoading, 
-    page, 
-    limit,
-    currentCommunityId 
-  } = useSelector((state: RootState) => state.communityDetail)
-  const queryClient = useQueryClient()
-  const [likingPosts, setLikingPosts] = useState<Set<string>>(new Set())
-  const { socket } = useSocket()
-  const socketListenersSetup = useRef(false)
+  const dispatch = useDispatch<AppDispatch>();
+  const { posts, total, page, limit, currentCommunityId } = useSelector(
+    (state: RootState) => state.communityDetail
+  );
+  const queryClient = useQueryClient();
+  const [likingPosts, setLikingPosts] = useState<Set<string>>(new Set());
+  const { socket } = useSocket();
+  const socketListenersSetup = useRef(false);
 
   // Reset state when community changes
   useEffect(() => {
     if (communityId !== currentCommunityId) {
-      dispatch(setCurrentCommunity(communityId))
+      dispatch(setCurrentCommunity(communityId));
     }
-  }, [communityId, currentCommunityId, dispatch])
+  }, [communityId, currentCommunityId, dispatch]);
 
-  const { data: postsDataClient, isLoading : isClientLoading, isError : isClientError } = useGetAllPostForClient({ page, limit , enabled : user.role === 'client'})
-  const { data: postsDataVendor, isLoading : isVendorLoading, isError : isVendorError } = useGetAllPostForVendor({ page, limit , enabled : user.role === 'vendor'})
-  const postsData = postsDataClient?.data.data ? postsDataClient?.data : postsDataVendor?.data
+  const {
+    data: postsDataClient,
+    isLoading: isClientLoading,
+    isError: isClientError,
+  } = useGetAllPostForClient({ page, limit, enabled: user?.role === "client" });
+  const {
+    data: postsDataVendor,
+    isLoading: isVendorLoading,
+    isError: isVendorError,
+  } = useGetAllPostForVendor({ page, limit, enabled: user?.role === "vendor" });
+  const postsData = postsDataClient?.data.data
+    ? postsDataClient?.data
+    : postsDataVendor?.data;
   // Handle data updates
   useEffect(() => {
-    if (!postsData || communityId !== currentCommunityId) return
-    
-    dispatch(setPosts({
-      data: postsData.data,
-      total: postsData.total,
-      replace: page === 1 // Replace only on first page
-    }))
-  }, [postsData?.data, page, communityId, currentCommunityId, dispatch])
+    if (!postsData || communityId !== currentCommunityId) return;
 
+    dispatch(
+      setPosts({
+        data: postsData.data,
+        total: postsData.total,
+        replace: page === 1, // Replace only on first page
+      })
+    );
+  }, [postsData?.data, page, communityId, currentCommunityId, dispatch]);
 
   // Socket listeners setup
   useEffect(() => {
-    if (!socket || socketListenersSetup.current) return
+    if (!socket || socketListenersSetup.current) return;
 
     const handleLikeConfirm = ({
       success,
       postId,
-      action
-    }:{
-      success: boolean
-      postId: string
-      action : 'like' | 'unlike'
+      action,
+    }: {
+      success: boolean;
+      postId: string;
+      action: "like" | "unlike";
     }) => {
-      setLikingPosts(prev => {
-        const newSet = new Set(prev)
-        newSet.delete(postId)
-        return newSet
-      })
+      setLikingPosts((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(postId);
+        return newSet;
+      });
 
       if (success) {
-        const isLiked = action === 'like' ? true : false
+        const isLiked = action === "like" ? true : false;
         communityToast.success({
           title: "Success",
           description: `Post ${isLiked ? "liked" : "unliked"} successfully`,
-        })
-        dispatch(toggleLikeCommunity({ postId, isLiked : isLiked }))
-        queryClient.invalidateQueries({queryKey:  ['community-post']})
+        });
+        dispatch(toggleLikeCommunity({ postId, isLiked: isLiked }));
+        queryClient.invalidateQueries({ queryKey: ["community-post"] });
       } else {
         communityToast.error({
           title: "Error",
           description: "Failed to update like status",
-        })
+        });
       }
-    }
+    };
 
-    socket.on("like_confirm", handleLikeConfirm)
-    socketListenersSetup.current = true
+    socket.on("like_confirm", handleLikeConfirm);
+    socketListenersSetup.current = true;
 
     return () => {
-      socket.off("like_confirm", handleLikeConfirm)
-      socketListenersSetup.current = false
-    }
-  }, [socket, dispatch])
+      socket.off("like_confirm", handleLikeConfirm);
+      socketListenersSetup.current = false;
+    };
+  }, [socket, dispatch]);
 
   // Infinite scroll callback
   const loadMorePosts = useCallback(() => {
-    if (!isClientLoading || !isVendorLoading && posts.length < total) {
-      dispatch(incrementPage())
+    if (!isClientLoading || (!isVendorLoading && posts.length < total)) {
+      dispatch(incrementPage());
     }
-  }, [isVendorLoading, isClientLoading, posts.length, total, dispatch])
+  }, [isVendorLoading, isClientLoading, posts.length, total, dispatch]);
 
-  const sentinelRef = useInfiniteScroll(loadMorePosts)
+  const sentinelRef = useInfiniteScroll(loadMorePosts);
 
-  const handleLikeToggle = useCallback((post: ICommunityPostResponse) => {
-    if (!post._id || !socket) return
+  const handleLikeToggle = useCallback(
+    (post: ICommunityPostResponse) => {
+      if (!post._id || !socket) return;
 
-    // Prevent duplicate requests
-    if (likingPosts.has(post._id)) return
+      // Prevent duplicate requests
+      if (likingPosts.has(post._id)) return;
 
-    setLikingPosts(prev => new Set(prev).add(post._id!))
+      setLikingPosts((prev) => new Set(prev).add(post._id!));
 
-    const eventName = post.isLiked ? "unLike_post" : "like_post"
-    socket.emit(eventName, { 
-      postId: post._id,
-      communityId
-    })
-  }, [socket, likingPosts])
+      const eventName = post.isLiked ? "unLike_post" : "like_post";
+      socket.emit(eventName, {
+        postId: post._id,
+        communityId,
+      });
+    },
+    [socket, likingPosts]
+  );
 
-  
-  if(isClientError || isVendorError){
-    return <p className="text-red-700">error feching post please try again later</p>
+  if (isClientError || isVendorError) {
+    return (
+      <p className="text-red-700">error feching post please try again later</p>
+    );
   }
 
+  if (!user) {
+    return (
+      <p>
+        user not found please try again later , or please relogin to continue
+      </p>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -170,7 +182,7 @@ export function PostsTab({ isMember, communityId, slug }: PostsTabProps) {
       </div>
 
       <div className="space-y-4">
-        {posts.map(post => (
+        {posts.map((post) => (
           <PostCard
             key={post._id}
             post={post}
@@ -193,24 +205,25 @@ export function PostsTab({ isMember, communityId, slug }: PostsTabProps) {
           </div>
         )}
 
-        {!isClientLoading || !isVendorLoading && posts.length === 0 && (
-          <div className="flex flex-col items-center justify-center p-10 text-center bg-secondary/30 rounded-lg">
-            <h3 className="text-xl font-medium mb-2">No posts yet</h3>
-            <p className="text-muted-foreground mb-4">
-              Be the first to share content in this community
-            </p>
-            {isMember && (
-              <Button asChild>
-                <Link to={`/community/submit?communityId=${communityId}`}>
-                  <Plus className="mr-2 h-4 w-4" /> Create Post
-                </Link>
-              </Button>
-            )}
-          </div>
-        )}
+        {!isClientLoading ||
+          (!isVendorLoading && posts.length === 0 && (
+            <div className="flex flex-col items-center justify-center p-10 text-center bg-secondary/30 rounded-lg">
+              <h3 className="text-xl font-medium mb-2">No posts yet</h3>
+              <p className="text-muted-foreground mb-4">
+                Be the first to share content in this community
+              </p>
+              {isMember && (
+                <Button asChild>
+                  <Link to={`/community/submit?communityId=${communityId}`}>
+                    <Plus className="mr-2 h-4 w-4" /> Create Post
+                  </Link>
+                </Button>
+              )}
+            </div>
+          ))}
 
         <div ref={sentinelRef} className="h-1 w-full" />
       </div>
     </div>
-  )
+  );
 }

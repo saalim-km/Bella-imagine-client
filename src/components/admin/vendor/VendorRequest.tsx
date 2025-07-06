@@ -24,7 +24,6 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   useUpdateVendorRequest,
   useVendorRequest,
-  vendorKeys,
 } from "@/hooks/admin/useVendor";
 import {
   DropdownMenu,
@@ -41,6 +40,7 @@ import Pagination from "@/components/common/Pagination";
 import { useNavigate } from "react-router-dom";
 import { LoadingBar } from "@/components/ui/LoadBar";
 import { communityToast } from "@/components/ui/community-toast";
+import { IVendor } from "@/services/vendor/vendorService";
 
 export function VendorRequestsTable() {
   const navigate = useNavigate();
@@ -60,9 +60,7 @@ export function VendorRequestsTable() {
   const { mutate: rejectVendor } = useUpdateVendorRequest();
   const itemsPerPage = 4;
 
-  const FILTER_OPTIONS = [
-    { label: "Old Requests", value: "oldest" },
-  ];
+  const FILTER_OPTIONS = [{ label: "Old Requests", value: "oldest" }];
 
   const predefinedReasons = [
     "Incomplete profile information",
@@ -72,11 +70,7 @@ export function VendorRequestsTable() {
   ];
 
   const filterOptions = buildQueryParams(appliedFilters);
-  console.log(filterOptions);
-  const {
-    data: vendorRequestsData,
-    isLoading,
-  } = useVendorRequest(
+  const { data: vendorRequestsData, isLoading } = useVendorRequest(
     {
       search: appliedSearchTerm,
       ...filterOptions,
@@ -137,20 +131,49 @@ export function VendorRequestsTable() {
   };
 
   const handleApprove = async (id: string) => {
-    console.log("vendor id", id);
     setIsApproving(true);
+
+    // Define the query key (must match the one used in useVendorRequest)
+    const queryKey = [
+      "vendor-request",
+      { search: appliedSearchTerm, ...filterOptions },
+      { page: currentPage, limit: itemsPerPage },
+    ];
+
+    // Optimistically update the cache
+    await queryClient.cancelQueries({ queryKey });
+
+    const previousData = queryClient.getQueryData(queryKey);
+
+    queryClient.setQueryData(queryKey, (oldData: any) => {
+      if (!oldData) return oldData;
+
+      const updatedDocs = oldData.data?.data?.map((vendor: IVendor) =>
+        vendor._id === id ? { ...vendor, isVerified: "accept" } : vendor
+      );
+
+      return {
+        ...oldData,
+        data: {
+          ...oldData.data,
+          data: updatedDocs,
+        },
+      };
+    });
+
     approveVendor(
-      { id: id, status: true },
+      { id, status: true },
       {
         onSuccess: (data: any) => {
-          setIsApproving(false);
-          queryClient.invalidateQueries({ queryKey: vendorKeys.lists() });
-                    communityToast.success({title : data?.message});
-          
+          communityToast.success({ title: data?.message });
         },
         onError: (error) => {
-          setIsApproving(false);
+          // Rollback to previous data on error
+          queryClient.setQueryData(queryKey, previousData);
           handleError(error);
+        },
+        onSettled: () => {
+          setIsApproving(false);
         },
       }
     );
@@ -164,39 +187,69 @@ export function VendorRequestsTable() {
   };
 
   const handleReject = async () => {
-    if (selectedVendor) {
-      setIsApproving(true);
-      const reasonToSend =
-        rejectReason === "Other (Specify reason)"
-          ? customRejectReason
-          : rejectReason;
-      console.log(reasonToSend, selectedVendor);
-      rejectVendor(
-        {
-          id: selectedVendor,
-          reason: reasonToSend,
-          status: false,
-        },
-        {
-          onSuccess: (data: any) => {
-            setIsApproving(false);
-            setRejectModalOpen(false);
-            setRejectReason("");
-            setCustomRejectReason("");
-            queryClient.invalidateQueries({ queryKey: vendorKeys.lists() });
-            queryClient.invalidateQueries({
-              queryKey: ["vendor-notifications"],
-            });
-                      communityToast.success({title : data?.message});
+    if (!selectedVendor) return;
 
-          },
-          onError: (error) => {
-            setIsApproving(false);
-            handleError(error);
-          },
-        }
+    setIsApproving(true);
+
+    const reasonToSend =
+      rejectReason === "Other (Specify reason)"
+        ? customRejectReason
+        : rejectReason;
+
+    const queryKey = [
+      "vendor-request",
+      { search: appliedSearchTerm, ...filterOptions },
+      { page: currentPage, limit: itemsPerPage },
+    ];
+
+    // Cancel ongoing queries
+    await queryClient.cancelQueries({ queryKey });
+
+    // Store previous state for rollback
+    const previousData = queryClient.getQueryData(queryKey);
+
+    // Optimistically update the vendor status to "reject"
+    queryClient.setQueryData(queryKey, (oldData: any) => {
+      if (!oldData) return oldData;
+
+      const updatedDocs = oldData.data?.data?.map((vendor: IVendor) =>
+        vendor._id === selectedVendor
+          ? { ...vendor, isVerified: "reject" }
+          : vendor
       );
-    }
+
+      return {
+        ...oldData,
+        data: {
+          ...oldData.data,
+          data: updatedDocs,
+        },
+      };
+    });
+
+    rejectVendor(
+      {
+        id: selectedVendor,
+        reason: reasonToSend,
+        status: false,
+      },
+      {
+        onSuccess: (data: any) => {
+          setRejectModalOpen(false);
+          setRejectReason("");
+          setCustomRejectReason("");
+          communityToast.success({ title: data?.message });
+        },
+        onError: (error) => {
+          // Rollback if something goes wrong
+          queryClient.setQueryData(queryKey, previousData);
+          handleError(error);
+        },
+        onSettled: () => {
+          setIsApproving(false);
+        },
+      }
+    );
   };
 
   return (
@@ -295,9 +348,11 @@ export function VendorRequestsTable() {
                             Accepted
                           </Badge>
                         )}
-                        {request.isVerified === "reject" && <Badge className="bg-red-600" variant={"outline"}>
+                        {request.isVerified === "reject" && (
+                          <Badge className="bg-red-600" variant={"outline"}>
                             Rejected
-                          </Badge>}
+                          </Badge>
+                        )}
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>
@@ -339,7 +394,10 @@ export function VendorRequestsTable() {
                                       onClick={() =>
                                         handleOpenRejectModal(request._id ?? "")
                                       }
-                                      disabled={isApproving || request.isVerified == 'reject'}
+                                      disabled={
+                                        isApproving ||
+                                        request.isVerified == "reject"
+                                      }
                                     >
                                       Reject
                                     </Button>

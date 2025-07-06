@@ -6,7 +6,6 @@ import { IUser } from "@/types/interfaces/User";
 import { toast } from "sonner";
 import { useSocket } from "@/context/SocketContext";
 import { communityToast } from "@/components/ui/community-toast";
-import Header from "@/components/common/Header";
 import { UserLayout } from "@/components/layout/UserLayout";
 
 const ClientSignup = () => {
@@ -23,8 +22,7 @@ const ClientSignup = () => {
 
   function handleRegister(data: IUser) {
     registerClient(data, {
-      onSuccess: (data) => {
-        alert("register success");
+      onSuccess: () => {
         communityToast.registerSuccess();
 
         if (socket) {

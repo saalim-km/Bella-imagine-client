@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { format, formatDistanceToNow } from "date-fns";
-import { Check, ClapperboardIcon } from "lucide-react";
+import { Check, } from "lucide-react";
 import { DropdownMenuContent } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import clsx from "clsx";
@@ -8,7 +8,6 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   markAllAsRead,
   setNotifications,
-  setPage,
 } from "@/store/slices/notificationSlice";
 import type { RootState } from "@/store/store";
 import {

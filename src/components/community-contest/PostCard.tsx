@@ -7,8 +7,6 @@ import {
   Share2,
   MoreHorizontal,
   Loader2,
-  ChevronUp,
-  ChevronDown,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";

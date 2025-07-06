@@ -2,7 +2,6 @@ import { useState, useRef, ChangeEvent } from "react";
 import { 
   Smile, 
   Paperclip, 
-  Image, 
   MapPin, 
   Send, 
   X

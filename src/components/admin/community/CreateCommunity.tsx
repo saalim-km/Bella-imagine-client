@@ -11,7 +11,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Link, useNavigate } from "react-router-dom";
 import { useCreateCommunityMutation } from "@/hooks/community/useCommunity";
 import { Community } from "@/types/interfaces/Community";
-import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { useAllCategoryQuery } from "@/hooks/admin/useAllCategory";
 import { communityToast } from "@/components/ui/community-toast";

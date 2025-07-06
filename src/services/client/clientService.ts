@@ -1,9 +1,7 @@
 import { clientAxiosInstance } from "@/api/client.axios";
 import { ENDPOINTS } from "@/api/endpoints";
 import {
-  IClientReponse,
   IProfileUpdate,
-  IProfileUpdateResponse,
   IVendorsFilter,
   IVendorsResponse,
 } from "@/types/interfaces/User";

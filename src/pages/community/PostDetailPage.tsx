@@ -1,51 +1,65 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useCallback, useEffect, useRef, useState } from "react"
-import { useParams } from "react-router-dom"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Heart, MessageSquare, Share2, MoreHorizontal, Loader2, ChevronUp, ChevronDown, Send } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { formatDistanceToNow } from "date-fns"
-import CommunityLayout from "@/components/layout/CommunityLayout"
-import { useAddComment, useGetPostDetailsClient, useGetPostDetailsVendor } from "@/hooks/community/useCommunity"
-import { LoadingBar } from "@/components/ui/LoadBar"
-import { Textarea } from "@/components/ui/textarea"
-import { communityToast } from "@/components/ui/community-toast"
-import { handleError } from "@/utils/Error/error-handler.utils"
-import { useQueryClient } from "@tanstack/react-query"
-import { addCommentServiceClient, addCommentServiceVendor } from "@/services/community/communityService"
-import Pagination from "@/components/common/Pagination"
-import { useSocket } from "@/context/SocketContext"
-import { useDispatch } from "react-redux"
-import { toggleLike } from "@/store/slices/feedslice"
-import type { BasePaginatedResponse } from "@/services/client/clientService"
-import { useSelector } from "react-redux"
-import type { RootState } from "@/store/store"
-import type { PostDetailsResponse } from "@/types/interfaces/Community"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import type React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Heart,
+  MessageSquare,
+  Share2,
+  MoreHorizontal,
+  Loader2,
+  Send,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { formatDistanceToNow } from "date-fns";
+import CommunityLayout from "@/components/layout/CommunityLayout";
+import {
+  useAddComment,
+  useGetPostDetailsClient,
+  useGetPostDetailsVendor,
+} from "@/hooks/community/useCommunity";
+import { LoadingBar } from "@/components/ui/LoadBar";
+import { Textarea } from "@/components/ui/textarea";
+import { communityToast } from "@/components/ui/community-toast";
+import { handleError } from "@/utils/Error/error-handler.utils";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  addCommentServiceClient,
+  addCommentServiceVendor,
+} from "@/services/community/communityService";
+import Pagination from "@/components/common/Pagination";
+import { useSocket } from "@/context/SocketContext";
+import { useDispatch } from "react-redux";
+import { toggleLike } from "@/store/slices/feedslice";
+import type { BasePaginatedResponse } from "@/services/client/clientService";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store/store";
+import type { PostDetailsResponse } from "@/types/interfaces/Community";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 const PostDetailPage: React.FC = () => {
-  const { postId } = useParams()
+  const { postId } = useParams();
   const user = useSelector((state: RootState) => {
-    if (state.client.client) return state.client.client
-    if (state.vendor.vendor) return state.vendor.vendor
-    return undefined
-  })
-  const { socket } = useSocket()
-  const dispatch = useDispatch()
-  const [commentContent, setCommentContent] = useState("")
-  const [likingPosts, setLikingPosts] = useState<Set<string>>(new Set())
-  const [page, setPage] = useState(1)
-  const commentLimit = 4
-  const isLiking = postId ? likingPosts.has(postId.toString()) : false
+    if (state.client.client) return state.client.client;
+    if (state.vendor.vendor) return state.vendor.vendor;
+    return undefined;
+  });
+  const { socket } = useSocket();
+  const dispatch = useDispatch();
+  const [commentContent, setCommentContent] = useState("");
+  const [likingPosts, setLikingPosts] = useState<Set<string>>(new Set());
+  const [page, setPage] = useState(1);
+  const commentLimit = 4;
+  const isLiking = postId ? likingPosts.has(postId.toString()) : false;
 
   const queryData = {
     postId: postId!,
     limit: commentLimit,
     page: page,
-  }
+  };
 
   const {
     data: postDetailsClient,
@@ -54,7 +68,7 @@ const PostDetailPage: React.FC = () => {
   } = useGetPostDetailsClient({
     ...queryData,
     enabled: user?.role === "client",
-  })
+  });
 
   const {
     data: postDetailsVendor,
@@ -63,28 +77,31 @@ const PostDetailPage: React.FC = () => {
   } = useGetPostDetailsVendor({
     ...queryData,
     enabled: user?.role === "vendor",
-  })
+  });
 
   const totalComments = postDetailsClient?.data
     ? postDetailsClient.data.totalComments
-    : postDetailsVendor?.data.totalComments || 0
+    : postDetailsVendor?.data.totalComments || 0;
 
-  const totalPages = Math.max(1, Math.ceil(totalComments / commentLimit))
+  const totalPages = Math.max(1, Math.ceil(totalComments / commentLimit));
 
-  const addCommentMutateFn = user?.role === "client" ? addCommentServiceClient : addCommentServiceVendor
+  const addCommentMutateFn =
+    user?.role === "client" ? addCommentServiceClient : addCommentServiceVendor;
 
-  const { mutate: addComment, isPending } = useAddComment(addCommentMutateFn)
+  const { mutate: addComment, isPending } = useAddComment(addCommentMutateFn);
 
-  const post = postDetailsClient?.data ? postDetailsClient.data : postDetailsVendor?.data
+  const post = postDetailsClient?.data
+    ? postDetailsClient.data
+    : postDetailsVendor?.data;
 
-  const isPostLiked = Boolean(post?.isLiked)
-  const queryClient = useQueryClient()
+  const isPostLiked = Boolean(post?.isLiked);
+  const queryClient = useQueryClient();
 
-  const socketListenerSetup = useRef(false)
+  const socketListenerSetup = useRef(false);
 
   useEffect(() => {
     if (!socket || socketListenerSetup.current) {
-      return
+      return;
     }
 
     function handleLikeConfirm({
@@ -93,127 +110,134 @@ const PostDetailPage: React.FC = () => {
       action,
       error,
     }: {
-      success: boolean
-      postId: string
-      action: "like" | "unlike"
-      error?: string
+      success: boolean;
+      postId: string;
+      action: "like" | "unlike";
+      error?: string;
     }) {
       setLikingPosts((prev) => {
-        const newSet = new Set(prev)
-        newSet.delete(postId.toString())
-        return newSet
-      })
+        const newSet = new Set(prev);
+        newSet.delete(postId.toString());
+        return newSet;
+      });
 
       if (success) {
-        const isLiked = action === "like"
-        dispatch(toggleLike({ postId: postId, isLiked: isLiked }))
+        const isLiked = action === "like";
+        dispatch(toggleLike({ postId: postId, isLiked: isLiked }));
 
         queryClient.setQueryData(
           ["post", postId, page],
           (oldData: BasePaginatedResponse<PostDetailsResponse> | undefined) => {
-            if (!oldData?.data) return oldData
+            if (!oldData?.data) return oldData;
 
-            const currentPost = oldData.data
+            const currentPost = oldData.data;
             const updatedPost = {
               ...currentPost,
-              likeCount: isLiked ? (currentPost.likeCount || 0) + 1 : Math.max(0, (currentPost.likeCount || 0) - 1),
+              likeCount: isLiked
+                ? (currentPost.likeCount || 0) + 1
+                : Math.max(0, (currentPost.likeCount || 0) - 1),
               isLiked: isLiked,
-            }
+            };
 
             return {
               ...oldData,
               data: updatedPost,
-            }
-          },
-        )
+            };
+          }
+        );
 
         communityToast.success({
           title: "Success",
           description: `Post ${isLiked ? "liked" : "unliked"} successfully`,
-        })
+        });
       } else {
         communityToast.error({
           title: "Error",
           description: error || `Failed to ${action} post. Please try again.`,
-        })
+        });
       }
     }
 
-    socket.on("like_confirm", handleLikeConfirm)
-    socketListenerSetup.current = true
+    socket.on("like_confirm", handleLikeConfirm);
+    socketListenerSetup.current = true;
 
     return () => {
-      socket.off("like_confirm", handleLikeConfirm)
-      socketListenerSetup.current = false
-    }
-  }, [socket, dispatch, queryClient, page])
+      socket.off("like_confirm", handleLikeConfirm);
+      socketListenerSetup.current = false;
+    };
+  }, [socket, dispatch, queryClient, page]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && newPage <= totalPages) {
-      setPage(newPage)
+      setPage(newPage);
     }
-  }
+  };
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!commentContent.trim()) return
+    e.preventDefault();
+    if (!commentContent.trim()) return;
 
     try {
       addComment(
         { content: commentContent, postId: postId! },
         {
           onSuccess: (data) => {
-            user?.role === "client" ? clientRefetch() : vendorRefresh()
-            queryClient.invalidateQueries({queryKey : ['comments']})
+            if (user?.role === "client") {
+              clientRefetch();
+            } else {
+              vendorRefresh();
+            }
+            queryClient.invalidateQueries({ queryKey: ["comments"] });
             communityToast.success({
               title: "Comment added",
               description: data.message,
-            })
+            });
           },
           onError: (err) => {
-            handleError(err)
+            handleError(err);
           },
-        },
-      )
-      setCommentContent("")
+        }
+      );
+      setCommentContent("");
     } catch (error) {
-      handleError(error)
+      handleError(error);
     }
-  }
+  };
 
   const handlelikeToggle = useCallback(() => {
     if (!socket) {
       communityToast.error({
         title: "Connection Error",
-        description: "Socket connection not available. Please refresh the page.",
-      })
-      return
+        description:
+          "Socket connection not available. Please refresh the page.",
+      });
+      return;
     }
 
     if (!postId) {
       communityToast.error({
         title: "Error",
         description: "Invalid post data.",
-      })
-      return
+      });
+      return;
     }
 
     if (likingPosts.has(postId.toString())) {
-      return
+      return;
     }
 
     if (!post) {
       communityToast.error({
         title: "Error",
         description: "Post data not available.",
-      })
-      return
+      });
+      return;
     }
 
-    setLikingPosts((prev) => new Set(prev).add(postId.toString()))
-    const eventName = isPostLiked ? "unLike_post" : "like_post"
-    socket.emit(eventName, { postId: postId })
-  }, [socket, likingPosts, postId, isPostLiked, post])
+    setLikingPosts((prev) => new Set(prev).add(postId.toString()));
+    const eventName = isPostLiked ? "unLike_post" : "like_post";
+    socket.emit(eventName, { postId: postId });
+  }, [socket, likingPosts, postId, isPostLiked, post]);
 
   if (!user) {
     return (
@@ -224,7 +248,7 @@ const PostDetailPage: React.FC = () => {
           </p>
         </Card>
       </div>
-    )
+    );
   }
 
   if (!postId) {
@@ -236,7 +260,7 @@ const PostDetailPage: React.FC = () => {
           </p>
         </Card>
       </CommunityLayout>
-    )
+    );
   }
 
   if (isLoadingClient || isLoadingVendor) {
@@ -244,17 +268,19 @@ const PostDetailPage: React.FC = () => {
       <CommunityLayout>
         <LoadingBar />
       </CommunityLayout>
-    )
+    );
   }
 
   if (!post) {
     return (
       <CommunityLayout>
         <Card className="p-6 text-center">
-          <p className="text-red-600 dark:text-red-400">Post not found or failed to load. Please try again later.</p>
+          <p className="text-red-600 dark:text-red-400">
+            Post not found or failed to load. Please try again later.
+          </p>
         </Card>
       </CommunityLayout>
-    )
+    );
   }
 
   return (
@@ -269,8 +295,7 @@ const PostDetailPage: React.FC = () => {
                 variant="ghost"
                 size="sm"
                 className="p-1 h-8 w-8 text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-950"
-              >
-              </Button>
+              ></Button>
 
               <Button
                 variant="ghost"
@@ -286,7 +311,9 @@ const PostDetailPage: React.FC = () => {
                 {isLiking ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
-                  <Heart className={`w-4 h-4 ${isPostLiked ? "fill-current" : ""}`} />
+                  <Heart
+                    className={`w-4 h-4 ${isPostLiked ? "fill-current" : ""}`}
+                  />
                 )}
               </Button>
 
@@ -298,8 +325,7 @@ const PostDetailPage: React.FC = () => {
                 variant="ghost"
                 size="sm"
                 className="p-1 h-8 w-8 text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950"
-              >
-              </Button>
+              ></Button>
             </div>
 
             {/* Main content area */}
@@ -318,7 +344,9 @@ const PostDetailPage: React.FC = () => {
                 </Avatar>
 
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                  <span className="font-medium text-gray-900 dark:text-gray-100">{post?.userName}</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                    {post?.userName}
+                  </span>
                   <span>•</span>
                   <span>
                     {post?.createdAt &&
@@ -341,7 +369,10 @@ const PostDetailPage: React.FC = () => {
                       </Badge>
                     ))}
                     {post.tags.length > 3 && (
-                      <Badge variant="outline" className="text-xs px-2 py-0 h-5 text-gray-500 dark:text-gray-400">
+                      <Badge
+                        variant="outline"
+                        className="text-xs px-2 py-0 h-5 text-gray-500 dark:text-gray-400"
+                      >
                         +{post.tags.length - 3}
                       </Badge>
                     )}
@@ -355,7 +386,9 @@ const PostDetailPage: React.FC = () => {
               </h1>
 
               {/* Content */}
-              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">{post?.content}</p>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {post?.content}
+              </p>
 
               {/* Media section */}
               {Array.isArray(post?.media) && post.media.length > 0 && (
@@ -365,25 +398,34 @@ const PostDetailPage: React.FC = () => {
                       post.media.length === 1
                         ? "grid grid-cols-1"
                         : post.media.length === 2
-                          ? "grid grid-cols-2"
-                          : "grid grid-cols-2 md:grid-cols-3"
+                        ? "grid grid-cols-2"
+                        : "grid grid-cols-2 md:grid-cols-3"
                     } gap-1`}
                   >
                     {post.media.map((mediaUrl: string, idx: number) => (
                       <div
                         key={idx}
                         className={`relative overflow-hidden bg-gray-100 dark:bg-gray-800 ${
-                          post.media.length === 1 ? "aspect-video" : "aspect-square"
+                          post.media.length === 1
+                            ? "aspect-video"
+                            : "aspect-square"
                         }`}
                       >
                         {post.mediaType === "image" ? (
                           <img
-                            src={mediaUrl || "/placeholder.svg?height=400&width=400"}
+                            src={
+                              mediaUrl ||
+                              "/placeholder.svg?height=400&width=400"
+                            }
                             alt={`Post media ${idx + 1}`}
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-200 cursor-pointer"
                           />
                         ) : (
-                          <video controls className="w-full h-full object-contain" preload="metadata">
+                          <video
+                            controls
+                            className="w-full h-full object-contain"
+                            preload="metadata"
+                          >
                             <source src={mediaUrl} type="video/mp4" />
                             Your browser does not support the video tag.
                           </video>
@@ -478,7 +520,9 @@ const PostDetailPage: React.FC = () => {
         {/* Comments Section - Reddit Style */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Comments ({totalComments})</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Comments ({totalComments})
+            </h3>
           </div>
 
           {post?.comments?.map((comment) => (
@@ -492,7 +536,10 @@ const PostDetailPage: React.FC = () => {
                   <div className="flex items-center gap-2 mb-2">
                     <Avatar className="h-6 w-6">
                       <AvatarImage
-                        src={comment.avatar || "/placeholder.svg?height=24&width=24"}
+                        src={
+                          comment.avatar ||
+                          "/placeholder.svg?height=24&width=24"
+                        }
                         alt={comment.userName}
                         className="object-cover"
                       />
@@ -502,7 +549,9 @@ const PostDetailPage: React.FC = () => {
                     </Avatar>
 
                     <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-                      <span className="font-medium text-gray-900 dark:text-gray-100">{comment.userName}</span>
+                      <span className="font-medium text-gray-900 dark:text-gray-100">
+                        {comment.userName}
+                      </span>
                       <span>•</span>
                       <span>
                         {comment.createdAt &&
@@ -513,7 +562,9 @@ const PostDetailPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-2">{comment.content}</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-2">
+                    {comment.content}
+                  </p>
                 </div>
               </div>
             </Card>
@@ -523,12 +574,16 @@ const PostDetailPage: React.FC = () => {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center pt-4">
-            <Pagination currentPage={page} onPageChange={handlePageChange} totalPages={totalPages} />
+            <Pagination
+              currentPage={page}
+              onPageChange={handlePageChange}
+              totalPages={totalPages}
+            />
           </div>
         )}
       </div>
     </CommunityLayout>
-  )
-}
+  );
+};
 
-export default PostDetailPage
+export default PostDetailPage;

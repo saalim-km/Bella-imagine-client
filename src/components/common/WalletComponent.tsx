@@ -14,31 +14,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
-  MoreHorizontal,
   Wallet,
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
   PaymentStatus,
   PopulatedWallet,
-  Purpose,
-  WalletTransactions,
 } from "@/types/interfaces/Wallet";
 import moment from "moment";
 import { formatPrice } from "@/utils/formatters/format-price.utils";

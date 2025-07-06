@@ -1,5 +1,4 @@
 import Signup from "@/components/auth/SignUp";
-import Header from "@/components/common/Header";
 import { UserLayout } from "@/components/layout/UserLayout";
 import AccountTypeModal from "@/components/modals/AccountTypeModal";
 import { communityToast } from "@/components/ui/community-toast";

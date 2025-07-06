@@ -27,7 +27,7 @@ export default function ServiceCard({ service, onViewDetails, workSample }: Serv
     >
       <div className="relative h-48 overflow-hidden">
         <ImageWithFallback
-          src={workSample?.media[0] || "/placeholder.svg?height=192&width=400"}
+          src={workSample?.media[3]}
           alt={service.serviceTitle}
           className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
           fallbackType="work"

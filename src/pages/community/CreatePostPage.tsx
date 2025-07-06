@@ -5,11 +5,11 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
 const CreatePostPage = () => {
-  const user = useSelector((state: RootState) => {
-    if (state.client.client) return state.client.client;
-    if (state.vendor.vendor) return state.vendor.vendor;
-    return undefined;
-  });
+  const client = useSelector((state: RootState) => state.client.client);
+  const vendor = useSelector((state: RootState) => state.vendor.vendor);
+  const user = client || vendor;
+
+  const { communityId } = useParams<{ communityId: string }>();
 
   if (!user) {
     return (
@@ -18,11 +18,6 @@ const CreatePostPage = () => {
       </p>
     );
   }
-
-  const { communityId } = useParams<{ communityId: string }>();
-  const { slug } = useParams<{ slug: string }>();
-  console.log("slug in the createpost : ", slug);
-
   return (
     <CommunityLayout>
       <CreatePostForm user={user} communityId={communityId!} />

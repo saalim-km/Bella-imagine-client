@@ -62,7 +62,7 @@ export default function CommunitySignup({
     sendVerificationOTP(
       { url: "/send-otp", email: user.email, role: userType },
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           communityToast.success({
             title: "OTP sent to your email",
             description:
@@ -86,7 +86,7 @@ export default function CommunitySignup({
     verifyOtp(
       { email: userData.email, otp },
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           submitRegister();
           communityToast.registerSuccess();
 
@@ -244,7 +244,7 @@ export default function CommunitySignup({
                 handleOtpSend(user);
               }}
             >
-              {({ isSubmitting }) => (
+              {() => (
                 <Form className="space-y-4">
                   <div>
                     <label

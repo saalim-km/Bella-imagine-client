@@ -38,7 +38,7 @@ export default function AdminDashboard() {
   const {data : dashboardData , isLoading , isError} = useGetDashBoard()
 
   useEffect(()=> {
-    setData(dashboardData?.data!)
+    setData(dashboardData?.data ? dashboardData?.data : null)
   },[dashboardData])
 
   const formatCurrency = (amount: number) => {

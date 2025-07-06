@@ -51,7 +51,8 @@ export const useGetPhotographerDetailsClient = (input : GetVendorDetails , vendo
   return useQuery({
     queryKey : ["photographer",vendorId,input],
     queryFn : ()=> getPhotographerDetailsClient(input,vendorId),
-    enabled : input.enabled
+    enabled : input.enabled,
+    staleTime : 1000 * 60 * 5
   })
 }
 

@@ -33,7 +33,7 @@ export function CommunityCard({ community, className }: CommunityCardProps) {
       {/* Cover Image */}
       <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900/20 dark:to-orange-800/20">
         <img
-          src={community.coverImage || "/placeholder.svg?height=200&width=400" || "/placeholder.svg"}
+          src={community.coverImage || "/placeholder.svg?height=200&width=400"}
           alt={community.name}
           className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
           loading="lazy"

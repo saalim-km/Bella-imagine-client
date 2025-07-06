@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { ChatHeader } from "./ChatHeader";
-import { Message, Reaction } from "@/types/interfaces/Chat";
+import { Message } from "@/types/interfaces/Chat";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
@@ -8,7 +8,6 @@ import {
   setSelectedConversationId,
   setShowConversations,
   updateConversation,
-  updateMessage,
   addMessage,
 } from "@/store/slices/chatSlice";
 import { ConversationList } from "./ConversationList";
@@ -35,10 +34,10 @@ export function ChatInterface() {
   const client = useSelector((state: RootState) => state.client.client);
   const vendor = useSelector((state: RootState) => state.vendor.vendor);
   const { socket } = useSocket();
-  const userFromRedux = client ? client : vendor;
+  const userFromRedux = client || vendor;
 
   const { fetchMessages } = useSocketEvents({
-    userId: userFromRedux?._id as string,
+    userId: userFromRedux?._id ?? "",
     userType: userFromRedux?.role as TRole,
   });
   
@@ -55,148 +54,83 @@ export function ChatInterface() {
       )
     : undefined;
 
-  useEffect(() => {
-    fetchMessages(selectedConversationId as string);
-  }, [selectedConversationId]);
+  const memoizedFetchMessages = useCallback(() => {
+    if (selectedConversationId) {
+      fetchMessages(selectedConversationId);
+    }
+  }, [fetchMessages, selectedConversationId]);
 
   useEffect(() => {
-    if (socket) {
-      socket.on("new_message", (newMessage: Message) => {
+    memoizedFetchMessages();
+  }, [memoizedFetchMessages]);
 
-        const updatedConversationList = conversations.reduce((acc, conv) => {
-          if (conv._id === selectedConversationId) {
-            return [{ ...conv, lastMessage: newMessage }, ...acc];
-          }
-          return [...acc, conv];
-        }, [] as typeof conversations);
+  useEffect(() => {
+    if (!socket) return;
 
-        if (selectedConversation && selectedConversation._id) {
+    const handleNewMessage = (newMessage: Message) => {
+      const updatedConversationList = conversations.map(conv => 
+        conv._id === selectedConversationId 
+          ? { ...conv, lastMessage: newMessage } 
+          : conv
+      );
+
+      if (selectedConversationId) {
+        const currentConversation = conversations.find(c => c._id === selectedConversationId);
+        if (currentConversation) {
           dispatch(
             updateConversation({
-              ...selectedConversation,
-              _id: selectedConversation._id,
+              ...currentConversation,
               lastMessage: newMessage,
             })
           );
         }
-        dispatch(setConversations(updatedConversationList));
-        dispatch(addMessage(newMessage));
-      });
+      }
 
-      return () => {
-        socket.off("new_message");
-      };
-    }
-  }, [socket, dispatch, messages]);
+      dispatch(setConversations(updatedConversationList));
+      dispatch(addMessage(newMessage));
+    };
+
+    socket.on("new_message", handleNewMessage);
+
+    return () => {
+      socket.off("new_message", handleNewMessage);
+    };
+  }, [socket, dispatch, conversations, selectedConversationId]);
 
   const handleSendMessage = (message: Message) => {
+    if (!userFromRedux || !selectedConversationId || !socket) return;
+
     const newMessage: Message = {
-      senderId: userFromRedux?._id as string,
+      senderId: userFromRedux._id,
       text: message.text,
       type: message.type,
       timestamp: new Date().toISOString(),
-      conversationId: selectedConversationId as string,
+      conversationId: selectedConversationId,
       mediaKey: message.mediaKey || "",
-      userType: userFromRedux?.role as TRole,
+      userType: userFromRedux.role as TRole,
     };
-    if (!socket) return;
 
     socket.emit("send_message", {
       message: newMessage,
       recipentId: recipientUser?._id,
-      recipentName: userFromRedux?.name,
+      recipentName: userFromRedux.name,
     });
 
-    const updatedConversationList = conversations.reduce((acc, conv) => {
-      if (conv._id === selectedConversationId) {
-        return [{ ...conv, lastMessage: newMessage }, ...acc];
-      }
-      return [...acc, conv];
-    }, [] as typeof conversations);
+    const updatedConversationList = conversations.map(conv => 
+      conv._id === selectedConversationId
+        ? { ...conv, lastMessage: newMessage }
+        : conv
+    );
 
     dispatch(setConversations(updatedConversationList));
   };
 
-  const handleDeleteMessage = async (messageId: string) => {
-    try {
-      // const success = await chatService.deleteMessage(messageId);
-      // if (success) {
-      //   dispatch(
-      //     updateMessage({
-      //       ...messages.find((m) => m._id === messageId)!,
-      //       isDeleted: true,
-      //     })
-      //   );
-      //   const updatedConversations = conversations.map((conv) => {
-      //     if (
-      //       conv._id === selectedConversationId &&
-      //       conv.lastMessage?._id === messageId
-      //     ) {
-      //       return {
-      //         ...conv,
-      //         lastMessage: { ...conv.lastMessage, isDeleted: true },
-      //       };
-      //     }
-      //     return conv;
-      //   });
-      //   dispatch(setConversations(updatedConversations));
-      // }
-    } catch (error) {
-      toast.error("Failed to delete message");
-      handleError(error);
-    }
+  const handleDeleteMessage = async () => {
+    toast.info("Message deletion functionality coming soon");
   };
 
-  const handleReactToMessage = async (messageId: string, emoji: string) => {
-    try {
-      // Find the message to update
-      const message = messages.find((m) => m._id === messageId);
-      if (!message) return;
-
-      // Create a reaction object
-      const reaction: Reaction = {
-        emoji,
-        userId: userFromRedux?._id!,
-        username: "You", // In a real app, this would come from the user profile
-      };
-
-      // Check if user already reacted with this emoji
-      const existingReactionIndex = message?.reactions?.findIndex(
-        (r) => r.userId === userFromRedux?._id! && r.emoji === emoji
-      );
-
-      let success;
-      let updatedReactions;
-
-      // if (existingReactionIndex! >= 0) {
-      //   // Remove reaction if it already exists
-      //   success = await chatService.removeReaction(
-      //     messageId,
-      //     userFromRedux?._id!,
-      //     emoji
-      //   );
-      //   updatedReactions = message.reactions!.filter(
-      //     (_, index) => index !== existingReactionIndex
-      //   );
-      // } else {
-      //   // Add new reaction
-      //   success = await chatService.addReaction(messageId, reaction);
-      //   updatedReactions = [...message.reactions!, reaction];
-      // }
-
-      if (success) {
-        // Update the message with new reactions
-        dispatch(
-          updateMessage({
-            ...message,
-            reactions: updatedReactions,
-          })
-        );
-      }
-    } catch (error) {
-      console.error("Error updating reaction:", error);
-      toast.error("Failed to update reaction");
-    }
+  const handleReactToMessage = async () => {
+    toast.info("Reaction functionality coming soon");
   };
 
   const handleSelectConversation = (conversationId: string) => {
@@ -221,7 +155,7 @@ export function ChatInterface() {
         <ConversationList
           users={users}
           conversations={conversations}
-          currentUserId={userFromRedux?._id!}
+          currentUserId={userFromRedux?._id ?? ""}
           selectedConversationId={selectedConversationId}
           onSelectConversation={handleSelectConversation}
         />
@@ -237,7 +171,7 @@ export function ChatInterface() {
             <ChatHeader user={recipientUser} />
             <MessageList
               messages={messages}
-              currentUserId={userFromRedux?._id!}
+              currentUserId={userFromRedux?._id ?? ""}
               users={users}
               onDeleteMessage={handleDeleteMessage}
               onReactToMessage={handleReactToMessage}

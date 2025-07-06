@@ -113,7 +113,7 @@ export const useGetPhotographerDetailsVendor = (input : GetVendorDetails , vendo
   return useQuery({
     queryKey : ["photographer",vendorId,input],
     queryFn : ()=> getPhotographerDetailsVendor(input,vendorId),
-    staleTime : 1000 * 60 * 5, // 15 minutes,
+    staleTime : 1000 * 60 * 5,
     enabled : input.enabled
   })
 }

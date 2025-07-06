@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
 import {
   categoryKeys,
-  updateCategory,
+  useUpdateCategory,
   useAllCategoryMutation,
 } from "@/hooks/admin/useAllCategory";
 import { Formik, Form, Field } from "formik";
@@ -25,7 +24,7 @@ export function CategoryForm({ initialData, onClose }: CategoryFormProps) {
 
   // Separate mutation hooks for adding and updating categories
   const { mutate: addCategory } = useAllCategoryMutation();
-  const { mutate: updateCategoryMutate } = updateCategory();
+  const { mutate: updateCategoryMutate } = useUpdateCategory();
 
   return (
     <div className="p-4 border rounded-lg shadow-md ">

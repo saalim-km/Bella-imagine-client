@@ -7,7 +7,7 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { useDropzone } from "react-dropzone";
-import { Check, X, Upload, Loader2, Image as ImageIcon } from "lucide-react";
+import { Check, X, Loader2, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -360,6 +360,7 @@ const WorkSampleUpload = ({
     } catch (error) {
       toast.error("Failed to process work sample. Please try again.");
       setIsSubmitting(false);
+      handleError(error)
     } finally {
       formData.media.forEach(
         (item) => item.file && URL.revokeObjectURL(item.url)

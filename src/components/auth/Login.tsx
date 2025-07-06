@@ -21,8 +21,6 @@ import {
   Users,
   Star,
   Heart,
-  MapPin,
-  Award,
 } from "lucide-react";
 import { communityToast } from "../ui/community-toast";
 import { Link } from "react-router-dom";

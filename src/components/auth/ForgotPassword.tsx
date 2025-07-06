@@ -9,10 +9,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { OTPVerificationModal } from "../modals/ForgotPassOtpModal"
-import { useThemeConstants } from "@/utils/theme/theme.utils"
 import { TRole } from "@/types/interfaces/User"
-import { useForgotPassSendOtp, useSendOtp } from "@/hooks/auth/useSendOtp"
-import { toast } from "sonner"
+import { useForgotPassSendOtp } from "@/hooks/auth/useSendOtp"
 import { handleError } from "@/utils/Error/error-handler.utils"
 import { useNavigate } from "react-router-dom"
 import { communityToast } from "../ui/community-toast"
@@ -31,7 +29,6 @@ interface ForgotPasswordProps {
 export function ForgotPassword({ userType }: ForgotPasswordProps) {
   const navigate = useNavigate()
   const {mutate : sendOtp} =  useForgotPassSendOtp()
-  const {bgColor} = useThemeConstants()
   const [isOTPModalOpen, setIsOTPModalOpen] = useState(false)
   const [email, setEmail] = useState("")
   const [isSendig,setIsSending] = useState(false)

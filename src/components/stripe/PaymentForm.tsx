@@ -14,9 +14,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import type { Booking } from "@/types/interfaces/User";
 import { useVendorBookingPaymentMutation } from "@/hooks/payment/usePayment";
-import { clientAxiosInstance } from "@/api/client.axios";
 import { communityToast } from "../ui/community-toast";
-import { useQueryClient } from "@tanstack/react-query";
+import { handleError } from "@/utils/Error/error-handler.utils";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
@@ -95,6 +94,7 @@ const PaymentForm: React.FC<PaymentWrapperProps> = ({
     } catch (error) {
       setLoading(false);
       toast.error("An unexpected error occurred");
+      handleError(error)
       onError("An unexpected error occurred");
     }
   };

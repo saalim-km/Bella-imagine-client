@@ -64,7 +64,7 @@ export const useUpdateCategoryRequest = ()=> {
   })
 }
 
-export const updateCategory = ()=> {
+export const useUpdateCategory = ()=> {
   return useMutation({
     mutationFn : updateCategoryService
   })

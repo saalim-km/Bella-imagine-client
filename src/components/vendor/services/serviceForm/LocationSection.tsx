@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Location } from "@/types/interfaces/vendor";
 import {
   GoogleMap,
@@ -85,12 +83,6 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
     setIsLoading(false);
   };
 
-  const handleFieldChange = (
-    field: string,
-    value: string | number | boolean
-  ) => {
-    updateLocation({ ...location, [field]: value, address });
-  };
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newAddress = e.target.value;

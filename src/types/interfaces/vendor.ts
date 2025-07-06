@@ -1,5 +1,4 @@
 import { Category } from "@/services/categories/categoryService";
-import { IVendorReponse } from "./User";
 import { IVendor } from "@/services/vendor/vendorService";
 
 // -----------common type-------------|
@@ -98,10 +97,6 @@ export interface IServiceFilter {
 
 // --------------------------Work-Sample Managment Types-----------------------------||
 
-type TMedia = {
-  url: string;
-  type: "image" | "video";
-}
 
 type TComment = {
   user: string;

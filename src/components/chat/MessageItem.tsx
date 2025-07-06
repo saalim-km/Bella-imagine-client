@@ -23,7 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { formatFileSize, formatTime } from "@/lib/formatters";
+import { formatTime } from "@/lib/formatters";
 
 interface MessageItemProps {
   message: Message;

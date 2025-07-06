@@ -10,7 +10,7 @@ interface ModalProps {
 
 const AccountTypeModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
-  const { bgColor, textColor, buttonPrimary, buttonSecondary } = useThemeConstants();
+  const { bgColor, textColor } = useThemeConstants();
 
   // Prevent background scrolling when modal is open
   useEffect(() => {

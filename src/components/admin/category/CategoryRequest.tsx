@@ -24,8 +24,7 @@ const CategoryRequest = () => {
       {
         onSuccess: (data) => {
           refetch();
-                    communityToast.success({title : data?.message});
-          
+          communityToast.success({ title: data?.message });
         },
         onError: (err) => {
           handleError(err);
@@ -40,8 +39,7 @@ const CategoryRequest = () => {
       {
         onSuccess: (data) => {
           refetch();
-                    communityToast.success({title : data?.message});
-
+          communityToast.success({ title: data?.message });
         },
         onError: (err) => {
           handleError(err);
@@ -124,7 +122,7 @@ const CategoryRequest = () => {
     <div className="p-4">
       <h2 className="text-xl font-bold mb-4">Category Join Requests</h2>
       <DataTable
-        data={categoryRequests as unknown as  ICategoryRequest[]}
+        data={categoryRequests as unknown as ICategoryRequest[]}
         columns={columns}
         totalPages={totalPages}
         currentPage={currPage}

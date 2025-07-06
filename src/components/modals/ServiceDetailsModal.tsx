@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Calendar, Clock, MapPin, Award, FileText, Camera } from "lucide-react";
+import { Calendar, Clock, MapPin, Award, FileText } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DialogClose, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";

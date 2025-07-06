@@ -1,5 +1,5 @@
-import { User, Users, Info } from "lucide-react";
-import { Community, CommunityResponse } from "@/types/interfaces/Community";
+import {  Users,  } from "lucide-react";
+import {  CommunityResponse } from "@/types/interfaces/Community";
 
 interface CommunityHeaderProps {
   community: CommunityResponse;

@@ -1,7 +1,7 @@
 import { Category } from "@/services/categories/categoryService";
 import { IClient } from "@/services/client/clientService";
 import { IVendor } from "@/services/vendor/vendorService";
-import { IService, IServiceResponse, IWorkSampleResponse } from "./vendor";
+import {  IServiceResponse, IWorkSampleResponse } from "./vendor";
 export interface IBaseUser {
   _id : string;
   name : string;

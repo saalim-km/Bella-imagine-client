@@ -42,7 +42,7 @@ export const calculateDistanceAndTime = async (
         avoidHighways: false,
         avoidTolls: false,
       },
-      (response, status) => {
+      (response : any, status : any) => {
         if (status === window.google.maps.DistanceMatrixStatus.OK && response) {
           const result = response.rows[0].elements[0]
 

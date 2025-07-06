@@ -1,125 +1,165 @@
 // src/pages/CommunityDetailPage.tsx
-import { useState, useEffect } from "react"
-import { useParams, Link, useNavigate } from "react-router-dom"
-import { useDispatch } from "react-redux"
-import { MessageSquare, Users, Info, MessageCircle } from "lucide-react"
-import { PageLayout } from "@/components/community-contest/layout/CommunityLayout"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { PostsTab } from "@/components/community-contest/tab/PostTab"
-import { AboutTab } from "@/components/community-contest/tab/AboutTab"
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { MessageSquare, Users, Info, MessageCircle } from "lucide-react";
+import { PageLayout } from "@/components/community-contest/layout/CommunityLayout";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PostsTab } from "@/components/community-contest/tab/PostTab";
+import { AboutTab } from "@/components/community-contest/tab/AboutTab";
 import {
   useGetCommunityBySlugQueryClient,
   useGetCommunityBySlugQueryVendor,
   useJoinCommunity,
   useLeaveCommunity,
-} from "@/hooks/community/useCommunity"
-import { CommunityHeader } from "@/components/community-contest/CommunityHeader"
-import { handleError } from "@/utils/Error/error-handler.utils"
-import { useQueryClient } from "@tanstack/react-query"
-import { resetState } from "@/store/slices/communityDetailsSlice"
-import type { AppDispatch, RootState } from "@/store/store"
-import { CommunityInfo } from "@/components/community-contest/CommunityInto"
-import { LoadingBar } from "@/components/ui/LoadBar"
-import { useSelector } from "react-redux"
-import { joinCommunityServiceClient, joinCommunityServiceVendor, leaveCommunityServiceClient, leaveCommunityServiceVendor } from "@/services/community/communityService"
+} from "@/hooks/community/useCommunity";
+import { CommunityHeader } from "@/components/community-contest/CommunityHeader";
+import { handleError } from "@/utils/Error/error-handler.utils";
+import { resetState } from "@/store/slices/communityDetailsSlice";
+import type { AppDispatch, RootState } from "@/store/store";
+import { CommunityInfo } from "@/components/community-contest/CommunityInto";
+import { LoadingBar } from "@/components/ui/LoadBar";
+import { useSelector } from "react-redux";
+import {
+  joinCommunityServiceClient,
+  joinCommunityServiceVendor,
+  leaveCommunityServiceClient,
+  leaveCommunityServiceVendor,
+} from "@/services/community/communityService";
 
 const CommunityDetailPage = () => {
-    const user = useSelector((state : RootState)=> {
-    if(state.client.client) return state.client.client;
-    if(state.vendor.vendor) return state.vendor.vendor;
-    return undefined;
-  })
+  const { slug } = useParams<{ slug: string }>();
+  const dispatch = useDispatch<AppDispatch>();
 
+  const [activeTab, setActiveTab] = useState("posts");
+  const [isJoining, setIsJoining] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
 
-  if(!user){
-    return <LoadingBar/>
-  }
+  const client = useSelector((state: RootState) => state.client.client);
+  const vendor = useSelector((state: RootState) => state.vendor.vendor);
+  const user = client || vendor;
 
+  // Call hooks unconditionally at the top level
+  const isClient = user?.role === "client";
+  const isVendor = user?.role === "vendor";
 
-  const { slug } = useParams<{ slug: string }>()
-  const dispatch = useDispatch<AppDispatch>()
-  const queryClient = useQueryClient()
-  
-  const [activeTab, setActiveTab] = useState("posts")
-  const [isJoining, setIsJoining] = useState(false)
-  const [isLeaving, setIsLeaving] = useState(false)
+  const {
+    data: communityDataClient,
+    isLoading: isCLientLoading,
+    error: isClientError,
+    refetch: refetchClient,
+  } = useGetCommunityBySlugQueryClient(
+    slug as string,
+    isClient,
+    user?._id ?? ""
+  );
 
-  const { 
-    data: communityDataClient, 
-    isLoading : isCLientLoading, 
-    error : isClientError,
-    refetch : refetchClient
-  } = useGetCommunityBySlugQueryClient(slug as string , user.role === 'client',user._id)
+  const {
+    data: communityDataVendor,
+    isLoading: isVendorLoading,
+    error: isVendorError,
+    refetch: refetchVendor,
+  } = useGetCommunityBySlugQueryVendor(
+    slug as string,
+    isVendor,
+    user?._id ?? ""
+  );
 
-  const { 
-    data: communityDataVendor, 
-    isLoading : isVendorLoading, 
-    error : isVendorError,
-    refetch : refetchVendor
-  } = useGetCommunityBySlugQueryVendor(slug as string , user.role === 'vendor',user._id)
+  const joinMutateFn = isClient
+    ? joinCommunityServiceClient
+    : joinCommunityServiceVendor;
+  const { mutate: joinCommunity } = useJoinCommunity(joinMutateFn);
 
-
-  const joinMutateFn = user.role === 'client' ? joinCommunityServiceClient : joinCommunityServiceVendor
-  const { mutate: joinCommunity } = useJoinCommunity(joinMutateFn)
-
-  const leaveMutateFn = user.role === 'client' ? leaveCommunityServiceClient : leaveCommunityServiceVendor
-  const { mutate: leaveCommunity } = useLeaveCommunity(leaveMutateFn)
+  const leaveMutateFn = isClient
+    ? leaveCommunityServiceClient
+    : leaveCommunityServiceVendor;
+  const { mutate: leaveCommunity } = useLeaveCommunity(leaveMutateFn);
 
   // Reset state when component unmounts or slug changes
   useEffect(() => {
     return () => {
-      dispatch(resetState())
-    }
-  }, [dispatch, slug])
+      dispatch(resetState());
+    };
+  }, [dispatch, slug]);
 
   const handleJoinToggle = (communityId: string) => {
-    setIsJoining(true)
+    if (!user) return;
+    
+    setIsJoining(true);
     joinCommunity(communityId, {
       onSuccess: () => {
-        user.role === 'client' ? refetchClient() : refetchVendor()
-
+        if (isClient) {
+          refetchClient();
+        } else {
+          refetchVendor();
+        }
       },
       onError: handleError,
       onSettled: () => setIsJoining(false),
-    })
-  }
+    });
+  };
 
   const handleLeaveCommunity = (communityId: string) => {
-    setIsLeaving(true)
+    if (!user) return;
+    
+    setIsLeaving(true);
     leaveCommunity(communityId, {
       onSuccess: () => {
-        user.role === 'client' ? refetchClient() : refetchVendor()
+        if (isClient) {
+          refetchClient();
+        } else {
+          refetchVendor();
+        }
       },
       onError: handleError,
       onSettled: () => setIsLeaving(false),
-    })
+    });
+  };
+
+  if (!user) {
+    return (
+      <p className="text-red-700">
+        user not found please try again later , or please relogin to continue
+      </p>
+    );
   }
 
   if (isCLientLoading || isVendorLoading) {
-    return <LoadingBar />
+    return <LoadingBar />;
   }
 
-  const community = communityDataClient?.data.community ? communityDataClient?.data : communityDataVendor?.data 
+  const community = communityDataClient?.data.community
+    ? communityDataClient?.data
+    : communityDataVendor?.data;
 
-  if(isClientError || isVendorError){
-    return <p className="text-red-700">An unexpected error occured please try again later</p>
+  if (isClientError || isVendorError) {
+    return (
+      <p className="text-red-700">
+        An unexpected error occured please try again later
+      </p>
+    );
   }
 
-  if(!community){
-    return <p className="text-red-700">An unexpected error occured while fetching community data please try again later</p>
+  if (!community) {
+    return (
+      <p className="text-red-700">
+        An unexpected error occured while fetching community data please try
+        again later
+      </p>
+    );
   }
 
   return (
     <PageLayout>
       <div className="flex flex-col min-h-screen">
         <CommunityHeader community={community.community} />
-        
+
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-1 space-y-6">
-            <Tabs 
-              defaultValue="posts" 
-              value={activeTab} 
+            <Tabs
+              defaultValue="posts"
+              value={activeTab}
               onValueChange={setActiveTab}
             >
               <div className="flex justify-between items-center mb-4">
@@ -137,15 +177,6 @@ const CommunityDetailPage = () => {
                     About
                   </TabsTrigger>
                 </TabsList>
-{/* 
-                {community.isMember && (
-                  <Button variant="outline" size="sm" className="hidden sm:flex items-center" asChild>
-                    <Link to={`/communities/${community.community._id}/chat`}>
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Chat Room
-                    </Link>
-                  </Button>
-                )} */}
               </div>
 
               <TabsContent value="posts">
@@ -206,14 +237,19 @@ const CommunityDetailPage = () => {
               <div className="bg-secondary/30 rounded-lg p-4">
                 <h3 className="font-medium mb-2">Community Rules</h3>
                 <ul className="text-sm space-y-2 text-muted-foreground">
-                  {Array.isArray(community.community.rules) && community.community.rules.map((rule, index) => (
-                    <li 
-                      key={index} 
-                      className={index !== (community.community.rules?.length ?? 0) - 1 ? "border-b pb-1" : ""}
-                    >
-                      {index + 1}. {rule}
-                    </li>
-                  ))}
+                  {Array.isArray(community.community.rules) &&
+                    community.community.rules.map((rule, index) => (
+                      <li
+                        key={index}
+                        className={
+                          index !== (community.community.rules?.length ?? 0) - 1
+                            ? "border-b pb-1"
+                            : ""
+                        }
+                      >
+                        {index + 1}. {rule}
+                      </li>
+                    ))}
                 </ul>
               </div>
             </div>
@@ -221,7 +257,7 @@ const CommunityDetailPage = () => {
         </div>
       </div>
     </PageLayout>
-  )
-}
+  );
+};
 
-export default CommunityDetailPage
+export default CommunityDetailPage;

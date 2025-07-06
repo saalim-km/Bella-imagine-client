@@ -33,8 +33,11 @@ export function Toaster() {
       {toasts.map(
         ({ id, title, description, action, variant = "default", ...props }) => {
           type Variant = keyof typeof iconMap;
+          // Safer way to check property existence
           const safeVariant: Variant = (
-            variant && iconMap.hasOwnProperty(variant) ? variant : "default"
+            variant && Object.prototype.hasOwnProperty.call(iconMap, variant) 
+              ? variant 
+              : "default"
           ) as Variant;
           const Icon = iconMap[safeVariant];
 

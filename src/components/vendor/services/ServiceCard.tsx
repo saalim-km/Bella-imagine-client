@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { IServiceResponse } from "@/types/interfaces/vendor";
-import { Clock, MapPin, Tag, Star, Calendar, Zap } from "lucide-react";
+import { Clock, MapPin, Tag, Calendar, Zap } from "lucide-react";
 
 interface ServiceCardProps {
   service: IServiceResponse;

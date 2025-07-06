@@ -1,10 +1,10 @@
 import { adminAxiosInstance } from "@/api/admin.axios";
 import { clientAxiosInstance } from "@/api/client.axios";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
-import { AddCommentInput, Community, CommunityBySlugResponse, CommunityResponse, CreatePostInput, EditCommentInput, GetAllPostInput, GetAllPostUserInput, GetCommentsInput, GetCommMemberInput, GetPostForUserOutput, IComment, ICommentResponse, PostDetailsInput, PostDetailsResponse } from "@/types/interfaces/Community";
+import { AddCommentInput, Community, CommunityBySlugResponse, CommunityResponse, CreatePostInput, EditCommentInput, GetAllPostInput, GetAllPostUserInput, GetCommentsInput, GetCommMemberInput, GetPostForUserOutput, ICommentResponse, PostDetailsInput, PostDetailsResponse } from "@/types/interfaces/Community";
 import { PaginatedResponse } from "@/types/interfaces/vendor";
 import { BasePaginatedResponse } from "../client/clientService";
-import { ICommunityPost, ICommunityPostResponse } from "@/components/User/Home";
+import {  ICommunityPostResponse } from "@/components/User/Home";
 import { vendorAxiosInstance } from "@/api/vendor.axios";
 
 

@@ -11,9 +11,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Link, useNavigate } from "react-router-dom";
 import { useUpdateCommunity } from "@/hooks/community/useCommunity";
 import { Community, CommunityResponse } from "@/types/interfaces/Community";
-import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { useAllCategoryQuery } from "@/hooks/admin/useAllCategory";
+import { communityToast } from "@/components/ui/community-toast";
 
 interface CommunityFormProps {
   community?: CommunityResponse;
@@ -26,15 +26,22 @@ const validationSchema = Yup.object({
   category: Yup.string().required("Please select a category"),
 });
 
-export default function EditCommunityForm({ community, refetch }: CommunityFormProps) {
+export default function EditCommunityForm({
+  community,
+  refetch,
+}: CommunityFormProps) {
   console.log(community);
   const navigate = useNavigate();
   const [rules, setRules] = useState<string[]>(community?.rules || []);
   const [newRule, setNewRule] = useState("");
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [iconImageFile, setIconImageFile] = useState<File | null>(null);
-  const [coverPreview, setCoverPreview] = useState<string | null>(community?.coverImage as string || null);
-  const [iconPreview, setIconPreview] = useState<string | null>(community?.iconImage as string || null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(
+    (community?.coverImage as string) || null
+  );
+  const [iconPreview, setIconPreview] = useState<string | null>(
+    (community?.iconImage as string) || null
+  );
   const [isPrivate, setIsPrivate] = useState(community?.isPrivate || false);
   const [isFeatured, setIsFeatured] = useState(community?.isFeatured || false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -105,22 +112,19 @@ export default function EditCommunityForm({ community, refetch }: CommunityFormP
           isFeatured,
           slug: community?.slug,
         };
-        updateCommunity(
-          formData,
-          {
-            onSuccess: (data) => {
-              setIsSubmitting(false);
-                        communityToast.success({title : data?.message});
-              
-              refetch();
-              navigate("/admin/community");
-            },
-            onError: (error) => {
-              setIsSubmitting(false);
-              handleError(error);
-            },
-          }
-        );
+        updateCommunity(formData, {
+          onSuccess: (data) => {
+            setIsSubmitting(false);
+            communityToast.success({ description: data?.message });
+
+            refetch();
+            navigate("/admin/community");
+          },
+          onError: (error) => {
+            setIsSubmitting(false);
+            handleError(error);
+          },
+        });
       }}
     >
       {({ isSubmitting: formikSubmitting, values }) => (
@@ -136,7 +140,11 @@ export default function EditCommunityForm({ community, refetch }: CommunityFormP
               className="w-full"
               aria-required="true"
             />
-            <ErrorMessage name="name" component="p" className="text-xs text-red-500" />
+            <ErrorMessage
+              name="name"
+              component="p"
+              className="text-xs text-red-500"
+            />
           </div>
 
           {/* Description */}
@@ -151,7 +159,11 @@ export default function EditCommunityForm({ community, refetch }: CommunityFormP
               className="w-full"
               aria-required="true"
             />
-            <ErrorMessage name="description" component="p" className="text-xs text-red-500" />
+            <ErrorMessage
+              name="description"
+              component="p"
+              className="text-xs text-red-500"
+            />
           </div>
 
           {/* Category */}
@@ -177,7 +189,11 @@ export default function EditCommunityForm({ community, refetch }: CommunityFormP
                 ))}
               </Field>
             )}
-            <ErrorMessage name="category" component="p" className="text-xs text-red-500" />
+            <ErrorMessage
+              name="category"
+              component="p"
+              className="text-xs text-red-500"
+            />
           </div>
 
           {/* Rules */}
@@ -191,14 +207,22 @@ export default function EditCommunityForm({ community, refetch }: CommunityFormP
                 placeholder="Add a rule"
                 aria-label="Add a community rule"
               />
-              <Button type="button" onClick={handleAddRule} size="sm" variant="outline">
+              <Button
+                type="button"
+                onClick={handleAddRule}
+                size="sm"
+                variant="outline"
+              >
                 Add
               </Button>
             </div>
             {rules.length > 0 && (
               <ul className="mt-2 space-y-1 max-h-24 overflow-y-auto">
                 {rules.map((rule, index) => (
-                  <li key={index} className="flex items-center justify-between text-sm p-2 rounded">
+                  <li
+                    key={index}
+                    className="flex items-center justify-between text-sm p-2 rounded"
+                  >
                     {rule}
                     <Button
                       type="button"
@@ -317,7 +341,11 @@ export default function EditCommunityForm({ community, refetch }: CommunityFormP
               size="sm"
               aria-label={community ? "Update community" : "Create community"}
             >
-              {isSubmitting || formikSubmitting ? "Saving..." : community ? "Update" : "Create"}
+              {isSubmitting || formikSubmitting
+                ? "Saving..."
+                : community
+                ? "Update"
+                : "Create"}
             </Button>
           </div>
         </Form>

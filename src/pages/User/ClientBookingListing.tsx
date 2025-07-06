@@ -30,7 +30,6 @@ import { useBookingStatusMutation } from "@/hooks/booking/useBooking";
 import { clientUpdateBookingStatus } from "@/services/booking/bookingService";
 import { ConfirmationModal } from "@/components/modals/ConfimationModal";
 import { BookingDetailsModal } from "@/components/modals/BookingDetailsModal";
-import { toast } from "sonner";
 import { formatPrice } from "@/utils/formatters/format-price.utils";
 import moment from "moment";
 import { debounce } from "lodash";
@@ -224,7 +223,7 @@ export default function ClientBookingList({
       updateBookingStatus(
         { bookingId, status },
         {
-          onSuccess: (data) => {
+          onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["paginated-booking"]});
             communityToast.success({
               title: "Photography Session cancelled",
