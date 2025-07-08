@@ -97,6 +97,7 @@ export const useCreatePostClient = ()=> {
 export const useGetAllPostForClient = (
     input: GetAllPostInput,
 ) => {
+    console.log('hook trigger',input);
     return useQuery({
         queryKey: ['community_post', input],
         queryFn: () => getAllPostServiceClient(input),

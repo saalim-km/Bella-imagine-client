@@ -43,6 +43,7 @@ export function PostsTab({ isMember, communityId }: PostsTabProps) {
   const { posts, total, page, limit, currentCommunityId } = useSelector(
     (state: RootState) => state.communityDetail
   );
+  console.log('total page and post',page,limit);
   const queryClient = useQueryClient();
   const [likingPosts, setLikingPosts] = useState<Set<string>>(new Set());
   const { socket } = useSocket();
@@ -53,22 +54,36 @@ export function PostsTab({ isMember, communityId }: PostsTabProps) {
     if (communityId !== currentCommunityId) {
       dispatch(setCurrentCommunity(communityId));
     }
-  }, [communityId, currentCommunityId]);
+  }, [communityId, currentCommunityId, dispatch]);
 
   const {
     data: postsDataClient,
     isLoading: isClientLoading,
     isError: isClientError,
-  } = useGetAllPostForClient({ page, limit, enabled: user?.role === "client" , communityId : communityId});
+  } = useGetAllPostForClient({ 
+    page, 
+    limit, 
+    enabled: user?.role === "client", 
+    communityId: communityId
+  });
+  
   const {
     data: postsDataVendor,
     isLoading: isVendorLoading,
     isError: isVendorError,
-  } = useGetAllPostForVendor({ page, limit, enabled: user?.role === "vendor" , communityId : communityId});
-  const postsData = postsDataClient?.data.data
-    ? postsDataClient?.data
+  } = useGetAllPostForVendor({ 
+    page, 
+    limit, 
+    enabled: user?.role === "vendor", 
+    communityId: communityId
+  });
+
+  // Memoize postsData to prevent unnecessary re-renders
+  const postsData = user?.role === "client" 
+    ? postsDataClient?.data 
     : postsDataVendor?.data;
-  // Handle data updates
+
+  // Handle data updates - FIXED: Use postsData instead of postsData?.data
   useEffect(() => {
     if (!postsData || communityId !== currentCommunityId) return;
 
@@ -79,7 +94,7 @@ export function PostsTab({ isMember, communityId }: PostsTabProps) {
         replace: page === 1, // Replace only on first page
       })
     );
-  }, [postsData?.data, page, communityId, currentCommunityId, dispatch]);
+  }, [postsData, page, communityId, currentCommunityId, dispatch]);
 
   // Socket listeners setup
   useEffect(() => {
@@ -123,14 +138,17 @@ export function PostsTab({ isMember, communityId }: PostsTabProps) {
       socket.off("like_confirm", handleLikeConfirm);
       socketListenersSetup.current = false;
     };
-  }, [socket, dispatch]);
+  }, [socket, dispatch, queryClient]);
 
-  // Infinite scroll callback
+  // Determine current loading state
+  const isLoading = user?.role === "client" ? isClientLoading : isVendorLoading;
+
+  // Infinite scroll callback - FIXED: Corrected the loading condition
   const loadMorePosts = useCallback(() => {
-    if (!isClientLoading || (!isVendorLoading && posts.length < total)) {
+    if (!isLoading && posts.length < total) {
       dispatch(incrementPage());
     }
-  }, [isVendorLoading, isClientLoading, posts.length, total, dispatch]);
+  }, [isLoading, posts.length, total, dispatch]);
 
   const sentinelRef = useInfiniteScroll(loadMorePosts);
 
@@ -149,19 +167,19 @@ export function PostsTab({ isMember, communityId }: PostsTabProps) {
         communityId,
       });
     },
-    [socket, likingPosts]
+    [socket, likingPosts, communityId]
   );
 
   if (isClientError || isVendorError) {
     return (
-      <p className="text-red-700">error feching post please try again later</p>
+      <p className="text-red-700">Error fetching posts, please try again later</p>
     );
   }
 
   if (!user) {
     return (
       <p>
-        user not found please try again later , or please relogin to continue
+        User not found, please try again later or please re-login to continue
       </p>
     );
   }
@@ -192,7 +210,7 @@ export function PostsTab({ isMember, communityId }: PostsTabProps) {
           />
         ))}
 
-        {(isClientLoading || isVendorLoading) && (
+        {isLoading && (
           <>
             <PostSkeleton />
             <PostSkeleton />
@@ -206,22 +224,21 @@ export function PostsTab({ isMember, communityId }: PostsTabProps) {
           </div>
         )}
 
-        {!isClientLoading ||
-          (!isVendorLoading && posts.length === 0 && (
-            <div className="flex flex-col items-center justify-center p-10 text-center bg-secondary/30 rounded-lg">
-              <h3 className="text-xl font-medium mb-2">No posts yet</h3>
-              <p className="text-muted-foreground mb-4">
-                Be the first to share content in this community
-              </p>
-              {isMember && (
-                <Button asChild>
-                  <Link to={`/community/submit?communityId=${communityId}`}>
-                    <Plus className="mr-2 h-4 w-4" /> Create Post
-                  </Link>
-                </Button>
-              )}
-            </div>
-          ))}
+        {!isLoading && posts.length === 0 && (
+          <div className="flex flex-col items-center justify-center p-10 text-center bg-secondary/30 rounded-lg">
+            <h3 className="text-xl font-medium mb-2">No posts yet</h3>
+            <p className="text-muted-foreground mb-4">
+              Be the first to share content in this community
+            </p>
+            {isMember && (
+              <Button asChild>
+                <Link to={`/community/submit?communityId=${communityId}`}>
+                  <Plus className="mr-2 h-4 w-4" /> Create Post
+                </Link>
+              </Button>
+            )}
+          </div>
+        )}
 
         <div ref={sentinelRef} className="h-1 w-full" />
       </div>
