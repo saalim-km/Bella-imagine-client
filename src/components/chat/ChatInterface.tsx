@@ -1,7 +1,6 @@
 import { useEffect, useCallback } from "react";
 import { ChatHeader } from "./ChatHeader";
 import { Message } from "@/types/interfaces/Chat";
-import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   setConversations,
@@ -19,6 +18,7 @@ import { RootState } from "@/store/store";
 import { useSocket } from "@/hooks/socket/useSocket";
 import { TRole } from "@/types/interfaces/User";
 import { useSocketEvents } from "@/hooks/chat/useSocketEvents";
+import { communityToast } from "../ui/community-toast";
 
 export function ChatInterface() {
   const dispatch = useDispatch();
@@ -125,11 +125,11 @@ export function ChatInterface() {
   };
 
   const handleDeleteMessage = async () => {
-    toast.info("Message deletion functionality coming soon");
+    communityToast.info({description:"Message deletion functionality coming soon"});
   };
 
   const handleReactToMessage = async () => {
-    toast.info("Reaction functionality coming soon");
+    communityToast.info({description:"Reaction functionality coming soon"});
   };
 
   const handleSelectConversation = (conversationId: string) => {

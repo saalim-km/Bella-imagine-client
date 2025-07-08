@@ -9,7 +9,6 @@ import { useAllVendorWorkSample, useDeleteWorkSample, useVendorServices } from "
 import { IWorkSampleResponse } from "@/types/interfaces/vendor";
 import { Spinner } from "../ui/spinner";
 import { ReusableAlertDialog } from "../common/AlertDialogue";
-import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { communityToast } from "../ui/community-toast";
 import WorkSampleCard from "./work-sample/WorkSampleCard"; // Make sure the path is correct
@@ -64,7 +63,7 @@ const VendorWorkSample = ({ handleIsCreateWorkSample, handleIsWorkSampleEditing 
 
   const handleOnSuccessDeleteWorkSample = () => {
     if (!worksampleId) {
-      toast.error("Work sample ID is required");
+      communityToast.error({description:"Work sample ID is required"});
       setIsWorkSampleDelete(false);
       return;
     }

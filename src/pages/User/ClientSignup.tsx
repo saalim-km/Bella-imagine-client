@@ -3,7 +3,6 @@ import AccountTypeModal from "@/components/modals/AccountTypeModal";
 import { useState } from "react";
 import { useRegisterMutation } from "@/hooks/auth/useRegister";
 import { IUser } from "@/types/interfaces/User";
-import { toast } from "sonner";
 import { useSocket } from "@/hooks/socket/useSocket";
 import { communityToast } from "@/components/ui/community-toast";
 import { UserLayout } from "@/components/layout/UserLayout";
@@ -30,7 +29,7 @@ const ClientSignup = () => {
         }
       },
       onError: (error) => {
-        toast.error(error.message);
+        communityToast.error({description:error.message});
       },
     });
   }

@@ -25,7 +25,6 @@ import {
 import { IServiceResponse } from "@/types/interfaces/vendor";
 import { Spinner } from "../../../ui/spinner";
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
-import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { communityToast } from "@/components/ui/community-toast";
 import { useSelector } from "react-redux";
@@ -88,7 +87,7 @@ const VendorServicesPage = ({
 
   const handleDeleteServiceSucess = () => {
     if (!serviceId) {
-      toast.error("Service ID is required to delete");
+      communityToast.error({description:"Service ID is required to delete"});
       setServiceId("");
       setDeleteModal(false);
       return;

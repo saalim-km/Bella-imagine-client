@@ -120,7 +120,7 @@ export default function Header({ onClick, isAuthPage = false }: IHeader) {
         }
       }
     }
-  }, [notifications,notificationsData, dispatch, page]); // Removed notifications from dependencies to prevent infinite loop
+  }, [notificationsData, dispatch, page]); // Removed notifications from dependencies to prevent infinite loop
 
   const logoutFunction = user?.role === "vendor" ? logoutVendor : logoutClient;
   const { mutate: logout } = useLogoutMutation(logoutFunction);

@@ -18,7 +18,7 @@ return (
           <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
         </Avatar>
         {user.isOnline && (
-          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-chat-success animate-pulse-dot ring-2 ring-background" />
+          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 animate-pulse-dot ring-2 ring-background" />
         )}
       </div>
       <div>

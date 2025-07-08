@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useFormik } from "formik";
-import { toast } from "sonner";
 import { format } from "date-fns";
 import {
   PencilLine,
@@ -184,7 +183,7 @@ export const ServiceForm = ({
       targetIndex > currentIndex + 1 &&
       !completedSections[tabSequence[currentIndex]]
     ) {
-      toast.error("Please complete the current section before skipping ahead");
+      communityToast.error({description:"Please complete the current section before skipping ahead"});
       return;
     }
 
@@ -230,11 +229,11 @@ export const ServiceForm = ({
             );
           }
 
-          toast.error("Please correct the errors before proceeding");
+          communityToast.error({description:"Please correct the errors before proceeding"});
         }
       } catch (error) {
         handleError(error)
-        toast.error("An error occurred during validation");
+        communityToast.error({description:"An error occurred during validation"});
       } finally {
         setIsValidating(false);
       }

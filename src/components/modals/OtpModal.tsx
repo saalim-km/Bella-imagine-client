@@ -1,7 +1,18 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogFooter } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogFooter,
+} from "@/components/ui/alert-dialog";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { communityToast } from "../ui/community-toast";
 
 interface OTPModalProps {
   isOpen: boolean;
@@ -10,11 +21,15 @@ interface OTPModalProps {
   isSending: boolean;
 }
 
-export default function OTPModal({ isOpen, onVerify, onResend, isSending }: OTPModalProps) {
-  const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
+export default function OTPModal({
+  isOpen,
+  onVerify,
+  onResend,
+  isSending,
+}: OTPModalProps) {
+  const [otp, setOtp] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [timer, setTimer] = useState(0);
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -30,105 +45,47 @@ export default function OTPModal({ isOpen, onVerify, onResend, isSending }: OTPM
 
   useEffect(() => {
     if (!isOpen) {
-      setOtp(new Array(6).fill(""));
+      setOtp("");
       setIsVerifying(false);
     } else {
       // Start timer when modal opens and not already running
       if (timer === 0) {
         setTimer(60);
       }
-      // Focus first input when modal opens
-      setTimeout(() => {
-        inputRefs.current[0]?.focus();
-      }, 100);
     }
-  }, [timer,isOpen]);
+  }, [isOpen]);
 
   useEffect(() => {
     // Start timer when resend is initiated
     if (isSending && timer === 0) {
       setTimer(60);
     }
-  }, [timer,isSending]);
+  }, [isSending]);
 
   const handleVerify = async () => {
-    const otpString = otp.join("");
-    if (otpString.length !== 6 || !/^\d{6}$/.test(otpString)) {
-      // toast.error("OTP must be a 6-digit number");
-      alert("OTP must be a 6-digit number");
+    if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+      communityToast.error({ description : "OTP must be a 6-digit number"});
       return;
     }
     setIsVerifying(true);
     try {
-      await onVerify(otpString);
+      await onVerify(otp);
     } finally {
       setIsVerifying(false);
-      setOtp(new Array(6).fill(""));
+      setOtp("");
     }
   };
 
   const handleResend = () => {
     if (timer === 0 && !isSending) {
       onResend();
-      setOtp(new Array(6).fill(""));
+      setOtp("");
       setTimer(60);
-      // Focus first input after resend
-      setTimeout(() => {
-        inputRefs.current[0]?.focus();
-      }, 100);
+      communityToast.success({description : 'OTP resend successfully please check you email'})
     }
   };
 
-  const handleOtpChange = (index: number, value: string) => {
-    // Only allow single digit
-    const digit = value.replace(/\D/g, "").slice(-1);
-    
-    const newOtp = [...otp];
-    newOtp[index] = digit;
-    setOtp(newOtp);
-    
-    // Auto focus next input if digit entered
-    if (digit && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace") {
-      if (otp[index] === "" && index > 0) {
-        // If current field is empty, move to previous field
-        inputRefs.current[index - 1]?.focus();
-      } else {
-        // Clear current field
-        const newOtp = [...otp];
-        newOtp[index] = "";
-        setOtp(newOtp);
-      }
-    } else if (e.key === "ArrowLeft" && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    } else if (e.key === "ArrowRight" && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const pasteData = e.clipboardData.getData("text/plain").replace(/\D/g, "").slice(0, 6);
-    
-    if (pasteData.length > 0) {
-      const newOtp = new Array(6).fill("");
-      for (let i = 0; i < pasteData.length && i < 6; i++) {
-        newOtp[i] = pasteData[i];
-      }
-      setOtp(newOtp);
-      
-      // Focus the next empty field or the last field
-      const nextIndex = Math.min(pasteData.length, 5);
-      inputRefs.current[nextIndex]?.focus();
-    }
-  };
-
-  const isOtpComplete = otp.every(digit => digit !== "") && otp.length === 6;
+  const isOtpComplete = otp.length === 6;
 
   return (
     <AlertDialog open={isOpen}>
@@ -142,23 +99,26 @@ export default function OTPModal({ isOpen, onVerify, onResend, isSending }: OTPM
           </p>
         </AlertDialogHeader>
 
-        <div className="flex justify-center space-x-2">
-          {otp.map((digit, index) => (
-            <Input
-              key={index}
-              ref={(el) => { inputRefs.current[index] = el; }}
-              type="text"
-              inputMode="numeric"
-              maxLength={1}
-              value={digit}
-              onChange={(e) => handleOtpChange(index, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(index, e)}
-              onPaste={handlePaste}
-              className="otp-input w-12 h-14 text-center text-2xl font-bold border-gray-300 dark:border-gray-600 
-                        focus:border-orange-500 focus:ring-1 focus:ring-orange-500 dark:focus:ring-orange-500
-                        bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            />
-          ))}
+        <div className="flex justify-center">
+          <InputOTP
+            maxLength={6}
+            value={otp}
+            onChange={(value) => setOtp(value)}
+            className="gap-2"
+          >
+            <InputOTPGroup className="gap-2">
+              {[0, 1, 2, 3, 4, 5].map((index) => (
+                <InputOTPSlot
+                  key={index}
+                  index={index}
+                  className="w-12 h-14 text-2xl font-bold border-gray-300 dark:border-gray-600 
+                            focus:border-orange-500 focus:ring-1 focus:ring-orange-500 dark:focus:ring-orange-500
+                            bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 
+                            data-[active=true]:border-orange-500 data-[active=true]:ring-1 data-[active=true]:ring-orange-500"
+                />
+              ))}
+            </InputOTPGroup>
+          </InputOTP>
         </div>
 
         <AlertDialogFooter className="flex flex-col sm:flex-row sm:justify-between gap-2">
@@ -168,13 +128,11 @@ export default function OTPModal({ isOpen, onVerify, onResend, isSending }: OTPM
             disabled={isSending || timer > 0}
             className="text-orange-700 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-gray-700"
           >
-            {isSending ? (
-              "Resending..."
-            ) : timer > 0 ? (
-              `Resend code in ${timer}s`
-            ) : (
-              "Resend code"
-            )}
+            {isSending
+              ? "Resending..."
+              : timer > 0
+              ? `Resend code in ${timer}s`
+              : "Resend code"}
           </Button>
           <Button
             onClick={handleVerify}

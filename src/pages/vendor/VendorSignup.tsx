@@ -6,7 +6,6 @@ import { useSocket } from "@/hooks/socket/useSocket";
 import { useRegisterMutation } from "@/hooks/auth/useRegister";
 import { IUser } from "@/types/interfaces/User";
 import { useState } from "react";
-import { toast } from "sonner";
 
 const VendorSignup = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,7 +28,7 @@ const VendorSignup = () => {
         }
       },
       onError: (error) => {
-        toast.error(error.message);
+        communityToast.error({description :error.message});
       },
     });
   }

@@ -52,9 +52,11 @@ export function CategoryManagement() {
     },
     { page: currentPage, limit: 4 },
   );
-  const totalPages = Math.max(1, Math.ceil(data ? data.data.total : 0 / 4));
-  
-  console.log(data?.data);
+  const totalCategories = data?.data.total || 0
+  const totalPages = Math.max(1, Math.ceil(totalCategories/ 4));
+  console.log('total pages from category ',data?.data.total);
+  console.log('calculated total pages : ',totalPages);
+
   function handleEdit(category: CategoryType) {
     setSelectedCategory(category);
     setIsEditing(true);

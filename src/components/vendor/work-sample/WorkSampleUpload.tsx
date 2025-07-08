@@ -1,12 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from "react";
-import { toast } from "sonner";
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-} from "react-beautiful-dnd";
-import { useDropzone } from "react-dropzone";
+import React, { useState, useMemo, useEffect } from "react";
 import { Check, X, Loader2, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -162,12 +154,13 @@ const WorkSampleUpload = ({
   const { mutate: updateWorkSample } = useUpdateWorkSample();
   const services: IServiceResponse[] = data?.data.data ?? [];
   const queryClient = useQueryClient();
+
   const validateFiles = (files: File[]): string | null => {
-    const allowedTypes = ["image/jpeg", "image/png"];
+    const allowedTypes = ["image/jpeg", "image/png","image/webp"];
     const maxSize = 10 * 1024 * 1024; // 10MB
     for (const file of files) {
       if (!allowedTypes.includes(file.type)) {
-        return "Only JPEG and PNG images are allowed.";
+        return "Only JPEG, PNG and WEBP images are allowed.";
       }
       if (file.size > maxSize) {
         return "Each image must be under 10MB.";
@@ -176,47 +169,38 @@ const WorkSampleUpload = ({
     return null;
   };
 
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      const totalImages = formData.media.length + acceptedFiles.length;
-      if (totalImages > 10) {
-        toast.error("Cannot upload more than 10 images.");
-        return;
-      }
-      if (totalImages < 3) {
-        toast.warning("You need at least 3 images.");
-      }
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const totalImages = formData.media.length + files.length;
+    if (totalImages > 10) {
+      communityToast.error({ description: "Cannot upload more than 10 images." });
+      return;
+    }
+    if (totalImages < 3) {
+      communityToast.warning({ description: "You need at least 3 images." });
+    }
 
-      const error = validateFiles(acceptedFiles);
-      if (error) {
-        toast.error(error);
-        return;
-      }
+    const error = validateFiles(files);
+    if (error) {
+      communityToast.error({ description: error });
+      return;
+    }
 
-      setFormData((prev) => ({
-        ...prev,
-        media: [
-          ...prev.media,
-          ...acceptedFiles.map((file) => ({
-            url: URL.createObjectURL(file),
-            file,
-            isNew: true,
-          })),
-        ],
-      }));
-      communityToast.success({
-        title: `${acceptedFiles.length} image(s) added.`,
-      });
-    },
-    [formData.media]
-  );
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: { "image/jpeg": [], "image/png": [] },
-    multiple: true,
-    disabled: isSubmitting,
-  });
+    setFormData((prev) => ({
+      ...prev,
+      media: [
+        ...prev.media,
+        ...files.map((file) => ({
+          url: URL.createObjectURL(file),
+          file,
+          isNew: true,
+        })),
+      ],
+    }));
+    communityToast.success({
+      title: `${files.length} image(s) added.`,
+    });
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -250,14 +234,6 @@ const WorkSampleUpload = ({
     });
   };
 
-  const handleDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-    const reorderedMedia = [...formData.media];
-    const [movedItem] = reorderedMedia.splice(result.source.index, 1);
-    reorderedMedia.splice(result.destination.index, 0, movedItem);
-    setFormData((prev) => ({ ...prev, media: reorderedMedia }));
-  };
-
   const isFormValid = useMemo(() => {
     return (
       formData.service.trim() &&
@@ -270,7 +246,7 @@ const WorkSampleUpload = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isFormValid) {
-      toast.error("Please fill all required fields and upload 3–10 images.");
+      communityToast.error({ description: "Please fill all required fields and upload 3–10 images." });
       return;
     }
 
@@ -338,7 +314,7 @@ const WorkSampleUpload = ({
 
         createWorkSample(formDataToSubmit as unknown as IWorkSampleRequest, {
           onSuccess: (data) => {
-            communityToast.success({title : data?.message});
+            communityToast.success({ title: data?.message });
             setFormData({
               service: "",
               vendor: vendorId,
@@ -348,7 +324,7 @@ const WorkSampleUpload = ({
               tags: [],
               isPublished: false,
             });
-            queryClient.invalidateQueries({ queryKey: ["worksamples"]});
+            queryClient.invalidateQueries({ queryKey: ["worksamples"] });
             handleCancelCreatingWorkSample();
           },
           onError: (err) => {
@@ -358,9 +334,9 @@ const WorkSampleUpload = ({
         });
       }
     } catch (error) {
-      toast.error("Failed to process work sample. Please try again.");
+      communityToast.error({ description: "Failed to process work sample. Please try again." });
       setIsSubmitting(false);
-      handleError(error)
+      handleError(error);
     } finally {
       formData.media.forEach(
         (item) => item.file && URL.revokeObjectURL(item.url)
@@ -468,67 +444,41 @@ const WorkSampleUpload = ({
               value={(formData.media.length / 10) * 100}
               className="h-2"
             />
-            <div
-              {...getRootProps()}
-              className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-                isDragActive
-                  ? "border-indigo-500 bg-indigo-50"
-                  : "border-gray-300 hover:border-gray-400"
-              } ${
-                isSubmitting
-                  ? "opacity-50 cursor-not-allowed"
-                  : "cursor-pointer"
-              }`}
-            >
-              <input {...getInputProps()} />
-              <div className="flex flex-col items-center space-y-2">
+            <div className="border-2 border-dashed rounded-lg p-6 text-center transition-colors border-gray-300 hover:border-gray-400">
+              <input
+                type="file"
+                accept="image/jpeg,image/png"
+                multiple
+                disabled={isSubmitting}
+                onChange={handleFileChange}
+                className="hidden"
+                id="file-upload"
+              />
+              <label
+                htmlFor="file-upload"
+                className={`flex flex-col items-center space-y-2 cursor-pointer ${
+                  isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
                 <ImageIcon className="h-8 w-8 text-gray-400" />
-                <p className="text-sm font-medium">
-                  {isDragActive
-                    ? "Drop images here"
-                    : "Drag & drop or click to upload images"}
-                </p>
+                <p className="text-sm font-medium">Click to upload images</p>
                 <p className="text-xs text-muted-foreground">
-                  JPEG, PNG (max 10MB each, 3–10 images)
+                  JPEG, PNG and WEBP (max 10MB each, 3–10 images)
                 </p>
-              </div>
+              </label>
             </div>
 
             {formData.media.length > 0 && (
-              <DragDropContext onDragEnd={handleDragEnd}>
-                <Droppable droppableId="images" direction="horizontal">
-                  {(provided) => (
-                    <div
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                      className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4"
-                    >
-                      {formData.media.map((item, index) => (
-                        <Draggable
-                          key={`${item.url}-${index}`}
-                          draggableId={`${item.url}-${index}`}
-                          index={index}
-                        >
-                          {(provided) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                              <ImagePreview
-                                item={item}
-                                index={index}
-                                onRemove={handleRemoveMedia}
-                              />
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+                {formData.media.map((item, index) => (
+                  <ImagePreview
+                    key={`${item.url}-${index}`}
+                    item={item}
+                    index={index}
+                    onRemove={handleRemoveMedia}
+                  />
+                ))}
+              </div>
             )}
           </div>
 

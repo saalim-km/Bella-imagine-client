@@ -5,7 +5,6 @@ import { Label } from "@/components/ui/label";
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import { useState, useRef, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { toast } from "sonner";
 import {
   clientProfileSchema,
   vendorProfileSchema,
@@ -36,6 +35,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { DEFAULT_CENTER, libraries } from "@/utils/config/map.config";
+import { communityToast } from "../ui/community-toast";
 
 export const popularLanguages = [
   "English",
@@ -130,7 +130,7 @@ export function EditProfileForm({
         }
       );
     }
-  }, [initialValues.location.lat,map]);
+  }, [initialValues.location.lat, map]);
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     try {
@@ -142,6 +142,12 @@ export function EditProfileForm({
       setSubmitting(false);
     }
   };
+
+  const handleKeyDown = (e : any)=> {
+    if(e.key == 'Enter'){
+      e.preventDefault()
+    }
+  }
 
   const handleImageSelect = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -158,7 +164,7 @@ export function EditProfileForm({
       ];
 
       if (!allowedTypes.includes(file.type)) {
-        toast.error("Only PNG, JPG, JPEG, and WEBP formats are allowed.");
+        communityToast.error({description : "Only PNG, JPG, JPEG, and WEBP formats are allowed."});
         return;
       }
 
@@ -192,14 +198,14 @@ export function EditProfileForm({
     ];
 
     if (!allowedTypes.includes(file.type)) {
-      toast.error(
-        `File "${file.name}" is not supported. Only PDF, PNG, JPG, and JPEG formats are allowed.`
+      communityToast.error({description :
+        `File "${file.name}" is not supported. Only PDF, PNG, JPG, and JPEG formats are allowed.`}
       );
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error(`File "${file.name}" exceeds the 5MB size limit.`);
+      communityToast.error({description :`File "${file.name}" exceeds the 5MB size limit.`});
       return;
     }
 
@@ -223,44 +229,44 @@ export function EditProfileForm({
     setFieldValue("verificationDocument", null);
   };
 
-const handleMapClick = (
-  e: google.maps.MapMouseEvent,
-  setFieldValue: FormikHelpers<any>["setFieldValue"]
-) => {
-  if (e.latLng) {
-    const lat = e.latLng.lat();
-    const lng = e.latLng.lng();
-    const newLocation = { lat, lng };
-    setMarker(newLocation);
-    setFieldValue("location.lat", lat);
-    setFieldValue("location.lng", lng);
-
-    const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({ location: newLocation }, (results, status) => {
-      if (status === "OK" && results?.[0]) {
-        setFieldValue("location.address", results[0].formatted_address);
-      }
-    });
-  }
-};
-
-const handlePlaceChanged = (
-  setFieldValue: FormikHelpers<any>["setFieldValue"]
-) => {
-  if (autocompleteRef.current) {
-    const place = autocompleteRef.current.getPlace();
-    if (place && place.geometry && place.geometry.location) {
-      const lat = place.geometry.location.lat();
-      const lng = place.geometry.location.lng();
+  const handleMapClick = (
+    e: google.maps.MapMouseEvent,
+    setFieldValue: FormikHelpers<any>["setFieldValue"]
+  ) => {
+    if (e.latLng) {
+      const lat = e.latLng.lat();
+      const lng = e.latLng.lng();
       const newLocation = { lat, lng };
       setMarker(newLocation);
       setFieldValue("location.lat", lat);
       setFieldValue("location.lng", lng);
-      setFieldValue("location.address", place.formatted_address || "");
-      if (map) map.panTo(newLocation);
+
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ location: newLocation }, (results, status) => {
+        if (status === "OK" && results?.[0]) {
+          setFieldValue("location.address", results[0].formatted_address);
+        }
+      });
     }
-  }
-};
+  };
+
+  const handlePlaceChanged = (
+    setFieldValue: FormikHelpers<any>["setFieldValue"]
+  ) => {
+    if (autocompleteRef.current) {
+      const place = autocompleteRef.current.getPlace();
+      if (place && place.geometry && place.geometry.location) {
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+        const newLocation = { lat, lng };
+        setMarker(newLocation);
+        setFieldValue("location.lat", lat);
+        setFieldValue("location.lng", lng);
+        setFieldValue("location.address", place.formatted_address || "");
+        if (map) map.panTo(newLocation);
+      }
+    }
+  };
 
   const handleMapLoad = (mapInstance: google.maps.Map) => {
     setMap(mapInstance);
@@ -284,7 +290,7 @@ const handlePlaceChanged = (
       validateOnChange
     >
       {({ values, setFieldValue }) => (
-        <Form className="space-y-6">
+        <Form onKeyDown={handleKeyDown} className="space-y-6">
           <div className="space-y-4">
             <Label htmlFor="profileImage" className="text-base font-medium">
               Profile Picture

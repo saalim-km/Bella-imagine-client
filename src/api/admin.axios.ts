@@ -1,5 +1,5 @@
+import { communityToast } from "@/components/ui/community-toast";
 import axios from "axios";
-import { toast } from "sonner";
 
 export const adminAxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_ADMIN_API_URI,
@@ -27,7 +27,7 @@ adminAxiosInstance.interceptors.response.use(
         } catch (refreshError) {
           isRefreshing = false;
 
-          toast.info("Please login again");
+          communityToast.info({description :"Please login again"});
           localStorage.removeItem("adminSession");
           window.location.href = "/admin/login";
           return Promise.reject(refreshError);

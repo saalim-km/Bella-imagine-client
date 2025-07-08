@@ -79,7 +79,7 @@ export function VendorProfile({ vendor }: VendorProfileProps) {
           <ImageWithFallbackForWork
             src={heroImage || "/placeholder.svg?height=320&width=800"}
             alt={`${vendor?.name || "Vendor"} work sample`}
-            className="w-full h-full object-cover"
+            className="w-full h-full bg-black"
             fallbackType="work"
           />
           {/* Gradient overlay */}
