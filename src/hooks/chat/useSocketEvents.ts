@@ -1,12 +1,6 @@
 import { TNotification } from "@/components/common/Notification";
 import { useSocket } from "@/hooks/socket/useSocket";
-import {
-  setConversations,
-  setMessages,
-  setUsers,
-  updateContactStatus,
-  updateLastSeen,
-} from "@/store/slices/chatSlice";
+import { setConversations, setMessages, setUsers, updateContactStatus, updateLastSeen } from "@/store/slices/chatSlice";
 import { addNotification } from "@/store/slices/notificationSlice";
 import { Conversation, Message, User } from "@/types/interfaces/Chat";
 import { TRole } from "@/types/interfaces/User";
@@ -14,90 +8,76 @@ import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 
-export function useSocketEvents({
-  userId,
-  userType,
-}: {
-  userId: string;
-  userType: TRole;
-}) {
-  const { socket } = useSocket();
-  const dispatch = useDispatch();
+export function useSocketEvents({userId , userType} : {userId : string , userType : TRole}) {
+    const {socket} = useSocket();
+    const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (!socket || !userId) {
-      return;
-    }
+    useEffect(()=> {
+        if(!socket || !userId) {
+            return;
+        }
 
-    socket.on("connect_error", () => {
-      toast.error("Failed to connect to chat server");
-    });
+        socket.on("connect_error", () => {
+            toast.error("Failed to connect to chat server");
+        });
 
-    socket.emit("join", { userId, userType });
+        socket.emit('join',{userId,userType})
 
-    socket.on("user_status", ({ userId, userType, status }) => {
-      console.log("user status event trigger 😘");
-      dispatch(
-        updateContactStatus({
-          userId: userId,
-          userType: userType,
-          status: status,
+        socket.on('user_status',({userId , userType , status})=> {
+            console.log('user status event trigger 😘');
+            dispatch(updateContactStatus({userId : userId,userType : userType,status : status}))
         })
-      );
-    });
 
-    socket.on("update_lastseen", ({ userId, lastSeen }) => {
-      console.log(
-        `in update_lastseen event in frontend ${userId} , lastseen : ${lastSeen}`
-      );
-      dispatch(updateLastSeen({ userId: userId, lastSeen: lastSeen }));
-    });
+        socket.on('update_lastseen',({userId , lastSeen})=> {
+            console.log(`in update_lastseen event in frontend ${userId} , lastseen : ${lastSeen}`);
+            dispatch(updateLastSeen({userId: userId , lastSeen : lastSeen}))
+        })
 
-    socket.on("messages", (messages: Message[]) => {
-      dispatch(setMessages(messages));
-    });
+        socket.on('messages',(messages : Message[])=> {
+            dispatch(setMessages(messages))
+        })
 
-    socket.on("notifications", (notification: TNotification) => {
-      console.log("got the notification", notification);
-      dispatch(addNotification(notification));
-    });
 
-    return () => {
-      socket.off("connect_error");
-      socket.off("user_status");
-      socket.off("update_lastseen");
-      socket.off("messages");
-    };
-  }, [dispatch, socket, userId, userType]);
+        socket.on('notifications' , (notification : TNotification)=> {
+            console.log('got the notification',notification);
+            dispatch(addNotification(notification))
+        })
+        
+        return ()=> {
+            socket.off('connect_error');
+            socket.off('user_status');
+            socket.off('update_lastseen');
+            socket.off('messages');
+        }
+    },[socket,userId,userType])
 
-  const fetchContacts = useCallback(() => {
-    if (socket) {
-      socket.emit("get_contacts", { userId, userType });
-      socket.once("contacts", (contacts: User[]) => {
-        console.log("got the contacts :", contacts);
-        dispatch(setUsers(contacts));
-      });
-    }
-  }, [socket, userId, userType, dispatch]);
+    const fetchContacts = useCallback(()=> {
+        if(socket) {
+            socket.emit('get_contacts',{userId , userType})
+            socket.once('contacts',(contacts : User[])=> {
+                console.log('got the contacts :',contacts);
+                dispatch(setUsers(contacts))
+            })
 
-  const fetchConversations = useCallback(() => {
-    if (socket) {
-      socket.emit("get_conversations", { userId, userType });
-      socket.once("conversations", (conversations: Conversation[]) => {
-        console.log("got the conversations : ", conversations);
-        dispatch(setConversations(conversations));
-      });
-    }
-  }, [socket, userId, userType, dispatch]);
+        }
+    },[socket,userId,userType,dispatch])
 
-  const fetchMessages = useCallback(
-    (conversationId: string) => {
-      if (socket) {
-        socket.emit("get_messages", { conversationId });
-      }
-    },
-    [socket]
-  );
+    const fetchConversations = useCallback(()=> {
+        if(socket){
+            socket.emit('get_conversations',{userId,userType})
+            socket.once('conversations',(conversations : Conversation[])=> {
+                console.log('got the conversations : ',conversations);
+                dispatch(setConversations(conversations))
+            })
+        }
+    },[socket , userId , userType , dispatch])
 
-  return { socket, fetchContacts, fetchConversations, fetchMessages };
+    const fetchMessages = useCallback((conversationId : string)=> {
+        if(socket) {
+            socket.emit('get_messages',{conversationId})
+        }
+    },[socket,userId,userType,dispatch])
+
+
+    return { socket , fetchContacts , fetchConversations , fetchMessages}
 }

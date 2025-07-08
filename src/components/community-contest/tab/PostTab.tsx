@@ -32,6 +32,7 @@ interface PostsTabProps {
 }
 
 export function PostsTab({ isMember, communityId }: PostsTabProps) {
+  console.log('community id : ',communityId);
   const user = useSelector((state: RootState) => {
     if (state.client.client) return state.client.client;
     if (state.vendor.vendor) return state.vendor.vendor;
@@ -52,18 +53,18 @@ export function PostsTab({ isMember, communityId }: PostsTabProps) {
     if (communityId !== currentCommunityId) {
       dispatch(setCurrentCommunity(communityId));
     }
-  }, [communityId, currentCommunityId, dispatch]);
+  }, [communityId, currentCommunityId]);
 
   const {
     data: postsDataClient,
     isLoading: isClientLoading,
     isError: isClientError,
-  } = useGetAllPostForClient({ page, limit, enabled: user?.role === "client" });
+  } = useGetAllPostForClient({ page, limit, enabled: user?.role === "client" , communityId : communityId});
   const {
     data: postsDataVendor,
     isLoading: isVendorLoading,
     isError: isVendorError,
-  } = useGetAllPostForVendor({ page, limit, enabled: user?.role === "vendor" });
+  } = useGetAllPostForVendor({ page, limit, enabled: user?.role === "vendor" , communityId : communityId});
   const postsData = postsDataClient?.data.data
     ? postsDataClient?.data
     : postsDataVendor?.data;
@@ -78,7 +79,7 @@ export function PostsTab({ isMember, communityId }: PostsTabProps) {
         replace: page === 1, // Replace only on first page
       })
     );
-  }, [postsData,postsData?.data, page, communityId, currentCommunityId, dispatch]);
+  }, [postsData?.data, page, communityId, currentCommunityId, dispatch]);
 
   // Socket listeners setup
   useEffect(() => {
@@ -122,7 +123,7 @@ export function PostsTab({ isMember, communityId }: PostsTabProps) {
       socket.off("like_confirm", handleLikeConfirm);
       socketListenersSetup.current = false;
     };
-  }, [queryClient,socket, dispatch]);
+  }, [socket, dispatch]);
 
   // Infinite scroll callback
   const loadMorePosts = useCallback(() => {
@@ -148,7 +149,7 @@ export function PostsTab({ isMember, communityId }: PostsTabProps) {
         communityId,
       });
     },
-    [communityId,socket, likingPosts]
+    [socket, likingPosts]
   );
 
   if (isClientError || isVendorError) {

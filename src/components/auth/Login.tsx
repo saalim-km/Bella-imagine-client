@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 import { clientLogin } from "@/store/slices/clientSlice";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { vendorLogin } from "@/store/slices/vendorSlice";
-import { useSocket } from "@/context/SocketContext";
+import { useSocket } from "@/hooks/socket/useSocket";
 import { useState } from "react";
 import {
   Eye,

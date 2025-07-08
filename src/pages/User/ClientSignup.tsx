@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRegisterMutation } from "@/hooks/auth/useRegister";
 import { IUser } from "@/types/interfaces/User";
 import { toast } from "sonner";
-import { useSocket } from "@/context/SocketContext";
+import { useSocket } from "@/hooks/socket/useSocket";
 import { communityToast } from "@/components/ui/community-toast";
 import { UserLayout } from "@/components/layout/UserLayout";
 

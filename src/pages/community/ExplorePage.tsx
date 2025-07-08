@@ -12,7 +12,7 @@ import {
   useGetAllPostForVendor,
 } from "@/hooks/community/useCommunity";
 import { incrementPage, setPosts, toggleLike } from "@/store/slices/feedslice";
-import { useSocket } from "@/context/SocketContext";
+import { useSocket } from "@/hooks/socket/useSocket";
 import { communityToast } from "@/components/ui/community-toast";
 import type { ICommunityPostResponse } from "@/components/User/Home";
 

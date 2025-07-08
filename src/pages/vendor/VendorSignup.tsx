@@ -2,7 +2,7 @@ import Signup from "@/components/auth/SignUp";
 import { UserLayout } from "@/components/layout/UserLayout";
 import AccountTypeModal from "@/components/modals/AccountTypeModal";
 import { communityToast } from "@/components/ui/community-toast";
-import { useSocket } from "@/context/SocketContext";
+import { useSocket } from "@/hooks/socket/useSocket";
 import { useRegisterMutation } from "@/hooks/auth/useRegister";
 import { IUser } from "@/types/interfaces/User";
 import { useState } from "react";

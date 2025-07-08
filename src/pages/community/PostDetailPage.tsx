@@ -30,7 +30,7 @@ import {
   addCommentServiceVendor,
 } from "@/services/community/communityService";
 import Pagination from "@/components/common/Pagination";
-import { useSocket } from "@/context/SocketContext";
+import { useSocket } from "@/hooks/socket/useSocket";
 import { useDispatch } from "react-redux";
 import { toggleLike } from "@/store/slices/feedslice";
 import type { BasePaginatedResponse } from "@/services/client/clientService";

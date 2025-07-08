@@ -5,7 +5,7 @@ import { handleError } from "@/utils/Error/error-handler.utils";
 import { useDispatch } from "react-redux";
 import { clientLogin } from "@/store/slices/clientSlice";
 import { useState } from "react";
-import { useSocket } from "@/context/SocketContext";
+import { useSocket } from "@/hooks/socket/useSocket";
 import AccountTypeModal from "@/components/modals/AccountTypeModal";
 import { communityToast } from "@/components/ui/community-toast";
 import { UserLayout } from "@/components/layout/UserLayout";

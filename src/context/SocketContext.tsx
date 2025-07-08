@@ -95,7 +95,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         setIsConnected(false);
       }
     };
-  }, [dispatch,socket,user,userType, socketKey]); // Add socketKey as dependency
+  }, [user?._id,userType, socketKey]); // Add socketKey as dependency
 
   return (
     <SocketContext.Provider value={{ socket, isConnected, reconnect }}>
@@ -103,4 +103,3 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     </SocketContext.Provider>
   );
 };
-

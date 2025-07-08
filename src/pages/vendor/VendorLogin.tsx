@@ -2,7 +2,7 @@ import Login from "@/components/auth/Login";
 import { UserLayout } from "@/components/layout/UserLayout";
 import AccountTypeModal from "@/components/modals/AccountTypeModal";
 import { communityToast } from "@/components/ui/community-toast";
-import { useSocket } from "@/context/SocketContext";
+import { useSocket } from "@/hooks/socket/useSocket";
 import { useLoginMutation } from "@/hooks/auth/useLogin";
 import { vendorLogin } from "@/store/slices/vendorSlice";
 import { ILogin } from "@/types/interfaces/User";
