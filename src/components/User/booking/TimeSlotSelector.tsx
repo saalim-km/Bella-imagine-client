@@ -55,7 +55,8 @@ const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
       hour = hour % 12 || 12; // Convert 0 to 12 for 12 AM
       return `${hour}:${minutes} ${ampm}`;
     } catch (error) {
-      return timeString; // Return original if parsing fails
+      console.log(error);
+      return timeString;
     }
   };
 

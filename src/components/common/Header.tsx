@@ -17,7 +17,7 @@ import { logoutClient, logoutVendor } from "@/services/auth/authService";
 import { clientLogout } from "@/store/slices/clientSlice";
 import { vendorLogout } from "@/store/slices/vendorSlice";
 import type { RootState } from "@/store/store";
-import { useSocket } from "@/context/SocketContext";
+import { useSocket } from "@/hooks/socket/useSocket";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { useGetAllNotifications } from "@/hooks/notifications/useNotifications";
@@ -120,7 +120,7 @@ export default function Header({ onClick, isAuthPage = false }: IHeader) {
         }
       }
     }
-  }, [notificationsData, dispatch, page]); // Removed notifications from dependencies to prevent infinite loop
+  }, [notifications,notificationsData, dispatch, page]); // Removed notifications from dependencies to prevent infinite loop
 
   const logoutFunction = user?.role === "vendor" ? logoutVendor : logoutClient;
   const { mutate: logout } = useLogoutMutation(logoutFunction);

@@ -8,7 +8,6 @@ import type {
   SessionDuration,
   IServiceResponse,
 } from "@/types/interfaces/vendor";
-import { toast } from "sonner";
 import ServiceDetails from "./ServiceDetails";
 import DateSelector from "./DateSelector";
 import TimeSlotSelector from "./TimeSlotSelector";
@@ -19,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { LoadingOverlay } from "@/components/modals/LoadingProcessBooking";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
-import { useSocket } from "@/context/SocketContext";
+import { useSocket } from "@/hooks/socket/useSocket";
 import { communityToast } from "@/components/ui/community-toast";
 
 interface BookingPageProps {
@@ -197,7 +196,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
 
       {/* Success Modal */}
       <BookingSuccessModal
-        userName={client?.name!}
+        userName={client ? client.name : ''}
         isOpen={isBookingSuccess}
         onClose={() => {
           setIsBookingSuccess(false);

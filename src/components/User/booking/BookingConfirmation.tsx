@@ -51,7 +51,8 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
       const ampm = hour >= 12 ? "PM" : "AM";
       hour = hour % 12 || 12;
       return `${hour}:${minutes} ${ampm}`;
-    } catch (error) {
+    } catch (err) {
+      console.log(err);
       return timeString;
     }
   };
@@ -80,7 +81,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
     travelFee: travelFee,
   };
 
-  const handlePaymentError = (error: string) => {
+  const handlePaymentError = () => {
     setIsLoading(false);
   };
 

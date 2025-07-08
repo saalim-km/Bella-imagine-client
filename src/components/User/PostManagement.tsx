@@ -1,7 +1,7 @@
 // src/components/Profile/PostManagement.tsx
 import React from 'react';
 import { Button } from '../ui/button';
-import { Edit, Trash2, Eye, Archive, FileEdit, Heart, MessageSquare } from 'lucide-react';
+import { Edit, Trash2, Eye, Heart, MessageSquare } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { formatDistanceToNow } from 'date-fns';
 import { Badge } from '../ui/badge';

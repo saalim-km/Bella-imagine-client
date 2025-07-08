@@ -15,7 +15,7 @@ import {
 import PostCard from "../PostCard";
 import PostSkeleton from "../PostSkeleton";
 import useInfiniteScroll from "../../../hooks/community/useInfiniteScroll";
-import { useSocket } from "@/context/SocketContext";
+import { useSocket } from "@/hooks/socket/useSocket";
 import { communityToast } from "@/components/ui/community-toast";
 import type { ICommunityPostResponse } from "@/components/User/Home";
 import type { RootState, AppDispatch } from "@/store/store";
@@ -31,7 +31,7 @@ interface PostsTabProps {
   slug: string;
 }
 
-export function PostsTab({ isMember, communityId, slug }: PostsTabProps) {
+export function PostsTab({ isMember, communityId }: PostsTabProps) {
   const user = useSelector((state: RootState) => {
     if (state.client.client) return state.client.client;
     if (state.vendor.vendor) return state.vendor.vendor;
@@ -78,7 +78,7 @@ export function PostsTab({ isMember, communityId, slug }: PostsTabProps) {
         replace: page === 1, // Replace only on first page
       })
     );
-  }, [postsData?.data, page, communityId, currentCommunityId, dispatch]);
+  }, [postsData,postsData?.data, page, communityId, currentCommunityId, dispatch]);
 
   // Socket listeners setup
   useEffect(() => {
@@ -122,7 +122,7 @@ export function PostsTab({ isMember, communityId, slug }: PostsTabProps) {
       socket.off("like_confirm", handleLikeConfirm);
       socketListenersSetup.current = false;
     };
-  }, [socket, dispatch]);
+  }, [queryClient,socket, dispatch]);
 
   // Infinite scroll callback
   const loadMorePosts = useCallback(() => {
@@ -148,7 +148,7 @@ export function PostsTab({ isMember, communityId, slug }: PostsTabProps) {
         communityId,
       });
     },
-    [socket, likingPosts]
+    [communityId,socket, likingPosts]
   );
 
   if (isClientError || isVendorError) {

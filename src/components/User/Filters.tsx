@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,7 +8,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Filter, FilterX, LocateIcon } from "lucide-react";
-import { useThemeConstants } from "@/utils/theme/theme.utils";
 import { Category } from "@/services/categories/categoryService";
 import { IVendorsResponse } from "@/types/interfaces/User";
 

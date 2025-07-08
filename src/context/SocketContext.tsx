@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { initSocket } from "@/config/socket";
@@ -14,7 +14,7 @@ interface SocketContextType {
   reconnect: () => void;
 }
 
-const SocketContext = createContext<SocketContextType>({
+export const SocketContext = createContext<SocketContextType>({
   socket: null,
   isConnected: false,
   reconnect: () => {},
@@ -95,7 +95,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         setIsConnected(false);
       }
     };
-  }, [user?._id, userType, socketKey]); // Add socketKey as dependency
+  }, [dispatch,socket,user,userType, socketKey]); // Add socketKey as dependency
 
   return (
     <SocketContext.Provider value={{ socket, isConnected, reconnect }}>
@@ -104,4 +104,3 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const useSocket = () => useContext(SocketContext);

@@ -5,7 +5,6 @@ import { ArrowUpRight, X, Eye, ChevronLeft, ChevronRight, Loader2 } from "lucide
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import type { IWorkSampleResponse } from "@/types/interfaces/vendor"
@@ -166,15 +165,15 @@ const EnhancedCarousel = ({
     preloadAdjacentImages()
   }, [currentIndex, images])
 
-  const goToPrevious = () => {
+  const goToPrevious = useCallback(() => {
     setCurrentIndex(prev => prev > 0 ? prev - 1 : images.length - 1)
     setIsImageLoading(true)
-  }
+  },[images.length])
 
-  const goToNext = () => {
+  const goToNext = useCallback(() => {
     setCurrentIndex(prev => prev < images.length - 1 ? prev + 1 : 0)
     setIsImageLoading(true)
-  }
+  },[images.length])
 
   // Keyboard navigation
   useEffect(() => {
@@ -186,7 +185,7 @@ const EnhancedCarousel = ({
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [onClose])
+  }, [goToNext,goToPrevious,onClose])
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm">

@@ -56,11 +56,7 @@ export interface ICommunityPost {
   };
 }
 
-interface PostsTabProps {
-  userRole: "client" | "vendor";
-}
-
-export function PostsTab({ userRole }: PostsTabProps) {
+export function PostsTab() {
   const [deletingPost, setDeletingPost] = useState<string | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const queryCLient = useQueryClient()
@@ -101,7 +97,7 @@ export function PostsTab({ userRole }: PostsTabProps) {
     if (!deletingPost) return;
 
     deletePost(deletingPost, {
-      onSuccess: (data) => {
+      onSuccess: () => {
         refetch()
         queryCLient.invalidateQueries({queryKey : ['comments']})
         communityToast.success({ description: "Post deleted successfully" });

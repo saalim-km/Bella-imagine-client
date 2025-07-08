@@ -57,7 +57,7 @@ export const FilterPanel = ({ isOpen, onClose, onApplyFilters, currentFilters, v
     ))).sort();
 
     return { categories, services, tags };
-  }, [vendors]);
+  }, [allCategories,vendors]);
 
   const handleCategoryToggle = (categoryId: string) => {
     const newCategories = localFilters.categories?.includes(categoryId)

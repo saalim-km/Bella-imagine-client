@@ -100,7 +100,7 @@ export function ClientTable() {
       if(!oldData) return oldData;
 
       const updatedDocs = oldData.data.data.map((client : IClient)=> {
-        client._id === id ? {...client , isblocked : action === 'block'} : client
+        return client._id === id ? {...client , isblocked : action === 'block'} : client
       });
 
       return {

@@ -16,7 +16,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DataTable, type ColumnDef } from "@/components/common/Table";
-import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { Input } from "@/components/ui/input";
 import { LoadingBar } from "@/components/ui/LoadBar";
@@ -53,7 +52,7 @@ export function CategoryManagement() {
     },
     { page: currentPage, limit: 4 },
   );
-  const totalPages = Math.max(1, Math.ceil(data?.data.total! / 4));
+  const totalPages = Math.max(1, Math.ceil(data ? data.data.total : 0 / 4));
   
   console.log(data?.data);
   function handleEdit(category: CategoryType) {
@@ -77,7 +76,7 @@ export function CategoryManagement() {
   }
 
   function handleToggleStatus(categoryId: string, status: boolean) {
-    console.log(categoryId);
+    console.log(categoryId,status);
     updateCategory(
       { id: categoryId },
       {

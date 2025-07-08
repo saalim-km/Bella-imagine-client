@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { 
-  CalendarDays, 
   MapPin, 
   Mail, 
   Phone, 
@@ -17,7 +16,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { IVendor } from "@/services/vendor/vendorService";
 import { IClient } from "@/services/client/clientService";
-import { Link } from "react-router-dom";
 
 type IProfileInfo = Partial<IVendor | IClient>
 
@@ -35,8 +33,6 @@ export function ProfileInfo({ data }: ProfileInfoProps) {
     : null;
 
 
-
-  const [activeTab, setActiveTab] = useState<'posts' | 'comments'>('posts');
 
   return (
     <div className="space-y-4 dark:text-gray-300 border pb-6">

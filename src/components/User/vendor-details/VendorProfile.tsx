@@ -36,33 +36,25 @@ export function VendorProfile({ vendor }: VendorProfileProps) {
     return undefined;
   });
 
-  if (!user || !user._id) {
-    return (
-      <p>
-        user not found please try again later , or please relogin to continue
-      </p>
-    );
-  }
-
   const heroImage = vendor?.workSamples?.[0]?.media?.[0];
   const profileImage = vendor?.profileImage;
 
   const mutateFn =
-    user.role === "client"
+    user?.role === "client"
       ? createConversationClient
       : createConversationVendor;
-      
+
   const { mutate: createConversation, isPending } =
     useCreateConversation(mutateFn);
 
   function handleSendMessage() {
     createConversation(
       {
-        userId: user?._id!,
-        vendorId: vendor._id!,
+        userId: user?._id ? user._id : '',
+        vendorId: vendor._id ? vendor._id : '',
       },
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           navigate("/messages");
         },
         onError: (error) => {
@@ -72,6 +64,13 @@ export function VendorProfile({ vendor }: VendorProfileProps) {
     );
   }
 
+  if (!user || !user._id) {
+    return (
+      <p>
+        user not found please try again later , or please relogin to continue
+      </p>
+    );
+  }
   return (
     <div className="space-y-6">
       {/* Hero Section */}

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -44,15 +44,16 @@ export default function Communities() {
   });
   const { mutate: deleteCommunity } = useDeleteCommunity();
   const communities = data?.data.data || [];
-  const totalPages = Math.max(1, Math.ceil(data?.data.total! / itemsPerPage));
+  const totalPages = Math.max(1, Math.ceil(data ? data.data.total : 0 / itemsPerPage));
 
   // Debounced search handler
-  const debouncedSearch = useCallback(
+const debouncedSearch = useMemo(
+  () =>
     debounce((value: string) => {
       setSearchQuery(value);
     }, 300),
-    []
-  );
+  []
+);
 
 
   const handleViewDetails = (community: CommunityResponse) => {

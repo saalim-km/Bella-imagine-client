@@ -42,14 +42,14 @@ export default function OTPModal({ isOpen, onVerify, onResend, isSending }: OTPM
         inputRefs.current[0]?.focus();
       }, 100);
     }
-  }, [isOpen]);
+  }, [timer,isOpen]);
 
   useEffect(() => {
     // Start timer when resend is initiated
     if (isSending && timer === 0) {
       setTimer(60);
     }
-  }, [isSending]);
+  }, [timer,isSending]);
 
   const handleVerify = async () => {
     const otpString = otp.join("");

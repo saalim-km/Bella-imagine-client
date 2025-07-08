@@ -16,10 +16,9 @@ import { MessageInput } from "./MessageInput";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { useSocket } from "@/context/SocketContext";
+import { useSocket } from "@/hooks/socket/useSocket";
 import { TRole } from "@/types/interfaces/User";
 import { useSocketEvents } from "@/hooks/chat/useSocketEvents";
-import { handleError } from "@/utils/Error/error-handler.utils";
 
 export function ChatInterface() {
   const dispatch = useDispatch();

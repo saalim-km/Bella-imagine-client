@@ -145,7 +145,7 @@ export default function CommunityHome() {
   // Transform real data into hero posts when data is available
   useEffect(() => {
     if (onlinePhotographers?.data.length || 0 > 0) {
-      const transformedPosts = transformWorkSamplesToHeroPosts(onlinePhotographers?.data!)
+      const transformedPosts = transformWorkSamplesToHeroPosts(onlinePhotographers ? onlinePhotographers.data : [])
       if (transformedPosts.length > 0) {
         setHeroPosts(transformedPosts)
       }
@@ -178,7 +178,7 @@ export default function CommunityHome() {
         setMarker(userLocation)
       })
     }
-  }, [])
+  }, [marker.lat])
 
   const currentPost = heroPosts[currentPostIndex]
 

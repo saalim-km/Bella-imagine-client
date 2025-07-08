@@ -49,19 +49,23 @@ export function NewPasswordForm({ email, userType }: NewPasswordFormProps) {
     return strength;
   };
 
-  const handleSubmit = (values: FormValues, {}: FormikHelpers<FormValues>) => {
+  const handleSubmit = (
+    values: FormValues,
+    { setSubmitting }: FormikHelpers<FormValues>
+  ) => {
+    console.log(setSubmitting);
     setIsSubmitting(true);
-    console.log(email, userType, values.password);
     resetPassword(
       { email: email, role: userType, password: values.password },
       {
         onSuccess: (data) => {
-          console.log(data.message);
-          communityToast.success({ title: data?.message });
+          communityToast.success({ description: data?.message });
 
-          userType === "vendor"
-            ? navigate("/vendor/login")
-            : navigate("/login");
+          if (userType === "vendor") {
+            navigate("/vendor/login");
+          } else {
+            navigate("/login");
+          }
         },
         onError: (err) => {
           handleError(err);

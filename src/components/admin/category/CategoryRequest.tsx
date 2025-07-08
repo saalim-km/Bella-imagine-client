@@ -52,11 +52,11 @@ const CategoryRequest = () => {
   const totalRequests = data?.data.total || 0;
   const totalPages = Math.max(1, Math.ceil(totalRequests / 5));
 
-  const handlePageChange = (newPage: number) => {
-    if (newPage > 0 && newPage <= data?.data.total!) {
-      setCurrPage(newPage);
-    }
-  };
+ const handlePageChange = (newPage: number) => {
+  if (data && newPage > 0 && newPage <= data.data.total) {
+    setCurrPage(newPage);
+  }
+};
 
   const columns: ColumnDef<ICategoryRequest>[] = [
     {

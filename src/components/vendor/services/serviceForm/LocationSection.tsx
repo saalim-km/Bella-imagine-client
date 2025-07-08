@@ -49,7 +49,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({
         }
       );
     }
-  }, [location.lat, location.lng, map, address]);
+  }, [location.lat, location.lng, map, address,updateLocation]);
 
   const handlePlaceChanged = () => {
     if (autocompleteRef.current) {

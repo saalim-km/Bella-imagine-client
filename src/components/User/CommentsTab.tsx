@@ -47,13 +47,6 @@ export function CommentsTab({ userRole }: CommentsTabProps) {
     return undefined;
   });
 
-  if (!user) {
-    return (
-      <p>
-        user not found please try again later , or please relogin to continue
-      </p>
-    );
-  }
   const [queryData, setQueryData] = useState<{ page: number; limit: number }>({
     limit: 6,
     page: 1,
@@ -64,12 +57,13 @@ export function CommentsTab({ userRole }: CommentsTabProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditLoading, setIsEditLoading] = useState(false);
-  const queryCLient = useQueryClient()
+  const queryCLient = useQueryClient();
   const mutateFnForCommentEdit =
-    user.role === "client" ? editCommentByClient : editCommentByVendor;
+    user?.role === "client" ? editCommentByClient : editCommentByVendor;
   const { mutate: editComment } = useEditComment(mutateFnForCommentEdit);
-  const mutateFnForDeleteComment = user.role === 'client' ? deleteCommentClient : deleteCommentVendor
-  const {mutate : deleteComment} = useDeleteComment(mutateFnForDeleteComment)
+  const mutateFnForDeleteComment =
+    user?.role === "client" ? deleteCommentClient : deleteCommentVendor;
+  const { mutate: deleteComment } = useDeleteComment(mutateFnForDeleteComment);
 
   const {
     data: clientData,
@@ -110,7 +104,7 @@ export function CommentsTab({ userRole }: CommentsTabProps) {
       { commentId: commentId, content: newContent },
       {
         onSuccess: (data) => {
-          queryCLient.invalidateQueries({queryKey : ['comments']})
+          queryCLient.invalidateQueries({ queryKey: ["comments"] });
           communityToast.success({
             title: data.message,
             description: "Your comment has been updated successfully.",
@@ -127,21 +121,21 @@ export function CommentsTab({ userRole }: CommentsTabProps) {
   const handleConfirmDelete = async () => {
     if (!deletingComment) return;
 
-    deleteComment(deletingComment._id!,{
-      onSuccess : (data)=> {
-        queryCLient.invalidateQueries({queryKey : ['comments']})
+    deleteComment(deletingComment._id!, {
+      onSuccess: (data) => {
+        queryCLient.invalidateQueries({ queryKey: ["comments"] });
         communityToast.success({
-            title: data.message,
-            description: "Your comment has been deleted successfully.",
+          title: data.message,
+          description: "Your comment has been deleted successfully.",
         });
       },
-      onError : (err)=> {
-        handleError(err)
-      }
-    })
+      onError: (err) => {
+        handleError(err);
+      },
+    });
 
-      setIsDeleteDialogOpen(false);
-      setDeletingComment(null);
+    setIsDeleteDialogOpen(false);
+    setDeletingComment(null);
   };
 
   const handlePageChange = (newPage: number) => {
@@ -156,6 +150,14 @@ export function CommentsTab({ userRole }: CommentsTabProps) {
   const getPostReference = (comment: ICommentResponse) => {
     return comment.post && comment.post.length > 0 ? comment.post[0] : null;
   };
+
+  if (!user) {
+    return (
+      <p>
+        user not found please try again later , or please relogin to continue
+      </p>
+    );
+  }
 
   if (isLoading) {
     return (
