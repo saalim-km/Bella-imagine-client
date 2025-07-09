@@ -426,7 +426,7 @@ export const ServiceForm = ({
         setValidationErrors(newErrors);
       }
     }
-  }, [validationErrors,formik.values.availableDates, activeTab]);
+  }, [formik.values.availableDates, activeTab]);
 
   useEffect(() => {
     const validateCurrentSection = async () => {
@@ -475,7 +475,7 @@ export const ServiceForm = ({
     };
 
     clearFieldErrors();
-  }, [formik.values, touchedFields,validationErrors]);
+  }, [formik.values, touchedFields]);
   return (
     <div className="min-h-screen ">
       <div className="max-w-5xl mx-auto pt-8 px-4 sm:px-6 pb-24">

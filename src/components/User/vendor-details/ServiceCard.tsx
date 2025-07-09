@@ -1,114 +1,146 @@
 "use client"
-
-import { Clock, ArrowRight, Star, Users } from "lucide-react"
+import { useState } from "react"
+import { ChevronDown, Clock, Star, Camera, Package } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import type { IServiceResponse, IWorkSampleResponse } from "@/types/interfaces/vendor"
-import { ImageWithFallback } from "../ImageFallBack"
+import type { IServiceResponse } from "@/types/interfaces/vendor"
 
-interface ServiceCardProps {
-  service: IServiceResponse
-  onViewDetails: (service: any) => void
-  workSample: IWorkSampleResponse
+interface ServicesAccordionProps {
+  services: IServiceResponse[]
+  onViewDetails: (service: IServiceResponse) => void
 }
 
-export default function ServiceCard({ service, onViewDetails, workSample }: ServiceCardProps) {
-  const minPrice =
-    service.sessionDurations.length > 0 ? Math.min(...service.sessionDurations.map((s: any) => s.price)) : 0
+export function ServicesAccordion({ services, onViewDetails }: ServicesAccordionProps) {
+  const [expandedService, setExpandedService] = useState<string | null>(null)
 
-  const minHours =
-    service.sessionDurations.length > 0 ? Math.min(...service.sessionDurations.map((s: any) => s.durationInHours)) : 0
+  const toggleService = (serviceId: string) => {
+    setExpandedService(expandedService === serviceId ? null : serviceId)
+  }
+
+  if (!services || services.length === 0) {
+    return (
+      <Card className="p-12 text-center bg-background">
+        <div className="space-y-4">
+          <div className="w-16 h-16 mx-auto bg-muted rounded-full flex items-center justify-center">
+            <Package className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <h3 className="text-xl font-semibold text-foreground">No Services Available</h3>
+          <p className="text-muted-foreground max-w-md mx-auto">
+            This photographer hasn't added any services yet. Contact them directly for custom packages.
+          </p>
+        </div>
+      </Card>
+    )
+  }
 
   return (
-    <Card
-      className="group cursor-pointer overflow-hidden bg-background border border-border hover:border-orange-200 dark:hover:border-orange-800 transition-all duration-200 hover:shadow-md"
-      onClick={() => onViewDetails(service)}
-    >
-      <div className="relative h-48 overflow-hidden">
-        <ImageWithFallback
-          src={workSample?.media[3]}
-          alt={service.serviceTitle}
-          className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-          fallbackType="work"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+    <div className="space-y-4">
+      {services.map((service) => {
+        const isExpanded = expandedService === service._id
+        const minPrice =
+          service.sessionDurations.length > 0 ? Math.min(...service.sessionDurations.map((s: any) => s.price)) : 0
+        const minHours =
+          service.sessionDurations.length > 0
+            ? Math.min(...service.sessionDurations.map((s: any) => s.durationInHours))
+            : 0
 
-        {/* Service Title Overlay */}
-        <div className="absolute bottom-4 left-4 right-4">
-          <h3 className="text-lg font-semibold text-white mb-2">{service.serviceTitle}</h3>
-          <div className="flex items-center gap-2">
-            <Badge className="bg-white/20 text-white hover:bg-white/30 border-0 backdrop-blur-sm">
-              <Star className="w-3 h-3 mr-1" />
-              {service.yearsOfExperience} Years
-            </Badge>
-            <Badge className="bg-white/20 text-white hover:bg-white/30 border-0 backdrop-blur-sm">
-              <Users className="w-3 h-3 mr-1" />
-              Popular
-            </Badge>
-          </div>
-        </div>
-      </div>
+        return (
+          <Card key={service._id} className="overflow-hidden border border-border">
+            <div
+              className="p-6 cursor-pointer hover:bg-muted/30 transition-colors"
+              onClick={() => toggleService(service._id || "")}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Camera className="w-5 h-5 text-orange-600" />
+                    <h3 className="text-xl font-semibold text-foreground">{service.serviceTitle}</h3>
+                  </div>
 
-      <CardContent className="p-6 space-y-4">
-        {/* Description */}
-        <p className="text-muted-foreground text-sm line-clamp-2 leading-relaxed">{service.serviceDescription}</p>
+                  <div className="flex items-center gap-6 text-sm text-muted-foreground mb-3">
+                    <div className="flex items-center gap-1">
+                      <span className="font-medium">Starting at</span>
+                      <span className="text-lg font-semibold text-foreground">
+                        ₹{minPrice > 0 ? minPrice.toLocaleString() : "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      <span>{minHours > 0 ? `${minHours}h minimum` : "Custom duration"}</span>
+                    </div>
+                  </div>
 
-        {/* Pricing and Duration */}
-        <div className="flex justify-between items-center py-3 border-y border-border">
-          <div className="space-y-1">
-            <div className="text-xs text-muted-foreground uppercase tracking-wider">Starting at</div>
-            <div className="text-xl font-semibold text-foreground">
-              ₹{minPrice > 0 ? minPrice.toLocaleString() : "N/A"}
+                  <p className="text-muted-foreground text-sm line-clamp-2">{service.serviceDescription}</p>
+                </div>
+
+                <ChevronDown
+                  className={`w-5 h-5 text-muted-foreground transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                />
+              </div>
             </div>
-          </div>
-          <div className="text-right space-y-1">
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Clock className="w-3 h-3" />
-              <span>Duration</span>
-            </div>
-            <div className="text-sm font-medium text-foreground">
-              {minHours > 0 ? `${minHours}h minimum` : "Custom"}
-            </div>
-          </div>
-        </div>
 
-        {/* Style Specialties */}
-        <div className="space-y-2">
-          <div className="text-xs text-muted-foreground uppercase tracking-wider">Specialties</div>
-          <div className="flex flex-wrap gap-1.5">
-            {service.styleSpecialty.slice(0, 3).map((style: string, idx: number) => (
-              <Badge
-                key={idx}
-                variant="secondary"
-                className="text-xs px-2 py-0.5 bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300"
-              >
-                {style}
-              </Badge>
-            ))}
-            {service.styleSpecialty.length > 3 && (
-              <Badge variant="outline" className="text-xs px-2 py-0.5">
-                +{service.styleSpecialty.length - 3}
-              </Badge>
+            {isExpanded && (
+              <CardContent className="px-6 pb-6 pt-2 border-t border-border bg-muted/20">
+                <div className="space-y-6">
+                  {/* Style Specialties */}
+                  {service.styleSpecialty && service.styleSpecialty.length > 0 && (
+                    <div>
+                      <h4 className="font-medium text-foreground mb-3">Style Specialties</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {service.styleSpecialty.map((style: string, idx: number) => (
+                          <Badge
+                            key={idx}
+                            variant="secondary"
+                            className="px-3 py-1 bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300"
+                          >
+                            {style}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Session Durations & Pricing */}
+                  {service.sessionDurations && service.sessionDurations.length > 0 && (
+                    <div>
+                      <h4 className="font-medium text-foreground mb-3">Available Packages</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {service.sessionDurations.map((session: any, idx: number) => (
+                          <div key={idx} className="p-4 bg-background rounded-lg border border-border">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-medium text-foreground">{session.durationInHours}h Session</span>
+                              <span className="text-lg font-semibold text-orange-600">
+                                ₹{session.price.toLocaleString()}
+                              </span>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              Perfect for {session.durationInHours > 4 ? "full day" : "short"} coverage
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Action Button */}
+                  <div className="flex justify-end pt-4 border-t border-border">
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onViewDetails(service)
+                      }}
+                      className="bg-orange-600 hover:bg-orange-700 text-white"
+                    >
+                      View Full Details & Book
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
             )}
-          </div>
-        </div>
-
-        {/* View Details Button */}
-        <div className="pt-2">
-          <Button
-            variant="outline"
-            className="w-full border-orange-200 text-orange-600 hover:bg-orange-50 dark:border-orange-800 dark:text-orange-400 dark:hover:bg-orange-950/50 group-hover:bg-orange-50 dark:group-hover:bg-orange-950/50 bg-transparent"
-            onClick={(e) => {
-              e.stopPropagation()
-              onViewDetails(service)
-            }}
-          >
-            <span>View Details & Packages</span>
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+          </Card>
+        )
+      })}
+    </div>
   )
 }
