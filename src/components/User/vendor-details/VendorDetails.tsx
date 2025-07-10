@@ -121,7 +121,7 @@ const VendorDetails = ({ user }: VendorDetails) => {
               </TabsTrigger>
               <TabsTrigger
                 value="services"
-                className="flex items-center gap-2 px-6 py-3 rounded-md data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 dark:data-[state=active]:bg-orange-900/30 dark:data-[state=active]:text-orange-300"
+                className="flex items-center gap-2 px-6 py-2 rounded-md data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 dark:data-[state=active]:bg-orange-900/30 dark:data-[state=active]:text-orange-300"
               >
                 <Package className="w-4 h-4" />
                 <span className="font-medium">Services & Pricing</span>

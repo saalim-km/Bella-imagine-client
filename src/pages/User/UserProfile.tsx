@@ -16,7 +16,7 @@ import {
   useUpdateVendorMutation,
   useVendorDetailsQuery,
 } from "@/hooks/vendor/useVendor";
-import type { IProfileUpdate } from "@/types/interfaces/User";
+import type { IProfileUpdate, TRole } from "@/types/interfaces/User";
 import { useQueryClient } from "@tanstack/react-query";
 import { VendorCategoryModal } from "@/components/modals/VendorCategoryModal";
 import { useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
@@ -236,7 +236,7 @@ export default function UserProfile() {
                 <Button
                   variant="outline"
                   onClick={handleModalOpen}
-                  className="border-orange-700 text-orange-700 hover:bg-orange-50"
+                  className="border-orange-700 text-orange-70"
                 >
                   Choose a Category
                 </Button>
@@ -321,7 +321,7 @@ export default function UserProfile() {
                   ) : null}
 
                   {activeTab === "posts" && (
-                    <PostsTab userRole={userData.role} />
+                    <PostsTab/>
                   )}
 
                   {activeTab === "comments" && (

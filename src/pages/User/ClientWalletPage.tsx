@@ -11,7 +11,7 @@ import EnhancedWalletComponent from "@/components/common/WalletComponent"
 export default function ClientWallet() {
   const [queryParams, setQueryParams] = useState<WalletQueryParams>({
     page: 1,
-    limit: 5,
+    limit: 10,
   })
 
   const { data, isLoading, isError, refetch } = useClientWallet(queryParams)
@@ -55,8 +55,6 @@ export default function ClientWallet() {
     )
   }
 
-  console.log('wallet data :',data);
-
   return (
     <div className="container mx-auto py-6 px-4">
       <div className="space-y-6">
@@ -64,9 +62,9 @@ export default function ClientWallet() {
           <h1 className="text-3xl font-bold tracking-tight">My Wallet</h1>
           <p className="text-muted-foreground">Manage your funds, view transaction history, and track your spending.</p>
         </div>
-
         <EnhancedWalletComponent
           walletData={data.data.wallet}
+          pagination={data.data.pagination}
           userRole="client"
           isLoading={isLoading}
           onFiltersChange={handleFiltersChange}

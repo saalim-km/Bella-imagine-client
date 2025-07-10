@@ -3,14 +3,17 @@
 import { useState, useCallback } from "react"
 import { AdminLayout } from "@/components/layout/AdminLayout"
 import { Spinner } from "@/components/ui/spinner"
-import { useAdminWallet, type WalletQueryParams } from "@/hooks/wallet/useWallet"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AlertCircle } from "lucide-react"
+import { useAdminWallet, WalletQueryParams } from "@/hooks/wallet/useWallet"
 import EnhancedWalletComponent from "@/components/common/WalletComponent"
 
 const AdminWalletPage = () => {
-  const [queryParams, setQueryParams] = useState<WalletQueryParams>({})
+  const [queryParams, setQueryParams] = useState<WalletQueryParams>({
+    page: 1,
+    limit: 50,
+  })
 
   const { data, isLoading, isError, refetch } = useAdminWallet(queryParams)
 
@@ -60,9 +63,9 @@ const AdminWalletPage = () => {
           <h1 className="text-3xl font-bold tracking-tight">Admin Wallet</h1>
           <p className="text-muted-foreground">Manage admin wallet transactions and monitor financial activities.</p>
         </div>
-
         <EnhancedWalletComponent
-          walletData={data.data}
+          walletData={data.data.wallet}
+          pagination={data.data.pagination}
           userRole="admin"
           isLoading={isLoading}
           onFiltersChange={handleFiltersChange}

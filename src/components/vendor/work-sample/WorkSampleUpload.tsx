@@ -141,7 +141,7 @@ const WorkSampleUpload = ({
           isNew: false,
         }))
       : [],
-    tags: workSampleData?.tags || [],
+    tags: workSampleData?.tags || ["worksample","couple photography","wedding photography"],
     title: workSampleData?.title || "",
     _id: workSampleData?._id,
   };

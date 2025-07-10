@@ -7,9 +7,11 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AlertCircle } from "lucide-react"
 import EnhancedWalletComponent from "@/components/common/WalletComponent"
-
 export default function VendorWallet() {
-  const [queryParams, setQueryParams] = useState<WalletQueryParams>({})
+  const [queryParams, setQueryParams] = useState<WalletQueryParams>({
+    page: 1,
+    limit: 50,
+  })
 
   const { data, isLoading, isError, refetch } = useVendorWallet(queryParams)
 
@@ -25,7 +27,7 @@ export default function VendorWallet() {
     return (
       <div className="container mx-auto py-6 px-4">
         <div className="flex items-center justify-center min-h-[400px]">
-          <Spinner />
+          <Spinner />{" "}
         </div>
       </div>
     )
@@ -61,9 +63,9 @@ export default function VendorWallet() {
             Track your earnings, manage payouts, and monitor your financial performance.
           </p>
         </div>
-
         <EnhancedWalletComponent
-          walletData={data.data}
+          walletData={data.data.wallet}
+          pagination={data.data.pagination}
           userRole="vendor"
           isLoading={isLoading}
           onFiltersChange={handleFiltersChange}

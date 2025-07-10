@@ -189,10 +189,6 @@ export function VendorProfile({ vendor }: VendorProfileProps) {
                   )}
                   Send Message
                 </Button>
-                <Button variant="outline" className="px-8 py-2.5 bg-transparent">
-                  <Users className="w-4 h-4 mr-2" />
-                  Follow
-                </Button>
               </div>
             )}
           </div>
