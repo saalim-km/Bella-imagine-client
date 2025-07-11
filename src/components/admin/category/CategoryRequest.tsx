@@ -9,39 +9,91 @@ import { Badge } from "@/components/ui/badge";
 import { ICategoryRequest } from "@/services/categories/categoryService";
 import { useState } from "react";
 import { communityToast } from "@/components/ui/community-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 const CategoryRequest = () => {
   const [currPage, setCurrPage] = useState(1);
-  const { data, isLoading, refetch } = useGetAllCategoryRequest({
+  const queryClient = useQueryClient();
+
+  const { data, isLoading } = useGetAllCategoryRequest({
     limit: 5,
     page: currPage,
   });
   const { mutate: updateRequest } = useUpdateCategoryRequest();
 
-  const handleApprove = (categoryId: string, vendorId: string) => {
+  const handleApprove = async (categoryId: string, vendorId: string) => {
+    const queryKey = ["category-request", { page: currPage, limit: 5 }];
+
+    await queryClient.cancelQueries({ queryKey: queryKey });
+    const prevData = queryClient.getQueryData(queryKey);
+    queryClient.setQueryData(queryKey, (oldData: any) => {
+      if (!oldData) return oldData;
+
+      const updatedDocs = oldData.data.data.map((catReq: ICategoryRequest) => {
+        const isMatching =
+          catReq.categoryId?._id === categoryId &&
+          catReq.vendorId?._id === vendorId;
+
+        return isMatching ? { ...catReq, status: "approved" } : catReq;
+      });
+
+      return {
+        ...oldData,
+        data: {
+          ...oldData.data,
+          data: updatedDocs,
+        },
+      };
+    });
     updateRequest(
       { vendorId, categoryId, status: "approved" },
       {
         onSuccess: (data) => {
-          refetch();
-          communityToast.success({ title: data?.message });
+          communityToast.success({ description: data?.message });
         },
         onError: (err) => {
+          queryClient.setQueryData(queryKey, prevData);
           handleError(err);
         },
       }
     );
   };
 
-  const handleReject = (categoryId: string, vendorId: string) => {
+  const handleReject = async (categoryId: string, vendorId: string) => {
+    const queryKey = ["category-request", { page: currPage, limit: 5 }];
+
+    await queryClient.cancelQueries({ queryKey: queryKey });
+    const prevData = queryClient.getQueryData(queryKey);
+
+    console.log("got the prev data", prevData);
+    queryClient.setQueryData(queryKey, (oldData: any) => {
+      console.log("old data😌😌", oldData);
+      if (!oldData) return oldData;
+
+      const updatedDocs = oldData.data.data.map((catReq: ICategoryRequest) => {
+        const isMatching =
+          catReq.categoryId?._id === categoryId &&
+          catReq.vendorId?._id === vendorId;
+
+        return isMatching ? { ...catReq, status: "rejected" } : catReq;
+      });
+
+      return {
+        ...oldData,
+        data: {
+          ...oldData.data,
+          data: updatedDocs,
+        },
+      };
+    });
     updateRequest(
       { vendorId, categoryId, status: "rejected" },
       {
         onSuccess: (data) => {
-          refetch();
-          communityToast.success({ title: data?.message });
+          communityToast.success({ description: data?.message });
         },
         onError: (err) => {
+          queryClient.setQueryData(queryKey, prevData);
           handleError(err);
         },
       }
@@ -52,11 +104,11 @@ const CategoryRequest = () => {
   const totalRequests = data?.data.total || 0;
   const totalPages = Math.max(1, Math.ceil(totalRequests / 5));
 
- const handlePageChange = (newPage: number) => {
-  if (data && newPage > 0 && newPage <= data.data.total) {
-    setCurrPage(newPage);
-  }
-};
+  const handlePageChange = (newPage: number) => {
+    if (data && newPage > 0 && newPage <= data.data.total) {
+      setCurrPage(newPage);
+    }
+  };
 
   const columns: ColumnDef<ICategoryRequest>[] = [
     {

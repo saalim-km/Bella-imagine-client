@@ -16,7 +16,7 @@ import {
   useUpdateVendorMutation,
   useVendorDetailsQuery,
 } from "@/hooks/vendor/useVendor";
-import type { IProfileUpdate, TRole } from "@/types/interfaces/User";
+import type { IProfileUpdate } from "@/types/interfaces/User";
 import { useQueryClient } from "@tanstack/react-query";
 import { VendorCategoryModal } from "@/components/modals/VendorCategoryModal";
 import { useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";

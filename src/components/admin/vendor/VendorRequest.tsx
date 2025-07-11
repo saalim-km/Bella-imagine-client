@@ -165,7 +165,7 @@ export function VendorRequestsTable() {
       { id, status: true },
       {
         onSuccess: (data: any) => {
-          communityToast.success({ title: data?.message });
+          communityToast.success({ description: data?.message });
         },
         onError: (error) => {
           // Rollback to previous data on error
@@ -238,7 +238,7 @@ export function VendorRequestsTable() {
           setRejectModalOpen(false);
           setRejectReason("");
           setCustomRejectReason("");
-          communityToast.success({ title: data?.message });
+          communityToast.success({ description: data?.message });
         },
         onError: (error) => {
           // Rollback if something goes wrong

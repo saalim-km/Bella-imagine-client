@@ -76,8 +76,8 @@ export function AdminSidebar() {
   ];
 
   return (
-    <Sidebar>
-      <SidebarHeader>
+    <Sidebar >
+      <SidebarHeader className="bg-background">
         <div className="flex items-center gap-2 px-4 py-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary">
             <Layers className="h-4 w-4 text-primary-foreground" />
@@ -85,7 +85,7 @@ export function AdminSidebar() {
           <div className="font-semibold">Admin Dashboard</div>
         </div>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-background">
         <SidebarGroup>
           <SidebarGroupLabel>Main</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -121,7 +121,7 @@ export function AdminSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="bg-background">
         <div className="flex items-center justify-between px-4 py-2">
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8">

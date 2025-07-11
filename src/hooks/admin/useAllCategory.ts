@@ -32,9 +32,10 @@ export const useAllCategoryQuery = (
   pagination: PaginationParams = { page: 1, limit: 4 }
 ) =>  {
   return useQuery({
-    queryKey: categoryKeys.list(filter,pagination),
+    queryKey: ["category-list-admin",filter,pagination],
     queryFn: (): Promise<TPaginatedCategoryResponse> =>
       AdminService.get("/categories", { ...filter, ...pagination}),
+    staleTime : 1000 * 60 * 5
   });
 };
 
@@ -54,7 +55,8 @@ export const useUpdateCategoryMutation = () => {
 export const useGetAllCategoryRequest = (input : PaginatedDataRequest)=> {
   return useQuery({
     queryKey : ["category-request",input],
-    queryFn : ()=> getAllCategoryJoinRequests(input)
+    queryFn : ()=> getAllCategoryJoinRequests(input),
+    staleTime : 1000 * 60 * 5
   })
 }
 
@@ -74,6 +76,6 @@ export const useGetDashBoard = ()=> {
   return useQuery({
     queryKey : ['dashboard'],
     queryFn : getDashBoardStatsService,
-    staleTime : 1000 * 60 * 5
+    staleTime : 1000 * 60 * 15
   })
 }

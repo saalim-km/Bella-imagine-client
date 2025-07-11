@@ -62,7 +62,8 @@ export const useUnBlockVendor = () => {
 export const useVendorRequest = (filter : any = {} , pagination : PaginationParams = {page : 1 , limit : 4})=> {
     return useQuery({
         queryKey : ['vendor-request',filter,pagination],
-        queryFn : ()=>  AdminService.get<TPaginatedVendorRequest>('/vendor-request',{...filter,...pagination})
+        queryFn : ()=>  AdminService.get<TPaginatedVendorRequest>('/vendor-request',{...filter,...pagination}),
+        staleTime : 1000 * 60 * 5
     })
 }
 

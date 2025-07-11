@@ -158,7 +158,7 @@ const Vendors = () => {
     setFilters((prev) => ({ ...prev, sortBy }));
   };
 
-  if (isClientLoading || isVendorLoading) {
+  if (isClientLoading || isVendorLoading || isCLientFetchig || isVendorFetchig) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <LoadingBar />
@@ -166,7 +166,7 @@ const Vendors = () => {
     );
   }
 
-  if (isLClientError || isLVendorError || isCLientFetchig || isVendorFetchig) {
+  if (isLClientError || isLVendorError ) {
     return (
       <div className="flex justify-center items-center min-h-screen text-red-700">
         Error loading vendors please try again later

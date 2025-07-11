@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -48,6 +48,7 @@ interface EnhancedWalletComponentProps {
   isLoading?: boolean
   onFiltersChange: (filters: WalletQueryParams) => void
   onRefresh: () => void
+  currentQueryParams?: WalletQueryParams // Add this prop to receive current query params
 }
 
 interface FilterState {
@@ -64,6 +65,7 @@ export default function EnhancedWalletComponent({
   isLoading = false,
   onFiltersChange,
   onRefresh,
+  currentQueryParams = {}, // Default to empty object
 }: EnhancedWalletComponentProps) {
   const [filters, setFilters] = useState<FilterState>({
     search: "",
@@ -71,6 +73,16 @@ export default function EnhancedWalletComponent({
     purpose: "all",
     dateRange: "all",
   })
+
+  // Sync local filter state with current query params
+  useEffect(() => {
+    setFilters({
+      search: currentQueryParams.search || "",
+      status: currentQueryParams.status || "all",
+      purpose: currentQueryParams.purpose || "all",
+      dateRange: currentQueryParams.dateRange || "all",
+    })
+  }, [currentQueryParams])
 
   // Create debounced search function
   const debouncedSearch = useCallback(

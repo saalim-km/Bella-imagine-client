@@ -15,7 +15,8 @@ export const useCreateCommunityMutation = ()=> {
 export const useGetlAllCommunityAdmin = (dto : { page : number , limit : number , search : string})=> {
     return useQuery({
         queryKey : ["Communities_Admin",dto],
-        queryFn : ()=> getAllCommunitesAdmin(dto)
+        queryFn : ()=> getAllCommunitesAdmin(dto),
+        staleTime : 1000 * 60 * 5
     })
 }
 
@@ -28,7 +29,8 @@ export const useDeleteCommunity = ()=> {
 export const useGetCommunityBySlug = (slug : string)=> {
     return useQuery({
         queryKey : ['community',slug],
-        queryFn:  ()=> getCommunityBySlugService(slug)
+        queryFn:  ()=> getCommunityBySlugService(slug),
+        staleTime : 1000 * 60 * 5
     })
 }
 

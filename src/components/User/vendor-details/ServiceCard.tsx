@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { ChevronDown, Clock, Star, Camera, Package } from "lucide-react"
+import { ChevronDown, Clock, Camera, Package } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"

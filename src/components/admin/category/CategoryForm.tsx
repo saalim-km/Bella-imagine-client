@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  categoryKeys,
   useUpdateCategory,
   useAllCategoryMutation,
 } from "@/hooks/admin/useAllCategory";
@@ -13,13 +12,14 @@ import { handleError } from "@/utils/Error/error-handler.utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { CategoryFormProps } from "@/types/component-types/admin-component.types";
 import { communityToast } from "@/components/ui/community-toast";
+import { Category } from "@/services/categories/categoryService";
 
 const CategorySchema = Yup.object().shape({
   title: Yup.string().trim().required("Category title is required"),
   status: Yup.string().oneOf(["active", "inactive"], "Invalid status"),
 });
 
-export function CategoryForm({ initialData, onClose }: CategoryFormProps) {
+export function CategoryForm({ initialData, onClose , filterOptions,pagination}: CategoryFormProps) {
   const queryClient = useQueryClient();
 
   // Separate mutation hooks for adding and updating categories
@@ -41,6 +41,25 @@ export function CategoryForm({ initialData, onClose }: CategoryFormProps) {
           const isActive = values.status === "active";
 
           if (initialData) {
+
+            const queryKey = ["category-list-admin",filterOptions,pagination]
+            const prevData = queryClient.getQueryData(queryKey)
+
+            queryClient.setQueryData(queryKey,(oldData : any)=> {
+              if(!oldData) return oldData;
+
+              const updatedDoc = oldData.data.data.map((cat : Category)=> {
+                return cat._id == initialData._id ? {...cat,title : values.title,status : isActive} : cat
+              })
+
+              return {
+                ...oldData,
+                data : {
+                  ...oldData.data,
+                  data : updatedDoc
+                }
+              }
+            })
             updateCategoryMutate(
               {
                 id: initialData._id,
@@ -51,14 +70,11 @@ export function CategoryForm({ initialData, onClose }: CategoryFormProps) {
               },
               {
                 onSuccess: (data) => {
-                  communityToast.success({ title: data?.message });
-
-                  queryClient.invalidateQueries({
-                    queryKey: categoryKeys.lists(),
-                  });
+                  communityToast.success({ description: data?.message });
                   onClose();
                 },
                 onError: (err) => {
+                  queryClient.setQueryData(queryKey,prevData)
                   handleError(err);
                 },
               }
@@ -68,12 +84,9 @@ export function CategoryForm({ initialData, onClose }: CategoryFormProps) {
               { title: values.title, status: isActive },
               {
                 onSuccess: (data) => {
+                  queryClient.invalidateQueries({queryKey : ['category-list-admin']})
                   const response = data as AxiosResponse;
-                  communityToast.success({ title: response?.message });
-
-                  queryClient.invalidateQueries({
-                    queryKey: categoryKeys.lists(),
-                  });
+                  communityToast.success({ description: response?.message });
                   onClose();
                 },
                 onError: (err) => {
@@ -99,7 +112,7 @@ export function CategoryForm({ initialData, onClose }: CategoryFormProps) {
               <Field
                 as="select"
                 name="status"
-                className="border p-2 rounded w-full"
+                className="border p-2 rounded w-full bg-background"
               >
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>

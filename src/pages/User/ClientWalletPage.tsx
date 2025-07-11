@@ -69,6 +69,7 @@ export default function ClientWallet() {
           isLoading={isLoading}
           onFiltersChange={handleFiltersChange}
           onRefresh={handleRefresh}
+          currentQueryParams={queryParams} // Pass current query params
         />
       </div>
     </div>
