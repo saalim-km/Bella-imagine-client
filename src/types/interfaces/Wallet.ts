@@ -70,7 +70,6 @@ export interface Wallet {
   paymentId: Transaction[]
   createdAt: string
   updatedAt: string
-  __v: number
 }
 
 export interface PaginationInfo {

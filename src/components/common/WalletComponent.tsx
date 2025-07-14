@@ -67,6 +67,7 @@ export default function EnhancedWalletComponent({
   onRefresh,
   currentQueryParams = {}, // Default to empty object
 }: EnhancedWalletComponentProps) {
+
   const [filters, setFilters] = useState<FilterState>({
     search: "",
     status: "all",
@@ -320,7 +321,7 @@ export default function EnhancedWalletComponent({
                   </TableRow>
                 ) : (
                   walletData.paymentId.map((transaction) => (
-                    <TableRow key={`${transaction._id}-${transaction.transactionId}`}>
+                    <TableRow key={`${transaction.transactionId}-${transaction.transactionId}`}>
                       <TableCell className="font-medium">{transaction.transactionId}</TableCell>
                       <TableCell>{moment(transaction.createdAt).format("MMM DD, YYYY HH:mm")}</TableCell>
                       <TableCell>

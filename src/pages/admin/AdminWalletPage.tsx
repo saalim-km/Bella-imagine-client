@@ -12,7 +12,7 @@ import EnhancedWalletComponent from "@/components/common/WalletComponent"
 const AdminWalletPage = () => {
   const [queryParams, setQueryParams] = useState<WalletQueryParams>({
     page: 1,
-    limit: 50,
+    limit: 10,
   })
 
   const { data, isLoading, isError, refetch } = useAdminWallet(queryParams)

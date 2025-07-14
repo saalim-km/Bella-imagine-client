@@ -31,7 +31,7 @@ export default function Communities() {
     useState<CommunityResponse | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const itemsPerPage = 4;
+  const itemsPerPage = 2;
   console.log("current page for fetching : ", currentPage);
   const {
     data,
@@ -44,7 +44,8 @@ export default function Communities() {
   });
   const { mutate: deleteCommunity } = useDeleteCommunity();
   const communities = data?.data.data || [];
-  const totalPages = Math.max(1, Math.ceil(data ? data.data.total : 0 / itemsPerPage));
+  const totalCommunities = data?.data.total || 0
+  const totalPages = Math.max(1, Math.ceil(totalCommunities/ itemsPerPage));
 
   // Debounced search handler
 const debouncedSearch = useMemo(
@@ -145,10 +146,6 @@ const debouncedSearch = useMemo(
                 label: "Edit",
                 href: `/admin/community/edit/${community.slug}`,
                 icon: <Pencil className="h-4 w-4" />,
-              },
-              {
-                label: "Manage Members",
-                href: `/admin/${community.slug}/members`,
               },
             ]}
           />
