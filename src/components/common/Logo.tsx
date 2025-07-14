@@ -1,6 +1,5 @@
-import React from "react";
 import { motion } from "framer-motion"; // Optional: for smooth transitions
-import { useTheme } from "@/context/ThemeContext";
+import { useTheme } from "@/hooks/theme/useTheme";
 
 const Logo = () => {
   // Define filter styles based on theme

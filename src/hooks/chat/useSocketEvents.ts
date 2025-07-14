@@ -1,15 +1,14 @@
 import { TNotification } from "@/components/common/Notification";
-import { useSocket } from "@/context/SocketContext";
+import { communityToast } from "@/components/ui/community-toast";
+import { useSocket } from "@/hooks/socket/useSocket";
 import { setConversations, setMessages, setUsers, updateContactStatus, updateLastSeen } from "@/store/slices/chatSlice";
 import { addNotification } from "@/store/slices/notificationSlice";
 import { Conversation, Message, User } from "@/types/interfaces/Chat";
 import { TRole } from "@/types/interfaces/User";
 import { useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { toast } from "sonner";
 
 export function useSocketEvents({userId , userType} : {userId : string , userType : TRole}) {
-    console.log('use socket triggered',userId);
     const {socket} = useSocket();
     const dispatch = useDispatch();
 
@@ -19,8 +18,8 @@ export function useSocketEvents({userId , userType} : {userId : string , userTyp
         }
 
         socket.on("connect_error", () => {
-            toast.error("Failed to connect to chat server");
-          });
+            communityToast.error({description:"Failed to connect to chat server"});
+        });
 
         socket.emit('join',{userId,userType})
 
@@ -35,7 +34,6 @@ export function useSocketEvents({userId , userType} : {userId : string , userTyp
         })
 
         socket.on('messages',(messages : Message[])=> {
-            console.log('go the messages',messages);
             dispatch(setMessages(messages))
         })
 

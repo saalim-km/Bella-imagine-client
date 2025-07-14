@@ -10,16 +10,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { useAllClientQuery, useBlockClient, useUnBlockClient, clientKeys } from "@/hooks/admin/useClients";
+import {
+  useAllClientQuery,
+  useBlockClient,
+  useUnBlockClient,
+} from "@/hooks/admin/useClients";
 import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { buildQueryParams } from "@/utils/helper/query-generator";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { DataTable, type ColumnDef } from "@/components/common/Table";
 import { ReusableDropdown } from "@/components/common/ReusableDropdown";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
+import { communityToast } from "@/components/ui/community-toast";
+import { IClient } from "@/services/client/clientService";
 
 const FILTER_OPTIONS = [
   { label: "Blocked", value: "blocked" },
@@ -27,7 +31,6 @@ const FILTER_OPTIONS = [
 ];
 
 export function ClientTable() {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { mutate: block } = useBlockClient();
   const { mutate: unBlock } = useUnBlockClient();
@@ -37,7 +40,10 @@ export function ClientTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedClient, setSelectedClient] = useState<{ id: string; action: "block" | "unblock" } | null>(null);
+  const [selectedClient, setSelectedClient] = useState<{
+    id: string;
+    action: "block" | "unblock";
+  } | null>(null);
   const itemsPerPage = 4;
 
   const toggleFilter = (key: string) => {
@@ -75,17 +81,44 @@ export function ClientTable() {
     setSelectedClient({ id: clientId, action });
   }
 
-  function handleConfirm() {
+  async function handleConfirm() {
     if (!selectedClient) return;
     const { id, action } = selectedClient;
+
+    const queryKey = [
+      "client-list-admin",
+      {...filterOptions,
+        search : appliedSearchTerm
+      },
+      {page : currentPage,limit : itemsPerPage}
+    ]
+
+    await queryClient.cancelQueries({queryKey})
+    const previousData = queryClient.getQueryData(queryKey);
+
+    queryClient.setQueryData(queryKey,(oldData : any)=> {
+      if(!oldData) return oldData;
+
+      const updatedDocs = oldData.data.data.map((client : IClient)=> {
+        return client._id === id ? {...client , isblocked : action === 'block'} : client
+      });
+
+      return {
+        ...oldData,
+        data: {
+          ...oldData.data,
+          data : updatedDocs
+        }
+      }
+    })
 
     const mutation = action === "block" ? block : unBlock;
     mutation(id, {
       onSuccess: (data) => {
-        queryClient.invalidateQueries({ queryKey: clientKeys.lists() });
-        toast.success(data.message);
+        communityToast.success({ description: data?.message });
       },
       onError: (err) => {
+        queryClient.setQueryData(queryKey,previousData)
         handleError(err);
       },
     });
@@ -116,7 +149,7 @@ export function ClientTable() {
     }
   };
 
-  const columns: ColumnDef<typeof clients[0]>[] = [
+  const columns: ColumnDef<(typeof clients)[0]>[] = [
     {
       id: "name",
       header: "Name",
@@ -132,8 +165,8 @@ export function ClientTable() {
       id: "status",
       header: "Status",
       cell: (client) => (
-        <Badge variant={client.isActive ? "default" : "secondary"}>
-          {client.isActive ? "Active" : "Inactive"}
+        <Badge variant={client.isblocked ? "default" : "secondary"}>
+          {client.isblocked ? "blocked" : "not-blocked"}
         </Badge>
       ),
     },
@@ -155,7 +188,12 @@ export function ClientTable() {
             { type: "separator" },
             {
               label: client.isblocked ? "Unblock" : "Block",
-              onClick: () => client._id && confirmAction(client._id, client.isblocked ? "unblock" : "block"),
+              onClick: () =>
+                client._id &&
+                confirmAction(
+                  client._id,
+                  client.isblocked ? "unblock" : "block"
+                ),
               danger: true,
             },
           ]}
@@ -177,14 +215,19 @@ export function ClientTable() {
               onChange={handleSearchChange}
               onKeyDown={handleKeyDown}
             />
-            <Button variant="outline" className="rounded-l-none" onClick={handleSearchSubmit}>
+            <Button
+              variant="outline"
+              className="rounded-l-none"
+              onClick={handleSearchSubmit}
+            >
               Search
             </Button>
           </div>
           <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
-                Filter {appliedFilters.length > 0 && `(${appliedFilters.length})`}
+                Filter{" "}
+                {appliedFilters.length > 0 && `(${appliedFilters.length})`}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
@@ -223,13 +266,19 @@ export function ClientTable() {
         <ReusableAlertDialog
           open={true}
           onOpenChange={(open) => !open && setSelectedClient(null)}
-          title={selectedClient.action === "block" ? "Block Client" : "Unblock Client"}
+          title={
+            selectedClient.action === "block"
+              ? "Block Client"
+              : "Unblock Client"
+          }
           description={`Are you sure you want to ${selectedClient.action} this client?`}
           confirmLabel={selectedClient.action === "block" ? "Block" : "Unblock"}
           cancelLabel="Cancel"
           onConfirm={handleConfirm}
           onCancel={() => setSelectedClient(null)}
-          confirmVariant={selectedClient.action === "block" ? "destructive" : "default"}
+          confirmVariant={
+            selectedClient.action === "block" ? "destructive" : "default"
+          }
         />
       )}
     </>

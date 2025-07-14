@@ -29,8 +29,9 @@ export const clientKeys = {
 
 export const useAllClientQuery = (filter : any = {} ,pagination : PaginationParams = {page : 1 , limit : 4} )=> {
     return useQuery({
-        queryKey : clientKeys.list(filter,pagination),
-        queryFn : ()=> AdminService.get<TPaginatedClientRequest>('/users',{...filter,...pagination,role : "client"})
+        queryKey : ["client-list-admin",filter,pagination],
+        queryFn : ()=> AdminService.get<TPaginatedClientRequest>('/users',{...filter,...pagination,role : "client"}),
+        staleTime : 1000 * 60 * 5
     })
 }
 
@@ -40,6 +41,7 @@ export const useBlockClient = () => {
       mutationFn: (id: string) => AdminService.patch<ApiResponse>('/user-status',{id : id , role : 'client' , isblock : true}),
     })
 }
+
 export const useUnBlockClient = () => {
     return useMutation({
       mutationFn: (id: string) => AdminService.patch<ApiResponse>('/user-status',{id : id , role : 'client' , isblock : false}),

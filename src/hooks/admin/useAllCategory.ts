@@ -1,4 +1,4 @@
-import AdminService from "@/services/admin/adminService";
+import AdminService, { getDashBoardStatsService } from "@/services/admin/adminService";
 import { Category, getAllCategoryJoinRequests, PaginatedDataRequest, updateCategoryJoinRequest, updateCategoryService, updateCategoryStatus } from "@/services/categories/categoryService";
 import { PaginationParams } from "@/types/interfaces/Admin";
 import { PaginatedResponse } from "@/types/interfaces/vendor";
@@ -32,9 +32,10 @@ export const useAllCategoryQuery = (
   pagination: PaginationParams = { page: 1, limit: 4 }
 ) =>  {
   return useQuery({
-    queryKey: categoryKeys.list(filter,pagination),
+    queryKey: ["category-list-admin",filter,pagination],
     queryFn: (): Promise<TPaginatedCategoryResponse> =>
       AdminService.get("/categories", { ...filter, ...pagination}),
+    staleTime : 1000 * 60 * 5
   });
 };
 
@@ -54,7 +55,8 @@ export const useUpdateCategoryMutation = () => {
 export const useGetAllCategoryRequest = (input : PaginatedDataRequest)=> {
   return useQuery({
     queryKey : ["category-request",input],
-    queryFn : ()=> getAllCategoryJoinRequests(input)
+    queryFn : ()=> getAllCategoryJoinRequests(input),
+    staleTime : 1000 * 60 * 5
   })
 }
 
@@ -64,8 +66,16 @@ export const useUpdateCategoryRequest = ()=> {
   })
 }
 
-export const updateCategory = ()=> {
+export const useUpdateCategory = ()=> {
   return useMutation({
     mutationFn : updateCategoryService
+  })
+}
+
+export const useGetDashBoard = ()=> {
+  return useQuery({
+    queryKey : ['dashboard'],
+    queryFn : getDashBoardStatsService,
+    staleTime : 1000 * 60 * 15
   })
 }

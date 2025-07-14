@@ -1,44 +1,77 @@
-import WalletComponent from "@/components/common/WalletComponent";
-import { Spinner } from "@/components/ui/spinner";
-import { useClientWallet } from "@/hooks/wallet/useWallet";
-import { PopulatedWallet } from "@/types/interfaces/Wallet";
-import { useEffect, useState } from "react";
+"use client"
 
+import { useState, useCallback } from "react"
+import { Spinner } from "@/components/ui/spinner"
+import { useClientWallet, type WalletQueryParams } from "@/hooks/wallet/useWallet"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { AlertCircle } from "lucide-react"
+import EnhancedWalletComponent from "@/components/common/WalletComponent"
 
 export default function ClientWallet() {
-  const { data, isLoading } = useClientWallet();
+  const [queryParams, setQueryParams] = useState<WalletQueryParams>({
+    page: 1,
+    limit: 10,
+  })
 
-  const [walletData, setWalletData] = useState<Omit<
-    PopulatedWallet,
-    "paymentId"
-  > | null>(null);
-  const [transactions, setTransactions] = useState<PopulatedWallet | null>(
-    null
-  );
+  const { data, isLoading, isError, refetch } = useClientWallet(queryParams)
 
-  useEffect(() => {
-    if (data) {
-      setWalletData(data.data);
+  const handleFiltersChange = useCallback((filters: WalletQueryParams) => {
+    setQueryParams(filters)
+  }, [])
 
-      setTransactions(data.data);
-    }
-  }, [data]);
+  const handleRefresh = useCallback(() => {
+    refetch()
+  }, [refetch])
 
-  if (isLoading) {
-    return <Spinner />;
+  if (isLoading && !data) {
+    return (
+      <div className="container mx-auto py-6 px-4">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Spinner />
+        </div>
+      </div>
+    )
   }
 
-  if (!walletData || !transactions) {
-    return null;
+  if (isError || !data) {
+    return (
+      <div className="container mx-auto py-6 px-4">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Card className="p-8 text-center max-w-md">
+            <CardContent className="space-y-4">
+              <AlertCircle className="h-12 w-12 text-destructive mx-auto" />
+              <h3 className="text-lg font-semibold">Error Loading Wallet</h3>
+              <p className="text-muted-foreground">
+                An error occurred while fetching your wallet data. Please try again later.
+              </p>
+              <Button onClick={handleRefresh} variant="outline">
+                Try Again
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="container mx-auto py-6 px-4">
-      <WalletComponent
-        walletData={walletData}
-        transactions={transactions}
-        userRole="client"
-      />
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">My Wallet</h1>
+          <p className="text-muted-foreground">Manage your funds, view transaction history, and track your spending.</p>
+        </div>
+        <EnhancedWalletComponent
+          walletData={data.data.wallet}
+          pagination={data.data.pagination}
+          userRole="client"
+          isLoading={isLoading}
+          onFiltersChange={handleFiltersChange}
+          onRefresh={handleRefresh}
+          currentQueryParams={queryParams} // Pass current query params
+        />
+      </div>
     </div>
-  );
+  )
 }

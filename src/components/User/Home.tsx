@@ -1,501 +1,426 @@
-"use client";
+"use client"
 
-import { useRef, useState, useEffect } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Search, MapPin } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import CategoryCard from "./CategoryCard";
-import ContestCard from "./ContestCard";
-import PhotoCard from "./PhotoCard";
+import { useState, useEffect } from "react"
+import { ArrowRight, Camera, Users, Clock, MapPin } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useNavigate } from "react-router-dom"
+import { LoadingBar } from "../ui/LoadBar"
+import { useSelector } from "react-redux"
+import type { RootState } from "@/store/store"
+import { useAllVendorsListQueryClient } from "@/hooks/client/useClient"
+import { useAllVendorsListQueryVendor } from "@/hooks/vendor/useVendor"
 
-// Sample data (would come from API in real implementation)
-const categories = [
-  { _id: "1", title: "Wedding" },
-  { _id: "2", title: "Portrait" },
-  { _id: "3", title: "Family" },
-  { _id: "4", title: "Events" },
-  { _id: "5", title: "Fashion" },
-  { _id: "6", title: "Travel" },
-  { _id: "7", title: "Architecture" },
-  { _id: "8", title: "Food" },
-];
+// Your existing interface
+export interface ICommunityPost {
+  _id?: string
+  communityId: string
+  userId: string
+  title: string
+  content: string
+  media: string[]
+  mediaType?: "image" | "video" | "mixed" | "none"
+  isEdited?: boolean
+  likeCount: number
+  commentCount: number
+  tags: string[]
+  comments: string[]
+  createdAt?: string
+  updatedAt?: string
+}
 
-const photos = [
-  {
-    id: "1",
-    src: "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741531304/unnamed_5_i7qnb7.webp",
-    alt: "Wedding couple by the lake",
-    photographer: "Anita Sharma",
-    category: "Wedding",
-  },
-  {
-    id: "2",
-    src: "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741531305/unnamed_2_yjfx4l.webp",
-    alt: "Family portrait in a garden",
-    photographer: "Rahul Mehta",
-    category: "Family",
-  },
-  {
-    id: "3",
-    src: "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741531305/unnamed_mnfmjo.webp",
-    alt: "Engagement photoshoot at sunset",
-    photographer: "Priya Kapoor",
-    category: "Engagement",
-  },
-  {
-    id: "4",
-    src: "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741531305/unnamed_1_re5olq.webp",
-    alt: "Traditional Indian wedding ceremony",
-    photographer: "Vikram Singh",
-    category: "Wedding",
-  },
-  {
-    id: "5",
-    src: "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741531305/unnamed_6_hsw1lx.webp",
-    alt: "Bride preparation",
-    photographer: "Meera Patel",
-    category: "Wedding",
-  },
-  {
-    id: "6",
-    src: "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741531305/unnamed_4_h0l0zp.webp",
-    alt: "Couple portrait",
-    photographer: "Arjun Reddy",
-    category: "Portrait",
-  },
-  {
-    id: "7",
-    src: "https://res.cloudinary.com/deh2nuqeb/image/upload/v1743234985/photo1.jpg",
-    alt: "Portrait session",
-    photographer: "Neha Gupta",
-    category: "Portrait",
-  },
-  {
-    id: "8",
-    src: "https://res.cloudinary.com/deh2nuqeb/image/upload/v1743234985/photo2.jpg",
-    alt: "Wedding celebration",
-    photographer: "Sanjay Kumar",
-    category: "Wedding",
-  },
-];
+export interface ICommunityPostResponse {
+  _id?: string
+  communityId: string
+  userId: {
+    _id: string
+    name: string
+    profileImage: string
+  }
+  isLiked: boolean
+  title: string
+  content: string
+  media: string[]
+  mediaType?: "image" | "video" | "mixed" | "none"
+  isEdited?: boolean
+  likeCount: number
+  commentCount: number
+  tags: string[]
+  comments: string[]
+  createdAt?: string
+  updatedAt?: string
+}
 
-const contests = [
-  {
-    id: 1,
-    title: "Portrait Master 2025",
-    startDate: "2025-04-10",
-    endDate: "2025-04-30",
-    image: "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741531304/portrait.jpg",
-    status: "New",
-  },
-  {
-    id: 2,
-    title: "Monsoon Magic",
-    startDate: "2025-04-15",
-    endDate: "2025-05-15",
-    image: "https://res.cloudinary.com/deh2nuqeb/image/upload/v1741531304/monsoon.jpg",
-    status: "Trending",
-  },
-  {
-    id: 3,
-    title: "Urban Vibes",
-    startDate: "2025-05-01",
-    endDate: "2025-05-30",
-    image: "https://res.cloudinary.com/deh2nuqeb/image/upload/v1743234985/urban.jpg",
-    status: "Popular",
-  },
-];
+// Transform work samples into hero posts format
+const transformWorkSamplesToHeroPosts = (photographers: any[]) => {
+  const heroPosts: any[] = []
 
-const locations = [
+  photographers.forEach((photographer) => {
+    if (photographer.workSamples && Array.isArray(photographer.workSamples)) {
+      photographer.workSamples.forEach((workSample: any) => {
+        if (workSample && workSample.media && Array.isArray(workSample.media) && workSample.media.length > 0) {
+          heroPosts.push({
+            _id: workSample._id || `work-${Math.random()}`,
+            title: workSample.title || "Professional Photography Work",
+            content: workSample.description || "Explore this amazing photography work...",
+            media: workSample.media.filter(Boolean), // Remove any null/undefined media
+            mediaType: "image",
+            tags: Array.isArray(workSample.tags) ? workSample.tags : [],
+            photographer: {
+              name: photographer.name || "Professional Photographer",
+              profileImage: photographer.profileImage || "/placeholder.svg",
+              location: photographer.location?.address || "Available",
+              categories: Array.isArray(photographer.categories)
+                ? photographer.categories.map((cat: any) => cat?.title).filter(Boolean)
+                : [],
+            },
+            service:
+              Array.isArray(photographer.services) && photographer.services.length > 0
+                ? photographer.services[0]
+                : null,
+          })
+        }
+      })
+    }
+  })
+
+  return heroPosts.length > 0 ? heroPosts : fallbackPosts
+}
+
+// Fallback posts if no work samples available
+const fallbackPosts = [
   {
-    state: "Maharashtra",
-    count: 1245,
-    cities: [
-      { name: "Mumbai", count: 355 },
-      { name: "Pune", count: 210 },
-      { name: "Nagpur", count: 98 },
-      { name: "Nashik", count: 67 },
-    ],
+    _id: "fallback1",
+    title: "Discover Amazing Photography Services",
+    content: "Connect with professional photographers in your area for all your photography needs...",
+    media: ["/placeholder.svg?height=800&width=1200"],
+    mediaType: "image",
+    likeCount: 47,
+    commentCount: 12,
+    tags: ["photography", "professional"],
+    photographer: {
+      name: "Professional Photographers",
+      profileImage: "/placeholder.svg?height=100&width=100",
+      location: "Available Nationwide",
+      categories: ["All Categories"],
+    },
   },
-  {
-    state: "Karnataka",
-    count: 987,
-    cities: [
-      { name: "Bangalore", count: 172 },
-      { name: "Mysore", count: 89 },
-      { name: "Hubli", count: 45 },
-      { name: "Mangalore", count: 62 },
-    ],
-  },
-  {
-    state: "Delhi",
-    count: 678,
-    cities: [
-      { name: "New Delhi", count: 193 },
-      { name: "Noida", count: 87 },
-      { name: "Gurgaon", count: 112 },
-    ],
-  },
-];
+]
 
-export default function Home() {
-  const heroRef = useRef(null);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [locationOpen, setLocationOpen] = useState(false);
-  const [locationValue, setLocationValue] = useState("");
-  const [activeCategory, setActiveCategory] = useState("All");
+export default function CommunityHome() {
+  const user = useSelector((state: RootState) => {
+    if (state.vendor.vendor) return state.vendor.vendor
+    if (state.client.client) return state.client.client
+    return null
+  })
 
-  // Parallax effect for hero section
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
+  const [currentPostIndex, setCurrentPostIndex] = useState(0)
+  const [marker, setMarker] = useState<{ lng: number; lat: number }>({
+    lng: 0,
+    lat: 0,
+  })
+  const [heroPosts, setHeroPosts] = useState<any[]>(fallbackPosts)
+  const [isTransitioning, setIsTransitioning] = useState(false)
 
-  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
-  const y = useTransform(scrollYProgress, [0, 1], [0, 150]);
+  const navigate = useNavigate()
 
-  // Rotate through images every 6 seconds
+  const { data : clientData, isLoading : isClientLoading, isError : isCLienterror } = useAllVendorsListQueryClient({
+    maxCharge: 100000,
+    location: marker,
+    limit: 4,
+    page: 1,
+    enabled: user?.role === "client",
+  })
+  const { data : vendorData, isLoading : isVendorLoading, isError : isVendorerror } = useAllVendorsListQueryVendor({
+    maxCharge: 100000,
+    location: marker,
+    limit: 4,
+    page: 1,
+    enabled: user?.role === "vendor",
+  })
+
+  const onlinePhotographers = clientData?.data.data ? clientData.data : vendorData?.data
+
+  // Transform real data into hero posts when data is available
   useEffect(() => {
+    if (onlinePhotographers?.data.length || 0 > 0) {
+      const transformedPosts = transformWorkSamplesToHeroPosts(onlinePhotographers ? onlinePhotographers.data : [])
+      if (transformedPosts.length > 0) {
+        setHeroPosts(transformedPosts)
+      }
+    }
+  }, [onlinePhotographers])
+
+  // Smooth transition between posts every 6 seconds
+  useEffect(() => {
+    if (heroPosts.length <= 1) return
+
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % photos.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, []);
+      setIsTransitioning(true)
+
+      setTimeout(() => {
+        setCurrentPostIndex((prevIndex) => (prevIndex + 1) % heroPosts.length)
+        setIsTransitioning(false)
+      }, 300) // Half of transition duration
+    }, 6000)
+
+    return () => clearInterval(interval)
+  }, [heroPosts.length])
+
+  useEffect(() => {
+    if (navigator.geolocation && marker.lat == 0) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const userLocation = {
+          lng: position.coords.longitude,
+          lat: position.coords.latitude,
+        }
+        setMarker(userLocation)
+      })
+    }
+  }, [marker.lat])
+
+  const currentPost = heroPosts[currentPostIndex]
+
+  // Add safety checks
+  if (!currentPost || !currentPost.media || currentPost.media.length === 0) {
+    return <LoadingBar />
+  }
+
+  if (isClientLoading || isVendorLoading) {
+    return <LoadingBar />
+  }
+
+  if (isCLienterror || isVendorerror) {
+    return <p className="text-red-600">Error fetching photographers. Please try again later.</p>
+  }
 
   return (
-    <main className="relative">
-      {/* Hero Section with Photographer Search */}
-      <section ref={heroRef} className="relative h-screen w-full overflow-hidden">
-        {/* Background Image with Parallax */}
-        <motion.div style={{ opacity, scale, y }} className="absolute inset-0 z-0">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentImageIndex}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1 }}
-              className="h-full w-full"
-            >
+    <main className="min-h-screen bg-gradient-to-br">
+      {/* Hero Section - Real Work Samples Showcase */}
+      <section className="relative h-[70vh] w-full overflow-hidden">
+        {/* Background Image with Smooth Transition */}
+        <div className="absolute inset-0">
+          <div
+            className={`absolute inset-0 bg-cover bg-center transition-all duration-700 ease-in-out ${
+              isTransitioning ? "opacity-0 scale-105" : "opacity-100 scale-100"
+            }`}
+            style={{
+              backgroundImage: `url(${currentPost?.media?.[0] || "/placeholder.svg?height=800&width=1200"})`,
+              filter: "brightness(0.7)",
+            }}
+          />
+        </div>
+
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+
+        {/* Content */}
+        <div className="relative z-10 h-full flex items-center">
+          <div className="container mx-auto px-6">
+            <div className="max-w-3xl">
+              {/* Badges */}
               <div
-                className="h-full w-full bg-cover bg-center"
-                style={{
-                  backgroundImage: `url(${photos[currentImageIndex].src})`,
-                }}
+                className={`flex items-center gap-3 mb-6 transition-all duration-500 ${
+                  isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+                }`}
               >
-                <div className="absolute inset-0" />
+                <Badge variant="secondary" className="bg-orange-100 text-orange-800 px-3 py-1">
+                  Featured Work
+                </Badge>
+                {currentPost?.photographer?.categories?.[0] && (
+                  <Badge variant="outline" className="text-white border-white/30 px-3 py-1">
+                    {currentPost.photographer.categories[0]}
+                  </Badge>
+                )}
+                {currentPost?.tags?.[0] && (
+                  <Badge variant="outline" className="text-orange-200 border-orange-200/30 px-3 py-1">
+                    {currentPost.tags[0]}
+                  </Badge>
+                )}
               </div>
-            </motion.div>
-          </AnimatePresence>
-        </motion.div>
 
-        {/* Hero Content */}
-        <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center ">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="font-serif text-4xl md:text-6xl lg:text-7xl leading-tight mb-6 text-white"
-          >
-            Extraordinary Moments, <br />
-            <span className="italic">Artfully Captured</span>
-          </motion.h1>
+              {/* Title */}
+              <h1
+                className={`text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white leading-tight transition-all duration-500 delay-100 ${
+                  isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+                }`}
+              >
+                {currentPost?.title || "Discover Amazing Photography"}
+              </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="text-lg md:text-xl /80 mb-10 max-w-xl text-white"
-          >
-            Connect with over 45,000 visionary photographers across India
-          </motion.p>
+              {/* Description */}
+              <p
+                className={`text-lg md:text-xl mb-6 text-orange-100 leading-relaxed max-w-2xl transition-all duration-500 delay-200 ${
+                  isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+                }`}
+              >
+                {currentPost?.content ||
+                  "Connect with professional photographers in your area for all your photography needs."}
+              </p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-            className="w-full max-w-md"
-          >
-            <div className="flex flex-col gap-3">
-              <Popover open={locationOpen} onOpenChange={setLocationOpen}>
-                <PopoverTrigger asChild>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 /60 text-white"/>
-                    <Input
-                      placeholder="Search for state or city..."
-                      className="h-12 pl-10  /10 border-white/20 focus:border-white/50 transition-colors"
-                      onClick={() => setLocationOpen(true)}
-                      value={locationValue}
-                      onChange={(e) => setLocationValue(e.target.value)}
-                    />
+              {/* Photographer Info */}
+              {currentPost?.photographer && (
+                <div
+                  className={`flex items-center gap-4 mb-8 transition-all duration-500 delay-300 ${
+                    isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+                  }`}
+                >
+                  <Avatar className="w-12 h-12 border-2 border-white/20">
+                    <AvatarImage src={currentPost.photographer.profileImage || "/placeholder.svg"} />
+                    <AvatarFallback className="bg-orange-600 text-white">
+                      {currentPost.photographer.name?.charAt(0) || "P"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-white font-semibold">
+                      {currentPost.photographer.name || "Professional Photographer"}
+                    </p>
+                    <p className="text-orange-200 text-sm flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      {currentPost.photographer.location || "Available"}
+                    </p>
                   </div>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0" align="start">
-                  <Command className=" ">
-                    <CommandInput
-                      placeholder="Search for state or city..."
-                      value={locationValue}
-                      onValueChange={setLocationValue}
-                      className=" placeholder:/40"
-                    />
-                    <CommandList className="max-h-[300px] overflow-auto">
-                      <CommandEmpty className="/60">No results found.</CommandEmpty>
-                      {locations.map((location) => (
-                        <CommandGroup key={location.state} heading={location.state} className="/80">
-                          <CommandItem
-                            onSelect={() => {
-                              setLocationValue(location.state);
-                              setLocationOpen(false);
-                            }}
-                            className="flex items-center justify-between  "
-                          >
-                            <span>{location.state}</span>
-                            <span className="text-sm /60">{location.count}</span>
-                          </CommandItem>
-                          {location.cities.map((city) => (
-                            <CommandItem
-                              key={city.name}
-                              onSelect={() => {
-                                setLocationValue(`${city.name}, ${location.state}`);
-                                setLocationOpen(false);
-                              }}
-                              className="flex items-center justify-between pl-6  "
-                            >
-                              <span>{city.name}</span>
-                              <span className="text-sm /60">{city.count}</span>
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      ))}
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+                </div>
+              )}
 
-              <a href="/photographers">
-                <Button className="h-12 w-full  transition-colors text-sm uppercase tracking-widest">
-                  Find a Photographer
+              {/* Stats */}
+              <div
+                className={`flex items-center gap-6 mb-8 transition-all duration-500 delay-300 ${
+                  isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+                }`}
+              >
+                {currentPost?.service?.sessionDurations?.durationInHours && (
+                  <div className="flex items-center gap-2 text-white/80">
+                    <Clock className="w-4 h-4" />
+                    <span>{currentPost.service.sessionDurations.durationInHours}h sessions</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div
+                className={`flex flex-col sm:flex-row gap-4 transition-all duration-500 delay-400 ${
+                  isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+                }`}
+              >
+                <Button
+                  size="lg"
+                  className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 text-lg"
+                  onClick={() => navigate("/photographers")}
+                >
+                  <Camera className="w-5 h-5 mr-2" />
+                  Find Photographers
                 </Button>
-              </a>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-white/30 text-white hover:bg-white/10 px-8 py-3 text-lg bg-transparent"
+                  onClick={() => navigate("/communities")}
+                >
+                  <Users className="w-5 h-5 mr-2" />
+                  Join Community
+                </Button>
+              </div>
             </div>
-          </motion.div>
+          </div>
+        </div>
 
-          {/* Image indicators */}
-          <div className="absolute bottom-8 flex gap-2">
-            {photos.slice(0, 6).map((_, index) => (
+        {/* Navigation Dots */}
+        {heroPosts.length > 1 && (
+          <div className="absolute bottom-6 left-6 flex gap-2">
+            {heroPosts.map((_, index) => (
               <button
                 key={index}
-                className={cn(
-                  "h-1.5 rounded-full transition-all",
-                  currentImageIndex === index ? " w-8" : "/40 w-4 hover:/60",
-                )}
-                onClick={() => setCurrentImageIndex(index)}
-                aria-label={`Go to slide ${index + 1}`}
+                onClick={() => {
+                  setIsTransitioning(true)
+                  setTimeout(() => {
+                    setCurrentPostIndex(index)
+                    setIsTransitioning(false)
+                  }, 300)
+                }}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index === currentPostIndex ? "bg-orange-500 scale-110" : "bg-white/40 hover:bg-white/60"
+                }`}
               />
             ))}
           </div>
-        </div>
+        )}
+
+        {/* Progress Bar */}
+        {heroPosts.length > 1 && (
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-black/20">
+            <div
+              className="h-full bg-orange-500 transition-all duration-75 ease-linear"
+              style={{
+                width: `${((currentPostIndex + 1) / heroPosts.length) * 100}%`,
+              }}
+            />
+          </div>
+        )}
       </section>
 
-      {/* Categories Section */}
-      <section className="py-24 bg-muted/30">
+      {/* Online Photographers - Instant Booking */}
+      <section className="py-16 bg-gradient-to-r">
         <div className="container mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="max-w-md mb-12"
-          >
-            <h2 className="font-serif text-3xl md:text-4xl  mb-6">Explore Categories</h2>
-            <p className="/60">Discover photographers specializing in your desired style and occasion</p>
-          </motion.div>
-
-          <ScrollArea className="w-full pb-6">
-            <div className="flex space-x-4">
-              <CategoryCard
-                key="all"
-                title="All"
-                isActive={activeCategory === "All"}
-                onClick={() => setActiveCategory("All")}
-              />
-              {categories.map((category) => (
-                <CategoryCard
-                  key={category._id}
-                  title={category.title}
-                  isActive={activeCategory === category.title}
-                  onClick={() => setActiveCategory(category.title)}
-                />
-              ))}
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </div>
-      </section>
-
-      {/* Photo Gallery Section */}
-      <section className="py-24 ">
-        <div className="container mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="flex flex-col md:flex-row justify-between items-start mb-16 gap-8"
-          >
-            <div className="max-w-md">
-              <h2 className="font-serif text-3xl md:text-4xl  mb-6">Featured Work</h2>
-              <p className="/60">
-                A curated selection of exceptional photography from our community of artists
+          <div className="flex justify-between items-center mb-12">
+            <div>
+              <h2 className="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-200">Available Right Now</h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                Connect instantly with online photographers in your area
               </p>
             </div>
-
-            <a
-              href="/gallery"
-              className="inline-flex items-center gap-2  text-sm uppercase tracking-widest group"
-            >
-              <span>View Full Gallery</span>
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </a>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            {/* Featured large image */}
-            <div className="md:col-span-8 aspect-[16/9]">
-              <PhotoCard photo={photos[0]} featured />
-            </div>
-
-            {/* Regular grid items */}
-            <div className="md:col-span-4 aspect-square">
-              <PhotoCard photo={photos[1]} />
-            </div>
-
-            <div className="md:col-span-4 aspect-[3/4]">
-              <PhotoCard photo={photos[2]} />
-            </div>
-
-            <div className="md:col-span-4 aspect-square">
-              <PhotoCard photo={photos[3]} />
-            </div>
-
-            <div className="md:col-span-4 aspect-[4/3]">
-              <PhotoCard photo={photos[4]} />
-            </div>
-
-            <div className="md:col-span-6 aspect-[16/9]">
-              <PhotoCard photo={photos[5]} />
-            </div>
-
-            <div className="md:col-span-6 aspect-[16/9]">
-              <PhotoCard photo={photos[6]} />
-            </div>
+            <Button variant="outline" onClick={() => navigate("/photographers")}>
+              <span>View all photographers</span>
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
           </div>
 
-          {/* Tags Section */}
-          <div className="mt-16 text-center">
-            <p className="/60 text-lg mb-6">Discover more by category:</p>
-            <div className="flex flex-wrap justify-center gap-3">
-              {["Wedding", "Portrait", "Family", "Events", "Fashion", "Travel"].map((tag) => (
-                <a
-                  key={tag}
-                  href={`/category/${tag.toLowerCase()}`}
-                  className="px-4 py-2 /5  border  rounded-full transition-colors"
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {onlinePhotographers?.data.map((photographer) => (
+                <div
+                  key={photographer._id}
+                  className="rounded-xl p-6 border transition-all group shadow-sm cursor-pointer hover:shadow-md"
                 >
-                  {tag}
-                </a>
-              ))}
-              <button className="px-4 py-2 /5  border  rounded-full transition-colors inline-flex items-center gap-2">
-                <Search className="h-4 w-4" />
-                <span>Search all</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="relative">
+                      <Avatar className="w-12 h-12">
+                        <AvatarImage src={photographer.profileImage || "/placeholder.svg"} className="object-cover" />
+                        <AvatarFallback>{photographer.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      {photographer.isOnline && (
+                        <div className="absolute bottom-0 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 animate-pulse" />
+                      )}
+                    </div>
+                  </div>
 
-      {/* Contests Section */}
-      <section className="py-24 ">
-        <div className="container mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="flex flex-col md:flex-row justify-between items-start mb-16 gap-8"
-          >
-            <div className="max-w-md">
-              <h2 className="font-serif text-3xl md:text-4xl  mb-6">Current Contests</h2>
-              <p className="/60">
-                Showcase your talent and win recognition through our curated photography contests
-              </p>
-            </div>
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-200 mb-1">{photographer.name}</h3>
+                  <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    <MapPin className="w-3 h-3" />
+                    <span>{photographer.location?.address}</span>
+                  </div>
 
-            <a
-              href="/contests"
-              className="inline-flex items-center gap-2  text-sm uppercase tracking-widest group"
-            >
-              <span>View All Contests</span>
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </a>
-          </motion.div>
+                  <div className="flex flex-wrap gap-1 mb-4">
+                    {photographer.services[0].styleSpecialty.slice(0, 2).map((specialty) => (
+                      <Badge key={specialty} variant="secondary" className="text-xs">
+                        {specialty}
+                      </Badge>
+                    ))}
+                  </div>
 
-          <ScrollArea className="w-full pb-6">
-            <div className="flex space-x-6">
-              {contests.map((contest) => (
-                <ContestCard key={contest.id} contest={contest} />
+                  <Button
+                    onClick={() => navigate(`/photographer/${photographer._id}`)}
+                    variant="default"
+                    className="w-full"
+                  >
+                    Book now
+                  </Button>
+                </div>
               ))}
             </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </div>
-      </section>
-
-      {/* Call to Action */}
-      <section className="py-32 ">
-        <div className="container mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="max-w-4xl mx-auto text-center"
-          >
-            <h2 className="font-serif text-3xl md:text-5xl  mb-8">
-              Ready to Capture Your <span className="italic">Extraordinary</span> Moments?
-            </h2>
-            <p className="/60 text-lg mb-12 max-w-2xl mx-auto">
-              Join our community of visionary photographers or find the perfect artist to bring your vision to life
-            </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <a
-                href="/photographers"
-                className="px-8 py-4   text-sm uppercase tracking-wides transition-colors"
-              >
-                Find a Photographer
-              </a>
-              <a
-                href="/join"
-                className="px-8 py-4 border border-white/30  text-sm uppercase tracking-widest  transition-colors"
-              >
-                Join as Photographer
-              </a>
-            </div>
-          </motion.div>
         </div>
       </section>
     </main>
-  );
+  )
 }
+  

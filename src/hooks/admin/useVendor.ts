@@ -33,11 +33,10 @@ export const vendorKeys = {
 }
 
 export const useAllVendorQuery = (filter: any = {}, pagination: PaginationParams = { page: 1, limit: 4 }) => {
-    console.log('usevendorquery ->');
-    console.log(pagination);
   return useQuery({
-    queryKey: vendorKeys.list(filter, pagination),
+    queryKey: ['vendors-list-admin',filter,pagination],
     queryFn: () => AdminService.get<TPaginatedVendorRequest>('/users', { ...filter, ...pagination,role : "vendor"}),
+    staleTime : 1000 * 60 * 5
   });
 };
 
@@ -62,8 +61,9 @@ export const useUnBlockVendor = () => {
 
 export const useVendorRequest = (filter : any = {} , pagination : PaginationParams = {page : 1 , limit : 4})=> {
     return useQuery({
-        queryKey : vendorKeys.list(filter,pagination),
-        queryFn : ()=>  AdminService.get<TPaginatedVendorRequest>('/vendor-request',{...filter,...pagination})
+        queryKey : ['vendor-request',filter,pagination],
+        queryFn : ()=>  AdminService.get<TPaginatedVendorRequest>('/vendor-request',{...filter,...pagination}),
+        staleTime : 1000 * 60 * 5
     })
 }
 

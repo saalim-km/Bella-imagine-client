@@ -1,9 +1,7 @@
 import { clientAxiosInstance } from "@/api/client.axios";
 import { ENDPOINTS } from "@/api/endpoints";
 import {
-  IClientReponse,
   IProfileUpdate,
-  IProfileUpdateResponse,
   IVendorsFilter,
   IVendorsResponse,
 } from "@/types/interfaces/User";
@@ -29,6 +27,7 @@ export interface IClient {
   role: "client" | "vendor";
   savedPhotographers?: string[];
   savedPhotos?: string[];
+  isOnline ?: boolean;
   isActive?: boolean;
   isblocked: boolean;
   createdAt: Date;
@@ -46,6 +45,7 @@ export interface GetVendorDetails {
   samplePage: number;
   sampleLimit: number;
   serviceLimit: number;
+  enabled : boolean
 }
 
 export const getClientDetails = async (): Promise<BasePaginatedResponse<IClient>> => {
@@ -66,10 +66,9 @@ export const updateClientDetails = async (
   return response.data;
 };
 
-export const getAllVendors = async (
+export const getAllVendorsServiceClient = async (
   data: IVendorsFilter
 ): Promise<BasePaginatedResponse<PaginatedResponse<IVendorsResponse>>> => {
-  console.log(`in vendors listing hook : `, data);
   const response = await clientAxiosInstance.get("/client/vendors", {
     params: data,
   });
@@ -83,14 +82,14 @@ export const getAllClientCategories = async (): Promise<
   return response.data;
 };
 
-export const getPhotographerDetails = async (input : GetVendorDetails , vendorId: string): Promise<BasePaginatedResponse<IVendorDetails>> => {
+export const getPhotographerDetailsClient = async (input : GetVendorDetails , vendorId: string): Promise<BasePaginatedResponse<IVendorDetails>> => {
   const response = await clientAxiosInstance.get(`/client/photographer/${vendorId}`, {
     params: input,
   });
   return response.data;
 };
 
-export const getService = async (id: string): Promise<BasePaginatedResponse<IServiceResponse>> => {
+export const getServiceClient = async (id: string): Promise<BasePaginatedResponse<IServiceResponse>> => {
   const response = await clientAxiosInstance.get(`/client/service/${id}`);
   return response.data;
 };

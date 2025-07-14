@@ -1,25 +1,25 @@
 import {
   BasePaginatedResponse,
   getAllClientCategories,
-  getAllVendors,
+  getAllVendorsServiceClient,
   getClientDetails,
-  getPhotographerDetails,
-  getService,
+  getPhotographerDetailsClient,
+  getServiceClient,
   GetVendorDetails,
   updateClientDetails,
 } from "@/services/client/clientService";
-import { getAllClientNotification } from "@/services/notification/notificationService";
 import { IVendorsFilter, IVendorsResponse } from "@/types/interfaces/User";
 import { PaginatedResponse } from "@/types/interfaces/vendor";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 
 
-export const useClientDetailsQuery = (enabled = true) => {
+export const useClientDetailsQuery = (enabled = true , userId : string) => {
   return useQuery({
-    queryKey: ["client-profile"],
+    queryKey: ["client-profile",userId],
     queryFn: getClientDetails,
     enabled,
+    staleTime : 1000 * 60 * 5 // 15 minutes
   });
 };
 
@@ -29,41 +29,37 @@ export const useUpdateClientMutation = () => {
   });
 };
 
-
-export const useAllClientNotification = (enabled = true)=> {
-  return useQuery({
-    queryKey : ["client-notification"],
-    queryFn : getAllClientNotification,
-    enabled
-  })
-}
-
-export const useAllVendorsListQuery = (filter: IVendorsFilter) => {
+export const useAllVendorsListQueryClient = (filter: IVendorsFilter) => {
   return useQuery<BasePaginatedResponse<PaginatedResponse<IVendorsResponse>>, Error>({
-    queryKey: ["client", filter],
-    queryFn: () => getAllVendors(filter),
-    staleTime: 5 * 60 * 1000
+    queryKey: ["client", filter,filter.location],
+    queryFn: () => getAllVendorsServiceClient(filter),
+    staleTime: 1000 *60 *5,
+    enabled : filter.enabled
   });
 };
 
-export const useAllClientCategories = ()=> {
+export const useAllClientCategories = (enabled : boolean)=> {
   return useQuery({
     queryKey : ["client-categories"],
-    queryFn : getAllClientCategories
+    queryFn : getAllClientCategories,
+    staleTime : 1000 * 60 * 5, // 5 minutes,
+    enabled : enabled
   })
 }
 
-export const useGetPhotographerDetails = (input : GetVendorDetails , vendorId: string)=> {
+export const useGetPhotographerDetailsClient = (input : GetVendorDetails , vendorId: string)=> {
   return useQuery({
     queryKey : ["photographer",vendorId,input],
-    queryFn : ()=> getPhotographerDetails(input,vendorId)
+    queryFn : ()=> getPhotographerDetailsClient(input,vendorId),
+    enabled : input.enabled,
+    staleTime : 1000 * 60 * 5
   })
 }
 
-export const useGetServiceQuery = (id : string)=> {
+export const useGetServiceQueryClient = (id : string , enabled : boolean)=> {
   return useQuery({
     queryKey : ["service",id],
-    queryFn : ()=> getService(id)
+    queryFn : ()=> getServiceClient(id),
+    enabled : enabled
   })
 }
-

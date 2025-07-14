@@ -1,257 +1,199 @@
-"use client";
+"use client"
+import { MapPin, Star, Award, Calendar, MessageSquare, Loader2, Globe, Camera } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import type { IVendorDetails } from "@/types/interfaces/vendor"
+import { ImageWithFallback } from "../ImageFallBack"
+import { useSelector } from "react-redux"
+import type { RootState } from "@/store/store"
+import { createConversationClient, createConversationVendor } from "@/services/chat/chatService"
+import { useCreateConversation } from "@/hooks/chat/useChat"
+import { handleError } from "@/utils/Error/error-handler.utils"
+import { useNavigate } from "react-router-dom"
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import {
-  MapPin,
-  Star,
-  Award,
-  MessageCircle,
-  Calendar,
-  ArrowRight,
-  User,
-  Image as ImageIcon,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { IVendor } from "@/services/vendor/vendorService";
-import { IVendorDetails } from "@/types/interfaces/vendor";
-
-// Define the Vendor type
 interface VendorProfileProps {
-  vendor: IVendorDetails;
+  vendor: IVendorDetails
 }
 
-// Fallback image component
-export const ImageWithFallback = ({ 
-  src, 
-  alt, 
-  className, 
-  fallbackType = "work" 
-}: { 
-  src?: string; 
-  alt: string; 
-  className: string; 
-  fallbackType?: "profile" | "work";
-}) => {
-  const [imageError, setImageError] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
+export function VendorProfile({ vendor }: VendorProfileProps) {
+  const navigate = useNavigate()
+  const user = useSelector((state: RootState) => {
+    if (state.client.client) return state.client.client
+    if (state.vendor.vendor) return state.vendor.vendor
+    return undefined
+  })
 
-  const handleImageError = () => {
-    setImageError(true);
-    setImageLoading(false);
-  };
+  const profileImage = vendor?.profileImage
+  const mutateFn = user?.role === "client" ? createConversationClient : createConversationVendor
 
-  const handleImageLoad = () => {
-    setImageLoading(false);
-  };
+  const { mutate: createConversation, isPending } = useCreateConversation(mutateFn)
 
-  // Fallback gradient backgrounds
-  const fallbackGradients = {
-    profile: "bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20",
-    work: "bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20"
-  };
-
-  if (!src || imageError) {
-    return (
-      <div className={`${className} ${fallbackGradients[fallbackType]} flex items-center justify-center`}>
-        {fallbackType === "profile" ? (
-          <User className="h-12 w-12 text-muted-foreground/60" />
-        ) : (
-          <ImageIcon className="h-16 w-16 text-muted-foreground/60" />
-        )}
-      </div>
-    );
+  function handleSendMessage() {
+    createConversation(
+      {
+        userId: user?._id ? user._id : "",
+        vendorId: vendor._id ? vendor._id : "",
+      },
+      {
+        onSuccess: () => {
+          navigate("/messages")
+        },
+        onError: (error) => {
+          handleError(error)
+        },
+      },
+    )
   }
 
-  return (
-    <div className="relative">
-      {imageLoading && (
-        <div className={`absolute inset-0 ${fallbackGradients[fallbackType]} flex items-center justify-center animate-pulse`}>
-          {fallbackType === "profile" ? (
-            <User className="h-12 w-12 text-muted-foreground/60" />
-          ) : (
-            <ImageIcon className="h-16 w-16 text-muted-foreground/60" />
-          )}
-        </div>
-      )}
-      <img
-        src={src}
-        alt={alt}
-        className={`${className} ${imageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
-        onError={handleImageError}
-        onLoad={handleImageLoad}
-      />
-    </div>
-  );
-};
+  if (!user || !user._id) {
+    return <p>user not found please try again later , or please relogin to continue</p>
+  }
 
-export default function VendorProfile({ vendor }: VendorProfileProps) {
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
-
-  // Safe access to work sample image
-  const heroImage = vendor?.workSamples?.[0]?.media?.[0];
-  const profileImage = vendor?.profileImage;
+  const totalPhotos = vendor?.workSamples?.reduce((acc, sample) => acc + (sample.media?.length || 0), 0) || 0
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="space-y-8"
-    >
-      {/* Hero Section */}
-      <div className="relative h-64 md:h-80 lg:h-96 w-full rounded-xl overflow-hidden">
-        <ImageWithFallback
-          src={heroImage}
-          alt={`${vendor?.name || 'Vendor'} work sample`}
-          className="w-full h-full object-cover"
-          fallbackType="work"
-        />
-        
-        {/* Gradient overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-        
-        <div className="absolute bottom-0 left-0 p-8 z-20">
-          <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl text-white mb-2">
-            {vendor?.name || 'Vendor Name'}
-          </h1>
-          <div className="flex items-center gap-4 text-white/80">
-            <div className="flex items-center gap-1.5">
-              <MapPin className="h-4 w-4" />
-              <span className="text-sm">
-                {vendor?.location?.address || 'Location not specified'}
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Star className="h-4 w-4 text-yellow-400" />
-              <span className="text-sm">4.9 (124 reviews)</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Profile Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-8">
-        {/* Left Column - Profile Image and Quick Actions */}
-        <div className="space-y-6">
-          <div className="relative">
-            <div className="aspect-square w-full overflow-hidden rounded-xl border border-border/10">
-              <ImageWithFallback
-                src={profileImage}
-                alt={`${vendor?.name || 'Vendor'} profile`}
-                className="object-cover w-full h-full"
-                fallbackType="profile"
-              />
-            </div>
-            {vendor?.isVerified === "accept" && (
-              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2">
-                <Badge className="bg-foreground text-background px-4 py-1 flex items-center gap-1.5">
-                  <Award className="h-3.5 w-3.5" />
-                  <span className="text-xs uppercase tracking-wider">
+    <div className="bg-background">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Left Column - Profile Image */}
+          <div className="flex-shrink-0">
+            <div className="relative">
+              <div className="w-48 h-48 lg:w-64 lg:h-64 rounded-full overflow-hidden border-4 border-white shadow-xl mx-auto lg:mx-0">
+                <ImageWithFallback
+                  src={profileImage || "/placeholder.svg?height=256&width=256"}
+                  alt={`${vendor?.name || "Vendor"} profile`}
+                  className="object-cover w-full h-full"
+                  fallbackType="profile"
+                />
+              </div>
+              {vendor?.isVerified === "accept" && (
+                <div className="absolute -bottom-0 left-1/2 transform -translate-x-1/2 lg:left-auto lg:right-16 lg:translate-x-0">
+                  <Badge className="bg-orange-500 text-white border-0 shadow-lg px-3 py-1.5 flex items-center">
+                    <Award className="w-4 h-4 mr-1" />
                     Verified Pro
-                  </span>
-                </Badge>
-              </div>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <Button
-              className="w-full bg-foreground text-background hover:bg-foreground/90 flex items-center gap-2"
-              onClick={() => setIsBookingOpen(true)}
-            >
-              <Calendar className="h-4 w-4" />
-              <span className="text-sm uppercase tracking-wider">Book Now</span>
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full border-border/20 hover:bg-muted/10 flex items-center gap-2"
-            >
-              <MessageCircle className="h-4 w-4" />
-              <span className="text-sm uppercase tracking-wider">Message</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* Right Column - Bio and Details */}
-        <div className="space-y-8">
-          <div className="space-y-4">
-            <h2 className="font-serif text-2xl text-foreground">About</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              {vendor?.description || 'No description available yet.'}
-            </p>
-          </div>
-
-          {/* Only show specialties if they exist */}
-          {vendor?.services?.[0]?.styleSpecialty && vendor.services[0].styleSpecialty.length > 0 && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="font-serif text-2xl text-foreground">
-                  Specialties
-                </h2>
-                <a
-                  href="#services"
-                  className="text-sm uppercase tracking-wider flex items-center gap-1 group text-foreground/80 hover:text-foreground"
-                >
-                  <span>View All Services</span>
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </a>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {vendor.services[0].styleSpecialty.map((specialty, index) => (
-                  <Badge
-                    key={`${specialty}-${index}`}
-                    variant="outline"
-                    className="px-3 py-1 border-border/20 text-foreground/80 hover:text-foreground"
-                  >
-                    {specialty}
                   </Badge>
-                ))}
-              </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
-          {/* Only show languages if they exist */}
-          {vendor?.languages && vendor.languages.length > 0 && (
+          {/* Right Column - Profile Details */}
+          <div className="flex-1 space-y-6">
+            {/* Header */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="font-serif text-2xl text-foreground">
-                  Languages speak
-                </h2>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {vendor.languages.map((lang, index) => (
-                  <Badge
-                    key={`${lang}-${index}`}
-                    variant="outline"
-                    className="px-3 py-1 border-border/20 text-foreground/80 hover:text-foreground"
-                  >
-                    {lang}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Only show experience if it exists */}
-          {vendor?.services?.[0]?.yearsOfExperience && (
-            <div className="space-y-4">
-              <h2 className="font-serif text-2xl text-foreground">Experience</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="p-4 border border-border/10 rounded-lg bg-muted/5">
-                  <div className="text-3xl font-serif text-foreground mb-1">
-                    {vendor.services[0].yearsOfExperience}
+              <div>
+                <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2">
+                  {`Photographer ${vendor.name}`}
+                </h1>
+                <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4" />
+                    <span>{vendor?.location?.address || "Location not specified"}</span>
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    Years Experience
+                  <div className="flex items-center gap-1.5">
+                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    <span>4.9 (124 reviews)</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="w-4 h-4" />
+                    <span>Available for bookings</span>
                   </div>
                 </div>
               </div>
+
+              {/* Description */}
+              <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl">
+                {vendor?.description ||
+                  "Professional photographer specializing in capturing life's most precious moments with artistic vision and technical expertise."}
+              </p>
             </div>
-          )}
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center p-4 bg-muted/30 rounded-lg">
+                <div className="text-2xl font-bold text-foreground">{totalPhotos}</div>
+                <div className="text-sm text-muted-foreground">Photos</div>
+              </div>
+              <div className="text-center p-4 bg-muted/30 rounded-lg">
+                <div className="text-2xl font-bold text-foreground">{vendor?.services?.length || 0}</div>
+                <div className="text-sm text-muted-foreground">Services</div>
+              </div>
+              <div className="text-center p-4 bg-muted/30 rounded-lg">
+                <div className="text-2xl font-bold text-foreground">
+                  {vendor?.services?.[0]?.yearsOfExperience || 0}
+                </div>
+                <div className="text-sm text-muted-foreground">Years Exp.</div>
+              </div>  
+            </div>
+
+            {/* Languages & Specialties */}
+            <div className="space-y-4">
+              {vendor?.languages && vendor.languages.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                    <Globe className="w-4 h-4" />
+                    Languages
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {vendor.languages.map((lang, index) => (
+                      <Badge
+                        key={`${lang}-${index}`}
+                        variant="secondary"
+                        className="px-3 py-1 bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300"
+                      >
+                        {lang}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {vendor?.services?.[0]?.styleSpecialty && vendor.services[0].styleSpecialty.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                    <Camera className="w-4 h-4" />
+                    Specialties
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {vendor.services[0].styleSpecialty.slice(0, 6).map((specialty, index) => (
+                      <Badge
+                        key={`${specialty}-${index}`}
+                        variant="outline"
+                        className="px-3 py-1 border-border text-foreground hover:bg-muted"
+                      >
+                        {specialty}
+                      </Badge>
+                    ))}
+                    {vendor.services[0].styleSpecialty.length > 6 && (
+                      <Badge variant="outline" className="px-3 py-1">
+                        +{vendor.services[0].styleSpecialty.length - 6} more
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            {user._id !== vendor._id && (
+              <div className="flex gap-3 pt-4">
+                <Button
+                  className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-2.5"
+                  onClick={handleSendMessage}
+                  disabled={isPending}
+                >
+                  {isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  ) : (
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                  )}
+                  Send Message
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </motion.div>
-  );
+    </div>
+  )
 }

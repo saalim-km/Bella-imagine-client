@@ -30,7 +30,6 @@ import { useBookingStatusMutation } from "@/hooks/booking/useBooking";
 import { clientUpdateBookingStatus } from "@/services/booking/bookingService";
 import { ConfirmationModal } from "@/components/modals/ConfimationModal";
 import { BookingDetailsModal } from "@/components/modals/BookingDetailsModal";
-import { toast } from "sonner";
 import { formatPrice } from "@/utils/formatters/format-price.utils";
 import moment from "moment";
 import { debounce } from "lodash";
@@ -38,6 +37,9 @@ import { TRole } from "@/types/interfaces/User";
 import Pagination from "@/components/common/Pagination";
 import { Spinner } from "@/components/ui/spinner";
 import { PaymentStatus, TBookingStatus } from "@/types/interfaces/Payment";
+import { communityToast } from "@/components/ui/community-toast";
+import { useQueryClient } from "@tanstack/react-query";
+import { handleError } from "@/utils/Error/error-handler.utils";
 
 interface FilterState {
   status: string;
@@ -60,7 +62,7 @@ export interface BookingList {
     _id: string;
     name: string;
   };
-  adminCommision : number;
+  adminCommision: number;
   paymentId: string | null;
   isClientApproved: boolean;
   isVendorApproved: boolean;
@@ -114,6 +116,7 @@ export default function ClientBookingList({
   const [tempPriceRange, setTempPriceRange] = useState<[number, number]>(
     filters.priceRange
   );
+  const queryClient = useQueryClient();
 
   const limit = 3;
   const maxPrice = 100000;
@@ -220,8 +223,17 @@ export default function ClientBookingList({
       updateBookingStatus(
         { bookingId, status },
         {
-          onSuccess: (data) => toast.success(data.message),
-          onError: (error: any) => toast.error(error.response.data.message),
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["paginated-booking"]});
+            communityToast.success({
+              title: "Photography Session cancelled",
+              description:
+                "Refund amount will be credited to your wallet within 24hrs",
+            });
+          },
+          onError: (error: any) => {
+            handleError(error)
+          },
         }
       );
     }
@@ -347,7 +359,7 @@ export default function ClientBookingList({
               setPage(1);
             }}
           >
-            <SelectTrigger className="w-full sm:w-40">
+            <SelectTrigger className="w-full sm:w-40 border-gray-400">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -381,7 +393,7 @@ export default function ClientBookingList({
               aria-label="Price range slider"
             />
             <div className="flex items-center gap-4">
-              <div className="flex-1">
+              <div className="flex-1 ">
                 <label className="text-xs font-medium text-muted-foreground">
                   Min
                 </label>
@@ -392,7 +404,7 @@ export default function ClientBookingList({
                   min={0}
                   max={maxPrice}
                   step={100}
-                  className="h-8 text-sm"
+                  className="h-8 text-sm border-gray-400"
                   aria-label="Minimum price"
                 />
               </div>
@@ -408,7 +420,7 @@ export default function ClientBookingList({
                   min={0}
                   max={maxPrice}
                   step={100}
-                  className="h-8 text-sm"
+                  className="h-8 text-sm border-gray-400"
                   aria-label="Maximum price"
                 />
               </div>

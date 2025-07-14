@@ -9,7 +9,7 @@ interface CategoryCardProps {
   onClick?: () => void
 }
 
-export default function CategoryCard({ title, isActive = false, onClick }: CategoryCardProps) {
+export default function CategoryCard({ title, onClick }: CategoryCardProps) {
   return (
     <motion.div
       whileHover={{ y: -5 }}

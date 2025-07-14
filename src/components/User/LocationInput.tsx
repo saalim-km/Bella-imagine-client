@@ -1,9 +1,9 @@
-import { useRef, useEffect } from "react"
+import { useRef } from "react"
 import { Autocomplete } from "@react-google-maps/api"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 
-const LocationInput = ({ value, onChange, error }: {
+const LocationInput = ({ value, onChange }: {
   value: string
   onChange: (value: string, coords?: { lat: number; lng: number }) => void
   error?: string

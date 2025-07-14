@@ -25,21 +25,28 @@ import { DateRange } from "react-day-picker";
 import { DateRangePicker } from "@/components/ui/DateRangePicker";
 import { Slider } from "@/components/ui/slider";
 import { useBookingQuery } from "@/hooks/booking/useBooking";
-import { getVendorBookings, vendorUpdateBookingStatus } from "@/services/booking/bookingService";
+import {
+  getVendorBookings,
+  vendorUpdateBookingStatus,
+} from "@/services/booking/bookingService";
 import { useBookingStatusMutation } from "@/hooks/booking/useBooking";
 import { ConfirmationModal } from "@/components/modals/ConfimationModal";
 import { BookingDetailsModal } from "@/components/modals/BookingDetailsModal";
-import { toast } from "sonner";
 import { formatPrice } from "@/utils/formatters/format-price.utils";
 import moment from "moment";
 import { debounce } from "lodash";
 import { TRole } from "@/types/interfaces/User";
 import Pagination from "@/components/common/Pagination";
 import { Spinner } from "@/components/ui/spinner";
-import { PaymentStatus, TBookingStatus } from "@/types/interfaces/Payment";
+import { communityToast } from "@/components/ui/community-toast";
+import { BookingList } from "../User/ClientBookingListing";
+import { handleError } from "@/utils/Error/error-handler.utils";
 
 // Error Boundary Component
-class ErrorBoundary extends React.Component<{children: React.ReactNode, fallback: React.ReactNode}, {hasError: boolean}> {
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallback: React.ReactNode },
+  { hasError: boolean }
+> {
   state = { hasError: false };
 
   static getDerivedStateFromError() {
@@ -60,8 +67,8 @@ const BookingListFallback = () => (
     <AlertCircle className="w-12 h-12 mb-4" />
     <p className="text-lg">Unable to load bookings</p>
     <p className="text-sm">Please try refreshing the page</p>
-    <Button 
-      variant="outline" 
+    <Button
+      variant="outline"
       className="mt-4"
       onClick={() => window.location.reload()}
     >
@@ -81,51 +88,10 @@ interface VendorBookingListProps {
   userType: TRole;
 }
 
-export interface BookingList {
-  _id: string;
-  userId: {
-    _id: string;
-    name: string;
-  };
-  vendorId: {
-    _id: string;
-    name: string;
-  };
-  paymentId: string | null;
-  isClientApproved: boolean;
-  isVendorApproved: boolean;
-  serviceDetails: {
-    _id: string;
-    serviceTitle: string;
-    serviceDescription: string;
-    cancellationPolicies: string[];
-    termsAndConditions: string[];
-    location: {
-      lat: number;
-      lng: number;
-      address: string;
-    };
-  };
-  bookingDate: string;
-  timeSlot: {
-    startTime: string;
-    endTime: string;
-  };
-  location: {
-    lat: number;
-    lng: number;
-  };
-  distance?: number;
-  travelFee?: number;
-  totalPrice: number;
-  paymentStatus: PaymentStatus;
-  status: TBookingStatus;
-  customLocation?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
 
-export default function VendorBookingList({ userType }: VendorBookingListProps) {
+export default function VendorBookingList({
+  userType,
+}: VendorBookingListProps) {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [sortBy, setSortBy] = useState("createdAt");
@@ -248,8 +214,9 @@ export default function VendorBookingList({ userType }: VendorBookingListProps) 
       updateBookingStatus(
         { bookingId, status },
         {
-          onSuccess: (data) => toast.success(data.message),
-          onError: (error: any) => toast.error(error.response?.data.message || "Failed to update status"),
+          onSuccess: (data) => communityToast.success({ title: data?.message }),
+          onError: (error: any) =>
+            handleError(error)
         }
       );
     }
@@ -351,11 +318,13 @@ export default function VendorBookingList({ userType }: VendorBookingListProps) 
 
   return (
     <ErrorBoundary fallback={<BookingListFallback />}>
-      <Suspense fallback={
-        <div className="flex justify-center items-center py-10">
-          <Spinner />
-        </div>
-      }>
+      <Suspense
+        fallback={
+          <div className="flex justify-center items-center py-10">
+            <Spinner />
+          </div>
+        }
+      >
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -508,7 +477,9 @@ export default function VendorBookingList({ userType }: VendorBookingListProps) 
                         <TableHeadSortable field="totalPrice">
                           Price
                         </TableHeadSortable>
-                        <TableHeadSortable field="status">Status</TableHeadSortable>
+                        <TableHeadSortable field="status">
+                          Status
+                        </TableHeadSortable>
                         <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -516,23 +487,32 @@ export default function VendorBookingList({ userType }: VendorBookingListProps) 
                       {bookings.map((booking) => (
                         <TableRow key={booking._id} className="hover:bg-accent">
                           <TableCell className="font-medium">
-                            {booking?.serviceDetails.serviceTitle || 'N/A'}
+                            {booking?.serviceDetails.serviceTitle || "N/A"}
                           </TableCell>
-                          <TableCell>{booking?.userId.name || 'N/A'}</TableCell>
+                          <TableCell>{booking?.userId.name || "N/A"}</TableCell>
                           <TableCell>
-                            {moment(booking?.bookingDate).format("LLL") || 'N/A'}
+                            {moment(booking?.bookingDate).format("LLL") ||
+                              "N/A"}
                           </TableCell>
-                          <TableCell>{formatPrice(booking?.totalPrice || 0)}</TableCell>
                           <TableCell>
-                            <Badge className={getStatusColor(booking?.status || 'unknown')}>
-                              {booking?.status || 'Unknown'}
+                            {formatPrice(booking?.totalPrice || 0)}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              className={getStatusColor(
+                                booking?.status || "unknown"
+                              )}
+                            >
+                              {booking?.status || "Unknown"}
                             </Badge>
                           </TableCell>
                           <TableCell>
                             <div className="flex space-x-2">
                               <BookingDetailsModal
                                 booking={booking}
-                                trigger={<Button size="sm">View Details</Button>}
+                                trigger={
+                                  <Button size="sm">View Details</Button>
+                                }
                               />
                               <Select
                                 value={booking.status}
@@ -559,7 +539,7 @@ export default function VendorBookingList({ userType }: VendorBookingListProps) 
                                   </SelectItem>
                                   <SelectItem
                                     value="confirmed"
-                                    disabled={booking.status !== 'pending'}
+                                    disabled={booking.status !== "pending"}
                                   >
                                     Confirmed
                                   </SelectItem>

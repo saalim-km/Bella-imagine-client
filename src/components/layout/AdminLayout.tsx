@@ -1,31 +1,25 @@
-import type { ReactNode } from "react"
-import { Bell, Search } from "lucide-react"
+import type { ReactNode } from "react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AdminSidebar } from "./AdminSidebar"
-import { useNotifications } from "@/hooks/admin/useNotification"
-import { useDispatch } from "react-redux"
-import { useLogoutMutation } from "@/hooks/auth/useLogout"
-import { logoutAdmin } from "@/services/auth/authService"
-import { toast } from "sonner"
-import { adminLogout } from "@/store/slices/adminSlice"
-import ThemeToggle from "@/components/common/ThemeToggle"
-import { handleError } from "@/utils/Error/error-handler.utils"
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AdminSidebar } from "./AdminSidebar";
+import { useDispatch } from "react-redux";
+import { useLogoutMutation } from "@/hooks/auth/useLogout";
+import { logoutAdmin } from "@/services/auth/authService";
+import { adminLogout } from "@/store/slices/adminSlice";
+import ThemeToggle from "@/components/common/ThemeToggle";
+import { handleError } from "@/utils/Error/error-handler.utils";
+import { communityToast } from "../ui/community-toast";
 
 interface AdminLayoutProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export function AdminLayout({ children }: AdminLayoutProps) {
@@ -33,19 +27,20 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   // const { data: notificationsData } = useNotifications({ page: 1, limit: 5 })
   // const notifications = notificationsData?.data || []
   // const unreadCount = notifications.filter((n) => !n.read).length
-  const dispatch = useDispatch()
-  const {mutate : logout} = useLogoutMutation(logoutAdmin)
+  const dispatch = useDispatch();
+  const { mutate: logout } = useLogoutMutation(logoutAdmin);
 
   function handleLogout() {
-    logout(undefined,{
-        onSuccess : (data)=> {
-            toast.success(data.message);
-            dispatch(adminLogout())
-        },
-        onError : (error)=> {
-            handleError(error)
-        }
-    })
+    logout(undefined, {
+      onSuccess: (data) => {
+        communityToast.success({ title: data?.message });
+
+        dispatch(adminLogout());
+      },
+      onError: (error) => {
+        handleError(error);
+      },
+    });
   }
 
   return (
@@ -88,10 +83,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     ))}
                   </DropdownMenuContent> */}
                 </DropdownMenu>
-                <ThemeToggle/>
+                <ThemeToggle />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full"
+                    >
                       <Avatar className="h-8 w-8">
                         <AvatarImage src="/placeholder-user.jpg" alt="Admin" />
                         <AvatarFallback>AD</AvatarFallback>
@@ -99,13 +98,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    {/* <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>View Profile</DropdownMenuItem>
-                    <DropdownMenuItem>Edit Profile</DropdownMenuItem>
-                    <DropdownMenuItem>Settings</DropdownMenuItem>
-                    <DropdownMenuSeparator /> */}
-                    <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleLogout}>
+                      Logout
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -116,6 +111,5 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </div>
       </div>
     </SidebarProvider>
-  )
+  );
 }
-

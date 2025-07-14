@@ -11,10 +11,10 @@ import {
 } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
 import type { Booking } from "@/types/interfaces/User";
 import { useVendorBookingPaymentMutation } from "@/hooks/payment/usePayment";
-import { clientAxiosInstance } from "@/api/client.axios";
+import { communityToast } from "../ui/community-toast";
+import { handleError } from "@/utils/Error/error-handler.utils";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
@@ -72,12 +72,12 @@ const PaymentForm: React.FC<PaymentWrapperProps> = ({
                 redirect: "if_required",
               });
             if (stripeError) {
-              toast.error(stripeError.message || "Payment failed");
+              communityToast.error({description : stripeError.message || "Payment failed"});
               setLoading(false);
               onError(stripeError.message || "Payment failed");
             } else if (paymentIntent?.status === "succeeded") {
               setIsSuccess();
-              toast.success("Payment completed", {
+              communityToast.success({title : "Payment completed", 
                 description: "Your payment has been successfully completed.",
               });
             }
@@ -85,14 +85,15 @@ const PaymentForm: React.FC<PaymentWrapperProps> = ({
           },
           onError: (error: any) => {
             setLoading(false);
-            toast.error(error.response?.data?.message || "Payment failed.");
+            communityToast.error({description : error.response?.data?.message || "Payment failed."});
             onError(error.response?.data?.message || "Payment failed.");
           },
         }
       );
     } catch (error) {
       setLoading(false);
-      toast.error("An unexpected error occurred");
+      communityToast.error({description:"An unexpected error occurred"});
+      handleError(error)
       onError("An unexpected error occurred");
     }
   };

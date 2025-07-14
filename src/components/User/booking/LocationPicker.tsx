@@ -13,13 +13,13 @@ import {
   LoadScript,
   Autocomplete,
 } from "@react-google-maps/api";
-import { toast } from "sonner";
 import {
   calculateDistanceAndTime,
   TRAVEL_RATE_PER_KM,
   FREE_RADIUS_KM,
 } from "@/utils/helper/distance-calculator";
 import { libraries } from "@/utils/config/map.config";
+import { communityToast } from "@/components/ui/community-toast";
 
 interface LocationData {
   address: string;
@@ -88,13 +88,13 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
         );
 
         if (result.distance > FREE_RADIUS_KM) {
-          toast.info(`Travel fee applied: ₹${result.travelFee}`, {
+          communityToast.info({title : `Travel fee applied: ₹${result.travelFee}`, 
             description: `Distance: ${result.distance.toFixed(2)}km (${
               result.travelTime
             })`,
           });
         } else {
-          toast.success("Within free service area!", {
+          communityToast.success( { title : "Within free service area!",
             description: `Distance: ${result.distance.toFixed(2)}km (${
               result.travelTime
             })`,
@@ -102,7 +102,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
         }
       } catch (error) {
         console.error("Distance calculation error:", error);
-        toast.error("Unable to calculate distance", {
+        communityToast.error({title : "Unable to calculate distance", 
           description: "Proceeding without travel fee calculation.",
         });
 
@@ -184,7 +184,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
       inputRef.current.value = "";
     }
 
-    toast.success("Location removed", {
+    communityToast.success({ title : "Location removed", 
       description: "Travel fee has been removed from your booking.",
     });
   }, [onLocationChange]);
@@ -282,7 +282,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
             libraries={libraries}
             onLoad={() => setIsMapLoaded(true)}
             onError={() => {
-              toast.error("Failed to load Google Maps API");
+              communityToast.error({description : "Failed to load Google Maps API"});
               setIsMapLoaded(false);
             }}
           >

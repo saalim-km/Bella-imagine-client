@@ -1,7 +1,7 @@
 import { vendorAxiosInstance } from "@/api/vendor.axios";
-import { BasePaginatedResponse, IClient } from "../client/clientService";
+import { BasePaginatedResponse, GetVendorDetails, IClient } from "../client/clientService";
 import { ENDPOINTS } from "@/api/endpoints";
-import { IProfileUpdate } from "@/types/interfaces/User";
+import { IProfileUpdate, IVendorsFilter, IVendorsResponse } from "@/types/interfaces/User";
 import {
   IService,
   IServiceFilter,
@@ -10,6 +10,7 @@ import {
   IWorkSampleFilter,
   PaginatedResponse,
   IWorkSampleResponse,
+  IVendorDetails,
 } from "@/types/interfaces/vendor";
 import { ApiResponse } from "@/hooks/vendor/useVendor";
 import { Category } from "../categories/categoryService";
@@ -67,6 +68,11 @@ export const updateVendorService = async (
   return response.data;
 };
 
+export const deleteVendorService = async (serviceId : string) : Promise<ApiResponse> => {
+  const response = await vendorAxiosInstance.delete(`/vendor/service/${serviceId}`)
+  return response.data
+}
+
 // vendor-work-sample-management
 export const cerateWorkSampleService = async (
   payload: IWorkSampleRequest
@@ -100,5 +106,29 @@ export const updateWorkSampleService = async (
   const response = await vendorAxiosInstance.put("/vendor/work-sample", payload, {
     headers: { "Content-Type": "multipart/form-data" },
   });
+  return response.data;
+};
+
+
+// query service
+export const getAllVendorsServiceVendor = async (
+  data: IVendorsFilter
+): Promise<BasePaginatedResponse<PaginatedResponse<IVendorsResponse>>> => {
+  console.log(`in vendors listing hook : `, data);
+  const response = await vendorAxiosInstance.get("/vendor/vendors", {
+    params: data,
+  });
+  return response.data;
+};
+
+export const getPhotographerDetailsVendor = async (input : GetVendorDetails , vendorId: string): Promise<BasePaginatedResponse<IVendorDetails>> => {
+  const response = await vendorAxiosInstance.get(`/vendor/photographer/${vendorId}`, {
+    params: input,
+  });
+  return response.data;
+};
+
+export const getServiceVendor = async (id: string): Promise<BasePaginatedResponse<IServiceResponse>> => {
+  const response = await vendorAxiosInstance.get(`/vendor/service/${id}`);
   return response.data;
 };

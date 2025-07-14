@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import {
   type CategoryType,
@@ -17,9 +16,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DataTable, type ColumnDef } from "@/components/common/Table";
-import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { Input } from "@/components/ui/input";
+import { LoadingBar } from "@/components/ui/LoadBar";
+import { communityToast } from "@/components/ui/community-toast";
+import { useQueryClient } from "@tanstack/react-query";
+import { Category } from "@/services/categories/categoryService";
 
 export function CategoryManagement() {
   const [searchTerm, setSerachTerm] = useState("");
@@ -32,6 +34,7 @@ export function CategoryManagement() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(
     null
   );
+  const queryClient = useQueryClient();
 
   let filterOption;
   switch (filter) {
@@ -45,16 +48,20 @@ export function CategoryManagement() {
       filterOption = {};
   }
 
-  const { data, isLoading, refetch } = useAllCategoryQuery(
+  const itemPerPage = 4;
+
+  const { data, isLoading } = useAllCategoryQuery(
     {
       ...filterOption,
-      search : appliedSearch
+      search: appliedSearch,
     },
-    { page: currentPage, limit: 4 },
+    { page: currentPage, limit: itemPerPage }
   );
-  const totalPages = Math.max(1, Math.ceil(data?.data.total! / 4));
-  
-  console.log(data?.data);
+  const totalCategories = data?.data.total || 0;
+  const totalPages = Math.max(1, Math.ceil(totalCategories / itemPerPage));
+  console.log("total pages from category ", data?.data.total);
+  console.log("calculated total pages : ", totalPages);
+
   function handleEdit(category: CategoryType) {
     setSelectedCategory(category);
     setIsEditing(true);
@@ -75,16 +82,41 @@ export function CategoryManagement() {
     setAppliedSearch(searchTerm);
   }
 
-  function handleToggleStatus(categoryId: string, status: boolean) {
-    console.log(categoryId);
+  async function handleToggleStatus(categoryId: string, status: boolean) {
+    console.log("category toggle status : ", categoryId, !status);
+    const querykey = [
+      "category-list-admin",
+      { ...filterOption!, search: appliedSearch },
+      { page: currentPage, limit: itemPerPage },
+    ];
+
+    await queryClient.cancelQueries({ queryKey: querykey });
+    const prevData = queryClient.getQueryData(querykey);
+    queryClient.setQueryData(querykey, (oldData: any) => {
+      if (!oldData) return oldData;
+
+      const updatedDocs = oldData.data.data.map((category: Category) => {
+        return category._id == categoryId
+          ? { ...category, status: status ? false : true }
+          : category;
+      });
+
+      return {
+        ...oldData,
+        data: {
+          ...oldData.data,
+          data: updatedDocs,
+        },
+      };
+    });
     updateCategory(
       { id: categoryId },
       {
         onSuccess: (data: any) => {
-          refetch();
-          toast.success(data?.message);
+          communityToast.success({ description: data?.message });
         },
         onError: (err) => {
+          queryClient.setQueryData(querykey, prevData);
           handleError(err);
         },
       }
@@ -146,7 +178,11 @@ export function CategoryManagement() {
             }
             value={category._id}
           />
-          <Button variant={"outline"} size="sm" onClick={() => handleEdit(category)}>
+          <Button
+            variant={"outline"}
+            size="sm"
+            onClick={() => handleEdit(category)}
+          >
             Edit
           </Button>
         </div>
@@ -155,7 +191,7 @@ export function CategoryManagement() {
     },
   ];
 
-  if (isLoading) return <Spinner/>;
+  if (isLoading) return <LoadingBar />;
 
   return (
     <div className="p-4">
@@ -174,7 +210,11 @@ export function CategoryManagement() {
             onChange={handleChangeSeaarchTerm}
             onKeyDown={handleKeyDown}
           />
-          <Button variant={"outline"} className="rounded-l-none" onClick={handleSearchSubmit}>
+          <Button
+            variant={"outline"}
+            className="rounded-l-none"
+            onClick={handleSearchSubmit}
+          >
             Search
           </Button>
         </div>
@@ -195,6 +235,8 @@ export function CategoryManagement() {
 
       {showForm && (
         <CategoryForm
+          filterOptions={{...filterOption,search:appliedSearch}}
+          pagination={{ page: currentPage, limit: itemPerPage }}
           initialData={isEditing ? selectedCategory : null}
           onClose={handleFormClose}
         />

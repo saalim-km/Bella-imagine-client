@@ -1,6 +1,6 @@
 import axios from "axios";
 import { adminAxiosInstance } from "./admin.axios";
-import { toast } from "sonner";
+import { communityToast } from "@/components/ui/community-toast";
 
 export const communityAxiosInstance = axios.create({
     baseURL : import.meta.env.VITE_COMMUNITY_API_URI,
@@ -29,7 +29,7 @@ adminAxiosInstance.interceptors.response.use(
         } catch (refreshError) {
           isRefreshing = false;
 
-          toast.info("Please login again");
+          communityToast.info({description : "Please login again"});
           localStorage.removeItem("adminSession");
           window.location.href = "/admin/login";
           return Promise.reject(refreshError);
@@ -50,7 +50,7 @@ adminAxiosInstance.interceptors.response.use(
     ) {
       localStorage.removeItem("adminSession");
       window.location.href = "/admin/login";
-      toast.info("Please login again");
+      communityToast.info({description:"Please login again"});
       return Promise.reject(error);
     }
 

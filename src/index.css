@@ -1,16 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap");
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Noto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
+
 html {
   scroll-behavior: smooth;
 }
 
-html, body {
+html,
+body {
   overflow-x: hidden;
 }
 
@@ -27,30 +30,30 @@ body.modal-open {
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
+    --primary: 22 82% 39%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
+    --secondary: 25 95% 95%;
+    --secondary-foreground: 22 82% 39%;
+    --muted: 25 40% 96%;
     --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    --accent: 25 95% 95%;
+    --accent-foreground: 22 82% 39%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
-    --radius: 0.5rem;
+    --border: 25 30% 88%;
+    --input: 25 30% 88%;
+    --ring: 22 82% 39%;
+    --radius: 0.375rem;
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 220 10% 7%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
+    --primary: 25 95% 53%;
     --primary-foreground: 240 5.9% 10%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
@@ -72,68 +75,50 @@ body.modal-open {
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-/* Utils */
-.scrollbar-none {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.scrollbar-none::-webkit-scrollbar {
-  display: none;
-}
-
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   @apply tracking-tight;
 }
 
-/* Animations */
-@keyframes enter {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+h1 {
+  @apply text-2xl font-bold;
 }
 
-.animate-enter {
-  animation: enter 0.2s ease-out;
+h2 {
+  @apply text-xl font-semibold;
+}
+
+h3 {
+  @apply text-lg font-medium;
 }
 
 /* Custom utilities */
-.gradient-border {
-  --border-width: 1px;
-  --border-gradient: linear-gradient(
-    to right,
-    theme('colors.primary.DEFAULT'),
-    theme('colors.primary.DEFAULT/0')
-  );
-  
-  position: relative;
-  border-radius: var(--radius);
+.reddit-card {
+  @apply bg-white border border-gray-200 rounded shadow-sm;
 }
 
-.gradient-border::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius);
-  padding: var(--border-width);
-  background: var(--border-gradient);
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
-  mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
+.reddit-button {
+  @apply bg-orange-700 hover:bg-orange-800 text-white font-medium px-4 py-2 rounded text-sm;
+}
+
+.reddit-button-outline {
+  @apply border border-orange-700 text-orange-700 hover:bg-orange-50 font-medium px-4 py-2 rounded text-sm;
+}
+
+.reddit-tab {
+  @apply px-4 py-2 text-sm font-medium border-b-2 border-transparent hover:border-orange-200;
+}
+
+.reddit-tab-active {
+  @apply border-orange-700 text-orange-700;
 }

@@ -8,7 +8,6 @@ import type {
   SessionDuration,
   IServiceResponse,
 } from "@/types/interfaces/vendor";
-import { toast } from "sonner";
 import ServiceDetails from "./ServiceDetails";
 import DateSelector from "./DateSelector";
 import TimeSlotSelector from "./TimeSlotSelector";
@@ -19,6 +18,8 @@ import { useNavigate } from "react-router-dom";
 import { LoadingOverlay } from "@/components/modals/LoadingProcessBooking";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
+import { useSocket } from "@/hooks/socket/useSocket";
+import { communityToast } from "@/components/ui/community-toast";
 
 interface BookingPageProps {
   service: IServiceResponse;
@@ -26,6 +27,7 @@ interface BookingPageProps {
 }
 
 const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
+  const { socket } = useSocket();
   const client = useSelector((state: RootState) => state.client.client);
   const navigate = useNavigate();
   const [isBookingSuccess, setIsBookingSuccess] = useState(false);
@@ -50,6 +52,23 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
   );
 
   const handleDateSelect = (date: string) => {
+    const now = new Date(); // Current date and time: June 21, 2025, 12:03 PM IST
+    const selectedDate = new Date(date);
+
+    // Format current date to YYYY-MM-DD for comparison
+    const currentDateStr = now.toISOString().split("T")[0]; // e.g., "2025-06-21"
+
+    // Check if selected date is today
+    if (date === currentDateStr) {
+      communityToast.warning({
+        title: "Warning: You are booking for today.",
+        description:
+          "Bookings made for the current date cannot be canceled due to our 24-hour cancellation policy.",
+        duration: 5000, // Display for 5 seconds
+      });
+    }
+
+    console.log("user selected date : ", selectedDate);
     setBookingState((prev) => ({
       ...prev,
       selectedDate: date,
@@ -90,7 +109,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
   };
 
   const handleConfirmBooking = () => {
-    toast.success("Booking confirmed!", {
+    communityToast.success({title : "Booking confirmed!",
       description: "Your booking has been confirmed successfully.",
     });
 
@@ -108,10 +127,18 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
       travelTime: "",
       travelFee: 0,
     });
+
+    if (!socket) {
+      return;
+    }
+
+    socket.emit('new_booking',{
+      receiverId : vendorId
+    })
   };
 
   return (
-    <div className="container mx-auto px-4 py-10 mt-16 relative">
+    <div className="container mx-auto px-4 my-10 relative">
       {isLoading && <LoadingOverlay message="Processing your booking..." />}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -169,7 +196,7 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
 
       {/* Success Modal */}
       <BookingSuccessModal
-        userName={client?.name!}
+        userName={client ? client.name : ''}
         isOpen={isBookingSuccess}
         onClose={() => {
           setIsBookingSuccess(false);

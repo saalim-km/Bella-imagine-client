@@ -4,44 +4,96 @@ import {
 } from "@/hooks/admin/useAllCategory";
 import { DataTable, ColumnDef } from "@/components/common/Table";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { Badge } from "@/components/ui/badge";
 import { ICategoryRequest } from "@/services/categories/categoryService";
 import { useState } from "react";
+import { communityToast } from "@/components/ui/community-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 const CategoryRequest = () => {
   const [currPage, setCurrPage] = useState(1);
-  const { data, isLoading, refetch } = useGetAllCategoryRequest({
+  const queryClient = useQueryClient();
+
+  const { data, isLoading } = useGetAllCategoryRequest({
     limit: 5,
     page: currPage,
   });
   const { mutate: updateRequest } = useUpdateCategoryRequest();
 
-  const handleApprove = (categoryId: string, vendorId: string) => {
+  const handleApprove = async (categoryId: string, vendorId: string) => {
+    const queryKey = ["category-request", { page: currPage, limit: 5 }];
+
+    await queryClient.cancelQueries({ queryKey: queryKey });
+    const prevData = queryClient.getQueryData(queryKey);
+    queryClient.setQueryData(queryKey, (oldData: any) => {
+      if (!oldData) return oldData;
+
+      const updatedDocs = oldData.data.data.map((catReq: ICategoryRequest) => {
+        const isMatching =
+          catReq.categoryId?._id === categoryId &&
+          catReq.vendorId?._id === vendorId;
+
+        return isMatching ? { ...catReq, status: "approved" } : catReq;
+      });
+
+      return {
+        ...oldData,
+        data: {
+          ...oldData.data,
+          data: updatedDocs,
+        },
+      };
+    });
     updateRequest(
       { vendorId, categoryId, status: "approved" },
       {
         onSuccess: (data) => {
-          refetch();
-          toast.success(data.message);
+          communityToast.success({ description: data?.message });
         },
         onError: (err) => {
+          queryClient.setQueryData(queryKey, prevData);
           handleError(err);
         },
       }
     );
   };
 
-  const handleReject = (categoryId: string, vendorId: string) => {
+  const handleReject = async (categoryId: string, vendorId: string) => {
+    const queryKey = ["category-request", { page: currPage, limit: 5 }];
+
+    await queryClient.cancelQueries({ queryKey: queryKey });
+    const prevData = queryClient.getQueryData(queryKey);
+
+    console.log("got the prev data", prevData);
+    queryClient.setQueryData(queryKey, (oldData: any) => {
+      console.log("old data😌😌", oldData);
+      if (!oldData) return oldData;
+
+      const updatedDocs = oldData.data.data.map((catReq: ICategoryRequest) => {
+        const isMatching =
+          catReq.categoryId?._id === categoryId &&
+          catReq.vendorId?._id === vendorId;
+
+        return isMatching ? { ...catReq, status: "rejected" } : catReq;
+      });
+
+      return {
+        ...oldData,
+        data: {
+          ...oldData.data,
+          data: updatedDocs,
+        },
+      };
+    });
     updateRequest(
       { vendorId, categoryId, status: "rejected" },
       {
         onSuccess: (data) => {
-          refetch();
-          toast.success(data.message);
+          communityToast.success({ description: data?.message });
         },
         onError: (err) => {
+          queryClient.setQueryData(queryKey, prevData);
           handleError(err);
         },
       }
@@ -53,7 +105,7 @@ const CategoryRequest = () => {
   const totalPages = Math.max(1, Math.ceil(totalRequests / 5));
 
   const handlePageChange = (newPage: number) => {
-    if (newPage > 0 && newPage <= data?.data.total!) {
+    if (data && newPage > 0 && newPage <= data.data.total) {
       setCurrPage(newPage);
     }
   };
@@ -122,7 +174,7 @@ const CategoryRequest = () => {
     <div className="p-4">
       <h2 className="text-xl font-bold mb-4">Category Join Requests</h2>
       <DataTable
-        data={categoryRequests as ICategoryRequest[]}
+        data={categoryRequests as unknown as ICategoryRequest[]}
         columns={columns}
         totalPages={totalPages}
         currentPage={currPage}

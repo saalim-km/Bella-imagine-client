@@ -10,17 +10,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { useAllVendorQuery, useBlockVendor, useUnBlockVendor, vendorKeys } from "@/hooks/admin/useVendor";
+import {
+  useAllVendorQuery,
+  useBlockVendor,
+  useUnBlockVendor,
+} from "@/hooks/admin/useVendor";
 import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { buildQueryParams } from "@/utils/helper/query-generator";
-import { useNavigate } from "react-router-dom";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { ColumnDef, DataTable } from "@/components/common/Table";
 import { ReusableDropdown } from "@/components/common/ReusableDropdown";
 import { IVendor } from "@/services/vendor/vendorService";
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu";
 import { ReusableAlertDialog } from "@/components/common/AlertDialogue";
+import { communityToast } from "@/components/ui/community-toast";
 
 const FILTER_OPTIONS = [
   { label: "Blocked", value: "blocked" },
@@ -28,7 +31,6 @@ const FILTER_OPTIONS = [
 ];
 
 export function UserTable() {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { mutate: block } = useBlockVendor();
   const { mutate: unBlock } = useUnBlockVendor();
@@ -62,8 +64,8 @@ export function UserTable() {
       id: "status",
       header: "Status",
       cell: (item) => (
-        <Badge variant={item.isActive ? "outline" : "secondary"}>
-          {item.isActive ? "Active" : "Inactive"}
+        <Badge variant={item.isblocked ? "outline" : "secondary"}>
+          {item.isblocked ? "blocked" : "not-blocked"}
         </Badge>
       ),
     },
@@ -85,7 +87,9 @@ export function UserTable() {
             { type: "separator" },
             {
               label: item.isblocked ? "Unblock" : "Block",
-              onClick: () => item._id && confirmAction(item._id, item.isblocked ? "unblock" : "block"),
+              onClick: () =>
+                item._id &&
+                confirmAction(item._id, item.isblocked ? "unblock" : "block"),
               danger: true,
             },
           ]}
@@ -129,28 +133,55 @@ export function UserTable() {
     setSelectedVendor({ id: vendorId, action });
   }
 
-  function handleConfirm() {
+  async function handleConfirm() {
     if (!selectedVendor) return;
 
     const { id, action } = selectedVendor;
 
+    const queryKey = [
+      "vendors-list-admin",
+      { ...filterOptions, search: appliedSearchTerm },
+      { page: currentPage, limit: itemsPerPage },
+    ];
+
+    await queryClient.cancelQueries({ queryKey });
+    const previousData = queryClient.getQueryData(queryKey);
+
+    queryClient.setQueryData(queryKey, (oldData: any) => {
+      if (!oldData) return oldData;
+
+      const updatedDocs = oldData.data.data.map((vendor: IVendor) =>
+        vendor._id === id
+          ? { ...vendor, isblocked: action === "block" }
+          : vendor
+      );
+
+      return {
+        ...oldData,
+        data: {
+          ...oldData.data,
+          data: updatedDocs,
+        },
+      };
+    });
+
     if (action === "block") {
       block(id, {
         onSuccess: (data) => {
-          queryClient.invalidateQueries({ queryKey: vendorKeys.lists() });
-          toast.success(data?.message);
+          communityToast.success({ description: data?.message });
         },
         onError: (err) => {
+          queryClient.setQueryData(queryKey,previousData)
           handleError(err);
         },
       });
     } else {
       unBlock(id, {
         onSuccess: (data) => {
-          queryClient.invalidateQueries({ queryKey: vendorKeys.lists() });
-          toast.success(data?.message);
+          communityToast.success({ description: data?.message });
         },
         onError: (err) => {
+          queryClient.setQueryData(queryKey,previousData)
           handleError(err);
         },
       });
@@ -193,14 +224,19 @@ export function UserTable() {
                   onChange={handleSearchChange}
                   onKeyDown={handleKeyDown}
                 />
-                <Button variant={"outline"} className="rounded-l-none" onClick={handleSearchSubmit}>
+                <Button
+                  variant={"outline"}
+                  className="rounded-l-none"
+                  onClick={handleSearchSubmit}
+                >
                   Search
                 </Button>
               </div>
               <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
-                    Filter {appliedFilters.length > 0 && `(${appliedFilters.length})`}
+                    Filter{" "}
+                    {appliedFilters.length > 0 && `(${appliedFilters.length})`}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -216,7 +252,11 @@ export function UserTable() {
                   ))}
                   <DropdownMenuSeparator />
                   <div className="flex justify-end p-2">
-                    <Button variant={"outline"} size="sm" onClick={applyFilters}>
+                    <Button
+                      variant={"outline"}
+                      size="sm"
+                      onClick={applyFilters}
+                    >
                       Apply Filters
                     </Button>
                   </div>
@@ -240,13 +280,19 @@ export function UserTable() {
         <ReusableAlertDialog
           open={true}
           onOpenChange={(open) => !open && setSelectedVendor(null)}
-          title={selectedVendor.action === "block" ? "Block Vendor" : "Unblock Vendor"}
+          title={
+            selectedVendor.action === "block"
+              ? "Block Vendor"
+              : "Unblock Vendor"
+          }
           description={`Are you sure you want to ${selectedVendor.action} this vendor?`}
           confirmLabel={selectedVendor.action === "block" ? "Block" : "Unblock"}
           cancelLabel="Cancel"
           onConfirm={handleConfirm}
           onCancel={() => setSelectedVendor(null)}
-          confirmVariant={selectedVendor.action === "block" ? "destructive" : "default"}
+          confirmVariant={
+            selectedVendor.action === "block" ? "destructive" : "default"
+          }
         />
       )}
     </>

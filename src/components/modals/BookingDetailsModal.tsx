@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import {
   Calendar,
   Clock,
-  DollarSign,
   FileText,
   Info,
   User,
@@ -123,7 +122,7 @@ const ServiceInfo: React.FC<{
       <div className="grid grid-cols-2 gap-4 pt-2">
         <div className="bg-background p-4 rounded-lg">
           <p className="text-sm text-muted-foreground">Total Price</p>
-          <p className="font-medium text-xl text-primary mt-1">
+          <p className="font-medium text-xl text-foreground mt-1">
             ₹{totalPrice.toFixed(2)}
           </p>
         </div>
@@ -301,7 +300,7 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({
             </div>
             <div className="flex justify-between items-center">
               <p className="text-sm text-muted-foreground">
-                Admin Commission (2%)
+                Platform Commission (2%)
               </p>
               <p className="font-medium text-red-600">
                 -₹{adminCommission.toFixed(2)}
@@ -310,7 +309,7 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({
             <Separator className="my-2" />
             <div className="flex justify-between items-center">
               <p className="font-medium text-lg">Total Amount</p>
-              <p className="font-bold text-2xl text-primary">
+              <p className="font-bold text-2xl text-foreground">
                 ₹{(totalPrice - adminCommission).toFixed(2)}
               </p>
             </div>
@@ -318,7 +317,7 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({
         ) : (
           <div className="flex justify-between items-center">
             <p className="font-medium text-lg">Total Amount</p>
-            <p className="font-bold text-2xl text-primary">
+            <p className="font-bold text-2xl text-foreground">
               ₹{totalPrice.toFixed(2)}
             </p>
           </div>

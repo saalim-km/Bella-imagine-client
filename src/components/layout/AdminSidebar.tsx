@@ -1,7 +1,15 @@
-import { useLocation, useNavigate } from "react-router-dom"
-import { Calendar, CalendarCheck, DollarSign, Layers, LayoutDashboard, Settings, Tag, Users } from "lucide-react"
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  Calendar,
+  CalendarCheck,
+  DollarSign,
+  Layers,
+  LayoutDashboard,
+  Tag,
+  Users,
+} from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sidebar,
   SidebarContent,
@@ -14,15 +22,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import { useSelector } from "react-redux"
-import { RootState } from "@/store/store"
+} from "@/components/ui/sidebar";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 export function AdminSidebar() {
-    const admin = useSelector((state : RootState)=> state.admin.admin);
-  const location = useLocation()
+  const admin = useSelector((state: RootState) => state.admin.admin);
+  const location = useLocation();
   const navigate = useNavigate();
-  const pathname = location.pathname
+  const pathname = location.pathname;
 
   // Define navigation items
   const mainNavItems = [
@@ -33,10 +41,10 @@ export function AdminSidebar() {
       isActive: pathname === "/admin",
     },
     {
-      title: "Users & Vendors",
-      icon: Users,
-      href: "/admin/users",
-      isActive: pathname === "/admin/users",
+      title: "Payments & Wallet",
+      icon: DollarSign,
+      href: "/admin/payments",
+      isActive: pathname === "/admin/payments",
     },
     {
       title: "Vendor Requests",
@@ -44,14 +52,14 @@ export function AdminSidebar() {
       href: "/admin/vendor-requests",
       isActive: pathname === "/admin/vendor-requests",
     },
-  ]
+  ];
 
   const managementNavItems = [
     {
-      title: "Payments & Wallet",
-      icon: DollarSign,
-      href: "/admin/payments",
-      isActive: pathname === "/admin/payments",
+      title: "Users & Vendors",
+      icon: Users,
+      href: "/admin/users",
+      isActive: pathname === "/admin/users",
     },
     {
       title: "Categories",
@@ -65,11 +73,11 @@ export function AdminSidebar() {
       href: "/admin/community",
       isActive: pathname === "/admin/community",
     },
-  ]
+  ];
 
   return (
-    <Sidebar>
-      <SidebarHeader>
+    <Sidebar >
+      <SidebarHeader className="bg-background">
         <div className="flex items-center gap-2 px-4 py-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary">
             <Layers className="h-4 w-4 text-primary-foreground" />
@@ -77,7 +85,7 @@ export function AdminSidebar() {
           <div className="font-semibold">Admin Dashboard</div>
         </div>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-background">
         <SidebarGroup>
           <SidebarGroupLabel>Main</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -85,7 +93,7 @@ export function AdminSidebar() {
               {mainNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton isActive={item.isActive} asChild>
-                    <button onClick={()=> navigate(item.href)}>
+                    <button onClick={() => navigate(item.href)}>
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
                     </button>
@@ -102,7 +110,7 @@ export function AdminSidebar() {
               {managementNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton isActive={item.isActive} asChild>
-                  <button onClick={()=> navigate(item.href)}>
+                    <button onClick={() => navigate(item.href)}>
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
                     </button>
@@ -112,23 +120,8 @@ export function AdminSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Settings</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <a href="/admin/settings">
-                    <Settings className="h-4 w-4" />
-                    <span>Settings</span>
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="bg-background">
         <div className="flex items-center justify-between px-4 py-2">
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
@@ -144,6 +137,5 @@ export function AdminSidebar() {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
-

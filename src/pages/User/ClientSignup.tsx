@@ -3,8 +3,8 @@ import AccountTypeModal from "@/components/modals/AccountTypeModal";
 import { useState } from "react";
 import { useRegisterMutation } from "@/hooks/auth/useRegister";
 import { IUser } from "@/types/interfaces/User";
-import { toast } from "sonner";
-import { useSocket } from "@/context/SocketContext";
+import { useSocket } from "@/hooks/socket/useSocket";
+import { communityToast } from "@/components/ui/community-toast";
 import { UserLayout } from "@/components/layout/UserLayout";
 
 const ClientSignup = () => {
@@ -21,20 +21,21 @@ const ClientSignup = () => {
 
   function handleRegister(data: IUser) {
     registerClient(data, {
-      onSuccess: (data) => {
-        toast.success(data.message);
+      onSuccess: () => {
+        communityToast.registerSuccess();
+
         if (socket) {
           reconnect();
         }
       },
       onError: (error) => {
-        toast.error(error.message);
+        communityToast.error({description:error.message});
       },
     });
   }
 
   return (
-    <>
+    <UserLayout setIsModalOpen={handleOpenModal}>
       <Signup
         onClick={handleOpenModal}
         userType="client"
@@ -45,7 +46,7 @@ const ClientSignup = () => {
           <AccountTypeModal isOpen={isModalOpen} onClose={handleOnClose} />
         </div>
       )}
-    </>
+    </UserLayout>
   );
 };
 

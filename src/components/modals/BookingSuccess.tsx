@@ -107,7 +107,7 @@ export function BookingSuccessModal({
               size="lg"
               variant="outline"
               className="w-full sm:w-auto"
-              onClick={onClose}
+              onClick={()=>navigate('/profile')}
             >
               View My Bookings
             </Button>

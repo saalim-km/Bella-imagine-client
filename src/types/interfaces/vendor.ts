@@ -1,5 +1,4 @@
 import { Category } from "@/services/categories/categoryService";
-import { IVendorReponse } from "./User";
 import { IVendor } from "@/services/vendor/vendorService";
 
 // -----------common type-------------|
@@ -70,6 +69,7 @@ export interface IService {
 export interface IServiceResponse {
   _id ?: string;
   serviceTitle: string;
+  vendor : string;
   vendorId ?: string;
   category: Category
   yearsOfExperience: number;
@@ -90,11 +90,6 @@ export interface IServiceResponse {
 export interface IServiceFilter {
   serviceTitle?: string;
   category?: string; 
-  location?: string;
-  tags?: string[];
-  styleSpecialty?: string[];
-  isPublished?: boolean;
-  createdAt?: 1 | -1;
   page ?: number;
   limit ?: number
 }
@@ -102,10 +97,6 @@ export interface IServiceFilter {
 
 // --------------------------Work-Sample Managment Types-----------------------------||
 
-type TMedia = {
-  url: string;
-  type: "image" | "video";
-}
 
 type TComment = {
   user: string;

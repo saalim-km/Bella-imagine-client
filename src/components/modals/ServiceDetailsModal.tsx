@@ -1,6 +1,5 @@
-import React from "react";
 import { motion } from "framer-motion";
-import { Calendar, Clock, MapPin, Award, FileText, Camera } from "lucide-react";
+import { Calendar, Clock, MapPin, Award, FileText } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DialogClose, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { IServiceResponse } from "@/types/interfaces/vendor";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 interface ServiceModalProps {
   service: IServiceResponse;
@@ -39,6 +40,17 @@ const itemVariants = {
 };
 
 export const ServiceDetailsModal = ({ service, vendorId, isOpen, onClose }: ServiceModalProps) => {
+  const user = useSelector((state : RootState)=> {
+    if(state.client.client) return state.client.client;
+    if(state.vendor.vendor) return state.vendor.vendor;
+    return undefined;
+  })
+
+
+  if(!user){
+    return <p>user not found please try again later , or please relogin to continue</p>
+  }
+
   if (!service) return null;
 
   // Fallback location if service.location is invalid or missing
@@ -48,7 +60,7 @@ export const ServiceDetailsModal = ({ service, vendorId, isOpen, onClose }: Serv
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-7xl max-h-[95vh] overflow-hidden  rounded-lg shadow-xl p-0">
+      <DialogContent className="max-w-7xl max-h-[98vh] overflow-hidden  rounded-lg shadow-xl p-0">
         <DialogHeader className="px-8 pt-8 pb-4 bg-gradient-to-r from-primary/5 to-secondary/5">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-2xl font-bold ">{service.serviceTitle}</DialogTitle>
@@ -160,12 +172,7 @@ export const ServiceDetailsModal = ({ service, vendorId, isOpen, onClose }: Serv
                     </div>
                   </div>
                   <div className="flex items-center gap-2 text-sm ">
-                    <MapPin size={16} />
-                    {service.location.travelFee ? (
-                      <span>Travel fee: ₹{service.location.travelFee}</span>
-                    ) : (
-                      <span>No travel fee</span>
-                    )}
+                    <MapPin size={16}/>
                   </div>
                 </motion.div>
 
@@ -190,11 +197,20 @@ export const ServiceDetailsModal = ({ service, vendorId, isOpen, onClose }: Serv
                             <TableCell>{date.date}</TableCell>
                             <TableCell>
                               <div className="space-y-1">
-                                {date.timeSlots.map((slot, slotIdx) => (
-                                  <div key={slotIdx} className="text-xs">
-                                    {slot.startTime} - {slot.endTime} ({slot.capacity} slots)
-                                  </div>
-                                ))}
+                                {date.timeSlots.map((slot, slotIdx) => {
+                                  // Helper to format "HH:mm" to "h:mm AM/PM"
+                                  const formatTime = (timeStr: string) => {
+                                    const [hour, minute] = timeStr.split(":").map(Number);
+                                    const ampm = hour >= 12 ? "PM" : "AM";
+                                    const hour12 = hour % 12 === 0 ? 12 : hour % 12;
+                                    return `${hour12}:${minute.toString().padStart(2, "0")} ${ampm}`;
+                                  };
+                                  return (
+                                    <div key={slotIdx} className="text-xs">
+                                      {formatTime(slot.startTime)} - {formatTime(slot.endTime)} ({slot.capacity} slots)
+                                    </div>
+                                  );
+                                })}
                               </div>
                             </TableCell>
                           </TableRow>
@@ -244,9 +260,15 @@ export const ServiceDetailsModal = ({ service, vendorId, isOpen, onClose }: Serv
               Close
             </Button>
           </DialogClose>
-          <Link to={`/booking/${service._id}/${vendorId}`}>
-            <Button className="bg-blue-600 text-white hover:bg-blue-700">Book Now</Button>
-          </Link>
+            {user.role !== 'vendor' && (
+              <Link to={`/booking/${service._id}/${vendorId}`}>
+                <Button
+                  className="bg-blue-600 text-white hover:bg-blue-700"
+                >
+                  Book Now
+                </Button>
+              </Link>
+            )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

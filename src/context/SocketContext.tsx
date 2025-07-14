@@ -1,10 +1,12 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { initSocket } from "@/config/socket";
 import { Socket } from "socket.io-client";
-import { showNotificationToast } from "@/components/common/NotificationToast";
 import { TNotification } from "@/components/common/Notification";
+import { useDispatch } from "react-redux";
+import { addNotification } from "@/store/slices/notificationSlice";
+import { communityToast } from "@/components/ui/community-toast";
 
 interface SocketContextType {
   socket: Socket | null;
@@ -12,13 +14,14 @@ interface SocketContextType {
   reconnect: () => void;
 }
 
-const SocketContext = createContext<SocketContextType>({
+export const SocketContext = createContext<SocketContextType>({
   socket: null,
   isConnected: false,
   reconnect: () => {},
 });
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
+  const dispatch = useDispatch()
   const client = useSelector((state: RootState) => state.client.client);
   const vendor = useSelector((state: RootState) => state.vendor.vendor);
   const user = client || vendor;
@@ -72,7 +75,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
     socketInstance.on("new_message_notification", (notification: TNotification) => {
       console.log(notification);
-      showNotificationToast(notification)
+      communityToast.newMessage(notification.message)
+      dispatch(addNotification(notification))
     });
 
     socketInstance.on("disconnect", () => {
@@ -91,7 +95,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         setIsConnected(false);
       }
     };
-  }, [user?._id, userType, socketKey]); // Add socketKey as dependency
+  }, [user?._id,userType, socketKey]); // Add socketKey as dependency
 
   return (
     <SocketContext.Provider value={{ socket, isConnected, reconnect }}>
@@ -99,5 +103,3 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     </SocketContext.Provider>
   );
 };
-
-export const useSocket = () => useContext(SocketContext);

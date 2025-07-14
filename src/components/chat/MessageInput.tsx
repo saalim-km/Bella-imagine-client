@@ -2,7 +2,6 @@ import { useState, useRef, ChangeEvent } from "react";
 import { 
   Smile, 
   Paperclip, 
-  Image, 
   MapPin, 
   Send, 
   X
@@ -10,10 +9,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
 import { MessageType } from "@/types/interfaces/Chat";
 import { useUploadChatMedia } from "@/hooks/chat/useChat";
 import { handleError } from "@/utils/Error/error-handler.utils";
+import { communityToast } from "../ui/community-toast";
 
 interface MessageInputProps {
   conversationId: string;
@@ -81,7 +80,7 @@ export function MessageInput({ conversationId, onSendMessage }: MessageInputProp
       setIsUploading(false);
     } catch (error) {
       console.error("Error sending message:", error);
-      toast.error("Failed to send message. Please try again.");
+      communityToast.error({description:"Failed to send message. Please try again."});
       setIsUploading(false);
     }
   };
@@ -98,7 +97,7 @@ export function MessageInput({ conversationId, onSendMessage }: MessageInputProp
     if (!file) return;
     
     if (file.size > 10 * 1024 * 1024) {
-      toast.error("File is too large. Maximum size is 10MB.");
+      communityToast.error({description:"File is too large. Maximum size is 10MB."});
       return;
     }
     
@@ -134,7 +133,7 @@ export function MessageInput({ conversationId, onSendMessage }: MessageInputProp
       // onSendMessage(newMessage);
     } catch (error) {
       console.error("Error sharing location:", error);
-      toast.error("Failed to share location. Please check your permissions and try again.");
+      communityToast.error({description:"Failed to share location. Please check your permissions and try again."});
     }
   };
 

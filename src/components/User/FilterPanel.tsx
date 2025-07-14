@@ -57,7 +57,7 @@ export const FilterPanel = ({ isOpen, onClose, onApplyFilters, currentFilters, v
     ))).sort();
 
     return { categories, services, tags };
-  }, [vendors]);
+  }, [allCategories,vendors]);
 
   const handleCategoryToggle = (categoryId: string) => {
     const newCategories = localFilters.categories?.includes(categoryId)
@@ -121,7 +121,7 @@ export const FilterPanel = ({ isOpen, onClose, onApplyFilters, currentFilters, v
     <>
       {/* Backdrop */}
       <div 
-        className={`fixed inset-0 backdrop-blur-sm z-50 transition-opacity duration-300 ${
+        className={`fixed inset-0 backdrop-blur-md z-50 duration-100 ${
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}
@@ -130,10 +130,10 @@ export const FilterPanel = ({ isOpen, onClose, onApplyFilters, currentFilters, v
 
       {/* Filter Panel */}
       <div 
-        className={`fixed bottom-0 left-0 right-0 rounded-t-3xl shadow-2xl z-50 transition-transform duration-300 transform ${
+        className={`fixed bottom-0 left-0 right-0 rounded-t-3xl shadow-2xl z-50  duration-300 transform ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
-        } bg-white dark:bg-black`}
-        style={{ maxHeight: '80vh' }}
+        } bg-background`}
+        style={{ maxHeight: '90vh' }}
         aria-modal="true"
         role="dialog"
       >
@@ -143,7 +143,7 @@ export const FilterPanel = ({ isOpen, onClose, onApplyFilters, currentFilters, v
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between px-6 py-4 border-b">
           <h2 className="text-xl font-bold">Filter Photographers</h2>
           <Button
             variant="ghost"
@@ -181,7 +181,7 @@ export const FilterPanel = ({ isOpen, onClose, onApplyFilters, currentFilters, v
                   placeholder="Enter city, state, or address..."
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="w-full"
+                  className="w-full border-foreground"
                   aria-label="Search for a city or address"
                   disabled={!isMapLoaded}
                 />
@@ -217,7 +217,7 @@ export const FilterPanel = ({ isOpen, onClose, onApplyFilters, currentFilters, v
 
           {/* Categories */}
           <div className="mb-6">
-            <Label className="text-base font-semibold mb-3">
+            <Label className="text-base font-semibold">
               Photography Categories
             </Label>
             <div className="flex flex-wrap gap-2">
@@ -226,7 +226,7 @@ export const FilterPanel = ({ isOpen, onClose, onApplyFilters, currentFilters, v
                   <Badge
                     key={category._id}
                     variant={localFilters.categories?.includes(category._id) ? "default" : "outline"}
-                    className={`cursor-pointer transition-all duration-200`}
+                    className={`cursor-pointer transition-all duration-200 border-gray-400 px-2 py-1 rounded-full`}
                     onClick={() => handleCategoryToggle(category._id)}
                     role="button"
                     aria-pressed={localFilters.categories?.includes(category._id)}
@@ -251,7 +251,7 @@ export const FilterPanel = ({ isOpen, onClose, onApplyFilters, currentFilters, v
                   <Badge
                     key={service.id}
                     variant={localFilters.services?.includes(service.id!) ? "default" : "outline"}
-                    className={`cursor-pointer transition-all duration-200`}
+                    className={`cursor-pointer transition-all duration-200 border-gray-400 px-2 py-1 rounded-full`}
                     onClick={() => handleServiceToggle(service.id!)}
                     role="button"
                     aria-pressed={localFilters.services?.includes(service.id!)}
@@ -276,7 +276,7 @@ export const FilterPanel = ({ isOpen, onClose, onApplyFilters, currentFilters, v
                   <Badge
                     key={tag}
                     variant={localFilters.tags?.includes(tag!) ? "default" : "outline"}
-                    className={`cursor-pointer transition-all duration-200`}
+                    className={`cursor-pointer transition-all duration-200 border-gray-400 px-2 py-1 rounded-full`}
                     onClick={() => handleTagToggle(tag!)}
                     role="button"
                     aria-pressed={localFilters.tags?.includes(tag!)}
@@ -301,7 +301,7 @@ export const FilterPanel = ({ isOpen, onClose, onApplyFilters, currentFilters, v
               <Badge
                 key={language}
                 variant={localFilters.languages?.includes(language) ? "default" : "outline"}
-                className="cursor-pointer transition-all duration-200"
+                className="cursor-pointer transition-all duration-200 border-gray-400 px-2 py-1 rounded-full"
                 onClick={() => handleLanguageToggle(language)}
                 role="button"
                 aria-pressed={localFilters.languages?.includes(language)}
@@ -314,7 +314,7 @@ export const FilterPanel = ({ isOpen, onClose, onApplyFilters, currentFilters, v
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 rounded-t-3xl">
+        <div className="px-6 py-4 border-t rounded-t-3xl">
           <div className="flex space-x-3">
             <Button
               variant="outline"

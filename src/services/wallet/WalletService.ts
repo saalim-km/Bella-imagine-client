@@ -1,26 +1,26 @@
 import { clientAxiosInstance } from "@/api/client.axios";
-import { PopulatedWallet } from "@/types/interfaces/Wallet";
-import { BasePaginatedResponse } from "../client/clientService";
 import { vendorAxiosInstance } from "@/api/vendor.axios";
 import { adminAxiosInstance } from "@/api/admin.axios";
+import { WalletQueryParams } from "@/hooks/wallet/useWallet";
 
-export const getClientWalletDetails = async (): Promise<
-  BasePaginatedResponse<PopulatedWallet>
-> => {
-  const response = await clientAxiosInstance.get("/client/wallet");
-  return response.data;
-};
 
-export const getVendorWalletDetails = async (): Promise<
-  BasePaginatedResponse<PopulatedWallet>
-> => {
-  const response = await vendorAxiosInstance.get("/vendor/wallet");
-  return response.data;
-};
+export const clientWalletService = {
+  getWallet: async (queryParams?: WalletQueryParams) => {
+    const response = await clientAxiosInstance.get(`/client/wallet`,{params : queryParams})
+    return response.data
+  },
+}
 
-export const getAdminWalletDetails = async (): Promise<
-  BasePaginatedResponse<PopulatedWallet>
-> => {
-  const response = await adminAxiosInstance.get("/wallet");
-  return response.data;
-};
+export const vendorWalletService = {
+  getWallet: async (queryParams?: WalletQueryParams) => {
+    const response = await vendorAxiosInstance.get(`/vendor/wallet`,{params : queryParams})
+    return response.data
+  },
+}
+
+export const adminWalletService = {
+  getWallet: async (queryParams?: WalletQueryParams) => {
+    const response = await adminAxiosInstance.get(`/wallet`,{params : queryParams})
+    return response.data
+  },
+}

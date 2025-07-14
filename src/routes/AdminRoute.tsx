@@ -11,7 +11,7 @@ import { Admin404 } from '@/components/404/Admin404'
 import CommunityManagement from '@/pages/admin/CommunityManagement'
 import CreateCommunityPage from '@/pages/admin/CreateCommunityPage'
 import EditCommunityPage from '@/pages/admin/EditCommunity'
-import CommunityMembers from '@/components/admin/community_contest/CommunityMember'
+import CommunityMembers from '@/components/admin/community/CommunityMember'
 import AdminWalletPage from '@/pages/admin/AdminWalletPage'
 
 const AdminRoute = () => {
@@ -27,7 +27,7 @@ const AdminRoute = () => {
       <Route path='/community' element = {<AuthAdminRoute element={<CommunityManagement/>} allowedRoles={["admin"]}/>}/>
       <Route path='/community/new' element = {<AuthAdminRoute element={<CreateCommunityPage/>} allowedRoles={["admin"]}/>}/>
       <Route path='community/edit/r/:slug' element = {<AuthAdminRoute element={<EditCommunityPage/>} allowedRoles={["admin"]}/>}/>
-      <Route path='community/:id/members' element = {<AuthAdminRoute element={<CommunityMembers/>} allowedRoles={["admin"]}/>}/>
+      <Route path='r/:slug/members' element = {<AuthAdminRoute element={<CommunityMembers/>} allowedRoles={["admin"]}/>}/>
       <Route path='*' element={<Admin404/>}/>
     </Routes>
   )

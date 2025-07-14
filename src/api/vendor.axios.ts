@@ -1,6 +1,6 @@
 import axios from "axios";
-import { toast } from "sonner";
 import { ENDPOINTS } from "./endpoints";
+import { communityToast } from "@/components/ui/community-toast";
 
 export const vendorAxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_VENDOR_API_URI,
@@ -28,7 +28,7 @@ vendorAxiosInstance.interceptors.response.use(
         } catch (refreshError) {
           isRefreshing = false;
 
-          toast.info("Please login again");
+          communityToast.info({description :"Please login again"});
           localStorage.removeItem("vendorSession");
           window.location.href = "/";
           return Promise.reject(refreshError);
@@ -44,7 +44,7 @@ vendorAxiosInstance.interceptors.response.use(
     ) {
       localStorage.removeItem("vendorSession");
       window.location.href = "/";
-      toast.info("Please login again");
+      communityToast.info({description : "Please login again"});
       return Promise.reject(error);
     }
 

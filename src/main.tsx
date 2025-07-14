@@ -8,19 +8,19 @@ import { Provider } from "react-redux";
 import { store } from "./store/store.ts";
 import AppLayout from "./App.tsx";
 const queryClient = new QueryClient();
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 createRoot(document.getElementById("root")!).render(
-    <Provider store={store}>
-      <BrowserRouter>
-        <ErrorBoundary>
-          <ThemeProvider>
-            <QueryClientProvider client={queryClient}>
-              <AppLayout />
-              <ReactQueryDevtools initialIsOpen={false}/>
-            </QueryClientProvider>
-          </ThemeProvider>
-        </ErrorBoundary>
-      </BrowserRouter>
-    </Provider>
+  <Provider store={store}>
+    <BrowserRouter>
+      <ErrorBoundary>
+        <ThemeProvider>
+          <QueryClientProvider client={queryClient}>
+            <AppLayout />
+            <ReactQueryDevtools initialIsOpen={false} />
+          </QueryClientProvider>
+        </ThemeProvider>
+      </ErrorBoundary>
+    </BrowserRouter>
+  </Provider>
 );

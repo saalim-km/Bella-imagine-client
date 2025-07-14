@@ -4,7 +4,7 @@ import {
   GoogleOAuthProvider,
   CredentialResponse,
 } from "@react-oauth/google";
-import { toast } from "sonner";
+import { communityToast } from "../ui/community-toast";
 
 interface GoogleAuthProps {
   handleGoogleSuccess: (credentialResponse: CredentialResponse) => void;
@@ -18,7 +18,7 @@ const GoogleAuth: React.FC<GoogleAuthProps> = ({ handleGoogleSuccess }) => {
       <GoogleLogin
         onSuccess={handleGoogleSuccess}
         onError={() => {
-          toast.error("Login failed");
+          communityToast.error({description :"Login failed"});
         }}
         useOneTap
         type="standard"

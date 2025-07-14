@@ -1,23 +1,41 @@
-import type React from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Formik, Form, Field, ErrorMessage } from "formik"
-import { useState, useRef, useEffect } from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { toast } from "sonner"
-import { clientProfileSchema, vendorProfileSchema } from "@/utils/formikValidators/user/profile.validator"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Command, CommandInput, CommandList, CommandItem, CommandEmpty } from "@/components/ui/command"
-import { Globe, File, FileText, FileImage, X, Upload } from "lucide-react"
-import type { IVendor } from "@/services/vendor/vendorService"
-import { motion, AnimatePresence } from "framer-motion"
-import { useThemeConstants } from "@/utils/theme/theme.utils"
-import { handleError } from "@/utils/Error/error-handler.utils"
-import { GoogleMap, Marker, LoadScript, Autocomplete } from "@react-google-maps/api"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2 } from "lucide-react"
-import { DEFAULT_CENTER, libraries } from "@/utils/config/map.config"
+import type React from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
+import { useState, useRef, useEffect } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  clientProfileSchema,
+  vendorProfileSchema,
+} from "@/utils/formikValidators/user/profile.validator";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandItem,
+  CommandEmpty,
+} from "@/components/ui/command";
+import { Globe, File, FileText, FileImage, X, Upload } from "lucide-react";
+import type { IVendor } from "@/services/vendor/vendorService";
+import { motion, AnimatePresence } from "framer-motion";
+import { useThemeConstants } from "@/utils/theme/theme.utils";
+import { handleError } from "@/utils/Error/error-handler.utils";
+import {
+  GoogleMap,
+  Marker,
+  LoadScript,
+  Autocomplete,
+} from "@react-google-maps/api";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
+import { DEFAULT_CENTER, libraries } from "@/utils/config/map.config";
+import { communityToast } from "../ui/community-toast";
 
 export const popularLanguages = [
   "English",
@@ -35,7 +53,7 @@ export const popularLanguages = [
   "Assamese",
   "Maithili",
   "Sanskrit",
-]
+];
 
 export interface DocumentPreview {
   file: File;
@@ -45,30 +63,35 @@ export interface DocumentPreview {
 }
 
 export interface EditProfileFormProps {
-  role: "client" | "vendor"
-  setIsEditing: (isEditing: boolean) => void
-  data?: IVendor
-  handleUpdateProfile?: (values: any) => void
-  isUpdateSubmitting : boolean
+  role: "client" | "vendor";
+  setIsEditing: (isEditing: boolean) => void;
+  data?: IVendor;
+  handleUpdateProfile?: (values: any) => void;
+  isUpdateSubmitting: boolean;
 }
 
-
-export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpdateProfile , isUpdateSubmitting }: EditProfileFormProps) {
-  console.log('data to edit',data);
-  const [newLanguage, setNewLanguage] = useState("")
-  const [open, setOpen] = useState(false)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [documentPreview, setDocumentPreview] = useState<DocumentPreview | null>(null)
-  const [uploadProgress, setUploadProgress] = useState(0)
-  const {bgColor} = useThemeConstants()
+export function EditProfileForm({
+  role = "vendor",
+  data,
+  setIsEditing,
+  handleUpdateProfile,
+  isUpdateSubmitting,
+}: EditProfileFormProps) {
+  console.log("data to edit", data);
+  const [newLanguage, setNewLanguage] = useState("");
+  const [open, setOpen] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [documentPreview, setDocumentPreview] =
+    useState<DocumentPreview | null>(null);
+  const { bgColor } = useThemeConstants();
   // Location picker states
-  const [marker, setMarker] = useState(data?.location || DEFAULT_CENTER)
-  const [map, setMap] = useState<google.maps.Map | null>(null)
-  const [isMapLoading, setIsMapLoading] = useState(true)
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [marker, setMarker] = useState(data?.location || DEFAULT_CENTER);
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [isMapLoading, setIsMapLoading] = useState(true);
+  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const isVendor = role === "vendor"
+  const isVendor = role === "vendor";
 
   const initialValues = {
     name: data?.name || "",
@@ -76,10 +99,10 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
     location: {
       address: data?.location?.address || "",
       lat: data?.location?.lat || 0,
-      lng: data?.location?.lng || 0
+      lng: data?.location?.lng || 0,
     },
-    profileImage: data?.profileImage || "", 
-    imageFile: null, 
+    profileImage: data?.profileImage || "",
+    imageFile: null,
     verificationDocument: null,
     ...(isVendor
       ? {
@@ -88,7 +111,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
           languages: (data as IVendor)?.languages || [],
         }
       : { email: data?.email || "" }),
-  }
+  };
 
   // Try to get user's current location
   useEffect(() => {
@@ -98,26 +121,31 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
           const userLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
-          }
-          setMarker(userLocation)
-          if (map) map.panTo(userLocation)
+          };
+          setMarker(userLocation);
+          if (map) map.panTo(userLocation);
         },
         (error) => {
-          console.error("Error getting location:", error)
-        },
-      )
+          console.error("Error getting location:", error);
+        }
+      );
     }
-  }, [map])
+  }, [initialValues.location.lat, map]);
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     try {
       console.log(values);
-      handleUpdateProfile?.(values)
+      handleUpdateProfile?.(values);
     } catch (error) {
-      handleError(error)
+      handleError(error);
     } finally {
-      setSubmitting(false)
-      setUploadProgress(0)
+      setSubmitting(false);
+    }
+  };
+
+  const handleKeyDown = (e : any)=> {
+    if(e.key == 'Enter'){
+      e.preventDefault()
     }
   }
 
@@ -126,15 +154,20 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
     setFieldValue: any
   ) => {
     const file = event.target.files?.[0];
-  
+
     if (file) {
-      const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
-  
+      const allowedTypes = [
+        "image/png",
+        "image/jpeg",
+        "image/jpg",
+        "image/webp",
+      ];
+
       if (!allowedTypes.includes(file.type)) {
-        toast.error("Only PNG, JPG, JPEG, and WEBP formats are allowed.");
+        communityToast.error({description : "Only PNG, JPG, JPEG, and WEBP formats are allowed."});
         return;
       }
-  
+
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
       setFieldValue("imageFile", file);
@@ -142,8 +175,10 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
   };
 
   const getDocumentIcon = (fileType: string) => {
-    if (fileType === 'application/pdf') return <FileText className="h-6 w-6 text-red-500" />;
-    if (fileType.startsWith('image/')) return <FileImage className="h-6 w-6 text-blue-500" />;
+    if (fileType === "application/pdf")
+      return <FileText className="h-6 w-6 text-red-500" />;
+    if (fileType.startsWith("image/"))
+      return <FileImage className="h-6 w-6 text-blue-500" />;
     return <File className="h-6 w-6 text-gray-500" />;
   };
 
@@ -152,28 +187,35 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
     setFieldValue: any
   ) => {
     const file = event.target.files?.[0];
-    
+
     if (!file) return;
-    
-    const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "application/pdf"];
-    
+
+    const allowedTypes = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "application/pdf",
+    ];
+
     if (!allowedTypes.includes(file.type)) {
-      toast.error(`File "${file.name}" is not supported. Only PDF, PNG, JPG, and JPEG formats are allowed.`);
+      communityToast.error({description :
+        `File "${file.name}" is not supported. Only PDF, PNG, JPG, and JPEG formats are allowed.`}
+      );
       return;
     }
-    
+
     if (file.size > 5 * 1024 * 1024) {
-      toast.error(`File "${file.name}" exceeds the 5MB size limit.`);
+      communityToast.error({description :`File "${file.name}" exceeds the 5MB size limit.`});
       return;
     }
-    
+
     const preview: DocumentPreview = {
       file,
-      preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : '',
+      preview: file.type.startsWith("image/") ? URL.createObjectURL(file) : "",
       name: file.name,
-      type: file.type
+      type: file.type,
     };
-    
+
     setDocumentPreview(preview);
     setFieldValue("verificationDocument", file);
   };
@@ -182,53 +224,62 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
     if (documentPreview?.preview) {
       URL.revokeObjectURL(documentPreview.preview);
     }
-    
+
     setDocumentPreview(null);
     setFieldValue("verificationDocument", null);
   };
 
-  const handleMapClick = (e: google.maps.MapMouseEvent , setFieldValue : Function) => {
+  const handleMapClick = (
+    e: google.maps.MapMouseEvent,
+    setFieldValue: FormikHelpers<any>["setFieldValue"]
+  ) => {
     if (e.latLng) {
-      const lat = e.latLng.lat()
-      const lng = e.latLng.lng()
-      const newLocation = { lat, lng }
-      setMarker(newLocation)
-      setFieldValue("location.lat", lat)
-      setFieldValue("location.lng", lng)
-      // Reverse geocode to get address
-      const geocoder = new google.maps.Geocoder()
+      const lat = e.latLng.lat();
+      const lng = e.latLng.lng();
+      const newLocation = { lat, lng };
+      setMarker(newLocation);
+      setFieldValue("location.lat", lat);
+      setFieldValue("location.lng", lng);
+
+      const geocoder = new google.maps.Geocoder();
       geocoder.geocode({ location: newLocation }, (results, status) => {
         if (status === "OK" && results?.[0]) {
-          setFieldValue("location.address", results[0].formatted_address)
+          setFieldValue("location.address", results[0].formatted_address);
         }
-      })
+      });
     }
-  }
+  };
 
-  const handlePlaceChanged = (setFieldValue : Function) => {
+  const handlePlaceChanged = (
+    setFieldValue: FormikHelpers<any>["setFieldValue"]
+  ) => {
     if (autocompleteRef.current) {
-      const place = autocompleteRef.current.getPlace()
+      const place = autocompleteRef.current.getPlace();
       if (place && place.geometry && place.geometry.location) {
-        const lat = place.geometry.location.lat()
-        const lng = place.geometry.location.lng()
-        const newLocation = { lat, lng }
-        setMarker(newLocation)
-        setFieldValue("location.lat", lat)
-        setFieldValue("location.lng", lng)
-        setFieldValue("location.address", place.formatted_address || "")
-        if (map) map.panTo(newLocation)
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+        const newLocation = { lat, lng };
+        setMarker(newLocation);
+        setFieldValue("location.lat", lat);
+        setFieldValue("location.lng", lng);
+        setFieldValue("location.address", place.formatted_address || "");
+        if (map) map.panTo(newLocation);
       }
     }
-  }
+  };
 
   const handleMapLoad = (mapInstance: google.maps.Map) => {
-    setMap(mapInstance)
-    setIsMapLoading(false)
-  }
+    setMap(mapInstance);
+    setIsMapLoading(false);
+  };
 
-  const CustomInput = ({ field, form, ...props }: any) => <Input {...field} {...props} />
+  const CustomInput = ({ field, ...props }: any) => (
+    <Input {...field} {...props} />
+  );
 
-  const TextError = (props: any) => <div className="text-red-500 text-sm">{props.children}</div>
+  const TextError = (props: any) => (
+    <div className="text-red-500 text-sm">{props.children}</div>
+  );
 
   return (
     <Formik
@@ -238,19 +289,27 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
       validateOnBlur
       validateOnChange
     >
-      {({ values, isSubmitting, isValid, setFieldValue, getFieldProps  }) => (
-        <Form className="space-y-6">
+      {({ values, setFieldValue }) => (
+        <Form onKeyDown={handleKeyDown} className="space-y-6">
           <div className="space-y-4">
-            <Label htmlFor="profileImage" className="text-base font-medium">Profile Picture</Label>
+            <Label htmlFor="profileImage" className="text-base font-medium">
+              Profile Picture
+            </Label>
             <div className="flex items-center space-x-4">
-              <motion.div 
+              <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.3 }}
               >
                 <Avatar className="w-20 h-20 border-2 border-primary/20">
-                  <AvatarImage className="object-cover" src={imagePreview || values.profileImage} alt={values.name} />
-                  <AvatarFallback className="bg-primary/10">{values.name.charAt(0)}</AvatarFallback>
+                  <AvatarImage
+                    className="object-cover"
+                    src={imagePreview || values.profileImage}
+                    alt={values.name}
+                  />
+                  <AvatarFallback className="bg-primary/10">
+                    {values.name.charAt(0)}
+                  </AvatarFallback>
                 </Avatar>
               </motion.div>
               <div className="flex flex-col gap-2">
@@ -275,8 +334,8 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        setImagePreview(null)
-                        setFieldValue("imageFile", null)
+                        setImagePreview(null);
+                        setFieldValue("imageFile", null);
                       }}
                       className="group"
                     >
@@ -290,22 +349,41 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
           </div>
 
           <div>
-            <Label htmlFor="name" className="text-base font-medium">Name</Label>
+            <Label htmlFor="name" className="text-base font-medium">
+              Name
+            </Label>
             <Field name="name" as={CustomInput} id="name" className="mt-1" />
             <ErrorMessage name="name" component={TextError} />
           </div>
 
           {!isVendor && (
             <div>
-              <Label htmlFor="email" className="text-base font-medium">Email</Label>
-              <Field name="email" as={CustomInput} id="email" type="email" readOnly className="mt-1 bg-muted/50" />
+              <Label htmlFor="email" className="text-base font-medium">
+                Email
+              </Label>
+              <Field
+                name="email"
+                as={CustomInput}
+                id="email"
+                type="email"
+                readOnly
+                className="mt-1 bg-muted/50"
+              />
               <ErrorMessage name="email" component={TextError} />
             </div>
           )}
 
           <div>
-            <Label htmlFor="phoneNumber" className="text-base font-medium">Phone Number</Label>
-            <Field name="phoneNumber" as={CustomInput} id="phoneNumber" type="tel" className="mt-1" />
+            <Label htmlFor="phoneNumber" className="text-base font-medium">
+              Phone Number
+            </Label>
+            <Field
+              name="phoneNumber"
+              as={CustomInput}
+              id="phoneNumber"
+              type="tel"
+              className="mt-1"
+            />
             <ErrorMessage name="phoneNumber" component={TextError} />
           </div>
 
@@ -328,9 +406,9 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                   <div className="space-y-4">
                     <Autocomplete
                       onLoad={(autocomplete) => {
-                        autocompleteRef.current = autocomplete
+                        autocompleteRef.current = autocomplete;
                       }}
-                      onPlaceChanged={()=> handlePlaceChanged(setFieldValue)}
+                      onPlaceChanged={() => handlePlaceChanged(setFieldValue)}
                     >
                       <Input
                         ref={inputRef}
@@ -339,7 +417,9 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                         className="w-full"
                         aria-label="Search for a location"
                         value={values.location.address}
-                        onChange={(e) => setFieldValue("location.address", e.target.value)}
+                        onChange={(e) =>
+                          setFieldValue("location.address", e.target.value)
+                        }
                       />
                     </Autocomplete>
 
@@ -353,7 +433,7 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                         center={marker}
                         zoom={14}
                         mapContainerStyle={{ width: "100%", height: "100%" }}
-                        onClick={(e)=> handleMapClick(e,setFieldValue)}
+                        onClick={(e) => handleMapClick(e, setFieldValue)}
                         onLoad={handleMapLoad}
                         options={{
                           streetViewControl: false,
@@ -366,7 +446,8 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                     </div>
 
                     <p className="text-sm text-muted-foreground">
-                      Click on the map to select your exact location or search for an address above.
+                      Click on the map to select your exact location or search
+                      for an address above.
                     </p>
                   </div>
                 </LoadScript>
@@ -378,23 +459,46 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
           {isVendor && (
             <>
               <div>
-                <Label htmlFor="profileDescription" className="text-base font-medium">Profile Description</Label>
-                <Field name="profileDescription" as={CustomInput} id="profileDescription" className="mt-1" />
+                <Label
+                  htmlFor="profileDescription"
+                  className="text-base font-medium"
+                >
+                  Profile Description
+                </Label>
+                <Field
+                  name="profileDescription"
+                  as={CustomInput}
+                  id="profileDescription"
+                  className="mt-1"
+                />
                 <ErrorMessage name="profileDescription" component={TextError} />
               </div>
 
               <div>
-                <Label htmlFor="portfolioWebsite" className="text-base font-medium">Portfolio Website</Label>
-                <Field name="portfolioWebsite" as={CustomInput} id="portfolioWebsite" type="url" className="mt-1" />
+                <Label
+                  htmlFor="portfolioWebsite"
+                  className="text-base font-medium"
+                >
+                  Portfolio Website
+                </Label>
+                <Field
+                  name="portfolioWebsite"
+                  as={CustomInput}
+                  id="portfolioWebsite"
+                  type="url"
+                  className="mt-1"
+                />
                 <ErrorMessage name="portfolioWebsite" component={TextError} />
               </div>
 
               <div>
-                <Label htmlFor="languages" className="text-base font-medium">Languages</Label>
+                <Label htmlFor="languages" className="text-base font-medium">
+                  Languages
+                </Label>
                 <Popover open={open} onOpenChange={setOpen}>
                   <PopoverTrigger asChild>
                     <div className="relative w-full mt-1">
-                      <Globe className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"/>
+                      <Globe className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         placeholder="Type or select a language..."
                         className="pl-10"
@@ -415,14 +519,23 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                       <CommandList className="max-h-[250px] overflow-auto">
                         <CommandEmpty>No results found.</CommandEmpty>
                         {popularLanguages.map((lang) => (
-                          <CommandItem 
+                          <CommandItem
                             key={lang}
                             onSelect={() => {
-                              if (lang.trim() && !values?.languages?.includes(lang)) {
-                                setFieldValue("languages", [...(values?.languages || []), lang.trim()])
+                              if ("languages" in values) {
+                                const trimmedLang = lang.trim();
+                                if (
+                                  trimmedLang &&
+                                  !values.languages.includes(trimmedLang)
+                                ) {
+                                  setFieldValue("languages", [
+                                    ...(values.languages || []),
+                                    trimmedLang,
+                                  ]);
+                                }
                               }
-                              setNewLanguage("")
-                              setOpen(false)
+                              setNewLanguage("");
+                              setOpen(false);
                             }}
                           >
                             {lang}
@@ -436,11 +549,21 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                 <Button
                   type="button"
                   onClick={() => {
-                    if (newLanguage.trim() && !values.languages?.includes(newLanguage)) {
-                      setFieldValue("languages", [...(values.languages || []), newLanguage.trim()])
+                    const trimmed = newLanguage.trim();
+
+                    if (
+                      "languages" in values &&
+                      trimmed &&
+                      !values.languages?.includes(trimmed)
+                    ) {
+                      setFieldValue("languages", [
+                        ...(values.languages || []),
+                        trimmed,
+                      ]);
                     }
-                    setNewLanguage("")
-                    setOpen(false)
+
+                    setNewLanguage("");
+                    setOpen(false);
                   }}
                   disabled={!newLanguage.trim()}
                   className="mt-2"
@@ -451,30 +574,33 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
 
                 <div className="flex flex-wrap gap-2 mt-2">
                   <AnimatePresence>
-                    {values?.languages?.map((lang: string) => (
-                      <motion.div 
-                        key={lang} 
-                        className={`flex items-center ${bgColor} px-3 py-1.5 rounded-full text-sm`}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        {lang}
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setFieldValue(
-                              "languages",
-                              values?.languages?.filter((item: string) => item !== lang),
-                            )
-                          }
-                          className="ml-2 text-foreground/70 hover:text-foreground transition-colors"
+                    {"languages" in values &&
+                      values.languages?.map((lang: string) => (
+                        <motion.div
+                          key={lang}
+                          className={`flex items-center ${bgColor} px-3 py-1.5 rounded-full text-sm`}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          transition={{ duration: 0.2 }}
                         >
-                          <X className="h-3 w-3 text-gray"/>
-                        </button>
-                      </motion.div>
-                    ))}
+                          {lang}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setFieldValue(
+                                "languages",
+                                values.languages?.filter(
+                                  (item: string) => item !== lang
+                                )
+                              )
+                            }
+                            className="ml-2 text-foreground/70 hover:text-foreground transition-colors"
+                          >
+                            <X className="h-3 w-3 text-gray" />
+                          </button>
+                        </motion.div>
+                      ))}
                   </AnimatePresence>
                 </div>
 
@@ -482,22 +608,27 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
               </div>
 
               {/* Verification Documents Section */}
-              {
-                !data?.verificationDocument && (
-                  <div className="space-y-4 pt-2">
+              {!data?.verificationDocument && (
+                <div className="space-y-4 pt-2">
                   <div className="border-t pt-4">
-                    <Label htmlFor="verificationDocument" className="text-base font-medium">
+                    <Label
+                      htmlFor="verificationDocument"
+                      className="text-base font-medium"
+                    >
                       Verification Document
                     </Label>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Upload an identification document (Aadhar Card, Passport, Driver's License etc.)
+                      Upload an identification document (Aadhar Card, Passport,
+                      Driver's License etc.)
                     </p>
-                    
+
                     <div className="mt-3 relative">
                       <div className="border-2 border-dashed rounded-lg p-8 text-center border-primary/20 hover:border-primary/30 transition-colors group cursor-pointer">
                         <Input
                           type="file"
-                          onChange={(e) => handleDocumentSelect(e, setFieldValue)}
+                          onChange={(e) =>
+                            handleDocumentSelect(e, setFieldValue)
+                          }
                           id="verificationDocument"
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                         />
@@ -512,13 +643,18 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                         </div>
                       </div>
                     </div>
-                    <ErrorMessage name="verificationDocument" component={TextError} />
+                    <ErrorMessage
+                      name="verificationDocument"
+                      component={TextError}
+                    />
                   </div>
-  
+
                   {/* Preview of new document to be uploaded */}
                   {documentPreview && (
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">New Document</Label>
+                      <Label className="text-sm font-medium">
+                        New Document
+                      </Label>
                       <motion.div
                         className="relative flex items-center p-3 rounded-lg border bg-card"
                         initial={{ opacity: 0, y: 20 }}
@@ -528,9 +664,15 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                       >
                         {getDocumentIcon(documentPreview.type)}
                         <div className="ml-3 flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{documentPreview.name}</p>
+                          <p className="text-sm font-medium truncate">
+                            {documentPreview.name}
+                          </p>
                           <p className="text-xs text-muted-foreground">
-                            {(documentPreview.file.size / (1024 * 1024)).toFixed(2)} MB
+                            {(
+                              documentPreview.file.size /
+                              (1024 * 1024)
+                            ).toFixed(2)}{" "}
+                            MB
                           </p>
                         </div>
                         <Button
@@ -545,12 +687,11 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                       </motion.div>
                     </div>
                   )}
-                  </div>
-                )
-              }
+                </div>
+              )}
             </>
           )}
-{/* 
+          {/* 
           {isUploading && (
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
@@ -566,21 +707,21 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
                 />
               </div>
             </div>
-          )} */}
+          // )} */}
 
           <div className="flex justify-end space-x-3 pt-2">
-            <Button 
-              type="button" 
-              variant="destructive" 
-              onClick={() => setIsEditing(false)} 
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => setIsEditing(false)}
               disabled={isUpdateSubmitting}
               className="px-5"
             >
               Cancel
             </Button>
-            <Button 
+            <Button
               variant={"outline"}
-              type="submit" 
+              type="submit"
               disabled={isUpdateSubmitting}
               className="px-5"
             >
@@ -590,5 +731,5 @@ export function EditProfileForm({ role = "vendor", data, setIsEditing, handleUpd
         </Form>
       )}
     </Formik>
-  )
+  );
 }

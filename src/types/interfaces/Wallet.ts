@@ -5,7 +5,7 @@ export enum PaymentStatus {
   REFUNDED = "refunded",
 }
 
-export type Purpose =  'vendor-booking' | 'refund-amount' | 'wallet-credit';
+export type Purpose =  'vendor-booking' | 'refund-amount' | 'wallet-credit' | 'commission-credit';
 
 export interface IWalletEntity {
   _id?: string;
@@ -42,3 +42,57 @@ export interface PopulatedWallet
 }
 
 export type WalletTransactions = Pick<PopulatedWallet, "userId" | "paymentId">;
+export interface User {
+  _id: string
+  name: string
+  email: string
+}
+
+export interface Transaction {
+  _id: string
+  userId: string
+  bookingId: string
+  transactionId: string
+  amount: number
+  currency: string
+  status: "pending" | "processing" | "succeeded" | "failed" | "refunded" | "partially_refunded"
+  paymentIntentId: string
+  purpose: string
+  createdAt: string
+}
+
+export interface Wallet {
+  _id: string
+  userId: User
+  userType: string
+  role: string
+  balance: number
+  paymentId: Transaction[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface PaginationInfo {
+  currentPage: number
+  totalPages: number
+  totalTransactions: number
+  limit: number
+}
+
+export interface WalletResponse {
+  success: boolean
+  message: string
+  data: {
+    wallet: Wallet
+    pagination: PaginationInfo
+  }
+}
+
+export interface WalletQueryParams {
+  search?: string
+  status?: string
+  purpose?: string
+  dateRange?: string
+  page?: number
+  limit?: number
+}

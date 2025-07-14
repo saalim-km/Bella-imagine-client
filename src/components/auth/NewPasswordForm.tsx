@@ -1,4 +1,4 @@
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import { Eye, EyeOff, Loader2, Check } from "lucide-react";
 
@@ -11,9 +11,9 @@ import {
   passwordSchema,
 } from "@/utils/formikValidators/auth/reset-password.vlidator";
 import { useResetPasswordMUtation } from "@/hooks/auth/useResetPassword";
-import { toast } from "sonner";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { useNavigate } from "react-router-dom";
+import { communityToast } from "../ui/community-toast";
 
 // Password strength requirements
 
@@ -28,12 +28,8 @@ interface NewPasswordFormProps {
   userType: TRole;
 }
 
-export function NewPasswordForm({
-  onComplete,
-  email,
-  userType,
-}: NewPasswordFormProps) {
-  const navigate = useNavigate()  
+export function NewPasswordForm({ email, userType }: NewPasswordFormProps) {
+  const navigate = useNavigate();
   const { mutate: resetPassword } = useResetPasswordMUtation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -57,15 +53,19 @@ export function NewPasswordForm({
     values: FormValues,
     { setSubmitting }: FormikHelpers<FormValues>
   ) => {
+    console.log(setSubmitting);
     setIsSubmitting(true);
-    console.log(email, userType, values.password);
     resetPassword(
       { email: email, role: userType, password: values.password },
       {
         onSuccess: (data) => {
-          console.log(data.message);
-          toast.success(data.message);
-          userType === 'vendor' ? navigate('/vendor/login') : navigate('/login')
+          communityToast.success({ description: data?.message });
+
+          if (userType === "vendor") {
+            navigate("/vendor/login");
+          } else {
+            navigate("/login");
+          }
         },
         onError: (err) => {
           handleError(err);
@@ -94,7 +94,7 @@ export function NewPasswordForm({
       validationSchema={passwordSchema}
       onSubmit={handleSubmit}
     >
-      {({ values, errors, touched, handleChange, setFieldValue }) => (
+      {({ values, handleChange }) => (
         <Form className="space-y-4 py-2">
           <div className="space-y-1">
             <label htmlFor="password" className="text-sm font-medium">
