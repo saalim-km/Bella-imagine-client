@@ -1,4 +1,3 @@
-import React from "react";
 import { Calendar, Clock, MapPin, Award, FileText } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DialogClose, DialogFooter, DialogHeader } from "@/components/ui/dialog";

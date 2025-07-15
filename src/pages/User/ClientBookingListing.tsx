@@ -21,11 +21,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search, ChevronDown, ChevronUp, X } from "lucide-react";
-import { DateRange } from "react-day-picker";
 import { DateRangePicker } from "@/components/ui/DateRangePicker";
 import { Slider } from "@/components/ui/slider";
 import { useBookingQuery } from "@/hooks/booking/useBooking";
-import { getClientBookings } from "@/services/booking/bookingService";
+import {
+  BookingQueryParams,
+  getClientBookings,
+} from "@/services/booking/bookingService";
 import { useBookingStatusMutation } from "@/hooks/booking/useBooking";
 import { clientUpdateBookingStatus } from "@/services/booking/bookingService";
 import { ConfirmationModal } from "@/components/modals/ConfimationModal";
@@ -43,13 +45,21 @@ import { handleError } from "@/utils/Error/error-handler.utils";
 
 interface FilterState {
   status: string;
-  dateRange: DateRange | undefined;
+  dateRange: { from: Date | null; to: Date | null } | undefined;
   priceRange: [number, number];
   search: string;
 }
 
-interface ClientBookingListProps {
-  userType: TRole;
+interface QueryParams {
+  page: number;
+  limit: number;
+  sort: string;
+  statusFilter: string;
+  search: string;
+  dateFrom?: string;
+  dateTo?: string;
+  priceMin: number;
+  priceMax: number;
 }
 
 export interface BookingList {
@@ -95,6 +105,10 @@ export interface BookingList {
   customLocation?: string;
   createdAt?: string;
   updatedAt?: string;
+}
+
+interface ClientBookingListProps {
+  userType: TRole;
 }
 
 export default function ClientBookingList({
@@ -184,7 +198,7 @@ export default function ClientBookingList({
   };
 
   // Construct query parameters
-  const queryParams = {
+  const queryParams: QueryParams = {
     page,
     limit,
     sort: sortBy,
@@ -202,7 +216,7 @@ export default function ClientBookingList({
 
   const { data, isLoading } = useBookingQuery(
     getClientBookings,
-    queryParams,
+    queryParams as BookingQueryParams,
     userType === "client"
   );
 
@@ -224,15 +238,23 @@ export default function ClientBookingList({
         { bookingId, status },
         {
           onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["paginated-booking"]});
+            queryClient.invalidateQueries({ queryKey: ["paginated-booking"] });
+            if (status == "cancelled") {
+              communityToast.success({
+                title: "Photography Session cancelled",
+                description:
+                  "Refund amount will be credited to your wallet within 24hrs",
+              });
+              return;
+            }
+
             communityToast.success({
-              title: "Photography Session cancelled",
-              description:
-                "Refund amount will be credited to your wallet within 24hrs",
+              title: "Photography Session completed",
+              description: "Thank you for using our service!",
             });
           },
           onError: (error: any) => {
-            handleError(error)
+            handleError(error);
           },
         }
       );
@@ -321,6 +343,7 @@ export default function ClientBookingList({
             disabled={
               booking.isClientApproved || booking.status === "cancelled"
             }
+            aria-label="Mark as complete"
           >
             Mark as Complete
           </Button>
@@ -393,7 +416,7 @@ export default function ClientBookingList({
               aria-label="Price range slider"
             />
             <div className="flex items-center gap-4">
-              <div className="flex-1 ">
+              <div className="flex-1">
                 <label className="text-xs font-medium text-muted-foreground">
                   Min
                 </label>

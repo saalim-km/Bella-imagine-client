@@ -21,11 +21,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search, ChevronDown, ChevronUp, X, AlertCircle } from "lucide-react";
-import { DateRange } from "react-day-picker";
 import { DateRangePicker } from "@/components/ui/DateRangePicker";
 import { Slider } from "@/components/ui/slider";
 import { useBookingQuery } from "@/hooks/booking/useBooking";
 import {
+  BookingQueryParams,
   getVendorBookings,
   vendorUpdateBookingStatus,
 } from "@/services/booking/bookingService";
@@ -39,8 +39,77 @@ import { TRole } from "@/types/interfaces/User";
 import Pagination from "@/components/common/Pagination";
 import { Spinner } from "@/components/ui/spinner";
 import { communityToast } from "@/components/ui/community-toast";
-import { BookingList } from "../User/ClientBookingListing";
+import { useQueryClient } from "@tanstack/react-query";
 import { handleError } from "@/utils/Error/error-handler.utils";
+import { PaymentStatus, TBookingStatus } from "@/types/interfaces/Payment";
+
+interface FilterState {
+  status: string;
+  dateRange: { from: Date | null; to: Date | null } | undefined;
+  priceRange: [number, number];
+  search: string;
+}
+
+interface QueryParams {
+  page: number;
+  limit: number;
+  sort: string;
+  statusFilter: string;
+  search: string;
+  dateFrom?: string;
+  dateTo?: string;
+  priceMin: number;
+  priceMax: number;
+}
+
+export interface BookingList {
+  _id: string;
+  userId: {
+    _id: string;
+    name: string;
+  };
+  vendorId: {
+    _id: string;
+    name: string;
+  };
+  adminCommision: number;
+  paymentId: string | null;
+  isClientApproved: boolean;
+  isVendorApproved: boolean;
+  serviceDetails: {
+    _id: string;
+    serviceTitle: string;
+    serviceDescription: string;
+    cancellationPolicies: string[];
+    termsAndConditions: string[];
+    location: {
+      lat: number;
+      lng: number;
+      address: string;
+    };
+  };
+  bookingDate: string;
+  timeSlot: {
+    startTime: string;
+    endTime: string;
+  };
+  location: {
+    lat: number;
+    lng: number;
+  };
+  distance?: number;
+  travelFee?: number;
+  totalPrice: number;
+  paymentStatus: PaymentStatus;
+  status: TBookingStatus;
+  customLocation?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface VendorBookingListProps {
+  userType: TRole;
+}
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component<
@@ -77,18 +146,6 @@ const BookingListFallback = () => (
   </div>
 );
 
-interface FilterState {
-  status: string;
-  dateRange: DateRange | undefined;
-  priceRange: [number, number];
-  search: string;
-}
-
-interface VendorBookingListProps {
-  userType: TRole;
-}
-
-
 export default function VendorBookingList({
   userType,
 }: VendorBookingListProps) {
@@ -108,11 +165,12 @@ export default function VendorBookingList({
   const [tempPriceRange, setTempPriceRange] = useState<[number, number]>(
     filters.priceRange
   );
+  const queryClient = useQueryClient();
 
   const limit = 3;
   const maxPrice = 100000;
 
-  // Debounced price range handler
+  // Debounced price range handler for API calls
   const debouncedPriceRange = useMemo(
     () =>
       debounce((value: [number, number]) => {
@@ -175,7 +233,7 @@ export default function VendorBookingList({
   };
 
   // Construct query parameters
-  const queryParams = {
+  const queryParams: QueryParams = {
     page,
     limit,
     sort: sortBy,
@@ -193,7 +251,7 @@ export default function VendorBookingList({
 
   const { data, isLoading, error } = useBookingQuery(
     getVendorBookings,
-    queryParams,
+    queryParams as BookingQueryParams,
     userType === "vendor"
   );
 
@@ -214,9 +272,24 @@ export default function VendorBookingList({
       updateBookingStatus(
         { bookingId, status },
         {
-          onSuccess: (data) => communityToast.success({ title: data?.message }),
-          onError: (error: any) =>
-            handleError(error)
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["paginated-booking"] });
+            if (status === "cancelled") {
+              communityToast.success({
+                title: "Photography Session cancelled",
+                description:
+                  "Refund amount will be credited to your wallet within 24hrs",
+              });
+              return;
+            }
+            communityToast.success({
+              title: "Photography Session completed",
+              description: "Thank you for using our service!",
+            });
+          },
+          onError: (error: any) => {
+            handleError(error);
+          },
         }
       );
     }
@@ -304,6 +377,7 @@ export default function VendorBookingList({
             disabled={
               booking.isVendorApproved || booking.status === "cancelled"
             }
+            aria-label="Mark as complete"
           >
             Mark as Complete
           </Button>
@@ -354,7 +428,7 @@ export default function VendorBookingList({
                   setPage(1);
                 }}
               >
-                <SelectTrigger className="w-full sm:w-40">
+                <SelectTrigger className="w-full sm:w-40 border-gray-400">
                   <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -399,7 +473,7 @@ export default function VendorBookingList({
                       min={0}
                       max={maxPrice}
                       step={100}
-                      className="h-8 text-sm"
+                      className="h-8 text-sm border-gray-400"
                       aria-label="Minimum price"
                     />
                   </div>
@@ -415,7 +489,7 @@ export default function VendorBookingList({
                       min={0}
                       max={maxPrice}
                       step={100}
-                      className="h-8 text-sm"
+                      className="h-8 text-sm border-gray-400"
                       aria-label="Maximum price"
                     />
                   </div>
@@ -487,32 +561,23 @@ export default function VendorBookingList({
                       {bookings.map((booking) => (
                         <TableRow key={booking._id} className="hover:bg-accent">
                           <TableCell className="font-medium">
-                            {booking?.serviceDetails.serviceTitle || "N/A"}
+                            {booking.serviceDetails.serviceTitle}
                           </TableCell>
-                          <TableCell>{booking?.userId.name || "N/A"}</TableCell>
+                          <TableCell>{booking.userId.name}</TableCell>
                           <TableCell>
-                            {moment(booking?.bookingDate).format("LLL") ||
-                              "N/A"}
+                            {moment(booking.bookingDate).format("LLL")}
                           </TableCell>
+                          <TableCell>{formatPrice(booking.totalPrice)}</TableCell>
                           <TableCell>
-                            {formatPrice(booking?.totalPrice || 0)}
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              className={getStatusColor(
-                                booking?.status || "unknown"
-                              )}
-                            >
-                              {booking?.status || "Unknown"}
+                            <Badge className={getStatusColor(booking.status)}>
+                              {booking.status}
                             </Badge>
                           </TableCell>
                           <TableCell>
                             <div className="flex space-x-2">
                               <BookingDetailsModal
                                 booking={booking}
-                                trigger={
-                                  <Button size="sm">View Details</Button>
-                                }
+                                trigger={<Button size="sm">View Details</Button>}
                               />
                               <Select
                                 value={booking.status}
@@ -536,12 +601,6 @@ export default function VendorBookingList({
                                     disabled={booking.status !== "pending"}
                                   >
                                     Pending
-                                  </SelectItem>
-                                  <SelectItem
-                                    value="confirmed"
-                                    disabled={booking.status !== "pending"}
-                                  >
-                                    Confirmed
                                   </SelectItem>
                                   <SelectItem
                                     value="completed"

@@ -326,7 +326,7 @@ const PoliciesTerms: React.FC<{
           <AccordionContent className="px-6 pb-6 pt-2">
             <ul className="list-disc pl-5 space-y-2">
               {serviceDetails.cancellationPolicies.length > 0 ? (
-                serviceDetails.cancellationPolicies.map((policy, index) => (
+                serviceDetails.cancellationPolicies.map((policy:any, index:any) => (
                   <li key={index} className="text-muted-foreground">
                     {policy}
                   </li>
@@ -346,7 +346,7 @@ const PoliciesTerms: React.FC<{
           <AccordionContent className="px-6 pb-6 pt-2">
             <ul className="list-disc pl-5 space-y-2">
               {serviceDetails.termsAndConditions.length > 0 ? (
-                serviceDetails.termsAndConditions.map((term, index) => (
+                serviceDetails.termsAndConditions.map((term : any, index : any) => (
                   <li key={index} className="text-muted-foreground">
                     {term}
                   </li>
