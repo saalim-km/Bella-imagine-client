@@ -70,6 +70,7 @@ const Communities = () => {
   const communities = communitiesForClient?.data.data ? communitiesForClient?.data : communitiesForVendor?.data
   const totalCommunities = communities?.total || 0
 
+  
   const resetFilters = () => {
     setSearchTerm("")
     setCategoryFilter("all")
