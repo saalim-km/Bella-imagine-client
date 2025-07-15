@@ -56,7 +56,7 @@ export interface ICommunityPost {
   };
 }
 
-export function PostsTab() {
+ function PostsTab() {
   const [deletingPost, setDeletingPost] = useState<string | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const queryCLient = useQueryClient()
@@ -344,3 +344,5 @@ export function PostsTab() {
     </div>
   );
 }
+
+export default PostsTab;

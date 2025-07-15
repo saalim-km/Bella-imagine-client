@@ -36,7 +36,7 @@ interface SidebarProps {
   hasCategory?: boolean;
 }
 
-export function Sidebar({
+function Sidebar({
   name,
   profileImage,
   activeTab,
@@ -109,3 +109,5 @@ export function Sidebar({
     </div>
   );
 }
+
+export default Sidebar;

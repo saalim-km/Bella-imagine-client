@@ -23,7 +23,7 @@ interface ProfileInfoProps {
   data: IProfileInfo;
 }
 
-export function ProfileInfo({ data }: ProfileInfoProps) {
+function ProfileInfo({ data }: ProfileInfoProps) {
   const [showDocs, setShowDocs] = useState(false);
   const isVendor = "vendorId" in data && data.vendorId;
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
@@ -228,3 +228,5 @@ function InfoItem({
     </div>
   );
 }
+
+export default ProfileInfo;

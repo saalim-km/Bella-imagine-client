@@ -70,7 +70,7 @@ export interface EditProfileFormProps {
   isUpdateSubmitting: boolean;
 }
 
-export function EditProfileForm({
+function EditProfileForm({
   role = "vendor",
   data,
   setIsEditing,
@@ -733,3 +733,5 @@ export function EditProfileForm({
     </Formik>
   );
 }
+
+export default EditProfileForm;

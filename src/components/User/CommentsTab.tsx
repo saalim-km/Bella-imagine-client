@@ -40,7 +40,7 @@ interface CommentsTabProps {
   userRole: "client" | "vendor";
 }
 
-export function CommentsTab({ userRole }: CommentsTabProps) {
+function CommentsTab({ userRole }: CommentsTabProps) {
   const user = useSelector((state: RootState) => {
     if (state.client.client) return state.client.client;
     if (state.vendor.vendor) return state.vendor.vendor;
@@ -387,3 +387,5 @@ export function CommentsTab({ userRole }: CommentsTabProps) {
     </div>
   );
 }
+
+export default CommentsTab;

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Edit2, Menu } from "lucide-react";
-import { EditProfileForm } from "@/components/User/EditProfileForm";
+import  EditProfileForm  from "@/components/User/EditProfileForm";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Header from "@/components/common/Header";
 import { useSelector } from "react-redux";
@@ -21,7 +21,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { VendorCategoryModal } from "@/components/modals/VendorCategoryModal";
 import { useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
 import { handleError } from "@/utils/Error/error-handler.utils";
-import { ServiceForm } from "@/components/vendor/services/serviceForm/Service";
+import  ServiceForm  from "@/components/vendor/services/serviceForm/Service";
 import VendorServices from "@/components/vendor/services/serviceForm/VendorServices";
 import type {
   IServiceResponse,
@@ -38,12 +38,12 @@ import type { IClient } from "@/services/client/clientService";
 import { updateClientslice } from "@/store/slices/clientSlice";
 import ClientBookingList from "./ClientBookingListing";
 import VendorBookingList from "../vendor/vendorBookingListing";
-import { Sidebar } from "@/components/User/Sidebar";
-import { ProfileInfo } from "@/components/User/ProfileInfo";
-import { PostsTab } from "@/components/User/PostsTab";
-import { CommentsTab } from "@/components/User/CommentsTab";
-import { LoadingBar } from "@/components/ui/LoadBar";
-import { communityToast } from "@/components/ui/community-toast";
+import  Sidebar  from "@/components/User/Sidebar";
+import  ProfileInfo  from "@/components/User/ProfileInfo";
+import  PostsTab  from "@/components/User/PostsTab";
+import  CommentsTab from "@/components/User/CommentsTab";
+import  {LoadingBar}  from "@/components/ui/LoadBar";
+import  {communityToast}  from "@/components/ui/community-toast";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",

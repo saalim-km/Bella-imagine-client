@@ -53,7 +53,7 @@ interface IServiceFormProps {
   vendorData?: IVendor;
 }
 
-export const ServiceForm = ({
+const ServiceForm = ({
   handleIsCreatingService,
   editData,
   vendorData,
@@ -1073,3 +1073,5 @@ export const ServiceForm = ({
     </div>
   );
 };
+
+export default ServiceForm;
