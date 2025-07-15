@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
-import { motion } from "framer-motion";
 import {
   Calendar,
   Clock,
@@ -56,24 +55,6 @@ interface PaymentInfoProps {
   adminCommission: number;
 }
 
-// Animation variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
-  },
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: { type: "spring", stiffness: 300, damping: 24 },
-  },
-};
-
 // Utility function for status colors
 const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
@@ -107,7 +88,7 @@ const ServiceInfo: React.FC<{
   totalPrice: number;
   createdAt?: string;
 }> = ({ serviceDetails, totalPrice, createdAt }) => (
-  <motion.div variants={itemVariants} className="space-y-4">
+  <div className="space-y-4">
     <SectionHeader
       icon={<Info className="h-5 w-5" />}
       title="Service Information"
@@ -134,7 +115,7 @@ const ServiceInfo: React.FC<{
         </div>
       </div>
     </div>
-  </motion.div>
+  </div>
 );
 
 // Sub-component: Date & Time
@@ -142,7 +123,7 @@ const DateTimeInfo: React.FC<{
   bookingDate: string;
   timeSlot: BookingList["timeSlot"];
 }> = ({ bookingDate, timeSlot }) => (
-  <motion.div variants={itemVariants} className="space-y-4">
+  <div className="space-y-4">
     <SectionHeader
       icon={<Calendar className="h-5 w-5" />}
       title="Date & Time"
@@ -165,7 +146,7 @@ const DateTimeInfo: React.FC<{
         </div>
       </div>
     </div>
-  </motion.div>
+  </div>
 );
 
 // Sub-component: People
@@ -173,7 +154,7 @@ const PeopleInfo: React.FC<{
   userId: BookingList["userId"];
   vendorId: BookingList["vendorId"];
 }> = ({ userId, vendorId }) => (
-  <motion.div variants={itemVariants} className="space-y-4">
+  <div className="space-y-4">
     <SectionHeader icon={<User className="h-5 w-5" />} title="People" />
     <div className="bg-muted/20 rounded-xl p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 border">
       <div>
@@ -191,7 +172,7 @@ const PeopleInfo: React.FC<{
         </p>
       </div>
     </div>
-  </motion.div>
+  </div>
 );
 
 // Sub-component: Location
@@ -199,7 +180,7 @@ const LocationInfo: React.FC<{
   location: BookingList["serviceDetails"]["location"];
   customLocation?: string;
 }> = ({ location, customLocation }) => (
-  <motion.div variants={itemVariants} className="space-y-4">
+  <div className="space-y-4">
     <SectionHeader
       icon={<MapPin className="h-5 w-5" />}
       title="Service Location"
@@ -241,7 +222,7 @@ const LocationInfo: React.FC<{
         </div>
       )}
     </div>
-  </motion.div>
+  </div>
 );
 
 // Sub-component: Payment Details
@@ -254,7 +235,7 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({
   isVendor,
   adminCommission,
 }) => (
-  <motion.div variants={itemVariants} className="space-y-4">
+  <div className="space-y-4">
     <SectionHeader
       icon={<IndianRupee className="h-5 w-5" />}
       title="Payment Details"
@@ -324,13 +305,14 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({
         )}
       </div>
     </div>
-  </motion.div>
+  </div>
 );
+
 // Sub-component: Policies & Terms
 const PoliciesTerms: React.FC<{
   serviceDetails: BookingList["serviceDetails"];
 }> = ({ serviceDetails }) => (
-  <motion.div variants={itemVariants} className="space-y-4">
+  <div className="space-y-4">
     <SectionHeader
       icon={<FileText className="h-5 w-5" />}
       title="Policies & Terms"
@@ -379,7 +361,7 @@ const PoliciesTerms: React.FC<{
         </AccordionItem>
       </Accordion>
     </div>
-  </motion.div>
+  </div>
 );
 
 // Main Component
@@ -443,12 +425,7 @@ export function BookingDetailsModal({
           </div>
         </DialogHeader>
         <ScrollArea className="max-h-[80vh] px-8 pb-8">
-          <motion.div
-            className="space-y-8"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
+          <div className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="space-y-8">
                 <ServiceInfo
@@ -485,17 +462,14 @@ export function BookingDetailsModal({
             {booking.isClientApproved &&
               booking.isVendorApproved &&
               userType?.role === "client" && (
-                <motion.div
-                  variants={itemVariants}
-                  className="flex justify-end pt-4"
-                >
+                <div className="flex justify-end pt-4">
                   <ReviewRatingSystem
                     vendorId={booking.vendorId._id}
                     bookingId={booking._id}
                   />
-                </motion.div>
+                </div>
               )}
-          </motion.div>
+          </div>
         </ScrollArea>
       </DialogContent>
     </Dialog>

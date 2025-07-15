@@ -1,9 +1,9 @@
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { AlertCircle, Plus, Trash, Calendar as CalendarIcon, Clock } from "lucide-react";
 import { 
@@ -13,6 +13,8 @@ import {
   isFutureDate,
   isEndTimeAfterStartTime
 } from "@/utils/formikValidators/vendorService/avalability-date-validator";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 interface DateTimeSectionProps {
   availableDates: DateSlot[];
@@ -249,13 +251,14 @@ export const DateTimeSection: React.FC<DateTimeSectionProps> = ({
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={dateSlot.date ? new Date(dateSlot.date) : undefined}
-                      onSelect={(date) => date && updateDate(dateIndex, date)}
-                      disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                      initialFocus
-                    />
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                      <DatePicker
+                        value={dateSlot.date ? new Date(dateSlot.date) : null}
+                        onChange={(date) => date && updateDate(dateIndex, date)}
+                        shouldDisableDate={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                        slotProps={{ textField: { variant: 'outlined' } }}
+                      />
+                    </LocalizationProvider>
                   </PopoverContent>
                 </Popover>
               </div>
@@ -412,13 +415,14 @@ export const DateTimeSection: React.FC<DateTimeSectionProps> = ({
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
-            <Calendar
-              mode="single"
-              selected={newDate}
-              onSelect={setNewDate}
-              disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-              initialFocus
-            />
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                value={newDate || null}
+                onChange={(date) => setNewDate(date || undefined)}
+                shouldDisableDate={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                slotProps={{ textField: { variant: 'outlined' } }}
+              />
+            </LocalizationProvider>
           </PopoverContent>
         </Popover>
         <Button

@@ -1,34 +1,23 @@
-
-import React from "react";
-import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DateSlot } from "@/types/interfaces/vendor";
-
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import { CardTitle } from '@/components/ui/card';
+import CardContent from '@mui/material/CardContent';
+import { DateSlot } from '@/types/interfaces/vendor';
+import { format } from 'date-fns';
 interface DateSelectorProps {
   availableDates: DateSlot[];
   selectedDate: string | null;
   onDateSelect: (date: string) => void;
 }
 
-const DateSelector: React.FC<DateSelectorProps> = ({
-  availableDates,
-  selectedDate,
-  onDateSelect,
-}) => {
-  // Convert available dates strings to Date objects for the calendar
+const DateSelector: React.FC<DateSelectorProps> = ({ availableDates, selectedDate, onDateSelect }) => {
   const availableDateObjects = availableDates.map((d) => new Date(d.date));
-
-  const handleDateSelect = (date: Date | undefined) => {
-    if (date) {
-      // Format the date to match the format in the availableDates array
-      const formattedDate = format(date, "yyyy-MM-dd");
-      onDateSelect(formattedDate);
-    }
+  const handleDateSelect = (date: Date | null) => {
+    if (date) onDateSelect(format(date, 'yyyy-MM-dd'));
   };
-
-  // Find the selected date object if any
-  const selectedDateObject = selectedDate ? new Date(selectedDate) : undefined;
 
   return (
     <Card>
@@ -36,22 +25,18 @@ const DateSelector: React.FC<DateSelectorProps> = ({
         <CardTitle className="text-lg">Select Date</CardTitle>
       </CardHeader>
       <CardContent>
-        <Calendar
-          mode="single"
-          selected={selectedDateObject}
-          onSelect={handleDateSelect}
-          disabled={(date) => {
-            // Disable dates that are not in the available dates list
-            // Also disable dates in the past
-            return (
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DatePicker
+            value={selectedDate ? new Date(selectedDate) : null}
+            onChange={handleDateSelect}
+            shouldDisableDate={(date) =>
               !availableDateObjects.some(
-                (availableDate) =>
-                  format(availableDate, "yyyy-MM-dd") === format(date, "yyyy-MM-dd")
+                (availableDate) => format(availableDate, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
               ) || date < new Date(new Date().setHours(0, 0, 0, 0))
-            );
-          }}
-          className="rounded-md border p-3 pointer-events-auto"
-        />
+            }
+            slotProps={{ textField: { variant: 'outlined' } }}
+          />
+        </LocalizationProvider>
       </CardContent>
     </Card>
   );
