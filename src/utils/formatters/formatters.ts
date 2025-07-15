@@ -18,7 +18,7 @@ export function formatMessagePreview(message: Message): string {
   switch (message.type) {
     case "text":
       return message.text;
-    case "media":
+    case "image":
       return "📷 Image";
     case "location":
       return "📍 Location";

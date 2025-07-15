@@ -3,8 +3,8 @@ import type React from "react";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useInfiniteScroll from "../../hooks/community/useInfiniteScroll";
-import PostCard from "../../components/community-contest/PostCard";
-import PostSkeleton from "../../components/community-contest/PostSkeleton";
+import PostCard from "../../components/community/PostCard";
+import PostSkeleton from "../../components/community/PostSkeleton";
 import type { AppDispatch } from "@/store/store";
 import CommunityLayout from "@/components/layout/CommunityLayout";
 import {

@@ -1,9 +1,9 @@
 // src/features/profile/profileSlice.ts
-import { UserPost } from '@/utils/mockdata';
+import { PostDetailsResponse } from '@/types/interfaces/Community';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface ProfileState {
-  posts: UserPost[];
+  posts: PostDetailsResponse[];
   loading: boolean;
   error: string | null;
   activeTab: 'published' | 'drafts' | 'archived';
@@ -43,7 +43,7 @@ const profileSlice = createSlice({
       state.loading = true;
       state.error = null;
     },
-    fetchProfilePostsSuccess(state, action: PayloadAction<UserPost[]>) {
+    fetchProfilePostsSuccess(state, action: PayloadAction<PostDetailsResponse[]>) {
       state.posts = action.payload;
       state.loading = false;
     },
@@ -60,7 +60,7 @@ const profileSlice = createSlice({
       state.editModal.postId = null;
     },
     updatePost(state, action: PayloadAction<{id: string; title: string; content: string}>) {
-      const post = state.posts.find(p => p.id === action.payload.id);
+      const post = state.posts.find(p => p._id === action.payload.id);
       if (post) {
         post.title = action.payload.title;
         post.content = action.payload.content;
@@ -75,7 +75,7 @@ const profileSlice = createSlice({
       state.deleteModal.postId = null;
     },
     deletePost(state, action: PayloadAction<string>) {
-      state.posts = state.posts.filter(post => post.id !== action.payload);
+      state.posts = state.posts.filter((post: PostDetailsResponse) => post._id !== action.payload);
     },
   },
 });

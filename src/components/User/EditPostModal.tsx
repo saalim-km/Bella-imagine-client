@@ -11,7 +11,7 @@ import { closeEditModal, updatePost } from '@/store/slices/profileSlice';
 const EditPostModal: React.FC = () => {
   const dispatch = useDispatch();
   const { editModal, posts } = useSelector((state: RootState) => state.profile);
-  const post = posts.find(p => p.id === editModal.postId);
+  const post = posts.find(p => p._id === editModal.postId);
   
   const [title, setTitle] = useState(post?.title || '');
   const [content, setContent] = useState(post?.content || '');

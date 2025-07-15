@@ -73,14 +73,6 @@ const ServiceDetails: React.FC<ServiceDetailsProps> = ({
 
         <div>
           <h3 className="font-medium mb-2">Location</h3>
-          <div className="text-sm">
-            {service.location.travelFee && (
-              <p>
-                • Available on location 
-                {service.location.travelFee ? ` (Travel fee: ₹${service.location.travelFee.toFixed(2)})` : ""}
-              </p>
-            )}
-          </div>
         </div>
       </CardContent>
     </Card>

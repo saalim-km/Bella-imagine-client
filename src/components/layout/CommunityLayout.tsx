@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Header from "@/components/common/Header";
-import LeftSidebar from "../community-contest/Leftsidebar";
+import LeftSidebar from "../community/Leftsidebar";
 import { useLocation } from "react-router-dom";
-import RightSidebar from "../community-contest/RightSidebar";
+import RightSidebar from "../community/RightSidebar";
 import { useAllVendorsListQueryClient } from "@/hooks/client/useClient";
 import {
   useGetAllCommunitiesClient,

@@ -246,7 +246,7 @@ export default function AdminDashboard() {
                     dataKey="count"
                   >
                     {data.postDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell key={`cell-${`${entry}${index}`}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip />

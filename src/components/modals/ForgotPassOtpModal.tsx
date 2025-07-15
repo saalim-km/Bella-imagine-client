@@ -89,7 +89,7 @@ export function OTPVerificationModal({ isOpen, email, userType }: OTPVerificatio
   }
 
   const handleResendOTP = () => {
-    resendOtp({ url: '/forgot-password/send-otp', email: email , userType : userType }, {
+    resendOtp({ url: '/forgot-password/send-otp', email: email , role : userType }, {
       onSuccess: (data) => {
                   communityToast.success({title : data?.message});
 

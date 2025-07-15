@@ -4,7 +4,7 @@ import { useLoginMutation } from "@/hooks/auth/useLogin";
 import { adminLogin } from "@/store/slices/adminSlice";
 import { ILogin } from "@/types/interfaces/User";
 import { handleError } from "@/utils/Error/error-handler.utils";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 const AdminLogin = () => {

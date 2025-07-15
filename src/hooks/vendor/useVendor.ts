@@ -27,7 +27,7 @@ export const useUpdateVendorMutation = ()=> {
     })
 }
 
-export const useAllVendorCategoryQuery = (enabled : boolean)=> {
+export const useAllVendorCategoryQuery = (enabled : boolean = false)=> {
   return useQuery({
     queryKey : ["vendor-categorries"],
     queryFn : getAllCategories,

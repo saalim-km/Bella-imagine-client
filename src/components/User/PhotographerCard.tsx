@@ -17,9 +17,9 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
   const navigate = useNavigate()
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
 
-  const hourlyRate = vendorData?.services[0]?.sessionDurations.price || 0
+  const hourlyRate = vendorData?.services[0]?.sessionDurations?.[0]?.price || 0
   const currency = "INR"
-  const minimumHours = vendorData?.services[0]?.sessionDurations?.durationInHours || 0
+  const minimumHours = vendorData?.services[0]?.sessionDurations?.[0]?.durationInHours || 0
 
   const handleNavigate = () => navigate(`/photographer/${vendorData._id}`)
 

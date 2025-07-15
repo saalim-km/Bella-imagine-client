@@ -23,8 +23,6 @@ export function formatMessagePreview(message: Message): string {
       return "📷 Image";
     case "video":
       return "🎥 Video";
-    case "file":
-      return `📎 ${message.fileName || "File"}`;
     case "location":
       return "📍 Location";
     default:

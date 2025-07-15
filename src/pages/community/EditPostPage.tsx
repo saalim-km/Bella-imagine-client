@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import CommunityLayout from "@/components/layout/CommunityLayout";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { EditPostForm } from "@/components/community-contest/EditPostForm";
+import { EditPostForm } from "@/components/community/EditPostForm";
 import {
   useGetPostDetailsClient,
   useGetPostDetailsVendor,

@@ -133,7 +133,7 @@ const Vendors = () => {
     setSelectedCategory(newFilters.categories?.length ? newFilters.categories[0] : undefined);
   };
 
-  const handleSelectCategory = (category: string, categoryId: string) => {
+  const handleSelectCategory = (categoryId: string) => {
     setSelectedCategory(categoryId);
     setFilters((prev) => ({
       ...prev,

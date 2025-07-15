@@ -3,22 +3,22 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { MessageSquare, Users, Info, MessageCircle } from "lucide-react";
-import { PageLayout } from "@/components/community-contest/layout/CommunityLayout";
+import { PageLayout } from "@/components/community/layout/CommunityLayout";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PostsTab } from "@/components/community-contest/tab/PostTab";
-import { AboutTab } from "@/components/community-contest/tab/AboutTab";
+import { PostsTab } from "@/components/community/tab/PostTab";
+import { AboutTab } from "@/components/community/tab/AboutTab";
 import {
   useGetCommunityBySlugQueryClient,
   useGetCommunityBySlugQueryVendor,
   useJoinCommunity,
   useLeaveCommunity,
 } from "@/hooks/community/useCommunity";
-import { CommunityHeader } from "@/components/community-contest/CommunityHeader";
+import { CommunityHeader } from "@/components/community/CommunityHeader";
 import { handleError } from "@/utils/Error/error-handler.utils";
 import { resetState } from "@/store/slices/communityDetailsSlice";
 import type { AppDispatch, RootState } from "@/store/store";
-import { CommunityInfo } from "@/components/community-contest/CommunityInto";
+import { CommunityInfo } from "@/components/community/CommunityInto";
 import { LoadingBar } from "@/components/ui/LoadBar";
 import { useSelector } from "react-redux";
 import {

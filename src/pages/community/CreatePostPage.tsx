@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { CreatePostForm } from "@/components/community-contest/CommunityPostForm";
+import { CreatePostForm } from "@/components/community/CommunityPostForm";
 import CommunityLayout from "@/components/layout/CommunityLayout";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";

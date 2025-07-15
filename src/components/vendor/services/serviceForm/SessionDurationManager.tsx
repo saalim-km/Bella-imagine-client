@@ -28,7 +28,7 @@ export const SessionDurationManager: React.FC<SessionDurationManagerProps> = ({
   const removeDuration = (index: number) => {
     if (durations.length <= 1) return;
     
-    const newDurations = [...durations];
+    const newDurations: SessionDuration[] = [...durations];
     newDurations.splice(index, 1);
     updateDurations(newDurations);
     
@@ -40,6 +40,7 @@ export const SessionDurationManager: React.FC<SessionDurationManagerProps> = ({
   };
 
   const updateDuration = (index: number, field: keyof SessionDuration, value: number) => {
+    console.log(index);
     const newDurations = [...durations];
     
     // Validate input
@@ -62,7 +63,6 @@ export const SessionDurationManager: React.FC<SessionDurationManagerProps> = ({
     
     // Only update if no error
     if (!error) {
-      newDurations[index][field] = value;
       updateDurations(newDurations);
     }
   };
