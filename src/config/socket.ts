@@ -19,7 +19,6 @@ export const initSocket = (userId: string, userType: TRole): Socket => {
 };
 
 export const getSocket = (): Socket | null => socket;
-
 export const disconnectSocket = () => {
   if (socket) {
     socket.disconnect();
