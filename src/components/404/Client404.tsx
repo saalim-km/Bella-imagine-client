@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Header from "../common/Header";
 
-export const Client404 = () => {
+const Client404 = () => {
   return (
     <>
       <Header/>
@@ -80,3 +80,5 @@ export const Client404 = () => {
     </>
   );
 };
+
+export default Client404;

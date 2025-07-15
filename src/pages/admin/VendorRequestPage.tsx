@@ -1,7 +1,7 @@
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { VendorRequestsTable } from "@/components/admin/vendor/VendorRequest";
 
-export function VendorRequestsPage() {
+function VendorRequestsPage() {
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -16,3 +16,4 @@ export function VendorRequestsPage() {
   )
 }
 
+export default VendorRequestsPage;

@@ -7,7 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 
-export const Admin404 = () => {
+const Admin404 = () => {
   return (
     <>
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
@@ -68,3 +68,5 @@ export const Admin404 = () => {
     </>
   );
 };
+
+export default Admin404;
