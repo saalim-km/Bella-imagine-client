@@ -29,7 +29,7 @@ const Landing = () => {
               with real-time communication tools
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Button size="lg" onClick={() => navigate("/register")}>
+              <Button size="lg" onClick={() => navigate("/vendor/signup")}>
                 Join as Photographer
               </Button>
               <Button
