@@ -4,8 +4,14 @@ on:
   push:
     branches: [main]
     paths:
-      # Now triggers on any change in the root of the repository or the workflow file itself
-      - "**" # This means any file anywhere in the repo
+      # Trigger on any change anywhere in the repo that could be relevant to the client
+      - "**/*.js"
+      - "**/*.jsx"
+      - "**/*.ts"
+      - "**/*.tsx"
+      - "**/*.css"
+      - "**/*.html"
+      - "**/*.json" # For package.json, etc.
       - ".github/workflows/frontend-deploy.yml"
 
 jobs:
