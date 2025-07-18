@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Edit2, Menu } from "lucide-react";
-import  EditProfileForm  from "@/components/User/EditProfileForm";
+import EditProfileForm from "@/components/User/EditProfileForm";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Header from "@/components/common/Header";
 import { useSelector } from "react-redux";
@@ -21,7 +21,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { VendorCategoryModal } from "@/components/modals/VendorCategoryModal";
 import { useJoinCategoryRequestMutation } from "@/hooks/vendor/useVendor";
 import { handleError } from "@/utils/Error/error-handler.utils";
-import  ServiceForm  from "@/components/vendor/services/serviceForm/Service";
+import ServiceForm from "@/components/vendor/services/serviceForm/Service";
 import VendorServices from "@/components/vendor/services/serviceForm/VendorServices";
 import type {
   IServiceResponse,
@@ -38,12 +38,12 @@ import type { IClient } from "@/services/client/clientService";
 import { updateClientslice } from "@/store/slices/clientSlice";
 import ClientBookingList from "./ClientBookingListing";
 import VendorBookingList from "../vendor/vendorBookingListing";
-import  Sidebar  from "@/components/User/Sidebar";
-import  ProfileInfo  from "@/components/User/ProfileInfo";
-import  PostsTab  from "@/components/User/PostsTab";
-import  CommentsTab from "@/components/User/CommentsTab";
-import  {LoadingBar}  from "@/components/ui/LoadBar";
-import  {communityToast}  from "@/components/ui/community-toast";
+import Sidebar from "@/components/User/Sidebar";
+import ProfileInfo from "@/components/User/ProfileInfo";
+import PostsTab from "@/components/User/PostsTab";
+import CommentsTab from "@/components/User/CommentsTab";
+import { LoadingBar } from "@/components/ui/LoadBar";
+import { communityToast } from "@/components/ui/community-toast";
 
 const tabTitles: Record<string, string> = {
   profile: "Profile",
@@ -64,6 +64,7 @@ export default function UserProfile() {
   const { mutate: updateVendor } = useUpdateVendorMutation();
   const { mutate: updateClient } = useUpdateClientMutation();
   const [isModal, setIsModal] = useState(false);
+  console.log("modal state", isModal);
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -83,14 +84,20 @@ export default function UserProfile() {
     data: clientData,
     isLoading: isClientLoading,
     isError: isClientError,
-  } = useClientDetailsQuery(userType?.role === "client", userType ? userType._id : "");
+  } = useClientDetailsQuery(
+    userType?.role === "client",
+    userType ? userType._id : ""
+  );
 
   // Fetching vendor data if the role is only vendor
   const {
     data: vendorData,
     isLoading: isVendorLoading,
     isError: isVendorError,
-  } = useVendorDetailsQuery(userType?.role === "vendor", userType ? userType._id : "");
+  } = useVendorDetailsQuery(
+    userType?.role === "vendor",
+    userType ? userType._id : ""
+  );
 
   const isLoading = isClientLoading || isVendorLoading;
   const isError = isClientError || isVendorError;
@@ -185,11 +192,14 @@ export default function UserProfile() {
   function handleJoinCategory(category: string) {
     joinCategory(category, {
       onSuccess: (data) => {
-        queryClient.invalidateQueries({ queryKey: ["client-profile"] });
+        queryClient.invalidateQueries({ queryKey: ["vendor-profile"] }); // Changed from client-profile
         communityToast.success({ title: data?.message });
+        // Close modal after successful save
+        setIsModal(false);
       },
       onError: (err) => {
         handleError(err);
+        // Don't close modal on error so user can try again
       },
     });
   }
@@ -320,9 +330,7 @@ export default function UserProfile() {
                     )
                   ) : null}
 
-                  {activeTab === "posts" && (
-                    <PostsTab/>
-                  )}
+                  {activeTab === "posts" && <PostsTab />}
 
                   {activeTab === "comments" && (
                     <CommentsTab userRole={userData.role} />
@@ -383,13 +391,13 @@ export default function UserProfile() {
         </div>
       </div>
 
-      {isModal && (
-        <VendorCategoryModal
-          isOpen={isModal}
+      {/* <VendorCategoryModal
+          isOpen={true}
           onClose={handleModalClose}
           onSave={handleJoinCategory}
-        />
-      )}
+        /> */}
+
+      {isModal && <VendorCategoryModal isOpen={isModal} onClose={handleModalClose}  onSave={handleJoinCategory} />}
     </>
   );
 }
