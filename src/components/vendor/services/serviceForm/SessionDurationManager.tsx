@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { AlertCircle, Plus, Trash } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -34,8 +33,8 @@ export const SessionDurationManager: React.FC<SessionDurationManagerProps> = ({
     
     // Clear errors for this duration
     const newErrors = { ...errors };
-    delete newErrors[`duration-₹{index}`];
-    delete newErrors[`price-₹{index}`];
+    delete newErrors[`duration-${index}`];
+    delete newErrors[`price-${index}`];
     setErrors(newErrors);
   };
 
@@ -43,14 +42,20 @@ export const SessionDurationManager: React.FC<SessionDurationManagerProps> = ({
     console.log(index);
     const newDurations = [...durations];
     
+    // Always update the value first
+    newDurations[index] = {
+      ...newDurations[index],
+      [field]: value
+    };
+    
     // Validate input
     let error = "";
     if (field === "durationInHours") {
-      if (value <= 0) {
+      if (value <= 0 || isNaN(value)) {
         error = "Duration must be positive";
       }
     } else if (field === "price") {
-      if (value < 0) {
+      if (value < 0 || isNaN(value)) {
         error = "Price cannot be negative";
       }
     }
@@ -58,13 +63,11 @@ export const SessionDurationManager: React.FC<SessionDurationManagerProps> = ({
     // Update errors
     setErrors({
       ...errors,
-      [`₹{field}-₹{index}`]: error
+      [`${field}-${index}`]: error
     });
     
-    // Only update if no error
-    if (!error) {
-      updateDurations(newDurations);
-    }
+    // Always update the durations array to reflect the input change
+    updateDurations(newDurations);
   };
 
   return (
@@ -94,12 +97,12 @@ export const SessionDurationManager: React.FC<SessionDurationManagerProps> = ({
                 min="0.5"
                 value={duration.durationInHours}
                 onChange={(e) => updateDuration(index, "durationInHours", parseFloat(e.target.value))}
-                className={errors[`duration-₹{index}`] ? "border-red-500" : ""}
+                className={errors[`duration-${index}`] ? "border-red-500" : ""}
               />
-              {errors[`duration-₹{index}`] && (
+              {errors[`duration-${index}`] && (
                 <div className="text-red-500 text-sm mt-1 flex items-center">
                   <AlertCircle className="h-3 w-3 mr-1" />
-                  {errors[`duration-₹{index}`]}
+                  {errors[`duration-${index}`]}
                 </div>
               )}
             </div>
@@ -111,12 +114,12 @@ export const SessionDurationManager: React.FC<SessionDurationManagerProps> = ({
                 min="0"
                 value={duration.price}
                 onChange={(e) => updateDuration(index, "price", parseFloat(e.target.value))}
-                className={errors[`price-₹{index}`] ? "border-red-500" : ""}
+                className={errors[`price-${index}`] ? "border-red-500" : ""}
               />
-              {errors[`price-₹{index}`] && (
+              {errors[`price-${index}`] && (
                 <div className="text-red-500 text-sm mt-1 flex items-center">
                   <AlertCircle className="h-3 w-3 mr-1" />
-                  {errors[`price-₹{index}`]}
+                  {errors[`price-${index}`]}
                 </div>
               )}
             </div>
