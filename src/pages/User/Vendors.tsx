@@ -65,6 +65,8 @@ const Vendors = () => {
 
   const { data: categoriesClient } = useAllClientCategories(user?.role === 'client');
   const { data: categoriesVendor } = useAllVendorCategoryQuery(user?.role === 'vendor');
+  const itemsPerPage = 3;
+
   const {
     data: clientData,
     isLoading : isClientLoading,
@@ -72,7 +74,7 @@ const Vendors = () => {
     isFetching : isCLientFetchig
   } = useAllVendorsListQueryClient({
     page: currentPage,
-    limit: 6,
+    limit: itemsPerPage,
     category: selectedCategory,
     location: debouncedFilters.location,
     categories: debouncedFilters.categories,
@@ -91,7 +93,7 @@ const Vendors = () => {
     isFetching : isVendorFetchig
   } = useAllVendorsListQueryVendor({
     page: currentPage,
-    limit: 6,
+    limit: itemsPerPage,
     category: selectedCategory,
     location: debouncedFilters.location,
     categories: debouncedFilters.categories,
@@ -105,7 +107,6 @@ const Vendors = () => {
   });
 
   const vendors = clientData?.data.data ? clientData.data : vendorData?.data
-  const itemsPerPage = 3;
   const totalVendors = vendors?.total || 0;
   const totalPages = Math.max(1, Math.ceil(totalVendors / itemsPerPage));
   const categories = categoriesClient?.data.data ? categoriesClient.data : categoriesVendor?.data
