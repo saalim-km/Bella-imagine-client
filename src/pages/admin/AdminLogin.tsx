@@ -18,7 +18,6 @@ const AdminLogin = () => {
     login(user, {
       onSuccess: (data: any) => {
         setIsSending(false);
-        console.log(data);
         communityToast.success({
           title: data?.message,
           description: "User authenticated successfully",

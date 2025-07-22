@@ -39,7 +39,6 @@ export const SessionDurationManager: React.FC<SessionDurationManagerProps> = ({
   };
 
   const updateDuration = (index: number, field: keyof SessionDuration, value: number) => {
-    console.log(index);
     const newDurations = [...durations];
     
     // Always update the value first

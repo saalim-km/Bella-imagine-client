@@ -16,7 +16,6 @@ export const googleAuth = async ({
       client_id,
       role,
     });
-    console.log(response);
     return response.data;
   };
   

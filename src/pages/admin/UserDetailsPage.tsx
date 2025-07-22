@@ -13,7 +13,6 @@ const UserDetailsPage = () => {
     id!,
     role as "vendor" | "client"
   );
-  console.log(data?.data);
   const navigate = useNavigate();
   if (isLoading) {
     return <LoadingBar />;

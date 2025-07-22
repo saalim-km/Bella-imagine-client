@@ -24,12 +24,10 @@ export function useSocketEvents({userId , userType} : {userId : string , userTyp
         socket.emit('join',{userId,userType})
 
         socket.on('user_status',({userId , userType , status})=> {
-            console.log('user status event trigger 😘');
             dispatch(updateContactStatus({userId : userId,userType : userType,status : status}))
         })
 
         socket.on('update_lastseen',({userId , lastSeen})=> {
-            console.log(`in update_lastseen event in frontend ${userId} , lastseen : ${lastSeen}`);
             dispatch(updateLastSeen({userId: userId , lastSeen : lastSeen}))
         })
 
@@ -39,7 +37,6 @@ export function useSocketEvents({userId , userType} : {userId : string , userTyp
 
 
         socket.on('notifications' , (notification : TNotification)=> {
-            console.log('got the notification',notification);
             dispatch(addNotification(notification))
         })
         
@@ -55,7 +52,6 @@ export function useSocketEvents({userId , userType} : {userId : string , userTyp
         if(socket) {
             socket.emit('get_contacts',{userId , userType})
             socket.once('contacts',(contacts : User[])=> {
-                console.log('got the contacts :',contacts);
                 dispatch(setUsers(contacts))
             })
 
@@ -66,7 +62,6 @@ export function useSocketEvents({userId , userType} : {userId : string , userTyp
         if(socket){
             socket.emit('get_conversations',{userId,userType})
             socket.once('conversations',(conversations : Conversation[])=> {
-                console.log('got the conversations : ',conversations);
                 dispatch(setConversations(conversations))
             })
         }

@@ -65,9 +65,7 @@ const CategoryRequest = () => {
     await queryClient.cancelQueries({ queryKey: queryKey });
     const prevData = queryClient.getQueryData(queryKey);
 
-    console.log("got the prev data", prevData);
     queryClient.setQueryData(queryKey, (oldData: any) => {
-      console.log("old data😌😌", oldData);
       if (!oldData) return oldData;
 
       const updatedDocs = oldData.data.data.map((catReq: ICategoryRequest) => {

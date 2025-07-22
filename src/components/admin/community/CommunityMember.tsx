@@ -17,7 +17,6 @@ const CommunityMembers = () => {
     limit: filters.limit,
     page: filters.page,
   });
-  console.log(members);
 
   if (!slug) {
     return <p>slug is requird to fetch community members</p>;

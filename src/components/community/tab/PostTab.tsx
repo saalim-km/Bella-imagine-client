@@ -32,7 +32,6 @@ interface PostsTabProps {
 }
 
 export function PostsTab({ isMember, communityId }: PostsTabProps) {
-  console.log('community id : ',communityId);
   const user = useSelector((state: RootState) => {
     if (state.client.client) return state.client.client;
     if (state.vendor.vendor) return state.vendor.vendor;
@@ -43,7 +42,6 @@ export function PostsTab({ isMember, communityId }: PostsTabProps) {
   const { posts, total, page, limit, currentCommunityId } = useSelector(
     (state: RootState) => state.communityDetail
   );
-  console.log('total page and post',page,limit);
   const queryClient = useQueryClient();
   const [likingPosts, setLikingPosts] = useState<Set<string>>(new Set());
   const { socket } = useSocket();

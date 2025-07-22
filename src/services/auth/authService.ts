@@ -35,26 +35,22 @@ export const sendOtp = async ({url , email , role} : {url : string , email : str
     email,
     role
   });
-  console.log(response);
   return response.data;
 };
 
 export const verifyOtp = async (data: { email: string; otp: string }) => {
   const response = await authAxiosInstance.post(ENDPOINTS.VERIFY_OTP, data);
-  console.log(response);
   return response.data;
 };
 
 
 export const forgotPassword = async (data : {email : string, role : TRole})=> {
   const response = await authAxiosInstance.post('/forgot-password', data)
-  console.log(response);
   return response.data;
 }
 
 export const resetPassword = async (data : {email : string , password : string,role : TRole})=> {
   const response = await authAxiosInstance.patch('/forgot-password',data)
-  console.log(response);
   return response.data;
 }
 
@@ -65,12 +61,10 @@ export const logoutClient = async (): Promise<AxiosResponse> => {
 
 export const logoutVendor = async ()=> {
   const response = await vendorAxiosInstance.post(ENDPOINTS.VENDOR_LOGOUT)
-  console.log(response);
   return response.data;
 }
 
 export const logoutAdmin = async ()=> {
   const response = await adminAxiosInstance.post(ENDPOINTS.ADMIN_LOGOUT)
-  console.log(response);
   return response.data;
 }

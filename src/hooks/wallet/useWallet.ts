@@ -34,7 +34,6 @@ export function useDebounce<T>(value: T, delay: number): T {
 
 // for client wallet
 export const useClientWallet = (queryParams?: WalletQueryParams) => {
-  console.log('query params for wallet : ',queryParams);
   return useQuery({
     queryKey: ["client-wallet", queryParams],
     queryFn: () => clientWalletService.getWallet(queryParams),

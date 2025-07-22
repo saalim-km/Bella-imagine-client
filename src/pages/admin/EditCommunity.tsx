@@ -7,10 +7,8 @@ import { useLocation } from "react-router-dom";
 const EditCommunityPage = () => {
   const location = useLocation();
   const communitySlug = location.pathname.split("/").pop();
-  console.log("community slug : ", communitySlug);
 
   const { data: community, isLoading , refetch} = useGetCommunityBySlug(communitySlug!);
-  console.log("community : ", community);
 
   function refetchUpdatedData(){
     refetch()

@@ -46,15 +46,13 @@ const StarRating = ({ rating, setRating }: StarRatingProps) => {
   );
 };
 
-export default function ReviewRatingSystem({ vendorId, bookingId }: { vendorId: string, bookingId: string }) {
+export default function ReviewRatingSystem({}: { vendorId: string, bookingId: string }) {
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
 
 
   const handleSubmit = () => {
-    console.log('rating for= ',vendorId,bookingId);
-    console.log({ rating, review });
     setRating(0);
     setReview("");
     setOpen(false);

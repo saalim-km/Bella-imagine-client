@@ -69,7 +69,6 @@ const CommunityLayout: React.FC<CommunityLayoutProps> = ({ children }) => {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-          console.log("userlocation: ", userLocation);
           setMarker(userLocation);
         },
         (error) => {

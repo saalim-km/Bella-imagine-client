@@ -9,7 +9,6 @@ interface LeftSideBarProps {
 
 const LeftSidebar: React.FC<LeftSideBarProps> = ({ communities }) => {
   const navigate = useNavigate();
-  console.log("got the communities in the leftsidebar : ", communities);
   return (
     <div className="w-80   border-r border-gray-200 dark:border-gray-700 sticky top-0 h-screen py-4 px-2 hidden md:block">
       <div className="space-y-2 flex flex-col">

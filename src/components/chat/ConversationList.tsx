@@ -36,7 +36,6 @@ export function ConversationList({
     };
   });
 
-  console.log('conversations with user data:', conversationsWithUserData);
 
   return (
     <div className="flex flex-col h-full">

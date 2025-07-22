@@ -35,7 +35,10 @@ const validationSchema = Yup.object({
   category: Yup.string().required("Please select a category"),
 });
 
-export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps) {
+export function CommunityForm({
+  initialData,
+  isSubmitting,
+}: CommunityFormProps) {
   const navigate = useNavigate();
   const [rules, setRules] = useState<string[]>(initialData?.rules || []);
   const [newRule, setNewRule] = useState("");
@@ -48,7 +51,9 @@ export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps)
     initialData?.iconImage || null
   );
   const [isPrivate, setIsPrivate] = useState(initialData?.isPrivate || false);
-  const [isFeatured, setIsFeatured] = useState(initialData?.isFeatured || false);
+  const [isFeatured, setIsFeatured] = useState(
+    initialData?.isFeatured || false
+  );
   const { data, isLoading } = useAllCategoryQuery({}, { limit: 100, page: 1 });
   const { mutate: createCommunity } = useCreateCommunityMutation();
 
@@ -113,11 +118,10 @@ export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps)
           isPrivate,
           isFeatured,
         };
-        console.log("new community data: ", formData);
         createCommunity(formData as unknown as Partial<Community>, {
           onSuccess: (data) => {
-                      communityToast.success({title : data?.message});
-            
+            communityToast.success({ title: data?.message });
+
             navigate("/admin/community");
           },
           onError: (error) => {
@@ -138,7 +142,11 @@ export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps)
               placeholder="Community name"
               className="w-full"
             />
-            <ErrorMessage name="name" component="p" className="text-xs text-red-500" />
+            <ErrorMessage
+              name="name"
+              component="p"
+              className="text-xs text-red-500"
+            />
           </div>
 
           {/* Description */}
@@ -198,7 +206,12 @@ export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps)
                 onKeyDown={handleKeyDown}
                 placeholder="Add a rule"
               />
-              <Button type="button" onClick={handleAddRule} size="sm" variant="outline">
+              <Button
+                type="button"
+                onClick={handleAddRule}
+                size="sm"
+                variant="outline"
+              >
                 Add
               </Button>
             </div>
@@ -287,11 +300,19 @@ export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps)
           {/* Toggles */}
           <div className="flex gap-4">
             <div className="flex items-center gap-2">
-              <Switch id="isPrivate" checked={isPrivate} onCheckedChange={setIsPrivate} />
+              <Switch
+                id="isPrivate"
+                checked={isPrivate}
+                onCheckedChange={setIsPrivate}
+              />
               <Label htmlFor="isPrivate">Private</Label>
             </div>
             <div className="flex items-center gap-2">
-              <Switch id="isFeatured" checked={isFeatured} onCheckedChange={setIsFeatured} />
+              <Switch
+                id="isFeatured"
+                checked={isFeatured}
+                onCheckedChange={setIsFeatured}
+              />
               <Label htmlFor="isFeatured">Featured</Label>
             </div>
           </div>
@@ -313,7 +334,11 @@ export function CommunityForm({ initialData, isSubmitting }: CommunityFormProps)
               }
               size="sm"
             >
-              {isSubmitting || formikSubmitting ? "Saving..." : initialData ? "Update" : "Create"}
+              {isSubmitting || formikSubmitting
+                ? "Saving..."
+                : initialData
+                ? "Update"
+                : "Create"}
             </Button>
           </div>
         </Form>

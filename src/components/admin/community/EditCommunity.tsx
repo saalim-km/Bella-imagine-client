@@ -30,7 +30,6 @@ export default function EditCommunityForm({
   community,
   refetch,
 }: CommunityFormProps) {
-  console.log(community);
   const navigate = useNavigate();
   const [rules, setRules] = useState<string[]>(community?.rules || []);
   const [newRule, setNewRule] = useState("");

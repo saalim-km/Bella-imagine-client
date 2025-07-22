@@ -68,7 +68,6 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
       });
     }
 
-    console.log("user selected date : ", selectedDate);
     setBookingState((prev) => ({
       ...prev,
       selectedDate: date,

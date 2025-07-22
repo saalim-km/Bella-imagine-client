@@ -114,7 +114,6 @@ export const updateWorkSampleService = async (
 export const getAllVendorsServiceVendor = async (
   data: IVendorsFilter
 ): Promise<BasePaginatedResponse<PaginatedResponse<IVendorsResponse>>> => {
-  console.log(`in vendors listing hook : `, data);
   const response = await vendorAxiosInstance.get("/vendor/vendors", {
     params: data,
   });

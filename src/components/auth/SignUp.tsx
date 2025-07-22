@@ -109,7 +109,6 @@ export default function CommunitySignup({
       },
       {
         onSuccess: (data) => {
-          console.log("after google register of user : ", data);
           communityToast.registerSuccess();
 
           if (userType === "vendor") {

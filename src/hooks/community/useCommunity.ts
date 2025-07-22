@@ -70,7 +70,6 @@ export const useGetAllCommunitiesClient = (
 };
 
 export const useGetCommunityBySlugQueryClient = (slug : string , enabled : boolean,userId : string)=> {
-    console.log('client hook trigger',enabled)
     return useQuery({
         queryKey : ['community',slug,userId],
         queryFn : ()=> getCommunityBySlugForClient(slug),
@@ -99,7 +98,6 @@ export const useCreatePostClient = ()=> {
 export const useGetAllPostForClient = (
     input: GetAllPostInput,
 ) => {
-    console.log('hook trigger',input);
     return useQuery({
         queryKey: ['community_post', input],
         queryFn: () => getAllPostServiceClient(input),
@@ -196,7 +194,6 @@ export const useGetAllCommunitiesVendor = (
 };
 
 export const useGetCommunityBySlugQueryVendor = (slug : string , enabled : boolean,userId : string)=> {
-    console.log('vendor hook trigger',enabled)
     return useQuery({
         queryKey : ['community',slug,userId],
         queryFn : ()=> getCommunityBySlugForVendor(slug),

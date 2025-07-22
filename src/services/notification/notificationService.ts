@@ -21,9 +21,7 @@ export const getAllVendorNotification = async (input : GetAllNotificationsInput)
 }
 
 export const getAllClientNotification = async(input : GetAllNotificationsInput) : Promise<BasePaginatedResponse<NotificationPaginatedResponse>> => {
-    console.log('client notificaiton service triggered ');
     const response = await clientAxiosInstance.get('/client/notification',{params : input})
-    console.log(response);
     return response.data;
 }
 

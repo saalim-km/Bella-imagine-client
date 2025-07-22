@@ -34,7 +34,6 @@ export const getAllCommunitesAdmin = async (dto: {
 export const deleteCommunityService = async (
   communityId: string
 ): Promise<ApiResponse> => {
-  console.log("community delte service trigger : ", communityId);
   const response = await adminAxiosInstance.delete(`/community`, {
     data: { communityId: communityId },
   });

@@ -52,8 +52,6 @@ export default function CommunityLogin({
       },
       {
         onSuccess: (data) => {
-          console.log(data);
-
           if (userType === "vendor") {
             dispatch(
               vendorLogin({

@@ -33,7 +33,6 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Function to force socket reconnection
   const reconnect = () => {
-    console.log("Forcing socket reconnection");
     if (socket) {
       socket.disconnect();
       setSocket(null);
@@ -42,11 +41,9 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    console.log(user);
     if (!user || !user._id || !userType) {
       // Disconnect if no user
       if (socket) {
-        console.log("No user, disconnecting socket");
         socket.disconnect();
         setSocket(null);
         setIsConnected(false);
@@ -54,39 +51,32 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    console.log("Initializing socket connection for", user._id, userType);
 
     // Always create a new socket instance when this effect runs
     const socketInstance = initSocket(user._id, userType);
 
     if (!socketInstance) {
-      console.error("Failed to initialize socket");
       return;
     }
 
     // Join immediately after connection
     socketInstance.on("connect", () => {
-      console.log('user to connect the socket : ',user);
-      console.log("Socket connected ✅", socketInstance.id);
       socketInstance.emit("join", { userId: user._id, userType });
       setIsConnected(true);
       setSocket(socketInstance);
     });
 
     socketInstance.on("new_message_notification", (notification: TNotification) => {
-      console.log(notification);
       communityToast.newMessage(notification.message)
       dispatch(addNotification(notification))
     });
 
     socketInstance.on("disconnect", () => {
-      console.log("Socket disconnected");
       setIsConnected(false);
     });
 
     // Clean up function
     return () => {
-      console.log("Cleaning up socket connection");
       if (socketInstance) {
         socketInstance.off("connect");
         socketInstance.off("disconnect");

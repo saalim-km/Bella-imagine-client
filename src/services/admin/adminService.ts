@@ -47,7 +47,6 @@ export interface DashboardData {
 const AdminService = {
   get: async <T>(url: string, params?: any): Promise<T> => {
       const response = await adminAxiosInstance.get(url, { params });
-      console.log(response);
       return response.data;
   },
 

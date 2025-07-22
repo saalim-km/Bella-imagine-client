@@ -29,7 +29,6 @@ export const AuthAdminRoute = ({ element, allowedRoles }: ProtectedRouteProps) =
     if (state.admin.admin) return state.admin.admin?.role;
     return null;
   });
-  console.log('got admin in authadminroute',user);
 
   if (!user) {
     return <Navigate to="/admin/login" />; 

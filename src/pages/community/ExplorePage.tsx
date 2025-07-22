@@ -73,7 +73,6 @@ const ExplorePage: React.FC = () => {
       action: "like" | "unlike";
       error?: string;
     }) => {
-      console.log("Like confirm received:", { success, postId, action });
 
       // Remove from liking state
       setLikingPosts((prev) => {
@@ -147,7 +146,6 @@ const ExplorePage: React.FC = () => {
 
       const eventName = post.isLiked ? "unLike_post" : "like_post";
 
-      console.log(`Emitting ${eventName} for post:`, post._id);
       socket.emit(eventName, { postId: post._id });
     },
     [socket, likingPosts]

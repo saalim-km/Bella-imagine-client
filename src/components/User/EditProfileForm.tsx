@@ -77,7 +77,6 @@ function EditProfileForm({
   handleUpdateProfile,
   isUpdateSubmitting,
 }: EditProfileFormProps) {
-  console.log("data to edit", data);
   const [newLanguage, setNewLanguage] = useState("");
   const [open, setOpen] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -134,7 +133,6 @@ function EditProfileForm({
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     try {
-      console.log(values);
       handleUpdateProfile?.(values);
     } catch (error) {
       handleError(error);

@@ -58,7 +58,6 @@ export const updateCategoryStatus = async(input : IUpdateCategoryStatus)=> {
 
 export const getAllCategoryJoinRequests = async(input : PaginatedDataRequest): Promise<PaginatedCatRequestResponse> => {
   const response = await adminAxiosInstance.get('/category-request',{params : input})
-  console.log(response);
   return response.data
 }
 

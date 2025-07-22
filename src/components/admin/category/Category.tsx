@@ -59,8 +59,6 @@ export function CategoryManagement() {
   );
   const totalCategories = data?.data.total || 0;
   const totalPages = Math.max(1, Math.ceil(totalCategories / itemPerPage));
-  console.log("total pages from category ", data?.data.total);
-  console.log("calculated total pages : ", totalPages);
 
   function handleEdit(category: CategoryType) {
     setSelectedCategory(category);
@@ -83,7 +81,6 @@ export function CategoryManagement() {
   }
 
   async function handleToggleStatus(categoryId: string, status: boolean) {
-    console.log("category toggle status : ", categoryId, !status);
     const querykey = [
       "category-list-admin",
       { ...filterOption!, search: appliedSearch },

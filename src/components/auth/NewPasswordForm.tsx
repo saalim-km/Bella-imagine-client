@@ -53,7 +53,6 @@ export function NewPasswordForm({ email, userType }: NewPasswordFormProps) {
     values: FormValues,
     { setSubmitting }: FormikHelpers<FormValues>
   ) => {
-    console.log(setSubmitting);
     setIsSubmitting(true);
     resetPassword(
       { email: email, role: userType, password: values.password },

@@ -84,7 +84,6 @@ export interface ICommunityPost {
 
 
   const handleEditPost = (postId: string) => {
-    console.log("Editing post:", postId);
     navigate(`/post/edit/${postId}`);
   };
 

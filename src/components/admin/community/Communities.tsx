@@ -32,7 +32,6 @@ export default function Communities() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const itemsPerPage = 2;
-  console.log("current page for fetching : ", currentPage);
   const {
     data,
     isLoading,

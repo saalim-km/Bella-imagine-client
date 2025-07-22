@@ -19,7 +19,6 @@ export function MessageList({
   onReactToMessage,
 }: MessageListProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  console.log('got the messages here : ',messages);
 
   // Sort messages by timestamp
   const sortedMessages = [...messages].sort(

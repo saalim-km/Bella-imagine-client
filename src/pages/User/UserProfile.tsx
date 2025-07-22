@@ -64,7 +64,6 @@ export default function UserProfile() {
   const { mutate: updateVendor } = useUpdateVendorMutation();
   const { mutate: updateClient } = useUpdateClientMutation();
   const [isModal, setIsModal] = useState(false);
-  console.log("modal state", isModal);
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

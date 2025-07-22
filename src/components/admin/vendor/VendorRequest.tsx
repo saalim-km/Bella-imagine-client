@@ -85,7 +85,6 @@ export function VendorRequestsTable() {
   const totalVendors = vendorRequestsData?.data?.total ?? 1;
   const totalPages = Math.max(1, Math.ceil(totalVendors / itemsPerPage));
 
-  console.log(vendorRequests, totalPages);
 
   const handlePageChange = (page: number) => {
     if (page > 0 && page <= totalPages) {
