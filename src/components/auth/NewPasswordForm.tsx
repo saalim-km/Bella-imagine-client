@@ -51,7 +51,7 @@ export function NewPasswordForm({ email, userType }: NewPasswordFormProps) {
 
   const handleSubmit = (
     values: FormValues,
-    { setSubmitting }: FormikHelpers<FormValues>
+    { }: FormikHelpers<FormValues>
   ) => {
     setIsSubmitting(true);
     resetPassword(

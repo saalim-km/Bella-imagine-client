@@ -53,7 +53,6 @@ const BookingPage: React.FC<BookingPageProps> = ({ service, vendorId }) => {
 
   const handleDateSelect = (date: string) => {
     const now = new Date(); // Current date and time: June 21, 2025, 12:03 PM IST
-    const selectedDate = new Date(date);
 
     // Format current date to YYYY-MM-DD for comparison
     const currentDateStr = now.toISOString().split("T")[0]; // e.g., "2025-06-21"
