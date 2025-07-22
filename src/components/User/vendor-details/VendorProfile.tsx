@@ -1,5 +1,5 @@
 "use client"
-import { MapPin, Star, Award, Calendar, MessageSquare, Loader2, Globe, Camera } from "lucide-react"
+import { MapPin, Award, Calendar, MessageSquare, Loader2, Globe, Camera } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { IVendorDetails } from "@/types/interfaces/vendor"
