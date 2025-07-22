@@ -105,8 +105,9 @@ const Vendors = () => {
   });
 
   const vendors = clientData?.data.data ? clientData.data : vendorData?.data
+  const itemsPerPage = 3;
   const totalVendors = vendors?.total || 0;
-  const totalPages = Math.max(1, Math.ceil(totalVendors / 6));
+  const totalPages = Math.max(1, Math.ceil(totalVendors / itemsPerPage));
   const categories = categoriesClient?.data.data ? categoriesClient.data : categoriesVendor?.data
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && newPage <= totalPages) {
