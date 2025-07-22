@@ -93,15 +93,6 @@ const PhotographerCard = ({ vendorData }: PhotographerCardProps) => {
                   </div>
                 </div>
 
-                {/* Rating (if available) */}
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm font-medium">4.8</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">(24 reviews)</span>
-                </div>
-
                 {/* Pricing */}
                 {hourlyRate > 0 && (
                   <div className="bg-background rounded-lg p-3 border border-border">

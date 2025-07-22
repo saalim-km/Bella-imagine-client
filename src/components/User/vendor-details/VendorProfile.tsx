@@ -91,10 +91,6 @@ export function VendorProfile({ vendor }: VendorProfileProps) {
                     <span>{vendor?.location?.address || "Location not specified"}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span>4.9 (124 reviews)</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
                     <Calendar className="w-4 h-4" />
                     <span>Available for bookings</span>
                   </div>
