@@ -1,67 +1,51 @@
-# 📸 Bella Imagine
+# Bella Imagine
 
-**Bella Imagine** is a cutting-edge platform where users can hire professional photographers in India. The platform leverages AI-powered recommendations, real-time chatting, and real-time work sharing to enhance the client experience.
+![Bella Imagine Thumbnail](./src/assets/bellaImagine.png)
 
-## 🚀 Features
+**Bella Imagine** is a modern photography service platform designed to connect clients with professional photographers across India. It features real-time collaboration, AI-driven recommendations, and secure project management — all built with scalability and user experience in mind.
 
-### ✅ Photographer Discovery & Booking
-- Find and hire photographers based on categories and expertise.
-- AI-powered recommendations to match users with the best photographers.
-- Smart budget-based matching and negotiation options.
+---
 
-### 🧠 AI-Powered Features
-- **Photographer Recommendation**: Uses user behavior tracking (clicks, searches, likes) to suggest relevant photographers.
-- **Auto Photo Editing & Delivery**: Enhances, organizes, and securely delivers photos using AI.
+## Key Features
 
-### 📡 Real-Time Capabilities
-- **Instant Chat**: Real-time messaging between clients and photographers.
-- **Work Sharing**: Live updates and previews of ongoing photography projects.
+- **Photographer Discovery & Booking**  
+  Discover photographers by category, style, and location. Smart, budget-based recommendations powered by AI.
 
-### 🔐 Secure & Scalable
-- JWT authentication for admin, vendors, and clients.
-- Clean Architecture with structured backend services.
+- **AI-Driven Personalization**  
+  Behavioral data (clicks, searches, likes) enhances search and recommendation accuracy. Future-ready support for AI photo editing and automated delivery.
 
-## 🏗️ Tech Stack
+- **Real-Time Communication**  
+  Integrated Socket.IO enables instant messaging and live project updates between clients and photographers.
+
+- **Secure Role-Based Access**  
+  JWT-based authentication for clients, photographers, and admins ensures access control and data integrity.
+
+---
+
+## Tech Stack
 
 ### Frontend
-- React.js (with TanStack Query for state management)
-- TypeScript
+- React.js with TypeScript
+- TanStack Query (React Query)
 
 ### Backend
-- Node.js (Express.js)
-- MongoDB (Atlas)
-- Socket.io (for real-time chat and updates)
+- Node.js (Express)
+- MongoDB Atlas
+- Socket.IO (real-time communication)
 - JWT Authentication
+- Clean Architecture with modular service layers
 
-## 📌 Installation & Setup
+---
+
+## Getting Started
 
 ### Prerequisites
 - Node.js
 - MongoDB Atlas account
 
-### Steps to Run the Project
-1. Clone the repository:
-   ```sh
-   git clone https://github.com/your-repo/bella-imagine.git
-   ```
-2. Install dependencies:
-   ```sh
-   cd bella-imagine
-   npm install
-   ```
-3. Set up environment variables (`.env` file):
-   ```env
-   MONGO_URI=your_mongodb_uri
-   JWT_SECRET=your_secret_key
-   ```
-4. Start the server:
-   ```sh
-   npm start
-   ```
+### Installation
 
-## 📜 API Documentation
-[Refer to the API documentation](#) for details on all available endpoints.
-
-## 📞 Contact
-For any queries or suggestions, reach out at [your email].
-
+```bash
+git clone https://github.com/your-username/bella-imagine.git
+cd bella-imagine
+npm install
