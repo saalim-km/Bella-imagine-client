@@ -49,3 +49,9 @@
 git clone https://github.com/your-username/bella-imagine.git
 cd bella-imagine
 npm install
+
+
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
