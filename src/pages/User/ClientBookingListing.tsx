@@ -120,7 +120,7 @@ export default function ClientBookingList({
   const [filters, setFilters] = useState<FilterState>({
     status: "all",
     dateRange: undefined,
-    priceRange: [0, 100000],
+    priceRange: [0, 1000000],
     search: "",
   });
   const [bookings, setBookings] = useState<BookingList[] | null>(null);
@@ -133,7 +133,7 @@ export default function ClientBookingList({
   const queryClient = useQueryClient();
 
   const limit = 3;
-  const maxPrice = 100000;
+  const maxPrice = 1000000;
 
   // Debounced price range handler for API calls
   const debouncedPriceRange = useMemo(

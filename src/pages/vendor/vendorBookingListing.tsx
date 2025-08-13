@@ -155,7 +155,7 @@ export default function VendorBookingList({
   const [filters, setFilters] = useState<FilterState>({
     status: "all",
     dateRange: undefined,
-    priceRange: [0, 100000],
+    priceRange: [0, 1000000],
     search: "",
   });
   const [bookings, setBookings] = useState<BookingList[] | null>(null);
@@ -168,7 +168,7 @@ export default function VendorBookingList({
   const queryClient = useQueryClient();
 
   const limit = 3;
-  const maxPrice = 100000;
+  const maxPrice = 1000000;
 
   // Debounced price range handler for API calls
   const debouncedPriceRange = useMemo(
@@ -272,7 +272,7 @@ export default function VendorBookingList({
       updateBookingStatus(
         { bookingId, status },
         {
-          onSuccess: () => {
+          onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ["paginated-booking"] });
             if (status === "cancelled") {
               communityToast.success({
@@ -284,7 +284,7 @@ export default function VendorBookingList({
             }
             communityToast.success({
               title: "Photography Session completed",
-              description: "Thank you for using our service!",
+              description: data.message,
             });
           },
           onError: (error: any) => {
