@@ -107,10 +107,8 @@ export const FilterPanel = ({ isOpen, onClose, onApplyFilters, currentFilters, v
   };
 
   const handlePlaceChanged = () => {
-    alert('place selected')
     if (autocompleteRef.current) {
       const place = autocompleteRef.current.getPlace?.();
-      console.log(place);
       setLocation(place.address_components ? place.address_components[0].long_name + place.address_components[1].long_name : '')
       if (place && place.geometry && place.geometry.location) {
         const lat = place.geometry.location.lat();
