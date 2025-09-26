@@ -262,157 +262,127 @@ export default function AdminDashboard() {
           </div>
 
           {/* Top Photographers and Post Distribution */}
-<div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-  {/* Top Photographers - Improved Layout */}
-  <Card className="bg-background">
-    <CardHeader className="pb-3">
-      <CardTitle className="flex items-center gap-2 text-lg">
-        <Award className="h-6 w-6 text-amber-500" />
-        Top Photographers
-      </CardTitle>
-      <CardDescription>By number of bookings</CardDescription>
-    </CardHeader>
-    <CardContent>
-      <div className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={data.topPhotographers}
-            layout="vertical"
-            margin={{ left: 120, right: 20, top: 10, bottom: 10 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
-            <XAxis 
-              type="number" 
-              axisLine={false}
-              tickLine={false}
-            />
-            <YAxis
-              type="category"
-              dataKey="name"
-              width={110}
-              tick={{ fontSize: 11 }}
-              axisLine={false}
-              tickLine={false}
-            />
-            <Tooltip
-              formatter={(value: number) => [`${value} bookings`, 'Bookings']}
-              labelFormatter={(value, payload) => {
-                if (payload && payload[0]) {
-                  return payload[0].payload.name;
-                }
-                return value;
-              }}
-              contentStyle={{ 
-                borderRadius: '8px',
-                border: '1px solid #e2e8f0',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-              }}
-            />
-            <Bar
-              dataKey="bookingCount"
-              radius={[0, 4, 4, 0]}
-              name="Bookings"
-            >
-              {data.topPhotographers.map((_, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-      
-      {/* Additional Stats Summary */}
-      <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <span className="text-muted-foreground">Total Bookings: </span>
-            <span className="font-semibold">
-              {data.topPhotographers.reduce((sum, photographer) => sum + photographer.bookingCount, 0)}
-            </span>
-          </div>
-          <div>
-            <span className="text-muted-foreground">Top Performer: </span>
-            <span className="font-semibold">
-              {data.topPhotographers[0]?.name.split(' ')[0] || 'N/A'}
-            </span>
-          </div>
-        </div>
-      </div>
-    </CardContent>
-  </Card>
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            {/* Top Photographers - Improved Layout */}
+            <Card className="bg-background">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Award className="h-6 w-6 text-amber-500" />
+                  Top Photographers
+                </CardTitle>
+                <CardDescription>By number of bookings</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={data.topPhotographers}
+                      layout="vertical"
+                      margin={{ left: 120, right: 20, top: 10, bottom: 10 }}
+                    >
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        horizontal={true}
+                        vertical={false}
+                      />
+                      <XAxis type="number" axisLine={false} tickLine={false} />
+                      <YAxis
+                        type="category"
+                        dataKey="name"
+                        width={110}
+                        tick={{ fontSize: 11 }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <Tooltip
+                        formatter={(value: number) => [
+                          `${value} bookings`,
+                          "Bookings",
+                        ]}
+                        labelFormatter={(value, payload) => {
+                          if (payload && payload[0]) {
+                            return payload[0].payload.name;
+                          }
+                          return value;
+                        }}
+                        contentStyle={{
+                          borderRadius: "8px",
+                          border: "1px solid #e2e8f0",
+                          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                        }}
+                      />
+                      <Bar
+                        dataKey="bookingCount"
+                        radius={[0, 4, 4, 0]}
+                        name="Bookings"
+                      >
+                        {data.topPhotographers.map((_, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
 
-  {/* Post Distribution - Improved Layout */}
-  <Card className="bg-background">
-    <CardHeader className="pb-3">
-      <CardTitle className="text-lg">Post Distribution by Media Type</CardTitle>
-      <CardDescription>Breakdown of content types</CardDescription>
-    </CardHeader>
-    <CardContent>
-      <div className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={data.postDistribution}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={({ mediaType, count }) => 
-                `${mediaType === 'none' ? 'Text' : mediaType}: ${count}`
-              }
-              outerRadius={100}
-              innerRadius={60}
-              paddingAngle={2}
-              dataKey="count"
-            >
-              {data.postDistribution.map((_, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                  stroke="#fff"
-                  strokeWidth={2}
-                />
-              ))}
-            </Pie>
-            <Tooltip 
-              formatter={(value: number, name: string) => [
-                value, 
-                name === 'none' ? 'Text Posts' : `${name.charAt(0).toUpperCase() + name.slice(1)} Posts`
-              ]}
-              contentStyle={{ 
-                borderRadius: '8px',
-                border: '1px solid #e2e8f0',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-              }}
-            />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
-      
-      {/* Summary Stats */}
-      <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <span className="text-muted-foreground">Total Posts: </span>
-            <span className="font-semibold">
-              {data.postDistribution.reduce((sum, type) => sum + type.count, 0)}
-            </span>
+                {/* Additional Stats Summary */}
+                <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-muted-foreground">
+                        Total Bookings:{" "}
+                      </span>
+                      <span className="font-semibold">
+                        {data.topPhotographers.reduce(
+                          (sum, photographer) =>
+                            sum + photographer.bookingCount,
+                          0
+                        )}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">
+                        Top Performer:{" "}
+                      </span>
+                      <span className="font-semibold">
+                        {data.topPhotographers[0]?.name.split(" ")[0] || "N/A"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Post Distribution - Improved Layout */}
+          <Card className="bg-background">
+            <CardHeader>
+              <CardTitle>Post Distribution by Media Type</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={data.postDistribution}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ mediaType, percent }) => `${mediaType} ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="count"
+                  >
+                    {data.postDistribution.map((entry, index) => (
+                      <Cell key={`cell-${`${entry}${index}`}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
           </div>
-          <div>
-            <span className="text-muted-foreground">Most Common: </span>
-            <span className="font-semibold">
-              {data.postDistribution.reduce((max, type) => 
-                type.count > max.count ? type : max
-              ).mediaType === 'none' ? 'Text' : 'Image'}
-            </span>
-          </div>
-        </div>
-      </div>
-    </CardContent>
-  </Card>
-</div>
 
           {/* Recent Activity Tables */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
