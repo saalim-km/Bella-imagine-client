@@ -55,33 +55,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <div className="ml-auto flex items-center gap-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    {/* <Button variant="outline" size="icon" className="relative">
-                      <Bell className="h-4 w-4" />
-                      {unreadCount > 0 && (
-                        <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
-                          {unreadCount}
-                        </span>
-                      )}
-                    </Button> */}
                   </DropdownMenuTrigger>
-                  {/* <DropdownMenuContent align="end" className="w-[300px]">
-                    <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {notifications.map((notification) => (
-                      <DropdownMenuItem key={notification.id} className="flex flex-col items-start gap-1 p-4">
-                        <div className="flex w-full justify-between">
-                          <p className="font-medium">{notification.title}</p>
-                          {!notification.read && (
-                            <Badge variant="secondary" className="ml-auto">
-                              New
-                            </Badge>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground">{notification.message}</p>
-                        <p className="text-xs text-muted-foreground">{notification.time}</p>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent> */}
                 </DropdownMenu>
                 <ThemeToggle />
                 <DropdownMenu>
