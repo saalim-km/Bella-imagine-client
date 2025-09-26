@@ -313,7 +313,7 @@ export default function AdminDashboard() {
               radius={[0, 4, 4, 0]}
               name="Bookings"
             >
-              {data.topPhotographers.map((entry, index) => (
+              {data.topPhotographers.map((_, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={COLORS[index % COLORS.length]}
