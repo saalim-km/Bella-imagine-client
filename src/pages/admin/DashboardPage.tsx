@@ -367,7 +367,7 @@ export default function AdminDashboard() {
               paddingAngle={2}
               dataKey="count"
             >
-              {data.postDistribution.map((entry, index) => (
+              {data.postDistribution.map((_, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={COLORS[index % COLORS.length]}
