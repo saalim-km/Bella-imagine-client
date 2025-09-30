@@ -102,7 +102,6 @@ export const useGetAllPostForClient = (
         queryKey: ['community_post', input],
         queryFn: () => getAllPostServiceClient(input),
         enabled: input.enabled,
-        staleTime : 1000 * 60 * 5
     });
 }
 
@@ -170,7 +169,6 @@ export const useGetAllPostForVendor = (
         queryKey: ['community_post', input],
         queryFn: () => getAllPostServiceVendor(input),
         enabled: input.enabled,
-        staleTime : 1000 * 60 * 5
     });
 }
 
