@@ -28,20 +28,17 @@
 - **Payment Integration**  
   Secure payments via Stripe, with webhook handling for transaction updates.
 
-- **AI-Driven Personalization**  
-  Leverages behavioral data (clicks, searches, likes) to improve search and recommendation accuracy, with future support for AI photo editing and automated delivery.
-
 - **Secure Role-Based Access**  
   Ensures access control and data integrity for clients, photographers, and admins.
 
 ## Tech Stack
 
 ### Frontend
-- ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB) **React.js with TypeScript** - For building a dynamic and type-safe user interface.
-- ![TanStack Query](https://img.shields.io/badge/TanStack%20Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white) **TanStack Query (React Query)** - For efficient data fetching and state management.
-- ![Redux](https://img.shields.io/badge/Redux-593D88?style=for-the-badge&logo=redux&logoColor=white) **Redux** - For global state handling across the application.
-- ![Shadcn](https://img.shields.io/badge/Shadcn-000000?style=for-the-badge) **Shadcn** + ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white) **Tailwind CSS** - For modern, responsive, and customizable UI components.
-- ![Google Maps](https://img.shields.io/badge/Google%20Maps-4285F4?style=for-the-badge&logo=google-maps&logoColor=white) **Google Maps SDK** - For location-based autocomplete search and nearby photographer features.
+- ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB) **with TypeScript** For building a dynamic and type-safe user interface.
+- ![TanStack Query](https://img.shields.io/badge/TanStack%20Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white) For efficient data fetching and state management.
+- ![Redux](https://img.shields.io/badge/Redux-593D88?style=for-the-badge&logo=redux&logoColor=white) For global state handling across the application.
+- ![Shadcn](https://img.shields.io/badge/Shadcn-000000?style=for-the-badge) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white) For modern, responsive, and customizable UI components.
+- ![Google Maps](https://img.shields.io/badge/Google%20Maps-4285F4?style=for-the-badge&logo=google-maps&logoColor=white) For location-based autocomplete search and nearby photographer features.
 
 ## Getting Started
 
