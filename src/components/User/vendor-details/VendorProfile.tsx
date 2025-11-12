@@ -1,32 +1,48 @@
-"use client"
-import { MapPin, Award, Calendar, MessageSquare, Loader2, Globe, Camera } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import type { IVendorDetails } from "@/types/interfaces/vendor"
-import { ImageWithFallback } from "../ImageFallBack"
-import { useSelector } from "react-redux"
-import type { RootState } from "@/store/store"
-import { createConversationClient, createConversationVendor } from "@/services/chat/chatService"
-import { useCreateConversation } from "@/hooks/chat/useChat"
-import { handleError } from "@/utils/Error/error-handler.utils"
-import { useNavigate } from "react-router-dom"
+"use client";
+import {
+  MapPin,
+  Award,
+  Calendar,
+  MessageSquare,
+  Loader2,
+  Globe,
+  Camera,
+  Phone,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import type { IVendorDetails } from "@/types/interfaces/vendor";
+import { ImageWithFallback } from "../ImageFallBack";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store/store";
+import {
+  createConversationClient,
+  createConversationVendor,
+} from "@/services/chat/chatService";
+import { useCreateConversation } from "@/hooks/chat/useChat";
+import { handleError } from "@/utils/Error/error-handler.utils";
+import { useNavigate } from "react-router-dom";
 
 interface VendorProfileProps {
-  vendor: IVendorDetails
+  vendor: IVendorDetails;
 }
 
 export function VendorProfile({ vendor }: VendorProfileProps) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const user = useSelector((state: RootState) => {
-    if (state.client.client) return state.client.client
-    if (state.vendor.vendor) return state.vendor.vendor
-    return undefined
-  })
+    if (state.client.client) return state.client.client;
+    if (state.vendor.vendor) return state.vendor.vendor;
+    return undefined;
+  });
 
-  const profileImage = vendor?.profileImage
-  const mutateFn = user?.role === "client" ? createConversationClient : createConversationVendor
+  const profileImage = vendor?.profileImage;
+  const mutateFn =
+    user?.role === "client"
+      ? createConversationClient
+      : createConversationVendor;
 
-  const { mutate: createConversation, isPending } = useCreateConversation(mutateFn)
+  const { mutate: createConversation, isPending } =
+    useCreateConversation(mutateFn);
 
   function handleSendMessage() {
     createConversation(
@@ -36,20 +52,28 @@ export function VendorProfile({ vendor }: VendorProfileProps) {
       },
       {
         onSuccess: () => {
-          navigate("/messages")
+          navigate("/messages");
         },
         onError: (error) => {
-          handleError(error)
+          handleError(error);
         },
-      },
-    )
+      }
+    );
   }
 
   if (!user || !user._id) {
-    return <p>user not found please try again later , or please relogin to continue</p>
+    return (
+      <p>
+        user not found please try again later , or please relogin to continue
+      </p>
+    );
   }
 
-  const totalPhotos = vendor?.workSamples?.reduce((acc, sample) => acc + (sample.media?.length || 0), 0) || 0
+  const totalPhotos =
+    vendor?.workSamples?.reduce(
+      (acc, sample) => acc + (sample.media?.length || 0),
+      0
+    ) || 0;
 
   return (
     <div className="bg-background">
@@ -88,13 +112,20 @@ export function VendorProfile({ vendor }: VendorProfileProps) {
                 <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
                   <div className="flex items-center gap-1.5">
                     <MapPin className="w-4 h-4" />
-                    <span>{vendor?.location?.address || "Location not specified"}</span>
+                    <span>
+                      {vendor?.location?.address || "Location not specified"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Calendar className="w-4 h-4" />
                     <span>Available for bookings</span>
                   </div>
                 </div>
+              </div>
+
+              <div className="text-muted-foreground flex align-centre gap-2">
+                <Phone size={14} />
+                <p>{vendor.phoneNumber}</p>
               </div>
 
               {/* Description */}
@@ -107,11 +138,15 @@ export function VendorProfile({ vendor }: VendorProfileProps) {
             {/* Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center p-4 bg-muted/30 rounded-lg">
-                <div className="text-2xl font-bold text-foreground">{totalPhotos}</div>
+                <div className="text-2xl font-bold text-foreground">
+                  {totalPhotos}
+                </div>
                 <div className="text-sm text-muted-foreground">Photos</div>
               </div>
               <div className="text-center p-4 bg-muted/30 rounded-lg">
-                <div className="text-2xl font-bold text-foreground">{vendor?.services?.length || 0}</div>
+                <div className="text-2xl font-bold text-foreground">
+                  {vendor?.services?.length || 0}
+                </div>
                 <div className="text-sm text-muted-foreground">Services</div>
               </div>
               <div className="text-center p-4 bg-muted/30 rounded-lg">
@@ -119,7 +154,7 @@ export function VendorProfile({ vendor }: VendorProfileProps) {
                   {vendor?.services?.[0]?.yearsOfExperience || 0}
                 </div>
                 <div className="text-sm text-muted-foreground">Years Exp.</div>
-              </div>  
+              </div>
             </div>
 
             {/* Languages & Specialties */}
@@ -144,30 +179,33 @@ export function VendorProfile({ vendor }: VendorProfileProps) {
                 </div>
               )}
 
-              {vendor?.services?.[0]?.styleSpecialty && vendor.services[0].styleSpecialty.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                    <Camera className="w-4 h-4" />
-                    Specialties
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {vendor.services[0].styleSpecialty.slice(0, 6).map((specialty, index) => (
-                      <Badge
-                        key={`${specialty}-${index}`}
-                        variant="outline"
-                        className="px-3 py-1 border-border text-foreground hover:bg-muted"
-                      >
-                        {specialty}
-                      </Badge>
-                    ))}
-                    {vendor.services[0].styleSpecialty.length > 6 && (
-                      <Badge variant="outline" className="px-3 py-1">
-                        +{vendor.services[0].styleSpecialty.length - 6} more
-                      </Badge>
-                    )}
+              {vendor?.services?.[0]?.styleSpecialty &&
+                vendor.services[0].styleSpecialty.length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                      <Camera className="w-4 h-4" />
+                      Specialties
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {vendor.services[0].styleSpecialty
+                        .slice(0, 6)
+                        .map((specialty, index) => (
+                          <Badge
+                            key={`${specialty}-${index}`}
+                            variant="outline"
+                            className="px-3 py-1 border-border text-foreground hover:bg-muted"
+                          >
+                            {specialty}
+                          </Badge>
+                        ))}
+                      {vendor.services[0].styleSpecialty.length > 6 && (
+                        <Badge variant="outline" className="px-3 py-1">
+                          +{vendor.services[0].styleSpecialty.length - 6} more
+                        </Badge>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
 
             {/* Action Buttons */}
@@ -191,5 +229,5 @@ export function VendorProfile({ vendor }: VendorProfileProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

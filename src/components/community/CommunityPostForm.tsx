@@ -28,6 +28,7 @@ import { handleError } from "@/utils/Error/error-handler.utils";
 import { useDispatch } from "react-redux";
 import { addPost } from "@/store/slices/feedslice";
 import { CreatePostInput } from "@/types/interfaces/Community";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CreatePostFormProps {
   communityId?: string;
@@ -78,6 +79,7 @@ export function CreatePostForm({
   const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState("");
   const dispatch = useDispatch();
+  const queryClient = useQueryClient()
 
   const communities = communitiesData?.data || [];
 
@@ -212,8 +214,7 @@ export function CreatePostForm({
 
       createPost(formData as unknown as CreatePostInput, {
         onSuccess: (data) => {
-          // queryClient.invalidateQueries({ queryKey: ["community-post"] });
-          // queryClient.invalidateQueries({queryKey : ['user_posts']})
+          queryClient.invalidateQueries({queryKey: ["community-post"]});
           communityToast.success({
             title: "Post created",
             description: `your post has been created in the community`,
